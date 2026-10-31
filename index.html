@@ -271,6 +271,30 @@ textarea.input{min-height:110px;resize:vertical}
 .needs li{border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px}
 .needs b{display:block;margin-bottom:2px}
 
+/* ---------- Messagerie ---------- */
+.conv-list{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+.conv{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.conv:last-child{border-bottom:0}
+.conv:hover{background:var(--ice)}
+.conv-img{width:52px;height:64px;border-radius:10px;flex:none}
+.conv-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.conv-top{display:flex;justify-content:space-between;gap:8px}
+.conv-top small,.conv-sub{color:var(--muted);font-size:12px}
+.conv-sub,.conv-last{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conv-last{font-size:14px;color:var(--muted)}
+.conv.unread .conv-last{color:var(--ink);font-weight:650}
+.thread-item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:12px;font-size:14px}
+.thread-item .image-frame{width:44px;height:54px;border-radius:8px;flex:none}
+.thread-log{height:min(52vh,460px);overflow-y:auto;background:var(--ice);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:8px}
+.bubble{max-width:78%;padding:9px 13px;border-radius:14px;font-size:15px;line-height:1.45}
+.bubble p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble small{display:block;font-size:11px;opacity:.75;margin-top:3px}
+.bubble.them{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bubble.me{background:var(--navy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.thread-form{display:flex;gap:8px;align-items:flex-end;margin-top:10px}
+.thread-form textarea{min-height:48px;resize:vertical}
+.conv-img.image-failed::after,.thread-item .image-failed::after{display:none}
+
 /* ---------- Pages d'information ---------- */
 .prose{max-width:760px}
 .prose h1{font-size:30px;letter-spacing:-.6px;margin:6px 0 12px;color:var(--navy)}
@@ -352,6 +376,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
   .actions{margin-left:auto}
   .action{padding:8px 9px}
   .account-btn .label{display:none}
+  .action .badge:not(.has){display:none}
   .account-btn{margin-left:0}
   .search{order:3;flex-basis:100%}
   .search .btn{padding:8px 14px}
@@ -407,6 +432,10 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
       <button class="btn btn-primary" type="submit">Rechercher</button>
     </form>
     <div class="actions">
+      <a class="action" href="#/messages" id="messagesBtn" aria-label="Messages">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg>
+        <span class="label">Messages</span><span class="badge" id="msgCount">0</span>
+      </a>
       <a class="action" href="#/favoris" id="favoritesBtn" aria-label="Favoris">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
         <span class="label">Favoris</span><span class="badge" id="favCount">0</span>
@@ -562,6 +591,11 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 <div class="view wrap" id="view-product" hidden></div>
 
 <!-- ================= FAVORIS ================= -->
+<div class="view wrap" id="view-messages" hidden>
+  <div class="page-head narrow"><p class="crumbs"><a href="#/">Accueil</a> › Messages</p><h1 class="page-title" id="msgTitle">Messages</h1></div>
+  <div class="narrow" id="msgContent"></div>
+</div>
+
 <div class="view wrap" id="view-favoris" hidden>
   <div class="page-head"><p class="crumbs"><a href="#/">Accueil</a> › Favoris</p><h1 class="page-title">♡ Tes favoris</h1><p class="muted small" id="favNote">Enregistrés sur cet appareil.</p></div>
   <div class="products" id="favoriteProducts"></div>
@@ -801,11 +835,138 @@ async function syncFavorites(){
 }
 async function onSession(session,event){
   if(event==="PASSWORD_RECOVERY"){state.recovery=true}
-  if(session){await loadProfile(session);await syncFavorites()}
-  else state.user=null;
+  if(session){await loadProfile(session);await syncFavorites();await loadConversations();startRealtime()}
+  else {state.user=null;stopRealtime();chat.convs=[];chat.unread=0}
   state.remote.forEach(p=>p.mine=!!state.user&&state.user.id===p.sellerId);
   renderView();
   if(event==="PASSWORD_RECOVERY")location.hash="#/compte";
+}
+
+/* =========================================================
+   MESSAGERIE (Supabase : conversations + messages, temps réel)
+   ========================================================= */
+const chat = {convs:[], unread:0, current:null, messages:[], channel:null, poll:null, sending:false};
+const CONV_SELECT = "id,listing_id,buyer_id,seller_id,last_message_at,listings(title,photos,price,status),buyer:profiles!conversations_buyer_id_fkey(name),seller:profiles!conversations_seller_id_fkey(name)";
+function convView(c){
+  const me=state.user?.id, iAmBuyer=c.buyer_id===me;
+  return {...c, other: iAmBuyer?(c.seller?.name||"Vendeur"):(c.buyer?.name||"Acheteur"), role: iAmBuyer?"Tu achètes":"Tu vends",
+    title:c.listings?.title||"Annonce supprimée", img:(c.listings?.photos||[])[0]||"", price:c.listings?.price};
+}
+function msgTime(ts){const d=new Date(ts),now=new Date();return d.toDateString()===now.toDateString()?d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}
+async function loadConversations(){
+  if(!sb||!state.user){chat.convs=[];chat.unread=0;updateCounts();return}
+  const {data,error}=await sb.from("conversations").select(CONV_SELECT).order("last_message_at",{ascending:false});
+  if(error){console.warn(error);return}
+  const convs=(data||[]).map(convView);
+  if(convs.length){
+    const {data:msgs}=await sb.from("messages").select("conversation_id,body,sender_id,created_at,read_at").in("conversation_id",convs.map(c=>c.id)).order("created_at",{ascending:false}).limit(500);
+    (msgs||[]).forEach(m=>{const c=convs.find(x=>x.id===m.conversation_id);if(!c)return;if(!c.last)c.last=m;if(!m.read_at&&m.sender_id!==state.user.id)c.unread=(c.unread||0)+1});
+  }
+  chat.convs=convs.filter(c=>c.last||c.buyer_id===state.user.id);  // le vendeur ne voit une conversation qu'après le premier message
+  chat.unread=chat.convs.reduce((t,c)=>t+(c.unread||0),0);
+  updateCounts();
+}
+function startRealtime(){
+  stopRealtime();
+  if(!sb||!state.user)return;
+  try{
+    chat.channel=sb.channel("revoo-messages").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},payload=>onNewMessage(payload.new)).subscribe();
+  }catch(e){console.warn(e)}
+  chat.poll=setInterval(()=>{if(document.visibilityState==="visible")loadConversations().then(()=>{if(location.hash==="#/messages")renderMessages()})},60000);
+}
+function stopRealtime(){if(chat.channel){sb.removeChannel(chat.channel);chat.channel=null}clearInterval(chat.poll);chat.poll=null}
+async function onNewMessage(m){
+  if(!state.user)return;
+  if(chat.current&&m.conversation_id===chat.current.id){
+    if(!chat.messages.find(x=>x.id===m.id)){chat.messages.push(m);renderThreadLog()}
+    if(m.sender_id!==state.user.id)markRead(chat.current.id);
+  } else if(m.sender_id!==state.user.id){
+    await loadConversations();
+    const c=chat.convs.find(x=>x.id===m.conversation_id);
+    toast(`Nouveau message${c?` de ${c.other}`:""}`);
+    if(location.hash==="#/messages")renderMessages();
+    return;
+  }
+  loadConversations();
+}
+async function markRead(convId){
+  await sb.from("messages").update({read_at:new Date().toISOString()}).eq("conversation_id",convId).neq("sender_id",state.user.id).is("read_at",null);
+  const c=chat.convs.find(x=>x.id===convId);if(c){chat.unread-=c.unread||0;c.unread=0}updateCounts();
+}
+async function contactSeller(p){
+  if(p.demo){$("contactNote").innerHTML=`<p class="note">C’est un article de démonstration : il n’y a pas de vrai vendeur à contacter.</p>`;return}
+  if(!state.user){toast("Connecte-toi pour contacter le vendeur.");location.hash="#/compte";return}
+  const btn=$("contactSeller");if(btn){btn.disabled=true;btn.textContent="Ouverture…"}
+  let {data}=await sb.from("conversations").select("id").eq("listing_id",p.id).eq("buyer_id",state.user.id).maybeSingle();
+  if(!data){
+    const r=await sb.from("conversations").insert({listing_id:p.id,seller_id:p.sellerId,buyer_id:state.user.id}).select("id").single();
+    if(r.error){const again=await sb.from("conversations").select("id").eq("listing_id",p.id).eq("buyer_id",state.user.id).maybeSingle();data=again.data;if(!data){toast(frenchError(r.error));if(btn){btn.disabled=false;btn.textContent=`Contacter ${p.seller}`}return}}
+    else data=r.data;
+  }
+  location.hash="#/messages/"+data.id;
+}
+function renderMessages(id){
+  const el=$("msgContent");
+  if(!state.user){$("msgTitle").textContent="Messages";el.innerHTML=`<div class="panel"><h2>Connecte-toi pour voir tes messages</h2><p class="muted">La messagerie permet d’échanger avec les vendeurs et les acheteurs.</p><a class="btn btn-primary" href="#/compte">Se connecter</a></div>`;return}
+  if(id)return openThread(id);
+  chat.current=null;
+  $("msgTitle").textContent="Messages";
+  el.innerHTML=chat.convs.length?`<div class="conv-list">${chat.convs.map(c=>`<a class="conv${c.unread?" unread":""}" href="#/messages/${c.id}">
+      <span class="image-frame conv-img">${c.img?`<img data-safe-image src="${esc(c.img)}" alt="">`:""}</span>
+      <span class="conv-main"><span class="conv-top"><b>${esc(c.other)}</b><small>${c.last?msgTime(c.last.created_at):""}</small></span>
+      <span class="conv-sub">${esc(c.role)} · ${esc(c.title)}</span>
+      <span class="conv-last">${c.last?(c.last.sender_id===state.user.id?"Toi : ":"")+esc(c.last.body):"Aucun message pour l’instant"}</span></span>
+      ${c.unread?`<span class="badge has" aria-label="${c.unread} non lu${c.unread>1?"s":""}">${c.unread}</span>`:""}
+    </a>`).join("")}</div>`
+    :`<div class="empty"><p>Aucune conversation pour le moment.</p><p class="small">Pour écrire à un vendeur, ouvre une annonce et clique sur « Contacter ».</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;
+  watchImages(el);
+}
+async function openThread(id){
+  const el=$("msgContent");
+  let c=chat.convs.find(x=>x.id===id);
+  if(!c){const {data}=await sb.from("conversations").select(CONV_SELECT).eq("id",id).maybeSingle();if(data)c=convView(data)}
+  if(!c){el.innerHTML=`<div class="empty"><p>Conversation introuvable.</p><a class="btn btn-primary" href="#/messages">Mes messages</a></div>`;return}
+  chat.current=c;
+  $("msgTitle").textContent=c.other;
+  el.innerHTML=`<p class="crumbs" style="margin-top:-6px"><a href="#/messages">← Tous les messages</a></p>
+    <a class="thread-item" href="${c.listing_id?`#/article/${c.listing_id}`:"#/messages"}">
+      <span class="image-frame">${c.img?`<img data-safe-image src="${esc(c.img)}" alt="">`:""}</span>
+      <span><b>${esc(c.title)}</b><br><span class="muted small">${c.price!=null?eur(Number(c.price))+" · ":""}${esc(c.role)}</span></span>
+    </a>
+    <div class="thread-log" id="threadLog" aria-live="polite"><p class="muted small">Chargement…</p></div>
+    <form class="thread-form" id="threadForm">
+      <label for="threadInput" class="sr-only">Ton message à ${esc(c.other)}</label>
+      <textarea class="input" id="threadInput" rows="2" maxlength="2000" placeholder="Écris ton message…"></textarea>
+      <button class="btn btn-primary" type="submit">Envoyer</button>
+    </form>
+    <p class="error" id="threadErr" role="alert"></p>
+    <p class="muted small">Pour ta sécurité, reste sur Revoo pour échanger et ne partage jamais tes coordonnées bancaires.</p>`;
+  watchImages(el);
+  const {data,error}=await sb.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at").eq("conversation_id",id).order("created_at",{ascending:true}).limit(500);
+  if(chat.current?.id!==id)return;
+  if(error){$("threadLog").innerHTML=`<p class="error">${frenchError(error)}</p>`;return}
+  chat.messages=data||[];renderThreadLog();
+  if(chat.messages.some(m=>!m.read_at&&m.sender_id!==state.user.id))markRead(id);
+  const input=$("threadInput");
+  input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("threadForm").requestSubmit()}});
+  $("threadForm").addEventListener("submit",async e=>{
+    e.preventDefault();const body=input.value.trim();if(!body||chat.sending)return;
+    chat.sending=true;$("threadErr").textContent="";
+    const {data:m,error}=await sb.from("messages").insert({conversation_id:id,body,sender_id:state.user.id}).select("id,conversation_id,sender_id,body,created_at,read_at").single();
+    chat.sending=false;
+    if(error){$("threadErr").textContent=frenchError(error);return}
+    input.value="";
+    if(!chat.messages.find(x=>x.id===m.id)){chat.messages.push(m);renderThreadLog()}
+    loadConversations();
+  });
+  if(innerWidth>680)input.focus();
+}
+function renderThreadLog(){
+  const log=$("threadLog");if(!log)return;
+  const me=state.user.id;
+  log.innerHTML=chat.messages.length?chat.messages.map(m=>`<div class="bubble ${m.sender_id===me?"me":"them"}"><p>${esc(m.body)}</p><small>${msgTime(m.created_at)}${m.sender_id===me&&m.read_at?" · Lu":""}</small></div>`).join("")
+    :`<p class="muted small" style="text-align:center">Écris ton premier message à ${esc(chat.current.other)} : pose une question sur l’article, sa taille, son état…</p>`;
+  log.scrollTop=log.scrollHeight;
 }
 
 /* =========================================================
@@ -958,14 +1119,14 @@ function renderProduct(id){
       ${sold||p.mine?"":`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span></div><button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button></div>
-      ${p.mine||sold?"":`<button type="button" class="link" id="contactSeller">Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
+      ${p.mine||sold?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px">💬 Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
     </div>
   </div>
   ${similar.length?`<section class="section"><div class="section-head"><h2>Articles similaires</h2></div><div class="products" id="similarProducts"></div></section>`:""}`;
   if(similar.length)grid($("similarProducts"),similar,"");
   watchImages(v);
   v.querySelectorAll("[data-photo]").forEach(b=>b.addEventListener("click",()=>{$("mainPhoto").src=photos[+b.dataset.photo];v.querySelectorAll("[data-photo]").forEach(x=>x.setAttribute("aria-current",x===b))}));
-  $("contactSeller")?.addEventListener("click",()=>{$("contactNote").innerHTML=`<p class="note">La messagerie entre membres n’est pas encore active. Elle sera ajoutée dans une prochaine étape.</p>`});
+  $("contactSeller")?.addEventListener("click",()=>contactSeller(p));
   document.title=`${p.name} — Revoo`;
 }
 
@@ -1115,7 +1276,6 @@ function renderAccount(tab){
 }
 function needsHtml(){return `<div class="panel"><h2>Ce qui arrive ensuite</h2><p class="muted small">Ces fonctions demandent encore un service supplémentaire.</p>
   <ul class="needs">
-    <li><b>Messagerie entre membres</b>Échanger avec les vendeurs et acheteurs.</li>
     <li><b>Paiement</b>Encaisser le prix et les frais fixes, puis reverser l’argent au vendeur. Prestataire envisagé : Mangopay (argent bloqué jusqu’à la réception de l’article).</li>
     <li><b>Commandes et livraison</b>Étiquettes d’envoi, tarifs et suivi des colis.</li>
   </ul></div>`}
@@ -1257,7 +1417,7 @@ const PAGES={
     <ol class="steps"><li><b>1</b>Prends une photo nette de ton vêtement, sur un fond simple et bien éclairé.</li><li><b>2</b>Renseigne le titre, la description, la catégorie, la marque, la taille, l’état et le prix.</li><li><b>3</b>Publie : ton annonce est visible par tous. Modifie-la, marque-la vendue ou supprime-la depuis ton compte.</li></ol>
     <a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a>`,
   "aide":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Aide et contact</p><h1>Aide et contact</h1>
-    <details open><summary>Qu’est-ce qui fonctionne aujourd’hui ?</summary><p>Tu peux créer un vrai compte, publier des annonces avec photos (visibles par tous), les modifier ou les supprimer, et enregistrer tes favoris. Le paiement, la livraison et la messagerie ne sont pas encore actifs : les commandes sont simulées. Les articles marqués « Démo » sont des exemples.</p></details>
+    <details open><summary>Qu’est-ce qui fonctionne aujourd’hui ?</summary><p>Tu peux créer un vrai compte, publier des annonces avec photos (visibles par tous), les modifier ou les supprimer, et enregistrer tes favoris. Tu peux aussi discuter avec les vendeurs grâce à la messagerie. Le paiement et la livraison ne sont pas encore actifs : les commandes sont simulées. Les articles marqués « Démo » sont des exemples.</p></details>
     <details><summary>Combien coûte un achat ?</summary><p>Le prix de l’article + ${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()} + la livraison. ${feeExample()}</p></details>
     <details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. L’envoi d’e-mails (confirmation, mot de passe oublié) est encore limité pendant le lancement.</p></details>
     <details><summary>Où sont enregistrées mes données ?</summary><p>Ton compte, ton profil, tes annonces et tes favoris sont enregistrés chez Supabase, notre hébergeur de base de données. Ton panier et tes commandes simulées restent dans ton navigateur.</p></details>
@@ -1265,7 +1425,7 @@ const PAGES={
     <h2>Nous contacter</h2><p>Pour l’instant, pose ta question à Reboot. Les coordonnées officielles de Revoo seront publiées ici dès qu’elles seront définies.</p>
     <button type="button" class="btn btn-primary" data-open-chat>Discuter avec Reboot</button>`,
   "conditions":()=>legalStub("Conditions générales"),
-  "confidentialite":()=>legalStub("Politique de confidentialité",`<h2>Données utilisées aujourd’hui (information factuelle)</h2><ul><li>Compte : adresse e-mail et mot de passe, gérés par le service d’authentification Supabase. Le mot de passe n’est jamais visible par Revoo.</li><li>Profil : prénom ou pseudo, ville et présentation (facultatives), visibles par les autres membres.</li><li>Annonces et photos : publiques.</li><li>Favoris : liés à ton compte, visibles par toi seul.</li><li>Panier et commandes simulées : enregistrés uniquement dans ton navigateur.</li><li>Les photos d’exemple sont chargées depuis Unsplash.</li></ul>`),
+  "confidentialite":()=>legalStub("Politique de confidentialité",`<h2>Données utilisées aujourd’hui (information factuelle)</h2><ul><li>Compte : adresse e-mail et mot de passe, gérés par le service d’authentification Supabase. Le mot de passe n’est jamais visible par Revoo.</li><li>Profil : prénom ou pseudo, ville et présentation (facultatives), visibles par les autres membres.</li><li>Annonces et photos : publiques.</li><li>Favoris : liés à ton compte, visibles par toi seul.</li><li>Messages : visibles uniquement par l’acheteur et le vendeur concernés.</li><li>Panier et commandes simulées : enregistrés uniquement dans ton navigateur.</li><li>Les photos d’exemple sont chargées depuis Unsplash.</li></ul>`),
   "mentions-legales":()=>legalStub("Informations légales")
 };
 function legalStub(title,extra=""){return `<p class="crumbs"><a href="#/">Accueil</a> › ${title}</p><h1>${title}</h1><p class="note">Cette page sera complétée avec les informations officielles de Revoo. Aucun texte juridique n’a été inventé.</p>${extra}`}
@@ -1279,12 +1439,15 @@ function updateCounts(){
   $("favCount").textContent=f;$("favCount").classList.toggle("has",f>0);
   $("cartCount").textContent=state.cart.length;$("cartCount").classList.toggle("has",state.cart.length>0);
   $("favoritesBtn").setAttribute("aria-label",`Favoris (${f})`);$("cartBtn").setAttribute("aria-label",`Panier (${state.cart.length} article${state.cart.length>1?"s":""})`);
+  $("msgCount").textContent=chat.unread;$("msgCount").classList.toggle("has",chat.unread>0);
+  $("messagesBtn").setAttribute("aria-label",`Messages (${chat.unread} non lu${chat.unread>1?"s":""})`);
   $("loginLabel").textContent=state.user?state.user.name:"Se connecter";
   $("loginBtn").setAttribute("aria-label",state.user?`Mon compte (${state.user.name})`:"Se connecter");
 }
 function renderView(){
   const [name="",arg]=location.hash.replace(/^#\/?/,"").split("/").map(decodeURIComponent);
   document.querySelectorAll(".view").forEach(v=>v.hidden=true);
+  if(name!=="messages")chat.current=null;
   document.title="Revoo — Tes vêtements ont de l’avenir";
   let view="home";
   if(name==="catalogue"){view="catalogue";renderCatalogue()}
@@ -1293,6 +1456,7 @@ function renderView(){
   else if(name==="panier"){view="panier";renderCart()}
   else if(name==="vendre"){view="vendre";renderSell(arg)}
   else if(name==="compte"){view="compte";renderAccount(arg||(state.user?"profil":undefined))}
+  else if(name==="messages"){view="messages";renderMessages(arg)}
   else if(PAGES[name]){view="page";$("pageContent").innerHTML=PAGES[name]()}
   else renderHome();
   $("view-"+view).hidden=false;
@@ -1334,7 +1498,7 @@ document.addEventListener("click",async e=>{
   const un=t.closest("[data-unfilter]");if(un){const k=un.dataset.unfilter;if(Array.isArray(filters[k]))filters[k]=filters[k].filter(x=>x!==un.dataset.value);else filters[k]=k==="sort"?"recent":"";if(k==="q")$("searchInput").value="";renderCatalogue();return}
   if(t.closest("#resetResults")){resetFilters();$("searchInput").value="";renderCatalogue();return}
   const acc=t.closest("[data-acc]");if(acc){const k=acc.dataset.acc;if(state.user)location.hash="#/compte/"+k;else renderAccount(k);return}
-  if(t.closest("#logout")){await sb.auth.signOut();state.user=null;toast("Tu es déconnecté.");location.hash="#/compte";renderView();return}
+  if(t.closest("#logout")){await sb.auth.signOut();state.user=null;stopRealtime();chat.convs=[];chat.unread=0;toast("Tu es déconnecté.");location.hash="#/compte";renderView();return}
   if(t.closest("#wipe")){if(confirm("Effacer de cet appareil le panier, les favoris et les commandes simulées ? (Ton compte et tes annonces ne sont pas supprimés.)")){["favorites","cart","orders","sold","carrier"].forEach(store.del);location.reload()}return}
   if(t.closest("[data-open-chat]")){openChat(true);return}
   const rs=t.closest("[data-reboot-search]");if(rs){doSearch(rs.dataset.rebootSearch);if(innerWidth<680)openChat(false);return}
@@ -1448,13 +1612,13 @@ function rebootReply(raw){
   if(/frais|commission|combien.*(coute|paye)|cout|tarif revoo/.test(t))return fees;
   if(/livr|colis|envoi|expedi|transporteur|mondial|colissimo|chrono|dpd|relais/.test(t))return`<p>Tu pourras choisir entre <b>Colissimo, Mondial Relay, Chronopost, DPD et Relais Colis</b> au moment du panier.</p><p>Les tarifs de livraison ne sont pas encore connectés.</p>`;
   if(/paie|paye|paiement|carte|paypal|rembours|cb\b/.test(t))return`<p>Le paiement n’est pas encore disponible : aucun prestataire de paiement n’est connecté. Tu peux seulement simuler une commande pour tester le parcours.</p>`;
+  if(/message|contacter|discuter avec|ecrire au vendeur/.test(t))return`<p>Pour écrire à un vendeur, ouvre son annonce et clique sur « Contacter ». Tu retrouves toutes tes conversations dans <b>Messages</b>, en haut de la page.</p><a class="pill" href="#/messages">Mes messages</a>`;
   if(/vend|annonce|deposer|publier|mettre en vente/.test(t))return`<p>Pour vendre : crée ton compte, puis remplis le formulaire (photos, titre, description, catégorie, marque, taille, état, prix). Ton annonce sera visible par tous.</p><a class="pill" href="#/vendre">Vendre un vêtement</a>`;
   if(/mot de passe|oubli/.test(t))return`<p>Sur la page de connexion, clique sur « Mot de passe oublié ? » : tu recevras un lien par e-mail pour en choisir un nouveau.</p><a class="pill" href="#/compte">Connexion</a>`;
   if(/compte|inscri|connect|profil/.test(t))return`<p>Crée ton compte gratuitement avec ton prénom, ton e-mail et un mot de passe.</p><a class="pill" href="#/compte">Mon compte</a>`;
   if(/command|suivi|suivre/.test(t))return`<p>Tes commandes simulées sont dans <b>Mon compte › Mes commandes</b>. Le suivi réel des colis arrivera avec l’intégration d’un transporteur.</p><a class="pill" href="#/compte/commandes">Mes commandes</a>`;
   if(/favori/.test(t))return`<p>Appuie sur ♡ sur un article pour l’ajouter à tes favoris. Connecté, tu les retrouves sur tous tes appareils.</p><a class="pill" href="#/favoris">Mes favoris</a>`;
   if(/panier/.test(t))return`<p>Ton panier contient ${state.cart.length} article${state.cart.length>1?"s":""}.</p><a class="pill" href="#/panier">Voir mon panier</a>`;
-  if(/message|contacter|discuter avec/.test(t))return`<p>La messagerie entre membres n’est pas encore active. Elle arrivera dans une prochaine étape.</p>`;
   if(/aide|contact|probleme|support|assistance|souci|bug/.test(t))return`<p>Je suis là pour ça ! Tu peux aussi consulter la page d’aide. Les coordonnées officielles de Revoo y seront ajoutées dès qu’elles seront définies.</p><a class="pill" href="#/aide">Page d’aide</a>`;
   if(/^trouver un vetement$/.test(t))return`<p>Écris-moi ce que tu cherches, par exemple « veste en jean » ou « pull », ou choisis une catégorie :</p>${CATEGORIES.map(c=>`<button type="button" class="pill" data-category="${c}">${c}</button>`).join("")}`;
   const words=t.replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(w=>w.length>1&&!STOP.has(w));
