@@ -835,8 +835,8 @@ async function syncFavorites(){
 }
 async function onSession(session,event){
   if(event==="PASSWORD_RECOVERY"){state.recovery=true}
-  if(session){await loadProfile(session);await syncFavorites();await loadConversations();startRealtime()}
-  else {state.user=null;stopRealtime();chat.convs=[];chat.unread=0}
+  if(session){await loadProfile(session);await syncFavorites();await loadConversations();await loadAdmin();startRealtime()}
+  else {state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0}
   state.remote.forEach(p=>p.mine=!!state.user&&state.user.id===p.sellerId);
   renderView();
   if(event==="PASSWORD_RECOVERY")location.hash="#/compte";
@@ -970,6 +970,94 @@ function renderThreadLog(){
 }
 
 /* =========================================================
+   SIGNALEMENTS & MODÉRATION
+   ========================================================= */
+const REPORT_REASONS=["Article interdit ou dangereux","Contrefaçon","Arnaque ou fraude","Annonce trompeuse","Contenu choquant ou inapproprié","Ce n’est pas un vêtement","Autre"];
+const mod={reports:[],loaded:false};
+async function loadAdmin(){
+  state.isAdmin=false;
+  if(!sb||!state.user)return;
+  try{
+    const {data,error}=await sb.from("admins").select("user_id").eq("user_id",state.user.id).maybeSingle();
+    state.isAdmin=!error&&!!data;
+    if(state.isAdmin)await loadReports();
+  }catch(e){console.warn(e);state.isAdmin=false}
+}
+async function loadReports(){
+  const {data,error}=await sb.from("reports").select("id,listing_id,reason,details,contact_email,status,created_at,listings(title,photos,status,price,profiles(name))").order("created_at",{ascending:false}).limit(200);
+  if(error){console.warn(error);return}
+  mod.reports=data||[];mod.loaded=true;
+}
+function openReportForm(p){
+  const box=$("reportBox");if(!box)return;
+  if(box.innerHTML){box.innerHTML="";return}
+  box.innerHTML=`<form class="panel" id="reportForm" novalidate style="margin-top:12px">
+    <h2 style="font-size:17px">Signaler cette annonce</h2>
+    <p class="muted small">Ton signalement est confidentiel : le vendeur ne saura pas qui l’a envoyé.</p>
+    <div class="field"><label for="rReason">Motif</label><select class="input" id="rReason"><option value="">Choisir…</option>${REPORT_REASONS.map(r=>`<option>${r}</option>`).join("")}</select><span class="error" id="rReasonErr"></span></div>
+    <div class="field"><label for="rDetails">Explique en quelques mots <span class="hint" id="rDetailsHint">(facultatif)</span></label><textarea class="input" id="rDetails" maxlength="1000"></textarea><span class="error" id="rDetailsErr"></span></div>
+    ${state.user?"":`<div class="field"><label for="rEmail">Ton e-mail <span class="hint">(facultatif, pour être tenu informé)</span></label><input class="input" id="rEmail" type="email" autocomplete="email"><span class="error" id="rEmailErr"></span></div>`}
+    <div class="buy-actions"><button class="btn btn-primary" type="submit">Envoyer le signalement</button><button type="button" class="btn btn-outline" id="rCancel">Annuler</button></div>
+    <p class="error" id="reportErr" role="alert"></p>
+  </form>`;
+  $("rReason").addEventListener("change",()=>{$("rDetailsHint").textContent=$("rReason").value==="Autre"?"(obligatoire)":"(facultatif)"});
+  $("rCancel").addEventListener("click",()=>{box.innerHTML=""});
+  $("reportForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const reason=$("rReason").value,details=$("rDetails").value.trim(),email=$("rEmail")?$("rEmail").value.trim():"";
+    let ok=fieldError("rReason","rReasonErr",reason?"":"Choisis un motif.");
+    ok&=fieldError("rDetails","rDetailsErr",reason==="Autre"&&details.length<5?"Précise le problème en quelques mots.":"");
+    if($("rEmail"))ok&=fieldError("rEmail","rEmailErr",email&&!emailOk(email)?"Adresse e-mail invalide.":"");
+    if(!ok)return;
+    busy(e.target,true,"Envoi…");
+    const row={listing_id:p.id,reason,details:details||null,contact_email:email||state.user?.email||null};
+    if(state.user)row.reporter_id=state.user.id;
+    const {error}=await sb.from("reports").insert(row);
+    busy(e.target,false);
+    if(error){$("reportErr").textContent=/duplicate|unique/i.test(error.message||"")?"Tu as déjà signalé cette annonce. Merci !":frenchError(error);return}
+    box.innerHTML=`<p class="note" style="margin-top:12px">Merci, ton signalement a bien été envoyé. Revoo va examiner cette annonce.</p>`;
+    if(state.isAdmin)loadReports();
+  });
+  $("rReason").focus();
+}
+function moderationHtml(){
+  if(!mod.loaded)return`<p class="muted">Chargement…</p>`;
+  const nouveaux=mod.reports.filter(r=>r.status==="nouveau");
+  const row=r=>{const l=r.listings;const img=(l?.photos||[])[0]||"";
+    return `<div class="listing-row">
+      <a class="image-frame" href="#/article/${encodeURIComponent(r.listing_id)}">${img?`<img data-safe-image src="${esc(img)}" alt="">`:""}</a>
+      <div><h3>${esc(l?.title||"Annonce supprimée")}</h3>
+        <p><b>${esc(r.reason)}</b> · ${new Date(r.created_at).toLocaleDateString("fr-FR")} · vendeur : ${esc(l?.profiles?.name||"?")}</p>
+        ${r.details?`<p style="white-space:pre-line">« ${esc(r.details)} »</p>`:""}
+        ${r.contact_email?`<p>Contact : ${esc(r.contact_email)}</p>`:""}
+        <p><span class="status">${r.status==="nouveau"?"Nouveau":r.status==="traité"?"Traité":"Rejeté"}</span>${l?.status==="removed"?' <span class="status">Annonce retirée</span>':""}</p></div>
+      <div class="row-actions">
+        ${l&&l.status!=="removed"?`<button type="button" class="btn btn-danger" data-mod="remove" data-report="${r.id}" data-listing="${r.listing_id}">Retirer l’annonce</button>`:""}
+        ${l&&l.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-report="${r.id}" data-listing="${r.listing_id}">Remettre en ligne</button>`:""}
+        ${r.status==="nouveau"?`<button type="button" class="btn btn-outline" data-mod="reject" data-report="${r.id}" data-listing="${r.listing_id}">Rien à signaler</button>`:""}
+      </div></div>`};
+  return `<p class="muted small">Seul toi peux voir cet onglet. « Retirer l’annonce » la masque pour tout le monde ; le vendeur la voit marquée « Retirée par la modération ».</p>
+    <div class="panel"><h2>À traiter (${nouveaux.length})</h2>${nouveaux.length?nouveaux.map(row).join(""):`<p class="muted">Aucun nouveau signalement 🎉</p>`}</div>
+    ${mod.reports.length>nouveaux.length?`<div class="panel"><h2>Historique</h2>${mod.reports.filter(r=>r.status!=="nouveau").map(row).join("")}</div>`:""}`;
+}
+async function moderate(action,reportId,listingId){
+  const now=new Date().toISOString();
+  if(action==="remove"){
+    if(!confirm("Retirer cette annonce ? Elle ne sera plus visible par personne."))return;
+    let r=await sb.from("listings").update({status:"removed"}).eq("id",listingId);if(r.error){toast(frenchError(r.error));return}
+    await sb.from("reports").update({status:"traité",handled_at:now}).eq("listing_id",listingId).eq("status","nouveau");
+    toast("Annonce retirée.");
+  } else if(action==="restore"){
+    let r=await sb.from("listings").update({status:"active"}).eq("id",listingId);if(r.error){toast(frenchError(r.error));return}
+    toast("Annonce remise en ligne.");
+  } else if(action==="reject"){
+    await sb.from("reports").update({status:"rejeté",handled_at:now}).eq("id",reportId);
+    toast("Signalement classé sans suite.");
+  }
+  await Promise.all([loadReports(),loadListings()]);renderView();
+}
+
+/* =========================================================
    CARTE PRODUIT
    ========================================================= */
 function card(p){
@@ -1092,7 +1180,8 @@ function renderProduct(id){
   const photos=(p.photos&&p.photos.length?p.photos:[p.img]);
   const similar=available().filter(x=>x.id!==p.id&&(x.category===p.category||x.style===p.style)).slice(0,5);
   let actions;
-  if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
+  if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
+  else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
   else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div>`;
   const eyebrow=p.mine?"Ton annonce":p.demo?"Annonce de démonstration":"";
@@ -1120,6 +1209,7 @@ function renderProduct(id){
       ${actions}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span></div><button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button></div>
       ${p.mine||sold?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px">💬 Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
+      ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">🚩 Signaler cette annonce</button><div id="reportBox"></div>`:""}
     </div>
   </div>
   ${similar.length?`<section class="section"><div class="section-head"><h2>Articles similaires</h2></div><div class="products" id="similarProducts"></div></section>`:""}`;
@@ -1127,6 +1217,7 @@ function renderProduct(id){
   watchImages(v);
   v.querySelectorAll("[data-photo]").forEach(b=>b.addEventListener("click",()=>{$("mainPhoto").src=photos[+b.dataset.photo];v.querySelectorAll("[data-photo]").forEach(x=>x.setAttribute("aria-current",x===b))}));
   $("contactSeller")?.addEventListener("click",()=>contactSeller(p));
+  $("reportBtn")?.addEventListener("click",()=>openReportForm(p));
   document.title=`${p.name} — Revoo`;
 }
 
@@ -1238,12 +1329,15 @@ function renderAccount(tab){
   const mine=state.remote.filter(p=>p.mine);
   const myOrders=state.orders.filter(o=>!o.userId||o.userId===state.user.id);
   const tabs=[["profil","Profil"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]];
+  if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
   let body="";
-  if(accountTab==="annonces"){
+  if(accountTab==="moderation"&&state.isAdmin){
+    body=moderationHtml();
+  } else if(accountTab==="annonces"){
     body=mine.length?`<div class="panel">${mine.map(l=>`<div class="listing-row">
       <a class="image-frame" href="#/article/${encodeURIComponent(l.id)}"><img data-safe-image src="${esc(l.img)}" alt="${esc(l.name)}"></a>
-      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p><span class="status">${l.status==="active"?"En ligne":"Vendue (masquée)"}</span></p></div>
-      <div class="row-actions"><a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button><button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
+      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p><span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":"Vendue (masquée)"}</span></p></div>
+      <div class="row-actions">${l.status==="removed"?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
     </div>`).join("")}</div><a class="btn btn-primary" href="#/vendre">Ajouter une annonce</a>`
     :`<div class="empty"><p>Tu n’as pas encore d’annonce.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
   } else if(accountTab==="commandes"){
@@ -1288,6 +1382,7 @@ function renderSell(editId){
   const el=$("sellContent");
   if(!state.user){$("sellTitle").textContent="Vends un vêtement";el.innerHTML=`<div class="panel"><h2>Connecte-toi pour vendre</h2><p class="muted">Pour déposer une annonce, il faut un compte Revoo. C’est gratuit.</p><a class="btn btn-primary" href="#/compte">Créer un compte ou se connecter</a></div>`;return}
   const l=editId?state.remote.find(x=>x.id===editId&&x.mine):null;
+  if(l&&l.status==="removed"){el.innerHTML=`<div class="empty"><p>Cette annonce a été retirée par la modération et ne peut plus être modifiée.</p><a class="btn btn-primary" href="#/compte/annonces">Mes annonces</a></div>`;return}
   if(editId&&!l){el.innerHTML=state.loading?`<p class="muted">Chargement…</p>`:`<div class="empty"><p>Cette annonce est introuvable.</p><a class="btn btn-primary" href="#/compte/annonces">Mes annonces</a></div>`;return}
   $("sellTitle").textContent=l?"Modifier mon annonce":"Vends un vêtement";
   draftPhotos=l?[...l.photos]:[];
@@ -1421,6 +1516,7 @@ const PAGES={
     <details><summary>Combien coûte un achat ?</summary><p>Le prix de l’article + ${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()} + la livraison. ${feeExample()}</p></details>
     <details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. L’envoi d’e-mails (confirmation, mot de passe oublié) est encore limité pendant le lancement.</p></details>
     <details><summary>Où sont enregistrées mes données ?</summary><p>Ton compte, ton profil, tes annonces et tes favoris sont enregistrés chez Supabase, notre hébergeur de base de données. Ton panier et tes commandes simulées restent dans ton navigateur.</p></details>
+    <details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « 🚩 Signaler cette annonce », puis choisis le motif. Ton signalement est confidentiel et sera examiné par Revoo. Tu n’as pas besoin d’être connecté.</p></details>
     <details><summary>Qui est Reboot ?</summary><p>Reboot est l’assistant de Revoo. Il répond à partir de réponses préparées à l’avance : il n’est connecté à aucune intelligence artificielle.</p></details>
     <h2>Nous contacter</h2><p>Pour l’instant, pose ta question à Reboot. Les coordonnées officielles de Revoo seront publiées ici dès qu’elles seront définies.</p>
     <button type="button" class="btn btn-primary" data-open-chat>Discuter avec Reboot</button>`,
@@ -1494,6 +1590,7 @@ document.addEventListener("click",async e=>{
     save("cart");refresh();return}
   const rm=t.closest("[data-remove]");if(rm){state.cart=state.cart.filter(x=>x!==rm.dataset.remove);save("cart");toast("Retiré du panier");refresh();return}
   const del=t.closest("[data-delete]");if(del){deleteListing(del.dataset.delete);return}
+  const md=t.closest("[data-mod]");if(md){md.disabled=true;moderate(md.dataset.mod,md.dataset.report,md.dataset.listing);return}
   const sta=t.closest("[data-status]");if(sta){sta.disabled=true;toggleStatus(sta.dataset.status);return}
   const un=t.closest("[data-unfilter]");if(un){const k=un.dataset.unfilter;if(Array.isArray(filters[k]))filters[k]=filters[k].filter(x=>x!==un.dataset.value);else filters[k]=k==="sort"?"recent":"";if(k==="q")$("searchInput").value="";renderCatalogue();return}
   if(t.closest("#resetResults")){resetFilters();$("searchInput").value="";renderCatalogue();return}
@@ -1611,6 +1708,7 @@ function rebootReply(raw){
   if(/\b(ia|intelligence|chatgpt|robot|humain|qui es)/.test(t))return`<p>Je suis Reboot, l’assistant de Revoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle.</p>`;
   if(/frais|commission|combien.*(coute|paye)|cout|tarif revoo/.test(t))return fees;
   if(/livr|colis|envoi|expedi|transporteur|mondial|colissimo|chrono|dpd|relais/.test(t))return`<p>Tu pourras choisir entre <b>Colissimo, Mondial Relay, Chronopost, DPD et Relais Colis</b> au moment du panier.</p><p>Les tarifs de livraison ne sont pas encore connectés.</p>`;
+  if(/signal|arnaque|fraude|contrefa|faux|interdit|abus/.test(t))return`<p>Pour signaler une annonce suspecte, ouvre-la et clique sur « 🚩 Signaler cette annonce ». Ton signalement est confidentiel et sera examiné par Revoo.</p>`;
   if(/paie|paye|paiement|carte|paypal|rembours|cb\b/.test(t))return`<p>Le paiement n’est pas encore disponible : aucun prestataire de paiement n’est connecté. Tu peux seulement simuler une commande pour tester le parcours.</p>`;
   if(/message|contacter|discuter avec|ecrire au vendeur/.test(t))return`<p>Pour écrire à un vendeur, ouvre son annonce et clique sur « Contacter ». Tu retrouves toutes tes conversations dans <b>Messages</b>, en haut de la page.</p><a class="pill" href="#/messages">Mes messages</a>`;
   if(/vend|annonce|deposer|publier|mettre en vente/.test(t))return`<p>Pour vendre : crée ton compte, puis remplis le formulaire (photos, titre, description, catégorie, marque, taille, état, prix). Ton annonce sera visible par tous.</p><a class="pill" href="#/vendre">Vendre un vêtement</a>`;
