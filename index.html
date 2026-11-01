@@ -221,6 +221,10 @@ textarea.input{min-height:110px;resize:vertical}
 .seller-box{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;margin-top:18px}
 .seller-box .avatar{margin:0;width:46px;height:46px;font-size:19px}
 .seller-box div{flex:1}
+.phase1 #cartBtn{display:none}
+.safety{border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;margin:16px 0;font-size:14px;background:#fff}
+.safety h2{font-size:15px;margin:0 0 8px}
+.safety ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .profile-head{display:flex;gap:20px;align-items:center;padding:28px 0 8px;flex-wrap:wrap}
 .profile-head .avatar{width:84px;height:84px;font-size:34px;margin:0;background:var(--navy);color:#fff;font-weight:800}
 .profile-head h1{margin:0 0 4px;font-size:28px;color:var(--navy)}
@@ -425,7 +429,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 <body>
 <a href="#main" class="skip" id="skipLink">Aller au contenu</a>
 
-<div class="demo-bar" role="note">Revoo est en cours de lancement : le paiement n’est pas encore actif, les commandes sont simulées. <a href="#/aide">En savoir plus</a></div>
+<div class="demo-bar" role="note" id="demoBar">Lancement : <b>0 € de frais</b>. Le paiement se fait directement entre membres. <a href="#/securite">Conseils de sécurité</a></div>
 
 <header class="top">
   <div class="wrap head">
@@ -637,10 +641,10 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
       <div class="foot-brand">
         <img src="" data-logo="bleu" alt="Revoo" width="640" height="198" loading="lazy">
         <p>Tes vêtements ont de l’avenir.</p>
-        <p class="small">En cours de lancement — le paiement et la livraison ne sont pas encore connectés.</p>
+        <p class="small">En cours de lancement — 0 € de frais, paiement direct entre membres.</p>
       </div>
       <nav aria-label="Revoo"><h2>Revoo</h2><ul><li><a href="#/a-propos">À propos de Revoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
-      <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
+      <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/securite">Conseils de sécurité</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
       <nav aria-label="Aide"><h2>Aide</h2><ul><li><a href="#/aide">Aide et contact</a></li><li><a href="#/compte">Mon compte</a></li></ul></nav>
       <nav aria-label="Informations légales"><h2>Légal</h2><ul><li><a href="#/conditions">Conditions</a></li><li><a href="#/confidentialite">Confidentialité</a></li><li><a href="#/mentions-legales">Informations légales</a></li></ul></nav>
     </div>
@@ -686,6 +690,8 @@ document.querySelectorAll("img[data-logo]").forEach(i=>i.src=LOGOS[i.dataset.log
    ========================================================= */
 const CONFIG = {
   fraisFixes: 1,              // 1 € payé par l'acheteur
+  paiementIntegre: false,     // false = PHASE 1 : 0 € de frais, l'acheteur paie le vendeur directement (main propre ou PayPal « Biens et services »)
+                              // true  = PHASE 2 : panier, paiement intégré et frais ci-dessous
   fraisPar: "article",        // "article" = 1 € par article (10 articles = 10 €) · "commande" = 1 € par commande
   maxPhotos: 5,
   afficherDemo: true,         // true = afficher aussi les 12 articles d'exemple (marqués « Démo »)
@@ -903,7 +909,7 @@ async function markRead(convId){
   const c=chat.convs.find(x=>x.id===convId);if(c){chat.unread-=c.unread||0;c.unread=0}updateCounts();
 }
 async function contactSeller(p){
-  if(p.demo){$("contactNote").innerHTML=`<p class="note">C’est un article de démonstration : il n’y a pas de vrai vendeur à contacter.</p>`;return}
+  if(p.demo){const n=$("contactNote");const msg="C’est un article de démonstration : il n’y a pas de vrai vendeur à contacter.";if(n)n.innerHTML=`<p class="note">${msg}</p>`;else toast(msg);return}
   if(!state.user){toast("Connecte-toi pour contacter le vendeur.");location.hash="#/compte";return}
   const btn=$("contactSeller");if(btn){btn.disabled=true;btn.textContent="Ouverture…"}
   let {data}=await sb.from("conversations").select("id").eq("listing_id",p.id).eq("buyer_id",state.user.id).maybeSingle();
@@ -950,7 +956,7 @@ async function openThread(id){
       <button class="btn btn-primary" type="submit">Envoyer</button>
     </form>
     <p class="error" id="threadErr" role="alert"></p>
-    <p class="muted small">Pour ta sécurité, reste sur Revoo pour échanger et ne partage jamais tes coordonnées bancaires.</p>`;
+    <p class="muted small">🛡️ Pour ta sécurité : main propre (paiement à la remise) ou PayPal « Biens et services » uniquement. Jamais de virement, Wero ou PayPal « entre proches » à un inconnu. <a class="link" href="#/securite">Conseils</a></p>`;
   watchImages(el);
   const {data,error}=await sb.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at").eq("conversation_id",id).order("created_at",{ascending:true}).limit(500);
   if(chat.current?.id!==id)return;
@@ -1104,6 +1110,7 @@ function card(p){
   const fav=isFav(p.id), c=inCart(p.id), s=sellerInfo(p);
   const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : "";
   const cartBtn = p.mine ? `<a class="btn btn-outline" href="#/compte/annonces">Gérer l’annonce</a>`
+    : !CONFIG.paiementIntegre ? `<button type="button" class="btn btn-outline" data-contact="${esc(p.id)}" aria-label="Je suis intéressé(e) par ${esc(p.name)}">💬 Intéressé(e)</button>`
     : `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`;
   return `<article class="card">
     <a class="card-link" href="#/article/${encodeURIComponent(p.id)}">
@@ -1224,6 +1231,7 @@ function renderProduct(id){
   if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
+  else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions"><button type="button" class="btn btn-primary" id="contactSeller">💬 Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div><div id="contactNote"></div>`;
   else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div>`;
   const eyebrow=p.mine?"Ton annonce":p.demo?"Annonce de démonstration":"";
   v.innerHTML=`
@@ -1246,10 +1254,10 @@ function renderProduct(id){
         <dt>Ajouté</dt><dd>${ago(p.addedAt)}</dd>
       </dl>
       ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
-      ${sold||p.mine?"":`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
+      ${sold||p.mine?"":!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span></div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
-      ${p.mine||sold?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px">💬 Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
+      ${p.mine||sold||!CONFIG.paiementIntegre?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px">💬 Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
       ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">🚩 Signaler cette annonce</button><div id="reportBox"></div>`:""}
     </div>
   </div>
@@ -1369,7 +1377,7 @@ function renderAccount(tab){
   $("accountTitle").textContent=`Bonjour ${state.user.name} 👋`;
   const mine=state.remote.filter(p=>p.mine);
   const myOrders=state.orders.filter(o=>!o.userId||o.userId===state.user.id);
-  const tabs=[["profil","Profil"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]];
+  const tabs=[["profil","Profil"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]].filter(t=>CONFIG.paiementIntegre||t[0]!=="commandes");
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
   let body="";
   if(accountTab==="moderation"&&state.isAdmin){
@@ -1401,7 +1409,7 @@ function renderAccount(tab){
       <button class="btn btn-primary" type="submit">Enregistrer</button>
       <p class="error" id="profileErr" role="alert"></p>
     </form>
-    <div class="panel"><h2>Raccourcis</h2><div class="buy-actions"><a class="btn btn-outline" href="#/favoris">Mes favoris (${state.favorites.length})</a><a class="btn btn-outline" href="#/panier">Mon panier (${state.cart.length})</a><a class="btn btn-outline" href="#/vendeur/${state.user.id}">Mon profil public</a></div></div>
+    <div class="panel"><h2>Raccourcis</h2><div class="buy-actions"><a class="btn btn-outline" href="#/favoris">Mes favoris (${state.favorites.length})</a>${CONFIG.paiementIntegre?`<a class="btn btn-outline" href="#/panier">Mon panier (${state.cart.length})</a>`:""}<a class="btn btn-outline" href="#/vendeur/${state.user.id}">Mon profil public</a></div></div>
     <div class="panel"><h2>Session</h2>
       <div class="buy-actions"><button type="button" class="btn btn-outline" id="logout">Se déconnecter</button><button type="button" class="btn btn-danger" id="wipe">Effacer les données de cet appareil</button></div>
       <p class="muted small">Pour supprimer définitivement ton compte, contacte Revoo (coordonnées bientôt disponibles sur la page Aide).</p></div>
@@ -1457,7 +1465,7 @@ function renderSell(editId){
   </form>`;
   const fillSizes=()=>{const cat=$("tCat").value,list=cat==="Enfant"?SIZES.enfant:cat?SIZES.adulte:[];const cur=$("tSize").value||l?.size;$("tSize").innerHTML=`<option value="">${cat?"Choisir…":"Choisis d’abord une catégorie"}</option>`+list.map(s=>`<option ${s===cur?"selected":""}>${s}</option>`).join("")};
   fillSizes();$("tCat").addEventListener("change",fillSizes);
-  const priceHint=()=>{const v=parseFloat($("tPrice").value);$("priceHint").textContent=v>0?`L’acheteur paiera ${eur(v)} + ${eur(CONFIG.fraisFixes)} de frais fixes Revoo, hors livraison.`:""};
+  const priceHint=()=>{const v=parseFloat($("tPrice").value);$("priceHint").textContent=v>0?(CONFIG.paiementIntegre?`L’acheteur paiera ${eur(v)} + ${eur(CONFIG.fraisFixes)} de frais fixes Revoo, hors livraison.`:`Pendant le lancement, 0 € de frais : l’acheteur te paie ${eur(v)} directement.`):""};
   $("tPrice").addEventListener("input",priceHint);priceHint();
   renderPhotos();
   $("photoInput").addEventListener("change",async e=>{
@@ -1537,27 +1545,47 @@ async function toggleStatus(id){
    PAGES D'INFORMATION (aucun texte juridique inventé)
    ========================================================= */
 function feeExample(){return `Exemple : article à 10,00 € + frais fixes ${eur(CONFIG.fraisFixes)} = <b>${eur(10+CONFIG.fraisFixes)}</b> hors livraison.`+(CONFIG.fraisPar==="article"?` Pour 3 articles à 10,00 € : 30,00 € + ${eur(3*CONFIG.fraisFixes)} de frais = <b>${eur(30+3*CONFIG.fraisFixes)}</b> hors livraison.`:"")}
+function safetyBox(p){return `<div class="safety" aria-label="Paiement et sécurité"><h2>🛡️ Paiement direct entre membres · 0 € de frais</h2><ul>
+  <li>✅ <b>Main propre</b> : paie au moment de la remise.</li>
+  <li>✅ <b>À distance</b> : uniquement PayPal « Biens et services » (il te protège).</li>
+  <li>❌ Jamais de virement, Wero ou PayPal « entre proches ».</li></ul>
+  <p style="margin:8px 0 0"><a class="link" href="#/securite">Tous les conseils de sécurité</a></p></div>`}
 const PAGES={
   "a-propos":()=>`<p class="crumbs"><a href="#/">Accueil</a> › À propos</p><h1>À propos de Revoo</h1>
     <p><b>Tes vêtements ont de l’avenir.</b></p>
     <p>Revoo est une marketplace française dédiée à la vente et à l’achat de vêtements d’occasion entre particuliers. Achète, vends, donne une seconde vie à tes pièces préférées.</p>
     <p>Notre objectif : rendre l’achat de seconde main plus juste et plus abordable, avec des frais simples et identiques quel que soit le prix de l’article.</p>
     <p>Revoo est en cours de lancement, en France, en français, avec des prix en euros.</p>`,
-  "fonctionnement":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Fonctionnement</p><h1>Comment fonctionne Revoo ?</h1>
+  "securite":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Conseils de sécurité</p><h1>Acheter et vendre en sécurité</h1>
+    <p>Pendant le lancement, <b>Revoo ne gère pas le paiement</b> : l’acheteur paie directement le vendeur. Suis ces règles simples pour éviter les mauvaises surprises.</p>
+    <h2>✅ Le plus sûr : la remise en main propre</h2><p>Rencontrez-vous dans un lieu public. L’acheteur regarde l’article et <b>paie au moment de la remise</b>.</p>
+    <h2>✅ À distance : PayPal « Biens et services » uniquement</h2><p>C’est l’option PayPal qui <b>protège l’acheteur</b> : si l’article n’arrive pas ou ne correspond pas, PayPal peut le rembourser. Les frais PayPal sont à la charge du vendeur. Le vendeur envoie le colis avec <b>suivi</b> et partage le numéro dans la messagerie.</p>
+    <h2>❌ À ne jamais faire avec un inconnu</h2><ul><li>Payer par <b>virement</b>, <b>Wero</b>, <b>Lydia</b>, mandat ou carte cadeau.</li><li>Utiliser PayPal « <b>Envoyer à un proche</b> » : il n’offre aucune protection.</li><li>Cliquer sur un lien de paiement reçu par SMS ou e-mail : reste sur Revoo et PayPal.</li><li>Communiquer tes codes, ton mot de passe ou tes coordonnées bancaires.</li></ul>
+    <h2>🚩 Un doute ?</h2><p>Garde tous vos échanges dans la messagerie Revoo et utilise le bouton « 🚩 Signaler cette annonce ». Revoo peut retirer les annonces frauduleuses.</p>
+    <p class="note">Revoo ne peut pas rembourser un paiement fait en dehors du site. Un paiement intégré et protégé par Revoo arrivera dans une prochaine étape.</p>`,
+  "fonctionnement":()=>!CONFIG.paiementIntegre?`<p class="crumbs"><a href="#/">Accueil</a> › Fonctionnement</p><h1>Comment fonctionne Revoo ?</h1>
+    <ol class="steps"><li><b>1</b>Tu trouves une pièce grâce à la recherche, aux catégories et aux filtres.</li><li><b>2</b>Tu cliques sur « Je suis intéressé(e) » et tu t’arranges avec le vendeur dans la messagerie.</li><li><b>3</b>Remise en main propre, ou envoi par colis avec paiement PayPal « Biens et services ».</li></ol>
+    <h2>Les frais</h2><p><b>0 € de frais pendant le lancement.</b> Tu paies uniquement le prix de l’article (et l’envoi si vous choisissez le colis), directement au vendeur.</p>
+    <p><a class="btn btn-outline" href="#/securite">Lire les conseils de sécurité</a></p>`:`<p class="crumbs"><a href="#/">Accueil</a> › Fonctionnement</p><h1>Comment fonctionne Revoo ?</h1>
     <ol class="steps"><li><b>1</b>Tu trouves une pièce grâce à la recherche, aux catégories et aux filtres.</li><li><b>2</b>Tu l’ajoutes au panier et tu choisis ton mode de livraison.</li><li><b>3</b>Le vendeur envoie l’article et tu le reçois.</li></ol>
     <h2>Les frais</h2><p>L’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()}</b>, quel que soit le prix de l’article. Les frais de livraison sont distincts.</p><p>${feeExample()}</p>
     <p class="note warn">Le paiement et l’envoi ne sont pas encore actifs : les commandes sont simulées pour l’instant.</p>`,
-  "acheter":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Acheter</p><h1>Acheter sur Revoo</h1>
+  "acheter":()=>!CONFIG.paiementIntegre?`<p class="crumbs"><a href="#/">Accueil</a> › Acheter</p><h1>Acheter sur Revoo</h1>
+    <ol class="steps"><li><b>1</b>Cherche un vêtement ou parcours les catégories Femme, Homme, Enfant et Unisexe. Ajoute tes coups de cœur aux favoris ♡.</li><li><b>2</b>Clique sur « 💬 Je suis intéressé(e) » : la conversation avec le vendeur s’ouvre.</li><li><b>3</b>Mettez-vous d’accord : main propre (paiement à la remise) ou colis avec PayPal « Biens et services ».</li></ol>
+    <p><b>0 € de frais pendant le lancement.</b></p><div class="buy-actions"><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a><a class="btn btn-outline" href="#/securite">Conseils de sécurité</a></div>`:`<p class="crumbs"><a href="#/">Accueil</a> › Acheter</p><h1>Acheter sur Revoo</h1>
     <ol class="steps"><li><b>1</b>Cherche un vêtement ou parcours les catégories Femme, Homme, Enfant et Unisexe.</li><li><b>2</b>Affine avec les filtres taille, prix, état et marque. Ajoute tes coups de cœur aux favoris ♡.</li><li><b>3</b>Ajoute l’article au panier et choisis la livraison : Colissimo, Mondial Relay, Chronopost, DPD ou Relais Colis.</li></ol>
     <p>${feeExample()}</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a>`,
   "vendre-info":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Vendre</p><h1>Vendre sur Revoo</h1>
     <ol class="steps"><li><b>1</b>Prends une photo nette de ton vêtement, sur un fond simple et bien éclairé.</li><li><b>2</b>Renseigne le titre, la description, la catégorie, la marque, la taille, l’état et le prix.</li><li><b>3</b>Publie : ton annonce est visible par tous. Modifie-la, marque-la vendue ou supprime-la depuis ton compte.</li></ol>
-    <a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a>`,
+    ${CONFIG.paiementIntegre?"":`<p><b>0 € de frais pendant le lancement</b> : l’acheteur te paie directement, en main propre ou par PayPal « Biens et services » (les frais PayPal sont à ta charge). Envoie toujours tes colis avec suivi. Une fois l’article vendu, clique sur « Marquer vendue » dans Mon compte.</p>`}
+    <div class="buy-actions"><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a><a class="btn btn-outline" href="#/securite">Conseils de sécurité</a></div>`,
   "aide":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Aide et contact</p><h1>Aide et contact</h1>
-    <details open><summary>Qu’est-ce qui fonctionne aujourd’hui ?</summary><p>Tu peux créer un vrai compte, publier des annonces avec photos (visibles par tous), les modifier ou les supprimer, et enregistrer tes favoris. Tu peux aussi discuter avec les vendeurs grâce à la messagerie. Le paiement et la livraison ne sont pas encore actifs : les commandes sont simulées. Les articles marqués « Démo » sont des exemples.</p></details>
-    <details><summary>Combien coûte un achat ?</summary><p>Le prix de l’article + ${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()} + la livraison. ${feeExample()}</p></details>
+    <details open><summary>Comment acheter ?</summary><p>Clique sur « 💬 Je suis intéressé(e) » sur une annonce, puis arrange-toi avec le vendeur dans la messagerie : remise en main propre (paiement à la remise) ou envoi par colis avec paiement PayPal « Biens et services ». <a class="link" href="#/securite">Conseils de sécurité</a></p></details>
+    <details><summary>Combien coûte un achat ?</summary><p><b>0 € de frais pendant le lancement.</b> Tu paies uniquement le prix de l’article (et l’envoi si vous choisissez le colis), directement au vendeur.</p></details>
+    <details><summary>Que se passe-t-il si je paie et que je ne reçois rien ?</summary><p>Revoo ne gère pas encore le paiement et ne peut donc pas rembourser. C’est pour ça qu’il faut payer uniquement en main propre ou avec PayPal « Biens et services », qui permet d’ouvrir un litige et d’être remboursé. Signale aussi l’annonce avec le bouton « 🚩 ».</p></details>
+    <details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente.</p></details>
     <details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. L’envoi d’e-mails (confirmation, mot de passe oublié) est encore limité pendant le lancement.</p></details>
-    <details><summary>Où sont enregistrées mes données ?</summary><p>Ton compte, ton profil, tes annonces et tes favoris sont enregistrés chez Supabase, notre hébergeur de base de données. Ton panier et tes commandes simulées restent dans ton navigateur.</p></details>
+    <details><summary>Où sont enregistrées mes données ?</summary><p>Ton compte, ton profil, tes annonces et tes favoris sont enregistrés chez Supabase, notre hébergeur de base de données. </p></details>
     <details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « 🚩 Signaler cette annonce », puis choisis le motif. Ton signalement est confidentiel et sera examiné par Revoo. Tu n’as pas besoin d’être connecté.</p></details>
     <details><summary>Qui est Reboot ?</summary><p>Reboot est l’assistant de Revoo. Il répond à partir de réponses préparées à l’avance : il n’est connecté à aucune intelligence artificielle.</p></details>
     <h2>Nous contacter</h2><p>Pour l’instant, pose ta question à Reboot. Les coordonnées officielles de Revoo seront publiées ici dès qu’elles seront définies.</p>
@@ -1591,6 +1619,7 @@ function renderView(){
   if(name==="catalogue"){view="catalogue";renderCatalogue()}
   else if(name==="article"){view="product";renderProduct(arg)}
   else if(name==="favoris"){view="favoris";renderFavorites()}
+  else if(name==="panier"&&!CONFIG.paiementIntegre){view="page";$("pageContent").innerHTML=PAGES["acheter"]()}
   else if(name==="panier"){view="panier";renderCart()}
   else if(name==="vendre"){view="vendre";renderSell(arg)}
   else if(name==="compte"){view="compte";renderAccount(arg||(state.user?"profil":undefined))}
@@ -1633,6 +1662,7 @@ document.addEventListener("click",async e=>{
     save("cart");refresh();return}
   const rm=t.closest("[data-remove]");if(rm){state.cart=state.cart.filter(x=>x!==rm.dataset.remove);save("cart");toast("Retiré du panier");refresh();return}
   const del=t.closest("[data-delete]");if(del){deleteListing(del.dataset.delete);return}
+  const ct=t.closest("[data-contact]");if(ct){const pr=findProduct(ct.dataset.contact);if(pr)contactSeller(pr);return}
   const md=t.closest("[data-mod]");if(md){md.disabled=true;moderate(md.dataset.mod,md.dataset.report,md.dataset.listing);return}
   const sta=t.closest("[data-status]");if(sta){sta.disabled=true;toggleStatus(sta.dataset.status);return}
   const un=t.closest("[data-unfilter]");if(un){const k=un.dataset.unfilter;if(Array.isArray(filters[k]))filters[k]=filters[k].filter(x=>x!==un.dataset.value);else filters[k]=k==="sort"?"recent":"";if(k==="q")$("searchInput").value="";renderCatalogue();return}
@@ -1746,13 +1776,15 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("chat").classList
 const STOP=new Set("je tu il elle on nous vous un une des de du la le les et ou a au aux en pour avec sur dans mon ma mes ton ta tes cherche chercher recherche trouve trouver veux voudrais voir besoin quoi est ce que qui il y as avez taille prix moins euros euro".split(" "));
 function rebootReply(raw){
   const t=norm(raw);
-  const fees=`<p>Sur Revoo, l’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()}</b>, quel que soit le prix. La livraison est en plus.</p><p>${feeExample()}</p>`;
+  const fees=!CONFIG.paiementIntegre?`<p><b>0 € de frais pendant le lancement !</b> Tu paies uniquement le prix de l’article, directement au vendeur (et l’envoi si vous choisissez le colis).</p>`:`<p>Sur Revoo, l’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()}</b>, quel que soit le prix. La livraison est en plus.</p><p>${feeExample()}</p>`;
   if(/^(bonjour|salut|hello|coucou|hey|bonsoir)\b/.test(t)&&t.split(" ").length<4)return`<p>Salut ! 😊 Dis-moi ce que tu cherches (par exemple « pull taille M ») ou pose-moi une question sur Revoo.</p>`;
   if(/merci/.test(t))return`<p>Avec plaisir ! Je reste là si tu as besoin.</p>`;
   if(/\b(ia|intelligence|chatgpt|robot|humain|qui es)/.test(t))return`<p>Je suis Reboot, l’assistant de Revoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle.</p>`;
   if(/frais|commission|combien.*(coute|paye)|cout|tarif revoo/.test(t))return fees;
+  if(!CONFIG.paiementIntegre&&/livr|colis|envoi|expedi|transporteur|mondial|colissimo|chrono|dpd|relais/.test(t))return`<p>Pendant le lancement, l’acheteur et le vendeur choisissent ensemble dans la messagerie : <b>remise en main propre</b> ou <b>envoi par colis avec suivi</b> (Colissimo, Mondial Relay…). Les frais d’envoi se règlent entre vous.</p>`;
   if(/livr|colis|envoi|expedi|transporteur|mondial|colissimo|chrono|dpd|relais/.test(t))return`<p>Tu pourras choisir entre <b>Colissimo, Mondial Relay, Chronopost, DPD et Relais Colis</b> au moment du panier.</p><p>Les tarifs de livraison ne sont pas encore connectés.</p>`;
   if(/signal|arnaque|fraude|contrefa|faux|interdit|abus/.test(t))return`<p>Pour signaler une annonce suspecte, ouvre-la et clique sur « 🚩 Signaler cette annonce ». Ton signalement est confidentiel et sera examiné par Revoo.</p>`;
+  if(!CONFIG.paiementIntegre&&/paie|paye|paiement|carte|paypal|rembours|cb\b|arnaque|securi/.test(t))return`<p>Pendant le lancement, tu paies <b>directement le vendeur</b> :</p><p>✅ en <b>main propre</b>, au moment de la remise ;<br>✅ à distance, uniquement avec <b>PayPal « Biens et services »</b>, qui te protège.</p><p>❌ Jamais de virement, Wero ou PayPal « entre proches » à un inconnu.</p><a class="pill" href="#/securite">Conseils de sécurité</a>`;
   if(/paie|paye|paiement|carte|paypal|rembours|cb\b/.test(t))return`<p>Le paiement n’est pas encore disponible : aucun prestataire de paiement n’est connecté. Tu peux seulement simuler une commande pour tester le parcours.</p>`;
   if(/message|contacter|discuter avec|ecrire au vendeur/.test(t))return`<p>Pour écrire à un vendeur, ouvre son annonce et clique sur « Contacter ». Tu retrouves toutes tes conversations dans <b>Messages</b>, en haut de la page.</p><a class="pill" href="#/messages">Mes messages</a>`;
   if(/vend|annonce|deposer|publier|mettre en vente/.test(t))return`<p>Pour vendre : crée ton compte, puis remplis le formulaire (photos, titre, description, catégorie, marque, taille, état, prix). Ton annonce sera visible par tous.</p><a class="pill" href="#/vendre">Vendre un vêtement</a>`;
@@ -1760,6 +1792,7 @@ function rebootReply(raw){
   if(/compte|inscri|connect|profil/.test(t))return`<p>Crée ton compte gratuitement avec ton prénom, ton e-mail et un mot de passe.</p><a class="pill" href="#/compte">Mon compte</a>`;
   if(/command|suivi|suivre/.test(t))return`<p>Tes commandes simulées sont dans <b>Mon compte › Mes commandes</b>. Le suivi réel des colis arrivera avec l’intégration d’un transporteur.</p><a class="pill" href="#/compte/commandes">Mes commandes</a>`;
   if(/favori/.test(t))return`<p>Appuie sur ♡ sur un article pour l’ajouter à tes favoris. Connecté, tu les retrouves sur tous tes appareils.</p><a class="pill" href="#/favoris">Mes favoris</a>`;
+  if(!CONFIG.paiementIntegre&&/panier|acheter|commander/.test(t))return`<p>Pour acheter, clique sur « 💬 Je suis intéressé(e) » sur l’annonce : la conversation avec le vendeur s’ouvre et vous vous mettez d’accord sur la remise et le paiement.</p><a class="pill" href="#/acheter">Comment acheter</a>`;
   if(/panier/.test(t))return`<p>Ton panier contient ${state.cart.length} article${state.cart.length>1?"s":""}.</p><a class="pill" href="#/panier">Voir mon panier</a>`;
   if(/aide|contact|probleme|support|assistance|souci|bug/.test(t))return`<p>Je suis là pour ça ! Tu peux aussi consulter la page d’aide. Les coordonnées officielles de Revoo y seront ajoutées dès qu’elles seront définies.</p><a class="pill" href="#/aide">Page d’aide</a>`;
   if(/^trouver un vetement$/.test(t))return`<p>Écris-moi ce que tu cherches, par exemple « veste en jean » ou « pull », ou choisis une catégorie :</p>${CATEGORIES.map(c=>`<button type="button" class="pill" data-category="${c}">${c}</button>`).join("")}`;
@@ -1781,6 +1814,7 @@ chatLog.addEventListener("click",e=>{if(e.target.closest("a")&&innerWidth<680)op
    DÉMARRAGE
    ========================================================= */
 $("dailyQuote").textContent=["Le style n’a pas besoin d’être neuf.","Chaque vêtement mérite une nouvelle histoire.","Ton prochain coup de cœur existe peut-être déjà.","Un vêtement, une nouvelle aventure.","Les belles trouvailles ont parfois déjà vécu.","Change de style, pas forcément de planète.","Donne une nouvelle chance à un vêtement."][new Date().getDay()];
+if(!CONFIG.paiementIntegre)document.body.classList.add("phase1");
 watchImages();renderView();
 (async()=>{
   if(!sb){toast("Le service de comptes est momentanément indisponible.");return}
