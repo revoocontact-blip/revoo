@@ -779,7 +779,8 @@ function frenchError(err){
   if(m.includes("rate limit")||m.includes("too many"))return"Trop de tentatives. Réessaie dans quelques minutes.";
   if(m.includes("failed to fetch")||m.includes("network"))return"Connexion impossible. Vérifie ta connexion internet.";
   if(m.includes("row-level security")||m.includes("permission"))return"Action non autorisée.";
-  return"Une erreur est survenue. Réessaie dans un instant.";
+  const code=String((err&&(err.code||err.status))||"").slice(0,10), msg=String((err&&err.message)||"").slice(0,120);
+  return"Une erreur est survenue. Réessaie dans un instant."+(code||msg?` (détail : ${code}${code&&msg?" – ":""}${msg})`:"");
 }
 
 /* Vendeurs */
