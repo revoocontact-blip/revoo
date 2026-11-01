@@ -221,6 +221,11 @@ textarea.input{min-height:110px;resize:vertical}
 .seller-box{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;margin-top:18px}
 .seller-box .avatar{margin:0;width:46px;height:46px;font-size:19px}
 .seller-box div{flex:1}
+.profile-head{display:flex;gap:20px;align-items:center;padding:28px 0 8px;flex-wrap:wrap}
+.profile-head .avatar{width:84px;height:84px;font-size:34px;margin:0;background:var(--navy);color:#fff;font-weight:800}
+.profile-head h1{margin:0 0 4px;font-size:28px;color:var(--navy)}
+.profile-meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+.profile-bio{max-width:640px;white-space:pre-line;margin:12px 0 0}
 .note{background:var(--pale);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px;color:var(--ink);margin:12px 0}
 .note.warn{background:#FFF7E8;color:#5E4513}
 .sold-badge{display:inline-block;background:var(--ink);color:#fff;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700}
@@ -591,6 +596,8 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 <div class="view wrap" id="view-product" hidden></div>
 
 <!-- ================= FAVORIS ================= -->
+<div class="view wrap" id="view-vendeur" hidden></div>
+
 <div class="view wrap" id="view-messages" hidden>
   <div class="page-head narrow"><p class="crumbs"><a href="#/">Accueil</a> › Messages</p><h1 class="page-title" id="msgTitle">Messages</h1></div>
   <div class="narrow" id="msgContent"></div>
@@ -850,7 +857,7 @@ const chat = {convs:[], unread:0, current:null, messages:[], channel:null, poll:
 const CONV_SELECT = "id,listing_id,buyer_id,seller_id,last_message_at,listings(title,photos,price,status),buyer:profiles!conversations_buyer_id_fkey(name),seller:profiles!conversations_seller_id_fkey(name)";
 function convView(c){
   const me=state.user?.id, iAmBuyer=c.buyer_id===me;
-  return {...c, other: iAmBuyer?(c.seller?.name||"Vendeur"):(c.buyer?.name||"Acheteur"), role: iAmBuyer?"Tu achètes":"Tu vends",
+  return {...c, otherId: iAmBuyer?c.seller_id:c.buyer_id, other: iAmBuyer?(c.seller?.name||"Vendeur"):(c.buyer?.name||"Acheteur"), role: iAmBuyer?"Tu achètes":"Tu vends",
     title:c.listings?.title||"Annonce supprimée", img:(c.listings?.photos||[])[0]||"", price:c.listings?.price};
 }
 function msgTime(ts){const d=new Date(ts),now=new Date();return d.toDateString()===now.toDateString()?d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}
@@ -928,6 +935,7 @@ async function openThread(id){
   if(!c){const {data}=await sb.from("conversations").select(CONV_SELECT).eq("id",id).maybeSingle();if(data)c=convView(data)}
   if(!c){el.innerHTML=`<div class="empty"><p>Conversation introuvable.</p><a class="btn btn-primary" href="#/messages">Mes messages</a></div>`;return}
   chat.current=c;
+  setTimeout(()=>{const t=$("msgTitle");if(t&&chat.current===c)t.innerHTML=`<a href="#/vendeur/${c.otherId}" title="Voir le profil">${esc(c.other)}</a>`},0);
   $("msgTitle").textContent=c.other;
   el.innerHTML=`<p class="crumbs" style="margin-top:-6px"><a href="#/messages">← Tous les messages</a></p>
     <a class="thread-item" href="${c.listing_id?`#/article/${c.listing_id}`:"#/messages"}">
@@ -1059,6 +1067,36 @@ async function moderate(action,reportId,listingId){
 }
 
 /* =========================================================
+   PROFIL VENDEUR (public)
+   ========================================================= */
+async function renderSellerProfile(id){
+  const v=$("view-vendeur");
+  if(!sb||!isUuid(id||"")){v.innerHTML=`<div class="page-head"><h1 class="page-title">Profil introuvable</h1><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
+  v.innerHTML=`<div class="page-head"><p class="muted">Chargement du profil…</p></div>`;
+  const {data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at").eq("id",id).maybeSingle();
+  if(location.hash!=="#/vendeur/"+id)return;
+  if(error||!pr){v.innerHTML=`<div class="page-head"><h1 class="page-title">Profil introuvable</h1><p class="muted">Ce membre n’existe pas ou a supprimé son compte.</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
+  const items=available().filter(p=>p.sellerId===id).sort((a,b)=>b.addedAt-a.addedAt);
+  const me=state.user&&state.user.id===id;
+  const since=new Date(pr.created_at).toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+  v.innerHTML=`
+    <div class="profile-head">
+      <span class="avatar" aria-hidden="true">${esc((pr.name||"?").trim()[0]?.toUpperCase()||"?")}</span>
+      <div style="flex:1;min-width:200px">
+        <p class="crumbs"><a href="#/">Accueil</a> › Profil</p>
+        <h1>${esc(pr.name)}</h1>
+        <div class="profile-meta">${pr.city?`<span>📍 ${esc(pr.city)}</span>`:""}<span>🗓️ Membre depuis ${since}</span><span>👕 ${items.length} article${items.length>1?"s":""} en vente</span></div>
+      </div>
+      ${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}
+    </div>
+    ${pr.bio?`<p class="profile-bio">${esc(pr.bio)}</p>`:me?`<p class="muted small">Ajoute une présentation depuis « Modifier mon profil » : les acheteurs aiment savoir à qui ils achètent.</p>`:""}
+    ${!me&&items.length?`<p class="note small">Pour écrire à ${esc(pr.name)}, ouvre une de ses annonces et clique sur « Contacter ».</p>`:""}
+    <section class="section" style="margin-top:24px"><div class="section-head"><h2>Ses articles</h2></div><div class="products" id="profileProducts"></div></section>`;
+  grid($("profileProducts"),items,me?`<p>Tu n’as aucun article en vente pour le moment.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a>`:`<p>${esc(pr.name)} n’a aucun article en vente pour le moment.</p>`);
+  document.title=`${pr.name} — Revoo`;
+}
+
+/* =========================================================
    CARTE PRODUIT
    ========================================================= */
 function card(p){
@@ -1097,9 +1135,10 @@ function renderHome(){
   $("popularCats").innerHTML=CATEGORIES.map(c=>({c,n:av.filter(p=>p.category===c).length})).sort((a,b)=>b.n-a.n)
     .map(o=>`<button type="button" class="pill" data-category="${o.c}">${o.c}<span>${o.n}</span></button>`).join("");
   // nouveaux vendeurs : vrais membres récents d'abord, puis vendeurs de démonstration
-  const real=[];state.remote.filter(p=>p.status==="active").sort((a,b)=>Date.parse(b.sellerSince||0)-Date.parse(a.sellerSince||0)).forEach(p=>{if(!real.find(r=>r.name===p.seller))real.push({name:p.seller,emoji:sellerInfo(p).emoji})});
+  const real=[];state.remote.filter(p=>p.status==="active").sort((a,b)=>Date.parse(b.sellerSince||0)-Date.parse(a.sellerSince||0)).forEach(p=>{if(!real.find(r=>r.id===p.sellerId))real.push({id:p.sellerId,name:p.seller,emoji:sellerInfo(p).emoji})});
   const list=[...real,...(CONFIG.afficherDemo?SELLERS:[])].slice(0,6);
-  $("sellers").innerHTML=list.map(s=>`<button type="button" class="seller" data-seller="${esc(s.name)}" aria-label="Voir les articles de ${esc(s.name)}"><span class="avatar" aria-hidden="true">${s.emoji}</span><small>${esc(s.name)}</small><em>${av.filter(p=>p.seller===s.name).length} articles</em></button>`).join("")
+  $("sellers").innerHTML=list.map(s=>{const n=av.filter(p=>s.id?p.sellerId===s.id:(p.seller===s.name&&!p.sellerId)).length;const inner=`<span class="avatar" aria-hidden="true">${s.emoji}</span><small>${esc(s.name)}</small><em>${n} article${n>1?"s":""}</em>`;
+    return s.id?`<a class="seller" href="#/vendeur/${s.id}" aria-label="Profil de ${esc(s.name)}">${inner}</a>`:`<button type="button" class="seller" data-seller="${esc(s.name)}" aria-label="Voir les articles de ${esc(s.name)}">${inner}</button>`}).join("")
     + `<a class="seller seller-join" href="#/vendre"><span class="avatar" aria-hidden="true">＋</span><small>Vendre</small><em>Rejoins-les</em></a>`;
   const top=[...av].sort((a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt).slice(0,6);
   $("communityItems").innerHTML=top.map(p=>`<a class="mini" href="#/article/${encodeURIComponent(p.id)}"><div class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy"></div><span><b>${eur(p.price)}</b>♥ ${likes(p)}</span></a>`).join("");
@@ -1208,7 +1247,7 @@ function renderProduct(id){
       ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
       ${sold||p.mine?"":`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
-      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span></div><button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button></div>
+      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span></div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
       ${p.mine||sold?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px">💬 Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
       ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">🚩 Signaler cette annonce</button><div id="reportBox"></div>`:""}
     </div>
@@ -1360,7 +1399,7 @@ function renderAccount(tab){
       <button class="btn btn-primary" type="submit">Enregistrer</button>
       <p class="error" id="profileErr" role="alert"></p>
     </form>
-    <div class="panel"><h2>Raccourcis</h2><div class="buy-actions"><a class="btn btn-outline" href="#/favoris">Mes favoris (${state.favorites.length})</a><a class="btn btn-outline" href="#/panier">Mon panier (${state.cart.length})</a></div></div>
+    <div class="panel"><h2>Raccourcis</h2><div class="buy-actions"><a class="btn btn-outline" href="#/favoris">Mes favoris (${state.favorites.length})</a><a class="btn btn-outline" href="#/panier">Mon panier (${state.cart.length})</a><a class="btn btn-outline" href="#/vendeur/${state.user.id}">Mon profil public</a></div></div>
     <div class="panel"><h2>Session</h2>
       <div class="buy-actions"><button type="button" class="btn btn-outline" id="logout">Se déconnecter</button><button type="button" class="btn btn-danger" id="wipe">Effacer les données de cet appareil</button></div>
       <p class="muted small">Pour supprimer définitivement ton compte, contacte Revoo (coordonnées bientôt disponibles sur la page Aide).</p></div>
@@ -1554,6 +1593,7 @@ function renderView(){
   else if(name==="vendre"){view="vendre";renderSell(arg)}
   else if(name==="compte"){view="compte";renderAccount(arg||(state.user?"profil":undefined))}
   else if(name==="messages"){view="messages";renderMessages(arg)}
+  else if(name==="vendeur"){view="vendeur";renderSellerProfile(arg)}
   else if(PAGES[name]){view="page";$("pageContent").innerHTML=PAGES[name]()}
   else renderHome();
   $("view-"+view).hidden=false;
