@@ -72,17 +72,23 @@ begin
     body := jsonb_build_object(
       'sender', jsonb_build_object('name', 'Revoo', 'email', 'revoo.contact@gmail.com'),
       'to', jsonb_build_array(jsonb_build_object('email', to_email)),
-      'subject', 'Nouveau message de ' || coalesce((select name from public.profiles where id = new.sender_id), 'un membre') || ' – Revoo',
+      'subject', coalesce((select name from public.profiles where id = new.sender_id), 'Un membre') || ' t’a envoyé un message',
+      -- Version sobre (comme un e-mail personnel) : meilleure chance d'arriver dans « Principale »
       'htmlContent',
-        '<div style="font-family:Arial,Helvetica,sans-serif;background:#F3F8FB;padding:32px 16px">'
-        || '<div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:14px;padding:32px;border:1px solid #DCE6ED">'
-        || '<p style="font-size:28px;font-weight:800;color:#294B68;margin:0 0 24px">Revoo</p>'
-        || '<h1 style="font-size:20px;color:#1F3446;margin:0 0 8px">Tu as un nouveau message</h1>'
-        || '<p style="font-size:15px;color:#586A7C;margin:0 0 16px"><b style="color:#1F3446">' || sender_name || '</b> à propos de « ' || item_title || ' »</p>'
-        || '<p style="font-size:15px;color:#1F3446;line-height:1.5;background:#F3F8FB;border-radius:10px;padding:14px;margin:0 0 24px;white-space:pre-line">' || preview || '</p>'
-        || '<p style="margin:0 0 24px"><a href="' || link || '" style="display:inline-block;background:#294B68;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 24px;border-radius:99px">Répondre sur Revoo</a></p>'
-        || '<p style="font-size:12px;color:#586A7C;line-height:1.5;margin:0">Pour ne plus recevoir ces e-mails, décoche l’option dans Mon compte › Profil sur Revoo.</p>'
-        || '</div><p style="text-align:center;font-size:12px;color:#586A7C;margin:16px 0 0">Revoo · Tes vêtements ont de l’avenir.</p></div>'
+        '<p>Bonjour,</p>'
+        || '<p>' || sender_name || ' t’a envoyé un message à propos de « ' || item_title || ' » :</p>'
+        || '<blockquote style="margin:0 0 0 8px;padding-left:12px;border-left:3px solid #A8C4D8;white-space:pre-line">' || preview || '</blockquote>'
+        || '<p>Pour lui répondre : <a href="' || link || '">' || link || '</a></p>'
+        || '<p>À bientôt,<br>Revoo</p>'
+        || '<p style="font-size:12px;color:#777">Tu peux désactiver ces e-mails dans Mon compte, rubrique Profil.</p>',
+      'textContent',
+        'Bonjour,' || chr(10) || chr(10)
+        || coalesce((select name from public.profiles where id = new.sender_id), 'Un membre') || ' t’a envoyé un message à propos de « '
+        || coalesce((select title from public.listings where id = conv.listing_id), 'une annonce') || ' » :' || chr(10) || chr(10)
+        || '« ' || left(new.body, 300) || case when char_length(new.body) > 300 then '…' else '' end || ' »' || chr(10) || chr(10)
+        || 'Pour lui répondre : ' || link || chr(10) || chr(10)
+        || 'À bientôt,' || chr(10) || 'Revoo' || chr(10) || chr(10)
+        || 'Tu peux désactiver ces e-mails dans Mon compte, rubrique Profil.'
     )
   );
 
