@@ -830,7 +830,8 @@ async function loadListings(){
 async function loadProfile(session){
   const u=session.user;
   const {data}=await sb.from("profiles").select("name,city,bio,created_at").eq("id",u.id).maybeSingle();
-  state.user={id:u.id,email:u.email,name:data?.name||u.user_metadata?.name||u.email.split("@")[0],city:data?.city||"",bio:data?.bio||"",createdAt:data?.created_at};
+  state.user={id:u.id,email:u.email,name:data?.name||u.user_metadata?.name||u.email.split("@")[0],city:data?.city||"",bio:data?.bio||"",createdAt:data?.created_at,notify:null};
+  try{const r=await sb.from("profiles").select("notify_messages").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.notify=r.data.notify_messages!==false}catch(e){}
 }
 async function syncFavorites(){
   if(!sb||!state.user)return;
@@ -1396,6 +1397,7 @@ function renderAccount(tab){
       </div>
       <div class="field"><label for="pEmail">Adresse e-mail</label><input class="input" id="pEmail" type="email" value="${esc(state.user.email)}" disabled><span class="hint">Non visible par les autres membres.</span></div>
       <div class="field"><label for="pBio">Présentation <span class="hint">(facultatif, visible par tous)</span></label><textarea class="input" id="pBio" maxlength="300">${esc(state.user.bio||"")}</textarea></div>
+      ${state.user.notify===null?"":`<label class="carrier" style="margin-bottom:14px"><input type="checkbox" id="pNotify" ${state.user.notify?"checked":""}><span><b>Me prévenir par e-mail</b><small>Quand je reçois un nouveau message (au plus un e-mail toutes les 30 minutes par conversation).</small></span></label>`}
       <button class="btn btn-primary" type="submit">Enregistrer</button>
       <p class="error" id="profileErr" role="alert"></p>
     </form>
@@ -1697,10 +1699,11 @@ document.addEventListener("submit",async e=>{
     if(!fieldError("pName","pNameErr",name.length<2?"2 caractères minimum.":""))return;
     busy(f,true,"Enregistrement…");
     const row={name,city:$("pCity").value.trim()||null,bio:$("pBio").value.trim()||null};
+    if($("pNotify"))row.notify_messages=$("pNotify").checked;
     const {error}=await sb.from("profiles").update(row).eq("id",state.user.id);
     busy(f,false);
     if(error){$("profileErr").textContent=frenchError(error);return}
-    Object.assign(state.user,{name,city:row.city||"",bio:row.bio||""});
+    Object.assign(state.user,{name,city:row.city||"",bio:row.bio||""});if("notify_messages" in row)state.user.notify=row.notify_messages;
     await loadListings();toast("Profil enregistré.");renderView();
   }
 });
