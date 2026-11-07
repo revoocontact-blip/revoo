@@ -222,6 +222,11 @@ textarea.input{min-height:110px;resize:vertical}
 .seller-box .avatar{margin:0;width:46px;height:46px;font-size:19px}
 .seller-box div{flex:1}
 .phase1 #cartBtn{display:none}
+.legal-table{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 16px;display:block;overflow-x:auto}
+.legal-table th,.legal-table td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;min-width:140px}
+.legal-table th{background:var(--ice)}
+.check-line{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:4px 0 14px}
+.check-line input{margin-top:4px;accent-color:var(--navy);width:18px;height:18px;flex:none}
 .rating{color:#B07B12;font-weight:700;font-size:14px;white-space:nowrap}
 .review{border-bottom:1px solid var(--line);padding:12px 0}
 .review:last-child{border-bottom:0}
@@ -669,7 +674,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
       <nav aria-label="Aide"><h2>Aide</h2><ul><li><a href="#/aide">Aide et contact</a></li><li><a href="#/compte">Mon compte</a></li></ul></nav>
       <nav aria-label="Informations légales"><h2>Légal</h2><ul><li><a href="#/conditions">Conditions</a></li><li><a href="#/confidentialite">Confidentialité</a></li><li><a href="#/mentions-legales">Informations légales</a></li></ul></nav>
     </div>
-    <div class="foot-bottom"><span>Revoo · Tes vêtements ont de l’avenir.</span><span>France · Prix en euros (€)</span></div>
+    <div class="foot-bottom"><span>© 2026 Revoo · Tes vêtements ont de l’avenir.</span><span>France · Prix en euros (€)</span></div>
   </div>
 </footer>
 
@@ -1656,6 +1661,8 @@ function renderAccount(tab){
       </div>
       <div class="field"><label for="sEmail">Adresse e-mail</label><input class="input" id="sEmail" type="email" autocomplete="email" required><span class="error" id="sEmailErr"></span></div>
       ${pwdField("sPwd","Mot de passe","new-password")}
+      <label class="check-line"><input type="checkbox" id="sTerms"><span>J’ai lu et j’accepte les <a class="link" href="#/conditions" target="_blank">conditions d’utilisation</a> et la <a class="link" href="#/confidentialite" target="_blank">politique de confidentialité</a>. J’ai au moins ${LEGAL.ageMin} ans ; si j’ai moins de 18 ans, mes parents sont d’accord.</span></label>
+      <span class="error" id="sTermsErr"></span>
       <button class="btn btn-primary" type="submit">Créer mon compte</button>
       <p class="error" id="signupErr" role="alert"></p><p class="note small" id="signupOk" hidden></p>
     </form>`}`;
@@ -1751,6 +1758,8 @@ function renderSell(editId){
       <div class="field"><label for="tStyle">Style <span class="hint">(facultatif)</span></label><select class="input" id="tStyle">${opt(STYLES,l?.style,"Aucun")}</select></div>
       <div class="field"><label for="tPrice">Prix (€)</label><input class="input" id="tPrice" type="number" inputmode="decimal" min="1" max="10000" step="0.5" value="${l?l.price:""}"><span class="hint" id="priceHint"></span><span class="error" id="tPriceErr"></span></div>
     </div>
+    <label class="check-line"><input type="checkbox" id="tLegal" ${l?"checked":""}><span>Je certifie que cet article m’appartient, qu’il est légal et que l’annonce respecte les <a class="link" href="#/conditions" target="_blank">conditions d’utilisation</a>.</span></label>
+    <span class="error" id="tLegalErr"></span>
     <div class="buy-actions"><button class="btn btn-primary" type="submit" id="sellSubmit">${l?"Enregistrer les modifications":"Publier l’annonce"}</button>${l?`<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button>`:""}</div>
     <p class="error" id="sellErr" role="alert"></p>
   </form>`;
@@ -1800,6 +1809,7 @@ async function submitListing(existing){
   ok&=fieldError("tCond","tCondErr",v("tCond")?"":"Choisis l’état du vêtement.");
   ok&=fieldError("tPrice","tPriceErr",!(price>=1&&price<=10000)?"Indique un prix entre 1 € et 10 000 €.":"");
   $("photoErr").textContent=draftPhotos.length?"":"Ajoute au moins une photo.";if(!draftPhotos.length)ok=false;
+  ok&=fieldError("tLegal","tLegalErr",$("tLegal").checked?"":"Coche la case pour confirmer.");
   if(!ok){$("sellErr").textContent="Certains champs sont à corriger.";document.querySelector('#sellForm [aria-invalid="true"]')?.focus();return}
   const btn=$("sellSubmit"),label=btn.textContent;btn.disabled=true;btn.textContent="Publication en cours…";$("sellErr").textContent="";
   try{
@@ -1836,6 +1846,105 @@ async function toggleStatus(id){
    PAGES D'INFORMATION (aucun texte juridique inventé)
    ========================================================= */
 function feeExample(){return `Exemple : article à 10,00 € + frais fixes ${eur(CONFIG.fraisFixes)} = <b>${eur(10+CONFIG.fraisFixes)}</b> hors livraison.`+(CONFIG.fraisPar==="article"?` Pour 3 articles à 10,00 € : 30,00 € + ${eur(3*CONFIG.fraisFixes)} de frais = <b>${eur(30+3*CONFIG.fraisFixes)}</b> hors livraison.`:"")}
+/* =========================================================
+   PAGES LÉGALES — première version, à faire relire par un professionnel
+   ========================================================= */
+const LEGAL={
+  editeur:"Ahmed Boubetache",
+  statut:"particulier (entreprise en cours de création)",
+  email:"revoo.contact@gmail.com",
+  site:"https://revoocontact-blip.github.io/revoo/",
+  majDate:"7 novembre 2026",
+  ageMin:13
+};
+const legalHead=(t)=>`<p class="crumbs"><a href="#/">Accueil</a> › ${t}</p><h1>${t}</h1><p class="muted small">Dernière mise à jour : ${LEGAL.majDate}</p>`;
+const mail=`<a class="link" href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
+const LEGAL_PAGES={
+"mentions-legales":()=>`${legalHead("Mentions légales")}
+<h2>Éditeur du site</h2>
+<p>Le site Revoo (${LEGAL.site}) est édité par <b>${LEGAL.editeur}</b>, ${LEGAL.statut}.<br>Contact : ${mail}</p>
+<p>Conformément à l’article 6, III, 2 de la loi n° 2004-575 du 21 juin 2004 (LCEN), l’éditeur, agissant à titre non professionnel, a choisi de ne pas rendre publique son adresse personnelle ; ses coordonnées ont été communiquées à l’hébergeur. Ces mentions seront complétées (adresse, numéro SIREN/SIRET) dès la création de l’entreprise.</p>
+<h2>Directeur de la publication</h2><p>${LEGAL.editeur}</p>
+<h2>Hébergement du site</h2>
+<p><b>GitHub, Inc.</b> (service GitHub Pages) — 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — github.com</p>
+<h2>Hébergement des données</h2>
+<p><b>Supabase</b> (base de données, comptes et photos des annonces) — serveurs situés dans l’Union européenne (région « West EU », Paris, France) — supabase.com</p>
+<h2>Envoi des e-mails</h2>
+<p><b>Brevo</b> — France — brevo.com</p>
+<h2>Propriété intellectuelle</h2>
+<p>La marque, le logo et les éléments graphiques de Revoo sont la propriété de leur éditeur. Les annonces et photos publiées par les membres restent leur propriété (voir les <a class="link" href="#/conditions">conditions d’utilisation</a>). Certaines photos d’illustration proviennent d’Unsplash (unsplash.com), sous licence Unsplash.</p>
+<h2>Signaler un contenu</h2>
+<p>Pour signaler une annonce, utilise le bouton « 🚩 Signaler cette annonce » présent sur chaque annonce, ou écris à ${mail}.</p>`,
+
+"confidentialite":()=>`${legalHead("Politique de confidentialité")}
+<p>Cette page explique quelles données Revoo utilise, pourquoi, et quels sont tes droits, conformément au Règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
+<h2>1. Responsable du traitement</h2><p>${LEGAL.editeur} — ${mail}</p>
+<h2>2. Les données utilisées</h2>
+<table class="legal-table"><thead><tr><th>Données</th><th>Pourquoi</th><th>Base légale</th><th>Durée de conservation</th></tr></thead><tbody>
+<tr><td>Compte : adresse e-mail, mot de passe (chiffré, jamais visible par Revoo)</td><td>Créer et sécuriser ton compte</td><td>Exécution du contrat (conditions d’utilisation)</td><td>Tant que ton compte existe</td></tr>
+<tr><td>Profil : prénom ou pseudo, ville, présentation (facultatives)</td><td>Te présenter aux autres membres</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
+<tr><td>Annonces et photos</td><td>Les publier sur Revoo (elles sont publiques)</td><td>Exécution du contrat</td><td>Jusqu’à leur suppression, ou celle de ton compte</td></tr>
+<tr><td>Messages</td><td>Échanger avec les autres membres (visibles uniquement par les 2 personnes concernées)</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
+<tr><td>Favoris</td><td>Retrouver tes articles préférés</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
+<tr><td>Commandes et adresse de livraison (Revoo Pay, quand il sera actif)</td><td>Gérer la commande et la livraison (l’adresse n’est visible que par le vendeur concerné)</td><td>Exécution du contrat ; obligations comptables</td><td>Durée imposée par la loi (jusqu’à 10 ans pour les pièces comptables)</td></tr>
+<tr><td>Avis</td><td>Informer les acheteurs (publics)</td><td>Intérêt légitime (confiance entre membres)</td><td>Tant que le compte du vendeur existe</td></tr>
+<tr><td>Signalements (motif, précisions, e-mail facultatif)</td><td>Modérer et retirer les contenus illicites</td><td>Obligation légale ; intérêt légitime (sécurité)</td><td>1 an après leur traitement</td></tr>
+<tr><td>Préférences d’e-mail</td><td>T’envoyer (ou non) les notifications de messages</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
+</tbody></table>
+<p>Revoo n’utilise <b>aucun cookie publicitaire ni outil de mesure d’audience</b>. Ton navigateur garde seulement ce qui est nécessaire au fonctionnement du site (ta connexion, ton panier, tes réglages) : aucun consentement n’est donc demandé.</p>
+<h2>3. Qui peut voir tes données ?</h2>
+<ul><li><b>Les autres membres</b> : ton prénom ou pseudo, ta ville, ta présentation, tes annonces et les avis te concernant.</li>
+<li><b>L’autre personne d’une conversation</b> : vos messages. <b>Le vendeur</b> : ton adresse si tu choisis l’envoi par colis.</li>
+<li><b>Revoo (modération)</b> : uniquement pour traiter les signalements et les litiges.</li>
+<li><b>Nos prestataires</b>, qui agissent pour le compte de Revoo : Supabase (données, serveurs à Paris), Brevo (e-mails, France), GitHub (hébergement du site, États-Unis), jsDelivr (chargement d’un composant technique) et Unsplash (photos d’illustration). En chargeant le site, ton adresse IP peut être transmise à ces services ; les transferts hors de l’Union européenne sont encadrés par les garanties prévues par le RGPD (clauses contractuelles types ou décision d’adéquation).</li>
+<li><b>Plus tard</b>, le prestataire de paiement de Revoo Pay recevra les données nécessaires aux paiements. Cette page sera mise à jour avant son activation.</li></ul>
+<p>Tes données ne sont <b>jamais vendues</b>.</p>
+<h2>4. Mineurs</h2>
+<p>Revoo est accessible dès ${LEGAL.ageMin} ans. Entre ${LEGAL.ageMin} et 15 ans, l’inscription nécessite l’accord des titulaires de l’autorité parentale, conformément à l’article 45 de la loi Informatique et Libertés.</p>
+<h2>5. Tes droits</h2>
+<p>Tu peux à tout moment demander à <b>accéder</b> à tes données, les <b>corriger</b>, les <b>supprimer</b>, en <b>limiter</b> l’utilisation, t’<b>opposer</b> à leur utilisation ou les <b>récupérer</b> (portabilité). Tu peux aussi donner des directives sur leur sort après ton décès.</p>
+<p>Tu peux modifier ton profil directement dans Mon compte. Pour toute autre demande, notamment la <b>suppression de ton compte</b>, écris à ${mail} : nous répondons dans un délai d’un mois maximum.</p>
+<p>Si tu estimes que tes droits ne sont pas respectés, tu peux adresser une réclamation à la <b>CNIL</b> (cnil.fr).</p>
+<h2>6. Sécurité</h2>
+<p>Les échanges avec le site sont chiffrés (HTTPS), les mots de passe sont stockés sous forme chiffrée, et des règles d’accès empêchent chaque membre de lire les données des autres (messages, adresses, commandes).</p>`,
+
+"conditions":()=>`${legalHead("Conditions d’utilisation")}
+<p>En créant un compte sur Revoo, tu acceptes les présentes conditions. Elles peuvent évoluer ; en cas de changement important, tu en seras informé.</p>
+<h2>1. Qu’est-ce que Revoo ?</h2>
+<p>Revoo est une plateforme en ligne qui permet à des particuliers de <b>publier, découvrir, acheter et vendre des vêtements d’occasion</b> en France. Revoo est édité par ${LEGAL.editeur} (voir les <a class="link" href="#/mentions-legales">mentions légales</a>).</p>
+<p>Revoo met les membres en relation : <b>la vente est conclue directement entre l’acheteur et le vendeur</b>. Revoo n’est ni le vendeur ni l’acheteur des articles.</p>
+<h2>2. Inscription</h2>
+<ul><li>Il faut avoir au moins <b>${LEGAL.ageMin} ans</b>. Entre ${LEGAL.ageMin} et 15 ans, l’accord des parents est obligatoire pour s’inscrire ; avant 18 ans, l’accord des parents est nécessaire pour vendre ou acheter.</li>
+<li>Les informations données doivent être exactes. Un seul compte par personne.</li>
+<li>Tu es responsable de la confidentialité de ton mot de passe et de l’utilisation de ton compte.</li></ul>
+<h2>3. Publier une annonce</h2>
+<ul><li>Revoo est actuellement réservé aux <b>vêtements</b>. D’autres catégories pourront être ouvertes plus tard.</li>
+<li>Tu dois être le propriétaire de l’article et le décrire honnêtement : photos réelles, taille, état, défauts éventuels.</li>
+<li>Le prix est libre. L’article doit être disponible ; marque-le « vendu » ou supprime l’annonce dès qu’il ne l’est plus.</li>
+<li>Tu acceptes que Revoo affiche tes photos et textes sur le site pour présenter ton annonce, sans autre utilisation.</li>
+<li><b>Vendeurs professionnels</b> : Revoo est destiné aux particuliers. Un professionnel doit se déclarer comme tel auprès de Revoo et respecter les obligations du Code de la consommation.</li></ul>
+<h2>4. Articles et contenus interdits</h2>
+<p>Il est interdit de publier tout article ou contenu <b>illégal</b>, notamment : contrefaçons, articles volés, articles dangereux ou interdits à la vente, contenus haineux, violents, discriminatoires ou à caractère sexuel, ainsi que tout contenu portant atteinte aux droits d’autrui. Il est aussi interdit d’utiliser Revoo pour arnaquer, harceler ou envoyer de la publicité non sollicitée.</p>
+<h2>5. Acheter et payer</h2>
+<p><b>Pendant la période de lancement</b>, Revoo ne gère pas le paiement : l’acheteur et le vendeur s’entendent directement (remise en main propre, ou envoi par colis avec paiement PayPal « Biens et services »). Revoo ne prélève <b>aucuns frais</b> et ne peut pas rembourser un paiement fait en dehors du site. Lis nos <a class="link" href="#/securite">conseils de sécurité</a>.</p>
+<p><b>Plus tard</b>, un paiement intégré et sécurisé, Revoo Pay, sera proposé : l’argent sera bloqué jusqu’à la confirmation de réception, et des frais de ${eur(CONFIG.fraisFixes)} par article seront facturés à l’acheteur. Ces conditions seront complétées avant son activation.</p>
+<p>Les ventes entre particuliers ne donnent pas lieu au droit de rétractation de 14 jours prévu pour les achats auprès de professionnels.</p>
+<h2>6. Classement des annonces</h2>
+<p>Les annonces sont affichées selon le critère choisi par le visiteur : les plus récentes (par défaut), le prix ou la popularité (nombre de favoris). Aucun vendeur ne peut payer pour être mieux classé.</p>
+<h2>7. Avis</h2>
+<p>Un acheteur peut laisser un avis après avoir confirmé la réception d’une commande Revoo Pay. Les avis doivent être sincères et respectueux ; Revoo peut retirer un avis contraire à ces conditions.</p>
+<h2>8. Signalement et modération</h2>
+<p>Tout visiteur peut signaler une annonce grâce au bouton « 🚩 Signaler cette annonce ». Revoo examine les signalements et peut <b>retirer une annonce</b> ou <b>supprimer un compte</b> en cas de non-respect de ces conditions ou de la loi. Le membre concerné en est informé et peut contester la décision en écrivant à ${mail}.</p>
+<h2>9. Responsabilité</h2>
+<p>Chaque membre est responsable de ses annonces, de ses messages et des ventes qu’il conclut. Revoo agit comme hébergeur des contenus publiés par les membres et s’engage à retirer rapidement tout contenu manifestement illicite qui lui est signalé. Revoo fait de son mieux pour que le site fonctionne en permanence, sans pouvoir le garantir.</p>
+<h2>10. Obligations fiscales</h2>
+<p>Les revenus tirés de la vente occasionnelle de tes propres affaires ne sont en principe pas imposables. Comme toute plateforme, Revoo pourra être tenu de transmettre à l’administration fiscale certaines informations sur les vendeurs, dans les cas prévus par la loi.</p>
+<h2>11. Supprimer ton compte</h2>
+<p>Tu peux demander la suppression de ton compte à tout moment en écrivant à ${mail}. Revoo peut supprimer un compte qui ne respecte pas ces conditions.</p>
+<h2>12. Droit applicable</h2>
+<p>Ces conditions sont soumises au droit français. En cas de désaccord, une solution amiable sera recherchée en priorité en écrivant à ${mail}.</p>`
+};
+
 function safetyBox(p){return `<div class="safety" aria-label="Paiement et sécurité"><h2>🛡️ Paiement direct entre membres · 0 € de frais</h2><ul>
   <li>✅ <b>Main propre</b> : paie au moment de la remise.</li>
   <li>✅ <b>À distance</b> : uniquement PayPal « Biens et services » (il te protège).</li>
@@ -1881,9 +1990,9 @@ const PAGES={
     <details><summary>Qui est Reboot ?</summary><p>Reboot est l’assistant de Revoo. Il répond à partir de réponses préparées à l’avance : il n’est connecté à aucune intelligence artificielle.</p></details>
     <h2>Nous contacter</h2><p>Pour l’instant, pose ta question à Reboot. Les coordonnées officielles de Revoo seront publiées ici dès qu’elles seront définies.</p>
     <button type="button" class="btn btn-primary" data-open-chat>Discuter avec Reboot</button>`,
-  "conditions":()=>legalStub("Conditions générales"),
-  "confidentialite":()=>legalStub("Politique de confidentialité",`<h2>Données utilisées aujourd’hui (information factuelle)</h2><ul><li>Compte : adresse e-mail et mot de passe, gérés par le service d’authentification Supabase. Le mot de passe n’est jamais visible par Revoo.</li><li>Profil : prénom ou pseudo, ville et présentation (facultatives), visibles par les autres membres.</li><li>Annonces et photos : publiques.</li><li>Favoris : liés à ton compte, visibles par toi seul.</li><li>Messages : visibles uniquement par l’acheteur et le vendeur concernés.</li><li>Panier et commandes simulées : enregistrés uniquement dans ton navigateur.</li><li>Les photos d’exemple sont chargées depuis Unsplash.</li></ul>`),
-  "mentions-legales":()=>legalStub("Informations légales")
+  "conditions":()=>LEGAL_PAGES["conditions"](),
+  "confidentialite":()=>LEGAL_PAGES["confidentialite"](),
+  "mentions-legales":()=>LEGAL_PAGES["mentions-legales"]()
 };
 function legalStub(title,extra=""){return `<p class="crumbs"><a href="#/">Accueil</a> › ${title}</p><h1>${title}</h1><p class="note">Cette page sera complétée avec les informations officielles de Revoo. Aucun texte juridique n’a été inventé.</p>${extra}`}
 
@@ -1988,7 +2097,7 @@ document.addEventListener("submit",async e=>{
     toast("Merci pour ton avis !");await loadListings();renderView();return}
   if(f.id==="signupForm"){e.preventDefault();
     const name=$("sName").value.trim(),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();
-    const ok=fieldError("sName","sNameErr",name.length<2?"Indique ton prénom ou un pseudo (2 caractères minimum).":"") & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"");
+    const ok=fieldError("sName","sNameErr",name.length<2?"Indique ton prénom ou un pseudo (2 caractères minimum).":"") & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"") & fieldError("sTerms","sTermsErr",$("sTerms").checked?"":"Coche la case pour accepter les conditions.");
     if(!ok)return;
     busy(f,true,"Création…");$("signupErr").textContent="";
     const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city},emailRedirectTo:redirectUrl()}});
