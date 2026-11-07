@@ -528,9 +528,11 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 /* ---------- Finitions ---------- */
 .acct{position:relative}
-.acct-btn{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 10px 4px 4px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font-weight:700;font-size:14px}
-.acct-btn:hover{border-color:var(--sky);background:var(--ice)}
-.acct-av{width:34px;height:34px;margin:0;font-size:15px;font-weight:800;background:var(--brand);color:var(--on-brand);border:0;box-shadow:none}
+.acct-btn{display:grid;place-items:center;width:46px;height:46px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer}
+.acct-btn .acct-name,.acct-btn .acct-chev{display:none}
+.acct-btn:hover .acct-av{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--sky)}
+.acct-btn[aria-expanded="true"] .acct-av{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--navy)}
+.acct-av{width:40px;height:40px;margin:0;font-size:16px;font-weight:800;background:var(--brand);color:var(--on-brand);border:0;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--line);transition:box-shadow .2s}
 .acct-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .acct-chev{width:16px;height:16px;color:var(--muted);transition:transform .2s}
 .acct-btn[aria-expanded="true"] .acct-chev{transform:rotate(180deg)}
