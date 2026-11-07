@@ -556,7 +556,11 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .pp-actions .btn{min-height:40px;padding:8px 16px;font-size:14px}
 .pp-bio{margin:14px 24px 0;white-space:pre-line;max-width:720px}
 .pp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line);margin-top:18px}
-.pp-stats div{background:var(--surface);padding:14px;text-align:center}
+.pp-stats>*{background:var(--surface);padding:14px;text-align:center;border:0;position:relative;font:inherit;color:inherit}
+.pp-stats button{cursor:pointer;transition:background .15s}
+.pp-stats button:hover{background:var(--ice)}
+.pp-stats button[aria-selected="true"]{background:var(--ice)}
+.pp-stats button[aria-selected="true"]::after{content:"";position:absolute;left:24%;right:24%;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--navy)}
 .pp-stats b{display:block;font-size:20px;color:var(--heading)}
 .pp-stats span{font-size:12px;color:var(--muted)}
 @media (max-width:680px){.acct{display:none!important}}
@@ -1705,19 +1709,15 @@ async function renderSellerProfile(id){
         <div class="pp-actions">${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}<button type="button" class="btn btn-outline" id="shareProfile">Partager</button></div>
       </div>
       ${pr.bio?`<p class="pp-bio">${esc(pr.bio)}</p>`:me?`<p class="pp-bio muted small">Ajoute une bio depuis « Modifier mon profil » : les acheteurs aiment savoir à qui ils achètent.</p>`:""}
-      <div class="pp-stats">
-        <div><b>${items.length}</b><span>Article${items.length>1?"s":""} en vente</span></div>
-        <div><b>${revs.length}</b><span>Avis</span></div>
+      <div class="pp-stats" role="tablist" aria-label="Contenu du profil">
+        <button type="button" role="tab" aria-selected="${tab==="articles"}" aria-controls="ppArticles" data-pptab="articles"><b>${items.length}</b><span>Article${items.length>1?"s":""} en vente</span></button>
+        <button type="button" role="tab" aria-selected="${tab==="avis"}" aria-controls="ppAvis" data-pptab="avis"><b>${revs.length}</b><span>Avis</span></button>
         <div><b>${rt?rt.avg.toFixed(1).replace(".",",")+" ★":"—"}</b><span>Note moyenne</span></div>
       </div>
     </section>
     ${vac?`<p class="note small">${me?"Ton mode vacances est activé : tes annonces sont masquées pour les autres membres.":`@${esc(pr.name)} est en vacances : ses annonces sont temporairement masquées.`}</p>`:""}
-    <div class="tabs" role="tablist" style="margin-top:22px">
-      <button type="button" role="tab" aria-selected="${tab==="articles"}" data-pptab="articles">Articles (${items.length})</button>
-      <button type="button" role="tab" aria-selected="${tab==="avis"}" data-pptab="avis">Avis (${revs.length})</button>
-    </div>
-    <div id="ppArticles" ${tab==="articles"?"":"hidden"}><div class="products" id="profileProducts"></div>${!me&&items.length?`<p class="muted small" style="margin-top:14px">Pour écrire à @${esc(pr.name)}, ouvre une de ses annonces et clique sur « Je suis intéressé(e) ».</p>`:""}</div>
-    <div id="ppAvis" ${tab==="avis"?"":"hidden"}>${revs.length?`<div class="panel">${revs.map(r=>`<div class="review"><span class="rating" aria-label="${r.rating} sur 5">${starsTxt(r.rating)}</span> <b>@${esc(r.buyer?.name||"acheteur")}</b> <span class="muted small">· ${new Date(r.created_at).toLocaleDateString("fr-FR")}${r.demo?" · démo":""}</span>${r.comment?`<p>${esc(r.comment)}</p>`:""}${state.isAdmin?`<p><button type="button" class="link small" data-delreview="${r.id}">Supprimer cet avis (modération)</button></p>`:""}</div>`).join("")}</div>`:`<div class="empty"><p>Pas encore d’avis.</p></div>`}</div>`;
+    <div id="ppArticles" role="tabpanel" style="margin-top:22px" ${tab==="articles"?"":"hidden"}><div class="products" id="profileProducts"></div>${!me&&items.length?`<p class="muted small" style="margin-top:14px">Pour écrire à @${esc(pr.name)}, ouvre une de ses annonces et clique sur « Je suis intéressé(e) ».</p>`:""}</div>
+    <div id="ppAvis" role="tabpanel" style="margin-top:22px" ${tab==="avis"?"":"hidden"}>${revs.length?`<div class="panel">${revs.map(r=>`<div class="review"><span class="rating" aria-label="${r.rating} sur 5">${starsTxt(r.rating)}</span> <b>@${esc(r.buyer?.name||"acheteur")}</b> <span class="muted small">· ${new Date(r.created_at).toLocaleDateString("fr-FR")}${r.demo?" · démo":""}</span>${r.comment?`<p>${esc(r.comment)}</p>`:""}${state.isAdmin?`<p><button type="button" class="link small" data-delreview="${r.id}">Supprimer cet avis (modération)</button></p>`:""}</div>`).join("")}</div>`:`<div class="empty"><p>Pas encore d’avis.</p></div>`}</div>`;
   grid($("profileProducts"),items,me?`<p>Tu n’as aucun article en vente pour le moment.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a>`:`<p>@${esc(pr.name)} n’a aucun article en vente pour le moment.</p>`);
   v.querySelectorAll("[data-pptab]").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.pptab;v.querySelectorAll("[data-pptab]").forEach(x=>x.setAttribute("aria-selected",x===b));$("ppArticles").hidden=t!=="articles";$("ppAvis").hidden=t!=="avis"}));
   $("shareProfile").addEventListener("click",async()=>{const url=location.origin+location.pathname+"#/vendeur/"+id;try{if(navigator.share){await navigator.share({title:"@"+pr.name+" sur Revoo",url});return}await navigator.clipboard.writeText(url);toast("Lien du profil copié !")}catch(e){if(e&&e.name==="AbortError")return;prompt("Copie ce lien :",url)}});
