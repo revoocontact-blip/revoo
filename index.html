@@ -222,6 +222,16 @@ textarea.input{min-height:110px;resize:vertical}
 .seller-box .avatar{margin:0;width:46px;height:46px;font-size:19px}
 .seller-box div{flex:1}
 .phase1 #cartBtn{display:none}
+.order-body{display:flex;gap:14px;align-items:flex-start}
+.order-img{width:64px;height:80px;border-radius:10px;flex:none}
+.order-steps{list-style:none;display:flex;gap:6px;padding:0;margin:0 0 4px;flex-wrap:wrap}
+.order-steps li{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--pale);color:var(--muted)}
+.order-steps li.done{background:var(--navy);color:#fff}
+.wallet{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.wallet-box{border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:4px}
+.wallet-box b{font-size:28px;color:var(--navy)}
+.wallet-box.ok{background:var(--ice)}
+.demo-bar.paydemo{background:#7A5A12}
 .safety{border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;margin:16px 0;font-size:14px;background:#fff}
 .safety h2{font-size:15px;margin:0 0 8px}
 .safety ul{margin:0;padding-left:18px;display:grid;gap:4px}
@@ -602,6 +612,8 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 <!-- ================= FAVORIS ================= -->
 <div class="view wrap" id="view-vendeur" hidden></div>
 
+<div class="view wrap" id="view-paiement" hidden></div>
+
 <div class="view wrap" id="view-messages" hidden>
   <div class="page-head narrow"><p class="crumbs"><a href="#/">Accueil</a> › Messages</p><h1 class="page-title" id="msgTitle">Messages</h1></div>
   <div class="narrow" id="msgContent"></div>
@@ -792,6 +804,7 @@ function frenchError(err){
   if(m.includes("rate limit")||m.includes("too many"))return"Trop de tentatives. Réessaie dans quelques minutes.";
   if(m.includes("failed to fetch")||m.includes("network"))return"Connexion impossible. Vérifie ta connexion internet.";
   if(m.includes("row-level security")||m.includes("permission"))return"Action non autorisée.";
+  if(err&&err.code==="P0001"&&err.message)return err.message+".";
   const code=String((err&&(err.code||err.status))||"").slice(0,10), msg=String((err&&err.message)||"").slice(0,120);
   return"Une erreur est survenue. Réessaie dans un instant."+(code||msg?` (détail : ${code}${code&&msg?" – ":""}${msg})`:"");
 }
@@ -850,7 +863,7 @@ async function syncFavorites(){
 }
 async function onSession(session,event){
   if(event==="PASSWORD_RECOVERY"){state.recovery=true}
-  if(session){await loadProfile(session);await syncFavorites();await loadConversations();await loadAdmin();startRealtime()}
+  if(session){await loadProfile(session);await syncFavorites();await loadConversations();await loadAdmin();await loadOrders();startRealtime()}
   else {state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0}
   state.remote.forEach(p=>p.mine=!!state.user&&state.user.id===p.sellerId);
   renderView();
@@ -1074,6 +1087,185 @@ async function moderate(action,reportId,listingId){
 }
 
 /* =========================================================
+   REVOO PAY — interface (le paiement Mangopay sera branché à la fin)
+   Visible uniquement en mode démo : ajouter ?revoopay=demo à l'adresse du site
+   (et ?revoopay=off pour le cacher à nouveau).
+   ========================================================= */
+const PAY_DEMO=(()=>{try{const q=new URLSearchParams(location.search);if(q.get("revoopay")==="demo")sessionStorage.setItem("revoo.paydemo","1");if(q.get("revoopay")==="off")sessionStorage.removeItem("revoo.paydemo");return sessionStorage.getItem("revoo.paydemo")==="1"}catch(e){return false}})();
+const payOn=()=>CONFIG.paiementIntegre||PAY_DEMO;
+const ORDER_FEE=1;
+const orders={mine:[],all:[],loaded:false};
+const ORDER_STATUS={paid:"Payée · à envoyer",shipped:"Envoyée",received:"Reçue ✓",problem:"Problème signalé",cancelled:"Annulée"};
+async function loadOrders(){
+  orders.mine=[];orders.all=[];orders.loaded=false;
+  if(!sb||!state.user||!payOn())return;
+  try{
+    const {data,error}=await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(300);
+    if(error){console.warn(error);return}
+    orders.all=data||[];
+    orders.mine=orders.all.filter(o=>o.buyer_id===state.user.id||o.seller_id===state.user.id);
+    orders.loaded=true;
+  }catch(e){console.warn(e)}
+}
+const orderTotal=o=>Number(o.price)+Number(o.fee);
+function orderSteps(o){
+  const steps=[["paid","Payée"],["shipped",o.delivery==="main_propre"?"Remise":"Envoyée"],["received","Reçue"]];
+  const idx={paid:0,shipped:1,received:2,problem:1,cancelled:-1}[o.status];
+  return `<ol class="order-steps">${steps.map(([k,l],i)=>`<li class="${i<=idx?"done":""}">${l}</li>`).join("")}</ol>`;
+}
+function orderCard(o,role){
+  const me=role==="buyer";
+  let actions="";
+  if(me&&["paid","shipped"].includes(o.status))actions=`<button type="button" class="btn btn-primary" data-order="received" data-id="${o.id}">J’ai bien reçu l’article</button><button type="button" class="btn btn-outline" data-order="problem-form" data-id="${o.id}">Signaler un problème</button>`;
+  if(!me&&o.status==="paid"){
+    actions=o.delivery==="colis"
+      ?`<label class="sr-only" for="trk-${o.id}">Numéro de suivi</label><input class="input" id="trk-${o.id}" placeholder="Numéro de suivi du colis" maxlength="60" style="max-width:240px"><button type="button" class="btn btn-primary" data-order="shipped" data-id="${o.id}">Marquer comme envoyé</button>`
+      :`<button type="button" class="btn btn-primary" data-order="shipped" data-id="${o.id}">J’ai remis l’article</button>`;
+    actions+=`<button type="button" class="btn btn-danger" data-order="cancel" data-id="${o.id}">Annuler la vente</button>`;
+  }
+  const addr=!me&&o.delivery==="colis"&&o.ship_address?`<p class="small"><b>Adresse d’envoi :</b><br>${esc(o.ship_name)}<br>${esc(o.ship_address)}<br>${esc(o.ship_zip)} ${esc(o.ship_city)}</p>`:"";
+  const money=me?`Payé : <b>${eur(orderTotal(o))}</b> (article ${eur(Number(o.price))} + frais ${eur(Number(o.fee))})`:`Tu recevras <b>${eur(Number(o.price))}</b> ${o.status==="received"?"(disponible)":"après confirmation de réception"}`;
+  return `<div class="order">
+    <header><b>${esc(o.title)}</b><span class="status">${ORDER_STATUS[o.status]||o.status}${o.demo?" · démo":""}</span></header>
+    <div class="order-body">
+      <span class="image-frame order-img">${o.photo?`<img data-safe-image src="${esc(o.photo)}" alt="">`:""}</span>
+      <div style="flex:1;min-width:0">
+        ${o.status!=="cancelled"?orderSteps(o):""}
+        <p class="small" style="margin:6px 0">${money} · ${o.delivery==="colis"?"Envoi par colis":"Remise en main propre"} · ${new Date(o.created_at).toLocaleDateString("fr-FR")}</p>
+        ${o.tracking?`<p class="small">Suivi du colis : <b>${esc(o.tracking)}</b></p>`:""}
+        ${o.problem?`<p class="small note warn">Problème signalé : « ${esc(o.problem)} »</p>`:""}
+        ${addr}
+      </div>
+    </div>
+    ${actions?`<div class="row-actions" style="justify-content:flex-start;margin-top:10px">${actions}</div>`:""}
+    <div id="pf-${o.id}"></div>
+  </div>`;
+}
+function purchasesHtml(){
+  const list=orders.mine.filter(o=>o.buyer_id===state.user.id);
+  if(!orders.loaded)return`<p class="muted">Chargement…</p>`;
+  return (list.length?list.map(o=>orderCard(o,"buyer")).join(""):`<div class="empty"><p>Aucun achat pour le moment.</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`)
+    +`<p class="muted small">🛡️ Avec Revoo Pay, ton argent reste bloqué jusqu’à ce que tu confirmes la réception. En cas de problème, signale-le avant de confirmer.</p>`;
+}
+function salesHtml(){
+  const list=orders.mine.filter(o=>o.seller_id===state.user.id);
+  if(!orders.loaded)return`<p class="muted">Chargement…</p>`;
+  return list.length?list.map(o=>orderCard(o,"seller")).join(""):`<div class="empty"><p>Aucune vente pour le moment.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
+}
+function walletHtml(){
+  const sales=orders.mine.filter(o=>o.seller_id===state.user.id);
+  const pending=sales.filter(o=>["paid","shipped","problem"].includes(o.status)).reduce((t,o)=>t+Number(o.price),0);
+  const ready=sales.filter(o=>o.status==="received").reduce((t,o)=>t+Number(o.price),0);
+  return `<div class="wallet">
+      <div class="wallet-box"><span class="muted small">En attente</span><b>${eur(pending)}</b><span class="muted small">Ventes pas encore reçues par l’acheteur</span></div>
+      <div class="wallet-box ok"><span class="muted small">Disponible</span><b>${eur(ready)}</b><span class="muted small">Ventes confirmées</span></div>
+    </div>
+    <div class="panel"><h2>Virer sur mon compte bancaire</h2>
+      <p class="muted small">Le virement vers ton compte bancaire sera activé avec le paiement sécurisé. Tes coordonnées bancaires seront alors saisies directement chez notre prestataire de paiement : Revoo ne les stockera jamais.</p>
+      <div class="field"><label for="ibanDemo">IBAN</label><input class="input" id="ibanDemo" placeholder="FR76 …" disabled></div>
+      <button type="button" class="btn btn-primary" disabled>Virer ${eur(ready)}</button>
+    </div>`;
+}
+async function orderAction(action,id){
+  let r;
+  if(action==="received"){if(!confirm("Confirmer la bonne réception ? L’argent sera alors versé au vendeur."))return;r=await sb.rpc("confirm_received",{p_order:id})}
+  else if(action==="shipped"){const t=$("trk-"+id);r=await sb.rpc("mark_shipped",{p_order:id,p_tracking:t?t.value.trim():null})}
+  else if(action==="cancel"){if(!confirm("Annuler cette vente ? L’acheteur sera remboursé et l’article remis en vente."))return;r=await sb.rpc("cancel_order",{p_order:id})}
+  else if(action==="admin-cancel"){if(!confirm("Annuler la commande et rembourser l’acheteur ?"))return;r=await sb.rpc("cancel_order",{p_order:id})}
+  else if(action==="admin-close"){if(!confirm("Clore le litige en faveur du vendeur ?"))return;r=await sb.rpc("admin_close_problem",{p_order:id})}
+  else if(action==="problem-form"){
+    const box=$("pf-"+id);if(!box)return;if(box.innerHTML){box.innerHTML="";return}
+    box.innerHTML=`<form class="panel" style="margin-top:10px" data-problem="${id}" novalidate><div class="field"><label for="pr-${id}">Quel est le problème ?</label><textarea class="input" id="pr-${id}" maxlength="1000" placeholder="Ex. : je n’ai rien reçu, l’article ne correspond pas…"></textarea><span class="error" id="pr-${id}Err"></span></div><button class="btn btn-primary" type="submit">Envoyer</button></form>`;
+    return;
+  }
+  if(r&&r.error){toast(frenchError(r.error));return}
+  toast({received:"Merci ! La vente est terminée.",shipped:"C’est noté : l’acheteur est prévenu dans sa commande.",cancel:"Vente annulée.","admin-cancel":"Commande annulée.","admin-close":"Litige clos."}[action]||"C’est fait.");
+  await Promise.all([loadOrders(),loadListings()]);renderView();
+}
+async function submitProblem(id,form){
+  const reason=$("pr-"+id).value.trim();
+  if(!fieldError("pr-"+id,"pr-"+id+"Err",reason.length<5?"Décris le problème en quelques mots.":""))return;
+  busy(form,true,"Envoi…");
+  const {error}=await sb.rpc("report_order_problem",{p_order:id,p_reason:reason});
+  busy(form,false);
+  if(error){toast(frenchError(error));return}
+  toast("Problème signalé. Ton argent reste bloqué le temps de trouver une solution.");
+  await loadOrders();renderView();
+}
+function disputesHtml(){
+  const list=orders.all.filter(o=>o.status==="problem");
+  if(!payOn())return"";
+  return `<div class="panel"><h2>Litiges Revoo Pay (${list.length})</h2>${list.length?list.map(o=>`${orderCard(o,"admin")}<div class="row-actions" style="justify-content:flex-start;margin:-6px 0 14px"><button type="button" class="btn btn-danger" data-order="admin-cancel" data-id="${o.id}">Annuler et rembourser l’acheteur</button><button type="button" class="btn btn-outline" data-order="admin-close" data-id="${o.id}">Clore en faveur du vendeur</button></div>`).join(""):`<p class="muted">Aucun litige en cours.</p>`}</div>`;
+}
+
+/* Page de paiement */
+let checkoutDelivery="main_propre";
+function renderCheckout(id){
+  const v=$("view-paiement"),p=findProduct(id);
+  if(!payOn()){location.hash="#/article/"+id;return}
+  if(!state.user){v.innerHTML=`<div class="page-head narrow"><div class="panel"><h2>Connecte-toi pour acheter</h2><a class="btn btn-primary" href="#/compte">Se connecter</a></div></div>`;return}
+  if(!p){v.innerHTML=state.loading?`<p class="muted page-head">Chargement…</p>`:`<div class="page-head"><h1 class="page-title">Article introuvable</h1><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
+  if(p.demo||p.mine||p.status!=="active"){v.innerHTML=`<div class="page-head narrow"><div class="empty"><p>${p.demo?"C’est un article de démonstration : il ne peut pas être acheté.":p.mine?"C’est ton annonce : tu ne peux pas l’acheter.":"Cet article n’est plus disponible."}</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div></div>`;return}
+  v.innerHTML=`<div class="page-head"><p class="crumbs"><a href="#/">Accueil</a> › <a href="#/article/${p.id}">${esc(p.name)}</a> › Paiement</p><h1 class="page-title">Acheter avec Revoo Pay</h1></div>
+  <div class="cart-layout">
+    <form id="checkoutForm" novalidate>
+      <div class="panel"><div class="cart-item" style="border:0;padding:0">
+        <span class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}"></span>
+        <div><h3>${esc(p.name)}</h3><p>${esc(p.size)} · ${esc(p.condition)} · vendu par ${esc(p.seller)}</p></div>
+        <div class="price">${eur(p.price)}</div></div></div>
+      <div class="panel"><h2>Livraison</h2>
+        <fieldset class="carriers" style="margin:0"><legend class="sr-only">Mode de livraison</legend>
+          <label class="carrier"><input type="radio" name="dlv" value="main_propre" ${checkoutDelivery==="main_propre"?"checked":""}><span><b>Remise en main propre</b><small>Vous vous donnez rendez-vous via la messagerie.</small></span></label>
+          <label class="carrier"><input type="radio" name="dlv" value="colis" ${checkoutDelivery==="colis"?"checked":""}><span><b>Envoi par colis</b><small>Le vendeur t’envoie l’article avec un numéro de suivi.</small></span></label>
+        </fieldset>
+        <div id="addrBox" ${checkoutDelivery==="colis"?"":"hidden"} style="margin-top:14px">
+          <div class="field"><label for="cName">Nom et prénom</label><input class="input" id="cName" autocomplete="name" maxlength="80"><span class="error" id="cNameErr"></span></div>
+          <div class="field"><label for="cAddr">Adresse</label><input class="input" id="cAddr" autocomplete="street-address" maxlength="200"><span class="error" id="cAddrErr"></span></div>
+          <div class="grid-2"><div class="field"><label for="cZip">Code postal</label><input class="input" id="cZip" autocomplete="postal-code" inputmode="numeric" maxlength="10"><span class="error" id="cZipErr"></span></div>
+          <div class="field"><label for="cCity">Ville</label><input class="input" id="cCity" autocomplete="address-level2" maxlength="80"><span class="error" id="cCityErr"></span></div></div>
+          <p class="muted small">Ton adresse n’est visible que par le vendeur de cet article.</p>
+        </div>
+      </div>
+      <div class="panel"><h2>Paiement</h2>
+        <p class="small">💳 Paiement par carte bancaire, sécurisé par notre prestataire de paiement agréé.</p>
+        <p class="note warn small"><b>Mode démo :</b> le paiement par carte n’est pas encore branché. Le bouton ci-dessous crée une commande de test, <b>sans aucun paiement</b>.</p>
+      </div>
+    </form>
+    <aside class="summary" aria-labelledby="coSum"><h2 id="coSum">Récapitulatif</h2>
+      <div class="line"><span>Article</span><span>${eur(p.price)}</span></div>
+      <div class="line"><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div>
+      <div class="line"><span>Livraison</span><span class="muted" id="coShip">${checkoutDelivery==="colis"?"À régler avec le vendeur":"Gratuite"}</span></div>
+      <div class="line total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div>
+      <button type="submit" form="checkoutForm" class="btn btn-primary btn-block" id="coPay">Simuler le paiement (démo)</button>
+      <p class="error" id="coErr" role="alert"></p>
+      <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px">
+        <li>🛡️ Ton argent reste bloqué jusqu’à ce que tu confirmes la réception.</li>
+        <li>↩️ Problème ? Signale-le avant de confirmer : tu seras remboursé si l’article ne correspond pas.</li>
+      </ul>
+    </aside>
+  </div>`;
+  watchImages(v);
+  v.querySelectorAll('input[name="dlv"]').forEach(r=>r.addEventListener("change",()=>{checkoutDelivery=r.value;$("addrBox").hidden=r.value!=="colis";$("coShip").textContent=r.value==="colis"?"À régler avec le vendeur":"Gratuite"}));
+  $("checkoutForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const colis=checkoutDelivery==="colis",val=i=>$(i).value.trim();
+    if(colis){
+      let ok=fieldError("cName","cNameErr",val("cName").length<3?"Indique ton nom et prénom.":"");
+      ok&=fieldError("cAddr","cAddrErr",val("cAddr").length<5?"Indique ton adresse.":"");
+      ok&=fieldError("cZip","cZipErr",!/^\d{5}$/.test(val("cZip"))?"Code postal à 5 chiffres.":"");
+      ok&=fieldError("cCity","cCityErr",val("cCity").length<2?"Indique ta ville.":"");
+      if(!ok)return;
+    }
+    const b=$("coPay");b.disabled=true;b.textContent="Commande en cours…";$("coErr").textContent="";
+    const {error}=await sb.rpc("create_order",{p_listing:p.id,p_delivery:checkoutDelivery,p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null});
+    if(error){b.disabled=false;b.textContent="Simuler le paiement (démo)";$("coErr").textContent=frenchError(error);return}
+    await Promise.all([loadOrders(),loadListings(),loadConversations()]);
+    toast("Commande créée (démo, aucun paiement).");
+    location.hash="#/compte/achats";
+  });
+}
+
+/* =========================================================
    PROFIL VENDEUR (public)
    ========================================================= */
 async function renderSellerProfile(id){
@@ -1231,6 +1423,7 @@ function renderProduct(id){
   if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
+  else if(payOn()&&!p.demo) actions=`<div class="buy-actions"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}">🛡️ Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" id="contactSeller">💬 Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥":"♡"}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
   else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions"><button type="button" class="btn btn-primary" id="contactSeller">💬 Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div><div id="contactNote"></div>`;
   else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div>`;
   const eyebrow=p.mine?"Ton annonce":p.demo?"Annonce de démonstration":"";
@@ -1254,7 +1447,7 @@ function renderProduct(id){
         <dt>Ajouté</dt><dd>${ago(p.addedAt)}</dd>
       </dl>
       ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
-      ${sold||p.mine?"":!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
+      ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">🛡️ Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span></div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
       ${p.mine||sold||!CONFIG.paiementIntegre?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px">💬 Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
@@ -1378,10 +1571,14 @@ function renderAccount(tab){
   const mine=state.remote.filter(p=>p.mine);
   const myOrders=state.orders.filter(o=>!o.userId||o.userId===state.user.id);
   const tabs=[["profil","Profil"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]].filter(t=>CONFIG.paiementIntegre||t[0]!=="commandes");
+  if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["portemonnaie","Porte-monnaie"])}
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
   let body="";
-  if(accountTab==="moderation"&&state.isAdmin){
-    body=moderationHtml();
+  if(accountTab==="achats"&&payOn()){body=purchasesHtml()}
+  else if(accountTab==="ventes"&&payOn()){body=salesHtml()}
+  else if(accountTab==="portemonnaie"&&payOn()){body=walletHtml()}
+  else if(accountTab==="moderation"&&state.isAdmin){
+    body=moderationHtml()+disputesHtml();
   } else if(accountTab==="annonces"){
     body=mine.length?`<div class="panel">${mine.map(l=>`<div class="listing-row">
       <a class="image-frame" href="#/article/${encodeURIComponent(l.id)}"><img data-safe-image src="${esc(l.img)}" alt="${esc(l.name)}"></a>
@@ -1625,6 +1822,7 @@ function renderView(){
   else if(name==="compte"){view="compte";renderAccount(arg||(state.user?"profil":undefined))}
   else if(name==="messages"){view="messages";renderMessages(arg)}
   else if(name==="vendeur"){view="vendeur";renderSellerProfile(arg)}
+  else if(name==="paiement"){view="paiement";renderCheckout(arg)}
   else if(PAGES[name]){view="page";$("pageContent").innerHTML=PAGES[name]()}
   else renderHome();
   $("view-"+view).hidden=false;
@@ -1662,6 +1860,7 @@ document.addEventListener("click",async e=>{
     save("cart");refresh();return}
   const rm=t.closest("[data-remove]");if(rm){state.cart=state.cart.filter(x=>x!==rm.dataset.remove);save("cart");toast("Retiré du panier");refresh();return}
   const del=t.closest("[data-delete]");if(del){deleteListing(del.dataset.delete);return}
+  const oa=t.closest("[data-order]");if(oa){orderAction(oa.dataset.order,oa.dataset.id);return}
   const ct=t.closest("[data-contact]");if(ct){const pr=findProduct(ct.dataset.contact);if(pr)contactSeller(pr);return}
   const md=t.closest("[data-mod]");if(md){md.disabled=true;moderate(md.dataset.mod,md.dataset.report,md.dataset.listing);return}
   const sta=t.closest("[data-status]");if(sta){sta.disabled=true;toggleStatus(sta.dataset.status);return}
@@ -1685,6 +1884,7 @@ function busy(form,on,txt){const b=form.querySelector('button[type="submit"]');i
 const redirectUrl=()=>location.origin+location.pathname;
 document.addEventListener("submit",async e=>{
   const f=e.target;
+  if(f.dataset.problem){e.preventDefault();submitProblem(f.dataset.problem,f);return}
   if(f.id==="signupForm"){e.preventDefault();
     const name=$("sName").value.trim(),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();
     const ok=fieldError("sName","sNameErr",name.length<2?"Indique ton prénom ou un pseudo (2 caractères minimum).":"") & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"");
@@ -1815,6 +2015,7 @@ chatLog.addEventListener("click",e=>{if(e.target.closest("a")&&innerWidth<680)op
    ========================================================= */
 $("dailyQuote").textContent=["Le style n’a pas besoin d’être neuf.","Chaque vêtement mérite une nouvelle histoire.","Ton prochain coup de cœur existe peut-être déjà.","Un vêtement, une nouvelle aventure.","Les belles trouvailles ont parfois déjà vécu.","Change de style, pas forcément de planète.","Donne une nouvelle chance à un vêtement."][new Date().getDay()];
 if(!CONFIG.paiementIntegre)document.body.classList.add("phase1");
+if(PAY_DEMO&&!CONFIG.paiementIntegre){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=`<b>Mode démo Revoo Pay</b> — aucun paiement réel, visible seulement par toi. <a href="?revoopay=off">Quitter le mode démo</a>`}
 watchImages();renderView();
 (async()=>{
   if(!sb){toast("Le service de comptes est momentanément indisponible.");return}
