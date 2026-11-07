@@ -236,6 +236,34 @@ textarea.input{min-height:110px;resize:vertical}
 .seller-box .avatar{margin:0;width:46px;height:46px;font-size:19px}
 .seller-box div{flex:1}
 .phase1 #cartBtn{display:none}
+.btn-lg{min-height:52px;padding:12px 26px;font-size:16px}
+.btn .icon{width:18px;height:18px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 20px}
+.hero-quote{margin:0;color:var(--muted);font-size:14px;font-style:italic}
+.hero-quote-label{font-style:normal;font-weight:700;color:var(--navy);font-size:12px;text-transform:uppercase;letter-spacing:.6px;margin-right:6px}
+.how{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.how li{display:flex;gap:12px;align-items:center;background:var(--ice);border-radius:18px;padding:14px 16px}
+.how-n{width:34px;height:34px;flex:none;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800}
+.how b{display:block;color:var(--navy)}
+.how small{color:var(--muted);font-size:13px}
+.products-row{grid-template-columns:repeat(4,minmax(0,1fr))}
+#latestProducts{grid-template-columns:repeat(4,minmax(0,1fr))}
+.season-band{background:var(--ice);border-radius:24px;padding:20px}
+.season-intro{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:center;margin-bottom:18px}
+.season-photo{height:150px;border-radius:16px}
+.season-intro h2{margin:6px 0 4px;font-size:22px;color:var(--navy)}
+.season-intro p{color:var(--muted);margin:0 0 12px}
+.season-band .card{background:#fff}
+.mini-likes{display:inline-flex;align-items:center;gap:3px}
+.mini-likes .icon{width:13px;height:13px}
+.dos{list-style:none;padding:0;margin:0 0 10px;display:grid;gap:6px}
+.dos li{position:relative;padding-left:24px}
+.dos li::before{position:absolute;left:0;top:1px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+.dos li.ok::before{content:"✓";background:var(--ok)}
+.dos li.no::before{content:"✕";background:var(--danger)}
+.h-ok::before,.h-no::before{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font-size:13px;margin-right:8px;vertical-align:2px}
+.h-ok::before{content:"✓";background:var(--ok)}
+.h-no::before{content:"✕";background:var(--danger)}
 .legal-table{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 16px;display:block;overflow-x:auto}
 .legal-table th,.legal-table td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;min-width:140px}
 .legal-table th{background:var(--ice)}
@@ -403,6 +431,8 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
   .foot-brand{grid-column:1/-1}
 }
 @media (max-width:920px){
+  #latestProducts,.products-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .how{grid-template-columns:1fr}
   .action .label{display:none}
   .products,.products.cols-4{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
   .hero-inner{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
@@ -417,6 +447,19 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
   .steps{grid-template-columns:1fr}
 }
 @media (max-width:680px){
+  #latestProducts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .products-row{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin:0 -14px;padding:0 14px 6px;scrollbar-width:none}
+  .products-row::-webkit-scrollbar{display:none}
+  .products-row>.card{flex:0 0 46%;scroll-snap-align:start}
+  .mini-items{display:flex;overflow-x:auto;gap:8px;scrollbar-width:none}
+  .mini-items>.mini{flex:0 0 30%}
+  .how{grid-template-columns:1fr;gap:8px;margin-top:20px}
+  .how li{padding:10px 14px}
+  .season-band{padding:14px;border-radius:20px}
+  .season-intro{grid-template-columns:96px 1fr;gap:14px}
+  .season-photo{height:110px}
+  .season-intro h2{font-size:19px}
+  .hero-actions .btn{flex:1}
   .wrap{width:calc(100% - 32px)}
   .head{flex-wrap:wrap;gap:8px 10px;padding:10px 0;min-height:0}
   .logo img{height:30px}
@@ -467,7 +510,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 <body>
 <a href="#main" class="skip" id="skipLink">Aller au contenu</a>
 
-<div class="demo-bar" role="note" id="demoBar">Lancement : <b>0 € de frais</b>. Le paiement se fait directement entre membres. <a href="#/securite">Conseils de sécurité</a></div>
+<div class="demo-bar" role="note" id="demoBar"><b>0 € de frais</b> pendant le lancement · <a href="#/securite">Acheter en sécurité</a></div>
 
 <header class="top">
   <div class="wrap head">
@@ -517,68 +560,54 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
         <span class="eyebrow">La seconde main, autrement</span>
         <h1 id="heroTitle">Tes vêtements ont de l’avenir.</h1>
         <p class="lead">Achète, vends, donne une seconde vie à tes pièces préférées.</p>
-        <form class="hero-search" id="heroSearch" role="search">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <label for="heroInput" class="sr-only">Rechercher un vêtement</label>
-          <input id="heroInput" type="search" placeholder="Que recherches-tu aujourd’hui ?" autocomplete="off">
-          <button class="btn btn-primary" type="submit">Chercher</button>
-        </form>
-        <div class="quickcats" aria-label="Raccourcis catégories">
-          <button type="button" class="pill" data-category="Femme">Femme</button>
-          <button type="button" class="pill" data-category="Homme">Homme</button>
-          <button type="button" class="pill" data-category="Enfant">Enfant</button>
-          <button type="button" class="pill" data-category="Unisexe">Unisexe</button>
-        </div>
+        <div class="hero-actions"><a class="btn btn-primary btn-lg" href="#/catalogue" data-new="1">Découvrir les vêtements</a><a class="btn btn-outline btn-lg" href="#/vendre">Vendre un vêtement</a></div>
+        <p class="hero-quote"><span class="hero-quote-label">Le mot du jour</span> <span id="dailyQuote">Chaque vêtement mérite une nouvelle histoire.</span></p>
       </div>
       <div class="hero-photo image-frame">
         <img data-safe-image src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1100&q=80" alt="Sélection de vêtements de seconde main" width="1100" height="733">
-        <div class="photo-label">Mode responsable,<br>style unique ✨</div>
+        <div class="photo-label">Mode responsable,<br>style unique</div>
       </div>
     </div>
   </section>
 
   <div class="wrap">
-    <section class="daily" aria-label="Bannière du jour">
-      <div class="daily-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></div>
-      <div><span class="eyebrow">Bannière du jour</span><h2 id="dailyQuote">Chaque vêtement mérite une nouvelle histoire.</h2><p>Parce que la mode n’a pas besoin d’être neuve.</p></div>
-    </section>
-
-    <section class="section" aria-labelledby="seasonTitle">
-      <div class="section-head"><h2 id="seasonTitle">🍂 La saison du moment</h2><button type="button" class="viewall" id="seasonBtn">Voir tout →</button></div>
-      <div class="season">
-        <div class="image-frame"><img data-safe-image src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1100&q=80" alt="Pulls et vêtements de saison" loading="lazy"></div>
-        <div class="season-text"><h3>Les pièces parfaites pour un style de saison.</h3><p id="seasonText">Des vêtements doux, chauds et intemporels.</p><button type="button" class="pill" id="discoverSeason">Découvrir</button></div>
-      </div>
-      <div class="products" id="seasonProducts"></div>
-    </section>
+    <ol class="how" aria-label="Comment ça marche">
+      <li><span class="how-n">1</span><div><b>Trouve</b><small>Par catégorie, taille, prix ou état.</small></div></li>
+      <li><span class="how-n">2</span><div><b>Échange</b><small>Écris au vendeur dans la messagerie.</small></div></li>
+      <li><span class="how-n">3</span><div><b>Récupère</b><small>En main propre ou par colis.</small></div></li>
+    </ol>
 
     <section class="section" aria-labelledby="latestTitle">
-      <div class="section-head"><div><h2 id="latestTitle">✨ Les dernières trouvailles</h2><p class="section-sub">Les articles ajoutés le plus récemment.</p></div><button type="button" class="viewall" data-new="1">Voir tout →</button></div>
+      <div class="section-head"><div><h2 id="latestTitle">Les dernières trouvailles</h2><p class="section-sub">Ajoutées récemment par la communauté.</p></div><button type="button" class="viewall" data-new="1">Voir tout →</button></div>
       <div class="products" id="latestProducts"></div>
+    </section>
+
+    <section class="section season-band" aria-labelledby="seasonTitle">
+      <div class="season-intro">
+        <div class="image-frame season-photo"><img data-safe-image src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80" alt="Pulls et vêtements de saison" loading="lazy"></div>
+        <div><span class="eyebrow" id="seasonName">Automne</span><h2 id="seasonTitle">La saison du moment</h2><p id="seasonText">Des vêtements doux, chauds et intemporels.</p><button type="button" class="btn btn-outline" id="discoverSeason">Voir la sélection</button><button type="button" class="viewall sr-only" id="seasonBtn">Voir tout</button></div>
+      </div>
+      <div class="products products-row" id="seasonProducts"></div>
     </section>
 
     <div class="bottom-grid">
       <section class="section" aria-labelledby="trendTitle">
-        <div class="section-head"><h2 id="trendTitle">Tendances du moment</h2><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
+        <div class="section-head"><div><h2 id="trendTitle">Tendances du moment</h2><p class="section-sub">Des styles pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
         <div class="trend-img image-frame">
           <img data-safe-image src="https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=1000&q=80" alt="Sélection de styles" loading="lazy">
           <div class="trend-tags"><button type="button" data-style="Vintage">Vintage</button><button type="button" data-style="Streetwear">Streetwear</button><button type="button" data-style="Chic">Chic</button><button type="button" data-style="Doux">Doux</button></div>
         </div>
-        <p class="muted small">Des styles populaires, pour tous les goûts.</p>
-        <div class="popular" id="popularCats" aria-label="Catégories populaires"></div>
       </section>
 
       <section class="section" aria-labelledby="sellerTitle">
-        <div class="section-head"><h2 id="sellerTitle">Nouveaux vendeurs</h2><button type="button" class="viewall" data-go="#/vendre">Vendre →</button></div>
+        <div class="section-head"><div><h2 id="sellerTitle">Nouveaux vendeurs</h2><p class="section-sub">À découvrir, même s’ils débutent.</p></div></div>
         <div class="sellers" id="sellers"></div>
-        <p class="muted small">Des vendeurs à découvrir, même s’ils débutent.</p>
       </section>
     </div>
 
-    <section class="section community" aria-labelledby="communityTitle">
-      <div class="section-head"><h2 id="communityTitle">♡ Coups de cœur de la communauté</h2><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
+    <section class="section community" id="communitySection" aria-labelledby="communityTitle">
+      <div class="section-head"><div><h2 id="communityTitle">Coups de cœur de la communauté</h2><p class="section-sub">Les pièces les plus ajoutées en favoris.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
       <div class="mini-items" id="communityItems"></div>
-      <p class="muted small" style="margin-bottom:0">Des pièces appréciées par la communauté. Les articles vendus ne seront plus proposés à l’achat.</p>
     </section>
   </div>
 </div>
@@ -648,7 +677,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 </div>
 
 <div class="view wrap" id="view-favoris" hidden>
-  <div class="page-head"><p class="crumbs"><a href="#/">Accueil</a> › Favoris</p><h1 class="page-title">♡ Tes favoris</h1><p class="muted small" id="favNote">Enregistrés sur cet appareil.</p></div>
+  <div class="page-head"><p class="crumbs"><a href="#/">Accueil</a> › Favoris</p><h1 class="page-title">Tes favoris</h1><p class="muted small" id="favNote">Enregistrés sur cet appareil.</p></div>
   <div class="products" id="favoriteProducts"></div>
 </div>
 
@@ -681,14 +710,13 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
       <div class="foot-brand">
         <img src="" data-logo="bleu" alt="Revoo" width="640" height="198" loading="lazy">
         <p>Tes vêtements ont de l’avenir.</p>
-        <p class="small">En cours de lancement — 0 € de frais, paiement direct entre membres.</p>
       </div>
       <nav aria-label="Revoo"><h2>Revoo</h2><ul><li><a href="#/a-propos">À propos de Revoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
       <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/securite">Conseils de sécurité</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
       <nav aria-label="Aide"><h2>Aide</h2><ul><li><a href="#/aide">Aide et contact</a></li><li><a href="#/compte">Mon compte</a></li></ul></nav>
       <nav aria-label="Informations légales"><h2>Légal</h2><ul><li><a href="#/conditions">Conditions</a></li><li><a href="#/confidentialite">Confidentialité</a></li><li><a href="#/mentions-legales">Informations légales</a></li></ul></nav>
     </div>
-    <div class="foot-bottom"><span>© 2026 Revoo · Tes vêtements ont de l’avenir.</span><span>France · Prix en euros (€)</span></div>
+    <div class="foot-bottom"><span>© 2026 Revoo · Tes vêtements ont de l’avenir.</span><span>Fait en France</span></div>
   </div>
 </footer>
 
@@ -714,7 +742,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
   </form>
 </section>
 <button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat">
-  <span class="reboot-bubble"><img src="" data-logo="icone" alt=""></span><span class="reboot-label">Discuter avec Reboot</span>
+  <span class="reboot-bubble"><img src="" data-logo="icone" alt=""></span><span class="reboot-label">Reboot</span>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -842,7 +870,7 @@ function frenchError(err){
 function sellerInfo(p){
   if(typeof p==="string")p={seller:p};
   const demo=SELLERS.find(s=>s.name===p.seller&&!p.sellerId);
-  if(demo)return demo;
+  if(demo)return {...demo,emoji:esc(demo.name[0])};
   return {name:p.seller,emoji:esc((p.seller||"?").trim()[0]?.toUpperCase()||"?"),since:p.sellerSince?`Membre depuis ${new Date(p.sellerSince).toLocaleDateString("fr-FR",{month:"long",year:"numeric"})}`:"Membre Revoo"};
 }
 
@@ -1004,7 +1032,7 @@ async function openThread(id){
       <button class="btn btn-primary" type="submit">Envoyer</button>
     </form>
     <p class="error" id="threadErr" role="alert"></p>
-    <p class="muted small">🛡️ Pour ta sécurité : main propre (paiement à la remise) ou PayPal « Biens et services » uniquement. Jamais de virement, Wero ou PayPal « entre proches » à un inconnu. <a class="link" href="#/securite">Conseils</a></p>`;
+    <p class="muted small">Pour ta sécurité : main propre (paiement à la remise) ou PayPal « Biens et services » uniquement. Jamais de virement, Wero ou PayPal « entre proches » à un inconnu. <a class="link" href="#/securite">Conseils</a></p>`;
   watchImages(el);
   const {data,error}=await sb.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at").eq("conversation_id",id).order("created_at",{ascending:true}).limit(500);
   if(chat.current?.id!==id)return;
@@ -1101,7 +1129,7 @@ function moderationHtml(){
         ${r.status==="nouveau"?`<button type="button" class="btn btn-outline" data-mod="reject" data-report="${r.id}" data-listing="${r.listing_id}">Rien à signaler</button>`:""}
       </div></div>`};
   return `<p class="muted small">Seul toi peux voir cet onglet. « Retirer l’annonce » la masque pour tout le monde ; le vendeur la voit marquée « Retirée par la modération ».</p>
-    <div class="panel"><h2>À traiter (${nouveaux.length})</h2>${nouveaux.length?nouveaux.map(row).join(""):`<p class="muted">Aucun nouveau signalement 🎉</p>`}</div>
+    <div class="panel"><h2>À traiter (${nouveaux.length})</h2>${nouveaux.length?nouveaux.map(row).join(""):`<p class="muted">Aucun nouveau signalement.</p>`}</div>
     ${mod.reports.length>nouveaux.length?`<div class="panel"><h2>Historique</h2>${mod.reports.filter(r=>r.status!=="nouveau").map(row).join("")}</div>`:""}`;
 }
 async function moderate(action,reportId,listingId){
@@ -1130,7 +1158,7 @@ const PAY_DEMO=(()=>{try{const q=new URLSearchParams(location.search);if(q.get("
 const payOn=()=>CONFIG.paiementIntegre||PAY_DEMO;
 const ORDER_FEE=1;
 const orders={mine:[],all:[],loaded:false};
-const ORDER_STATUS={paid:"Payée · à envoyer",shipped:"Envoyée",received:"Reçue ✓",problem:"Problème signalé",cancelled:"Annulée"};
+const ORDER_STATUS={paid:"Payée · à envoyer",shipped:"Envoyée",received:"Reçue",problem:"Problème signalé",cancelled:"Annulée"};
 async function loadOrders(){
   orders.mine=[];orders.all=[];orders.loaded=false;
   if(!sb||!state.user||!payOn())return;
@@ -1151,7 +1179,7 @@ function orderSteps(o){
 function orderCard(o,role){
   const me=role==="buyer";
   let actions="";
-  if(me&&o.status==="received"){const rv=(state.reviews||[]).find(r=>r.order_id===o.id);actions=rv?`<span class="rating">Ton avis : ${starsTxt(rv.rating)}</span>`:`<button type="button" class="btn btn-primary" data-order="review-form" data-id="${o.id}">⭐ Laisser un avis</button>`}
+  if(me&&o.status==="received"){const rv=(state.reviews||[]).find(r=>r.order_id===o.id);actions=rv?`<span class="rating">Ton avis : ${starsTxt(rv.rating)}</span>`:`<button type="button" class="btn btn-primary" data-order="review-form" data-id="${o.id}">Laisser un avis</button>`}
   if(me&&["paid","shipped"].includes(o.status))actions=`<button type="button" class="btn btn-primary" data-order="received" data-id="${o.id}">J’ai bien reçu l’article</button><button type="button" class="btn btn-outline" data-order="problem-form" data-id="${o.id}">Signaler un problème</button>`;
   if(!me&&o.status==="paid"){
     actions=o.delivery==="colis"
@@ -1181,7 +1209,7 @@ function purchasesHtml(){
   const list=orders.mine.filter(o=>o.buyer_id===state.user.id);
   if(!orders.loaded)return`<p class="muted">Chargement…</p>`;
   return (list.length?list.map(o=>orderCard(o,"buyer")).join(""):`<div class="empty"><p>Aucun achat pour le moment.</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`)
-    +`<p class="muted small">🛡️ Avec Revoo Pay, ton argent reste bloqué jusqu’à ce que tu confirmes la réception. En cas de problème, signale-le avant de confirmer.</p>`;
+    +`<p class="muted small">Avec Revoo Pay, ton argent reste bloqué jusqu’à ce que tu confirmes la réception. En cas de problème, signale-le avant de confirmer.</p>`;
 }
 function salesHtml(){
   const list=orders.mine.filter(o=>o.seller_id===state.user.id);
@@ -1269,7 +1297,7 @@ function renderCheckout(id){
         </div>
       </div>
       <div class="panel"><h2>Paiement</h2>
-        <p class="small">💳 Paiement par carte bancaire, sécurisé par notre prestataire de paiement agréé.</p>
+        <p class="small">Paiement par carte bancaire, sécurisé par notre prestataire de paiement agréé.</p>
         <p class="note warn small"><b>Mode démo :</b> le paiement par carte n’est pas encore branché. Le bouton ci-dessous crée une commande de test, <b>sans aucun paiement</b>.</p>
       </div>
     </form>
@@ -1281,8 +1309,8 @@ function renderCheckout(id){
       <button type="submit" form="checkoutForm" class="btn btn-primary btn-block" id="coPay">Simuler le paiement (démo)</button>
       <p class="error" id="coErr" role="alert"></p>
       <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px">
-        <li>🛡️ Ton argent reste bloqué jusqu’à ce que tu confirmes la réception.</li>
-        <li>↩️ Problème ? Signale-le avant de confirmer : tu seras remboursé si l’article ne correspond pas.</li>
+        <li>Ton argent reste bloqué jusqu’à ce que tu confirmes la réception.</li>
+        <li>Problème ? Signale-le avant de confirmer : tu seras remboursé si l’article ne correspond pas.</li>
       </ul>
     </aside>
   </div>`;
@@ -1340,7 +1368,7 @@ function renderPayCart(){
       <div class="field"><label for="cCity">Ville</label><input class="input" id="cCity" autocomplete="address-level2" maxlength="80"><span class="error" id="cCityErr"></span></div></div>
       <p class="muted small">Ton adresse n’est visible que par les vendeurs qui t’envoient un colis.</p>
     </div>
-    <div class="panel"><h2>Paiement</h2><p class="small">💳 Paiement par carte bancaire, sécurisé par notre prestataire de paiement agréé.</p>
+    <div class="panel"><h2>Paiement</h2><p class="small">Paiement par carte bancaire, sécurisé par notre prestataire de paiement agréé.</p>
       <p class="note warn small"><b>Mode démo :</b> le paiement par carte n’est pas encore branché. Le bouton crée des commandes de test, <b>sans aucun paiement</b>.</p></div>
   </form>
   <aside class="summary" aria-labelledby="pcSum"><h2 id="pcSum">Récapitulatif</h2>
@@ -1350,7 +1378,7 @@ function renderPayCart(){
     <div class="line total"><span>Total</span><span>${eur(subtotal+fees)}</span></div>
     <button type="submit" form="payCartForm" class="btn btn-primary btn-block" id="pcPay">Simuler le paiement (démo)</button>
     <p class="error" id="pcErr" role="alert"></p>
-    <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px"><li>🛡️ Ton argent reste bloqué jusqu’à ce que tu confirmes chaque réception.</li><li>↩️ Problème ? Signale-le avant de confirmer.</li></ul>
+    <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px"><li>Ton argent reste bloqué jusqu’à ce que tu confirmes chaque réception.</li><li>Problème ? Signale-le avant de confirmer.</li></ul>
     ${demoCount?`<p class="muted small">${demoCount} article${demoCount>1?"s":""} « Démo » ignoré${demoCount>1?"s":""} : ils ne peuvent pas être achetés.</p>`:""}
   </aside></div>`;
   watchImages(el);
@@ -1395,7 +1423,7 @@ async function renderSellerProfile(id){
       <div style="flex:1;min-width:200px">
         <p class="crumbs"><a href="#/">Accueil</a> › Profil</p>
         <h1>${esc(pr.name)}</h1>
-        <div class="profile-meta">${pr.city?`<span>📍 ${esc(pr.city)}</span>`:""}<span>🗓️ Membre depuis ${since}</span><span>👕 ${items.length} article${items.length>1?"s":""} en vente</span>${ratingHtml(id)}</div>
+        <div class="profile-meta">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span><span>${items.length} article${items.length>1?"s":""} en vente</span>${ratingHtml(id)}</div>
       </div>
       ${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}
     </div>
@@ -1428,7 +1456,6 @@ function card(p){
     </a>
     ${tag?`<span class="card-tag">${tag}</span>`:""}
     <button type="button" class="heart" data-fav="${esc(p.id)}" aria-pressed="${fav}" aria-label="${fav?"Retirer":"Ajouter"} ${esc(p.name)} ${fav?"des":"aux"} favoris">${ICON_HEART}</button>
-    <div class="card-actions">${cartBtn}</div>
   </article>`;
 }
 function grid(el,list,emptyHtml){
@@ -1440,20 +1467,23 @@ function grid(el,list,emptyHtml){
    ========================================================= */
 function renderHome(){
   const season=currentSeason(), ui=SEASON_UI[season], av=available();
-  $("seasonTitle").textContent=`${ui.emoji} La saison du moment · ${season[0].toUpperCase()+season.slice(1)}`;
+  const byNew=[...av].sort((a,b)=>b.addedAt-a.addedAt), byLikes=(a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt;
+  const latest=byNew.slice(0,8), shown=new Set(latest.map(p=>p.id));
+  $("seasonName").textContent=season[0].toUpperCase()+season.slice(1);
   $("seasonText").textContent=ui.text;
-  grid($("seasonProducts"),av.filter(p=>(p.seasons||[]).includes(season)).sort((a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt).slice(0,5),"<p>Pas encore d’articles pour cette saison.</p>");
-  grid($("latestProducts"),[...av].sort((a,b)=>b.addedAt-a.addedAt).slice(0,10),`<p>Aucun article pour le moment.</p><a class="btn btn-primary" href="#/vendre">Publier la première annonce</a>`);
-  $("popularCats").innerHTML=CATEGORIES.map(c=>({c,n:av.filter(p=>p.category===c).length})).sort((a,b)=>b.n-a.n)
-    .map(o=>`<button type="button" class="pill" data-category="${o.c}">${o.c}<span>${o.n}</span></button>`).join("");
-  // nouveaux vendeurs : vrais membres récents d'abord, puis vendeurs de démonstration
+  const seasonal=av.filter(p=>!shown.has(p.id)&&(p.seasons||[]).includes(season)).sort(byLikes).slice(0,4);
+  seasonal.forEach(p=>shown.add(p.id));
+  grid($("latestProducts"),latest,`<p>Aucun article pour le moment.</p><a class="btn btn-primary" href="#/vendre">Publier la première annonce</a>`);
+  $("seasonProducts").hidden=seasonal.length<2;
+  if(seasonal.length>=2)grid($("seasonProducts"),seasonal,"");
   const real=[];state.remote.filter(p=>p.status==="active").sort((a,b)=>Date.parse(b.sellerSince||0)-Date.parse(a.sellerSince||0)).forEach(p=>{if(!real.find(r=>r.id===p.sellerId))real.push({id:p.sellerId,name:p.seller,emoji:sellerInfo(p).emoji})});
-  const list=[...real,...(showDemo()?SELLERS:[])].slice(0,6);
+  const list=[...real,...(showDemo()?SELLERS.map(x=>({...x,emoji:sellerInfo(x.name).emoji})):[])].slice(0,6);
   $("sellers").innerHTML=list.map(s=>{const n=av.filter(p=>s.id?p.sellerId===s.id:(p.seller===s.name&&!p.sellerId)).length;const inner=`<span class="avatar" aria-hidden="true">${s.emoji}</span><small>${esc(s.name)}</small><em>${n} article${n>1?"s":""}</em>`;
     return s.id?`<a class="seller" href="#/vendeur/${s.id}" aria-label="Profil de ${esc(s.name)}">${inner}</a>`:`<button type="button" class="seller" data-seller="${esc(s.name)}" aria-label="Voir les articles de ${esc(s.name)}">${inner}</button>`}).join("")
-    + `<a class="seller seller-join" href="#/vendre"><span class="avatar" aria-hidden="true">＋</span><small>Vendre</small><em>Rejoins-les</em></a>`;
-  const top=[...av].sort((a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt).slice(0,6);
-  $("communityItems").innerHTML=top.map(p=>`<a class="mini" href="#/article/${encodeURIComponent(p.id)}"><div class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy"></div><span><b>${eur(p.price)}</b>♥ ${likes(p)}</span></a>`).join("");
+    + `<a class="seller seller-join" href="#/vendre"><span class="avatar" aria-hidden="true">+</span><small>Toi ?</small><em>Vendre</em></a>`;
+  const top=av.filter(p=>!shown.has(p.id)).sort(byLikes).slice(0,6);
+  $("communitySection").hidden=top.length<3;
+  $("communityItems").innerHTML=top.map(p=>`<a class="mini" href="#/article/${encodeURIComponent(p.id)}"><div class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy"></div><span><b>${eur(p.price)}</b><span class="mini-likes">${ICON_HEART}${likes(p)}</span></span></a>`).join("");
   watchImages($("view-home"));
 }
 
@@ -1535,9 +1565,9 @@ function renderProduct(id){
   if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
-  else if(payOn()&&!p.demo) actions=`<div class="buy-actions"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}">🛡️ Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller">💬 Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥":"♡"}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
-  else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions"><button type="button" class="btn btn-primary" id="contactSeller">💬 Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div><div id="contactNote"></div>`;
-  else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div>`;
+  else if(payOn()&&!p.demo) actions=`<div class="buy-actions"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/></svg> Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
+  else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions"><button type="button" class="btn btn-primary" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div><div id="contactNote"></div>`;
+  else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div>`;
   const eyebrow=p.mine?"Ton annonce":p.demo?"Annonce de démonstration":"";
   v.innerHTML=`
   <div class="page-head" style="padding-bottom:0"><p class="crumbs"><a href="#/">Accueil</a> › <a href="#/catalogue" data-category="${esc(p.category)}">${esc(p.category)}</a> › ${esc(p.name)}</p></div>
@@ -1562,8 +1592,8 @@ function renderProduct(id){
       ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">🛡️ Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
-      ${p.mine||sold||!CONFIG.paiementIntegre?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px">💬 Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
-      ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">🚩 Signaler cette annonce</button><div id="reportBox"></div>`:""}
+      ${p.mine||sold||!CONFIG.paiementIntegre?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
+      ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">Signaler cette annonce</button><div id="reportBox"></div>`:""}
     </div>
   </div>
   ${similar.length?`<section class="section"><div class="section-head"><h2>Articles similaires</h2></div><div class="products" id="similarProducts"></div></section>`:""}`;
@@ -1581,7 +1611,7 @@ function renderProduct(id){
 function renderFavorites(){
   const list=allProducts().filter(p=>isFav(p.id)&&p.status==="active"&&!state.sold.includes(p.id));
   $("favNote").textContent=state.user?"Enregistrés sur ton compte (sauf les articles de démonstration).":"Enregistrés sur cet appareil. Connecte-toi pour les retrouver partout.";
-  grid($("favoriteProducts"),list,`<p>Tu n’as pas encore de favoris. Appuie sur ♡ sur un article pour le retrouver ici.</p><a class="btn btn-primary" href="#/catalogue">Découvrir les vêtements</a>`);
+  grid($("favoriteProducts"),list,`<p>Tu n’as pas encore de favoris. Appuie sur le cœur d’un article pour le retrouver ici.</p><a class="btn btn-primary" href="#/catalogue">Découvrir les vêtements</a>`);
 }
 function cleanCart(){if(state.loading)return;const before=state.cart.length;state.cart=state.cart.filter(id=>{const p=findProduct(id);return p&&!p.mine&&p.status==="active"&&!state.sold.includes(id)});if(state.cart.length!==before)save("cart")}
 function renderCart(){
@@ -1680,7 +1710,7 @@ function renderAccount(tab){
     </form>`}`;
     return;
   }
-  $("accountTitle").textContent=`Bonjour ${state.user.name} 👋`;
+  $("accountTitle").textContent=`Bonjour ${state.user.name}`;
   const mine=state.remote.filter(p=>p.mine);
   const myOrders=state.orders.filter(o=>!o.userId||o.userId===state.user.id);
   const tabs=[["profil","Profil"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]].filter(t=>CONFIG.paiementIntegre||t[0]!=="commandes");
@@ -1883,7 +1913,7 @@ const LEGAL_PAGES={
 <h2>Propriété intellectuelle</h2>
 <p>La marque, le logo et les éléments graphiques de Revoo sont la propriété de leur éditeur. Les annonces et photos publiées par les membres restent leur propriété (voir les <a class="link" href="#/conditions">conditions d’utilisation</a>). Certaines photos d’illustration proviennent d’Unsplash (unsplash.com), sous licence Unsplash.</p>
 <h2>Signaler un contenu</h2>
-<p>Pour signaler une annonce, utilise le bouton « 🚩 Signaler cette annonce » présent sur chaque annonce, ou écris à ${mail}.</p>`,
+<p>Pour signaler une annonce, utilise le bouton « Signaler cette annonce » présent sur chaque annonce, ou écris à ${mail}.</p>`,
 
 "confidentialite":()=>`${legalHead("Politique de confidentialité")}
 <p>Cette page explique quelles données Revoo utilise, pourquoi, et quels sont tes droits, conformément au Règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
@@ -1943,7 +1973,7 @@ const LEGAL_PAGES={
 <h2>7. Avis</h2>
 <p>Un acheteur peut laisser un avis après avoir confirmé la réception d’une commande Revoo Pay. Les avis doivent être sincères et respectueux ; Revoo peut retirer un avis contraire à ces conditions.</p>
 <h2>8. Signalement et modération</h2>
-<p>Tout visiteur peut signaler une annonce grâce au bouton « 🚩 Signaler cette annonce ». Revoo examine les signalements et peut <b>retirer une annonce</b> ou <b>supprimer un compte</b> en cas de non-respect de ces conditions ou de la loi. Le membre concerné en est informé et peut contester la décision en écrivant à ${mail}.</p>
+<p>Tout visiteur peut signaler une annonce grâce au bouton « Signaler cette annonce ». Revoo examine les signalements et peut <b>retirer une annonce</b> ou <b>supprimer un compte</b> en cas de non-respect de ces conditions ou de la loi. Le membre concerné en est informé et peut contester la décision en écrivant à ${mail}.</p>
 <h2>9. Responsabilité</h2>
 <p>Chaque membre est responsable de ses annonces, de ses messages et des ventes qu’il conclut. Revoo agit comme hébergeur des contenus publiés par les membres et s’engage à retirer rapidement tout contenu manifestement illicite qui lui est signalé. Revoo fait de son mieux pour que le site fonctionne en permanence, sans pouvoir le garantir.</p>
 <h2>10. Obligations fiscales</h2>
@@ -1954,11 +1984,11 @@ const LEGAL_PAGES={
 <p>Ces conditions sont soumises au droit français. En cas de désaccord, une solution amiable sera recherchée en priorité en écrivant à ${mail}.</p>`
 };
 
-function safetyBox(p){return `<div class="safety" aria-label="Paiement et sécurité"><h2>🛡️ Paiement direct entre membres · 0 € de frais</h2><ul>
-  <li>✅ <b>Main propre</b> : paie au moment de la remise.</li>
-  <li>✅ <b>À distance</b> : uniquement PayPal « Biens et services » (il te protège).</li>
-  <li>❌ Jamais de virement, Wero ou PayPal « entre proches ».</li></ul>
-  <p style="margin:8px 0 0"><a class="link" href="#/securite">Tous les conseils de sécurité</a></p></div>`}
+function safetyBox(p){return `<div class="safety" aria-label="Paiement et sécurité"><h2>Paiement direct entre membres</h2><ul class="dos">
+  <li class="ok"><b>Main propre</b> : tu paies à la remise.</li>
+  <li class="ok"><b>À distance</b> : PayPal « Biens et services » uniquement.</li>
+  <li class="no">Jamais de virement, Wero ou PayPal « entre proches ».</li></ul>
+  <a class="link small" href="#/securite">Conseils de sécurité</a></div>`}
 const PAGES={
   "a-propos":()=>`<p class="crumbs"><a href="#/">Accueil</a> › À propos</p><h1>À propos de Revoo</h1>
     <p><b>Tes vêtements ont de l’avenir.</b></p>
@@ -1967,10 +1997,10 @@ const PAGES={
     <p>Revoo est en cours de lancement, en France, en français, avec des prix en euros.</p>`,
   "securite":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Conseils de sécurité</p><h1>Acheter et vendre en sécurité</h1>
     <p>Pendant le lancement, <b>Revoo ne gère pas le paiement</b> : l’acheteur paie directement le vendeur. Suis ces règles simples pour éviter les mauvaises surprises.</p>
-    <h2>✅ Le plus sûr : la remise en main propre</h2><p>Rencontrez-vous dans un lieu public. L’acheteur regarde l’article et <b>paie au moment de la remise</b>.</p>
-    <h2>✅ À distance : PayPal « Biens et services » uniquement</h2><p>C’est l’option PayPal qui <b>protège l’acheteur</b> : si l’article n’arrive pas ou ne correspond pas, PayPal peut le rembourser. Les frais PayPal sont à la charge du vendeur. Le vendeur envoie le colis avec <b>suivi</b> et partage le numéro dans la messagerie.</p>
-    <h2>❌ À ne jamais faire avec un inconnu</h2><ul><li>Payer par <b>virement</b>, <b>Wero</b>, <b>Lydia</b>, mandat ou carte cadeau.</li><li>Utiliser PayPal « <b>Envoyer à un proche</b> » : il n’offre aucune protection.</li><li>Cliquer sur un lien de paiement reçu par SMS ou e-mail : reste sur Revoo et PayPal.</li><li>Communiquer tes codes, ton mot de passe ou tes coordonnées bancaires.</li></ul>
-    <h2>🚩 Un doute ?</h2><p>Garde tous vos échanges dans la messagerie Revoo et utilise le bouton « 🚩 Signaler cette annonce ». Revoo peut retirer les annonces frauduleuses.</p>
+    <h2 class="h-ok">Le plus sûr : la remise en main propre</h2><p>Rencontrez-vous dans un lieu public. L’acheteur regarde l’article et <b>paie au moment de la remise</b>.</p>
+    <h2 class="h-ok">À distance : PayPal « Biens et services » uniquement</h2><p>C’est l’option PayPal qui <b>protège l’acheteur</b> : si l’article n’arrive pas ou ne correspond pas, PayPal peut le rembourser. Les frais PayPal sont à la charge du vendeur. Le vendeur envoie le colis avec <b>suivi</b> et partage le numéro dans la messagerie.</p>
+    <h2 class="h-no">À ne jamais faire avec un inconnu</h2><ul><li>Payer par <b>virement</b>, <b>Wero</b>, <b>Lydia</b>, mandat ou carte cadeau.</li><li>Utiliser PayPal « <b>Envoyer à un proche</b> » : il n’offre aucune protection.</li><li>Cliquer sur un lien de paiement reçu par SMS ou e-mail : reste sur Revoo et PayPal.</li><li>Communiquer tes codes, ton mot de passe ou tes coordonnées bancaires.</li></ul>
+    <h2>Un doute ?</h2><p>Garde tous vos échanges dans la messagerie Revoo et utilise le bouton « Signaler cette annonce ». Revoo peut retirer les annonces frauduleuses.</p>
     <p class="note">Revoo ne peut pas rembourser un paiement fait en dehors du site. Un paiement intégré et protégé par Revoo arrivera dans une prochaine étape.</p>`,
   "fonctionnement":()=>!CONFIG.paiementIntegre?`<p class="crumbs"><a href="#/">Accueil</a> › Fonctionnement</p><h1>Comment fonctionne Revoo ?</h1>
     <ol class="steps"><li><b>1</b>Tu trouves une pièce grâce à la recherche, aux catégories et aux filtres.</li><li><b>2</b>Tu cliques sur « Je suis intéressé(e) » et tu t’arranges avec le vendeur dans la messagerie.</li><li><b>3</b>Remise en main propre, ou envoi par colis avec paiement PayPal « Biens et services ».</li></ol>
@@ -1980,22 +2010,22 @@ const PAGES={
     <h2>Les frais</h2><p>L’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()}</b>, quel que soit le prix de l’article. Les frais de livraison sont distincts.</p><p>${feeExample()}</p>
     <p class="note warn">Le paiement et l’envoi ne sont pas encore actifs : les commandes sont simulées pour l’instant.</p>`,
   "acheter":()=>!CONFIG.paiementIntegre?`<p class="crumbs"><a href="#/">Accueil</a> › Acheter</p><h1>Acheter sur Revoo</h1>
-    <ol class="steps"><li><b>1</b>Cherche un vêtement ou parcours les catégories Femme, Homme, Enfant et Unisexe. Ajoute tes coups de cœur aux favoris ♡.</li><li><b>2</b>Clique sur « 💬 Je suis intéressé(e) » : la conversation avec le vendeur s’ouvre.</li><li><b>3</b>Mettez-vous d’accord : main propre (paiement à la remise) ou colis avec PayPal « Biens et services ».</li></ol>
+    <ol class="steps"><li><b>1</b>Cherche un vêtement ou parcours les catégories Femme, Homme, Enfant et Unisexe. Ajoute tes coups de cœur aux favoris.</li><li><b>2</b>Clique sur « <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e) » : la conversation avec le vendeur s’ouvre.</li><li><b>3</b>Mettez-vous d’accord : main propre (paiement à la remise) ou colis avec PayPal « Biens et services ».</li></ol>
     <p><b>0 € de frais pendant le lancement.</b></p><div class="buy-actions"><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a><a class="btn btn-outline" href="#/securite">Conseils de sécurité</a></div>`:`<p class="crumbs"><a href="#/">Accueil</a> › Acheter</p><h1>Acheter sur Revoo</h1>
-    <ol class="steps"><li><b>1</b>Cherche un vêtement ou parcours les catégories Femme, Homme, Enfant et Unisexe.</li><li><b>2</b>Affine avec les filtres taille, prix, état et marque. Ajoute tes coups de cœur aux favoris ♡.</li><li><b>3</b>Ajoute l’article au panier et choisis la livraison : Colissimo, Mondial Relay, Chronopost, DPD ou Relais Colis.</li></ol>
+    <ol class="steps"><li><b>1</b>Cherche un vêtement ou parcours les catégories Femme, Homme, Enfant et Unisexe.</li><li><b>2</b>Affine avec les filtres taille, prix, état et marque. Ajoute tes coups de cœur aux favoris.</li><li><b>3</b>Ajoute l’article au panier et choisis la livraison : Colissimo, Mondial Relay, Chronopost, DPD ou Relais Colis.</li></ol>
     <p>${feeExample()}</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a>`,
   "vendre-info":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Vendre</p><h1>Vendre sur Revoo</h1>
     <ol class="steps"><li><b>1</b>Prends une photo nette de ton vêtement, sur un fond simple et bien éclairé.</li><li><b>2</b>Renseigne le titre, la description, la catégorie, la marque, la taille, l’état et le prix.</li><li><b>3</b>Publie : ton annonce est visible par tous. Modifie-la, marque-la vendue ou supprime-la depuis ton compte.</li></ol>
     ${CONFIG.paiementIntegre?"":`<p><b>0 € de frais pendant le lancement</b> : l’acheteur te paie directement, en main propre ou par PayPal « Biens et services » (les frais PayPal sont à ta charge). Envoie toujours tes colis avec suivi. Une fois l’article vendu, clique sur « Marquer vendue » dans Mon compte.</p>`}
     <div class="buy-actions"><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a><a class="btn btn-outline" href="#/securite">Conseils de sécurité</a></div>`,
   "aide":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Aide et contact</p><h1>Aide et contact</h1>
-    <details open><summary>Comment acheter ?</summary><p>Clique sur « 💬 Je suis intéressé(e) » sur une annonce, puis arrange-toi avec le vendeur dans la messagerie : remise en main propre (paiement à la remise) ou envoi par colis avec paiement PayPal « Biens et services ». <a class="link" href="#/securite">Conseils de sécurité</a></p></details>
+    <details open><summary>Comment acheter ?</summary><p>Clique sur « <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e) » sur une annonce, puis arrange-toi avec le vendeur dans la messagerie : remise en main propre (paiement à la remise) ou envoi par colis avec paiement PayPal « Biens et services ». <a class="link" href="#/securite">Conseils de sécurité</a></p></details>
     <details><summary>Combien coûte un achat ?</summary><p><b>0 € de frais pendant le lancement.</b> Tu paies uniquement le prix de l’article (et l’envoi si vous choisissez le colis), directement au vendeur.</p></details>
     <details><summary>Que se passe-t-il si je paie et que je ne reçois rien ?</summary><p>Revoo ne gère pas encore le paiement et ne peut donc pas rembourser. C’est pour ça qu’il faut payer uniquement en main propre ou avec PayPal « Biens et services », qui permet d’ouvrir un litige et d’être remboursé. Signale aussi l’annonce avec le bouton « 🚩 ».</p></details>
     <details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente.</p></details>
     <details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. L’envoi d’e-mails (confirmation, mot de passe oublié) est encore limité pendant le lancement.</p></details>
     <details><summary>Où sont enregistrées mes données ?</summary><p>Ton compte, ton profil, tes annonces et tes favoris sont enregistrés chez Supabase, notre hébergeur de base de données. </p></details>
-    <details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « 🚩 Signaler cette annonce », puis choisis le motif. Ton signalement est confidentiel et sera examiné par Revoo. Tu n’as pas besoin d’être connecté.</p></details>
+    <details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce », puis choisis le motif. Ton signalement est confidentiel et sera examiné par Revoo. Tu n’as pas besoin d’être connecté.</p></details>
     <details><summary>Qui est Reboot ?</summary><p>Reboot est l’assistant de Revoo. Il répond à partir de réponses préparées à l’avance : il n’est connecté à aucune intelligence artificielle.</p></details>
     <h2>Nous contacter</h2><p>Pour l’instant, pose ta question à Reboot. Les coordonnées officielles de Revoo seront publiées ici dès qu’elles seront définies.</p>
     <button type="button" class="btn btn-primary" data-open-chat>Discuter avec Reboot</button>`,
@@ -2049,7 +2079,6 @@ window.addEventListener("hashchange",()=>{const was=lastHash;lastHash=location.h
    ÉVÉNEMENTS
    ========================================================= */
 $("topSearch").addEventListener("submit",e=>{e.preventDefault();doSearch($("searchInput").value)});
-$("heroSearch").addEventListener("submit",e=>{e.preventDefault();$("searchInput").value=$("heroInput").value;doSearch($("heroInput").value)});
 $("skipLink").addEventListener("click",e=>{e.preventDefault();$("main").focus()});
 
 document.addEventListener("click",async e=>{
@@ -2063,7 +2092,7 @@ document.addEventListener("click",async e=>{
   const fav=t.closest("[data-fav]");if(fav){
     const id=fav.dataset.fav, on=!isFav(id);
     state.favorites=on?[...state.favorites,id]:state.favorites.filter(x=>x!==id);save("favorites");
-    toast(on?"Ajouté à tes favoris ♡":"Retiré de tes favoris");refresh();
+    toast(on?"Ajouté à tes favoris":"Retiré de tes favoris");refresh();
     if(sb&&state.user&&isUuid(id)){const r=on?await sb.from("favorites").upsert({listing_id:id},{onConflict:"user_id,listing_id",ignoreDuplicates:true}):await sb.from("favorites").delete().eq("listing_id",id);if(r.error)toast("Favori enregistré seulement sur cet appareil.")}
     return}
   const add=t.closest("[data-cart]");if(add){
@@ -2196,22 +2225,22 @@ const STOP=new Set("je tu il elle on nous vous un une des de du la le les et ou 
 function rebootReply(raw){
   const t=norm(raw);
   const fees=!CONFIG.paiementIntegre?`<p><b>0 € de frais pendant le lancement !</b> Tu paies uniquement le prix de l’article, directement au vendeur (et l’envoi si vous choisissez le colis).</p>`:`<p>Sur Revoo, l’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()}</b>, quel que soit le prix. La livraison est en plus.</p><p>${feeExample()}</p>`;
-  if(/^(bonjour|salut|hello|coucou|hey|bonsoir)\b/.test(t)&&t.split(" ").length<4)return`<p>Salut ! 😊 Dis-moi ce que tu cherches (par exemple « pull taille M ») ou pose-moi une question sur Revoo.</p>`;
+  if(/^(bonjour|salut|hello|coucou|hey|bonsoir)\b/.test(t)&&t.split(" ").length<4)return`<p>Salut ! Dis-moi ce que tu cherches (par exemple « pull taille M ») ou pose-moi une question sur Revoo.</p>`;
   if(/merci/.test(t))return`<p>Avec plaisir ! Je reste là si tu as besoin.</p>`;
   if(/\b(ia|intelligence|chatgpt|robot|humain|qui es)/.test(t))return`<p>Je suis Reboot, l’assistant de Revoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle.</p>`;
   if(/frais|commission|combien.*(coute|paye)|cout|tarif revoo/.test(t))return fees;
   if(!CONFIG.paiementIntegre&&/livr|colis|envoi|expedi|transporteur|mondial|colissimo|chrono|dpd|relais/.test(t))return`<p>Pendant le lancement, l’acheteur et le vendeur choisissent ensemble dans la messagerie : <b>remise en main propre</b> ou <b>envoi par colis avec suivi</b> (Colissimo, Mondial Relay…). Les frais d’envoi se règlent entre vous.</p>`;
   if(/livr|colis|envoi|expedi|transporteur|mondial|colissimo|chrono|dpd|relais/.test(t))return`<p>Tu pourras choisir entre <b>Colissimo, Mondial Relay, Chronopost, DPD et Relais Colis</b> au moment du panier.</p><p>Les tarifs de livraison ne sont pas encore connectés.</p>`;
-  if(/signal|arnaque|fraude|contrefa|faux|interdit|abus/.test(t))return`<p>Pour signaler une annonce suspecte, ouvre-la et clique sur « 🚩 Signaler cette annonce ». Ton signalement est confidentiel et sera examiné par Revoo.</p>`;
-  if(!CONFIG.paiementIntegre&&/paie|paye|paiement|carte|paypal|rembours|cb\b|arnaque|securi/.test(t))return`<p>Pendant le lancement, tu paies <b>directement le vendeur</b> :</p><p>✅ en <b>main propre</b>, au moment de la remise ;<br>✅ à distance, uniquement avec <b>PayPal « Biens et services »</b>, qui te protège.</p><p>❌ Jamais de virement, Wero ou PayPal « entre proches » à un inconnu.</p><a class="pill" href="#/securite">Conseils de sécurité</a>`;
+  if(/signal|arnaque|fraude|contrefa|faux|interdit|abus/.test(t))return`<p>Pour signaler une annonce suspecte, ouvre-la et clique sur « Signaler cette annonce ». Ton signalement est confidentiel et sera examiné par Revoo.</p>`;
+  if(!CONFIG.paiementIntegre&&/paie|paye|paiement|carte|paypal|rembours|cb\b|arnaque|securi/.test(t))return`<p>Pendant le lancement, tu paies <b>directement le vendeur</b> :</p><p>En <b>main propre</b>, au moment de la remise ; ou à distance, uniquement avec <b>PayPal « Biens et services »</b>, qui te protège.</p><p>Jamais de virement, Wero ou PayPal « entre proches » à un inconnu.</p><a class="pill" href="#/securite">Conseils de sécurité</a>`;
   if(/paie|paye|paiement|carte|paypal|rembours|cb\b/.test(t))return`<p>Le paiement n’est pas encore disponible : aucun prestataire de paiement n’est connecté. Tu peux seulement simuler une commande pour tester le parcours.</p>`;
   if(/message|contacter|discuter avec|ecrire au vendeur/.test(t))return`<p>Pour écrire à un vendeur, ouvre son annonce et clique sur « Contacter ». Tu retrouves toutes tes conversations dans <b>Messages</b>, en haut de la page.</p><a class="pill" href="#/messages">Mes messages</a>`;
   if(/vend|annonce|deposer|publier|mettre en vente/.test(t))return`<p>Pour vendre : crée ton compte, puis remplis le formulaire (photos, titre, description, catégorie, marque, taille, état, prix). Ton annonce sera visible par tous.</p><a class="pill" href="#/vendre">Vendre un vêtement</a>`;
   if(/mot de passe|oubli/.test(t))return`<p>Sur la page de connexion, clique sur « Mot de passe oublié ? » : tu recevras un lien par e-mail pour en choisir un nouveau.</p><a class="pill" href="#/compte">Connexion</a>`;
   if(/compte|inscri|connect|profil/.test(t))return`<p>Crée ton compte gratuitement avec ton prénom, ton e-mail et un mot de passe.</p><a class="pill" href="#/compte">Mon compte</a>`;
   if(/command|suivi|suivre/.test(t))return`<p>Tes commandes simulées sont dans <b>Mon compte › Mes commandes</b>. Le suivi réel des colis arrivera avec l’intégration d’un transporteur.</p><a class="pill" href="#/compte/commandes">Mes commandes</a>`;
-  if(/favori/.test(t))return`<p>Appuie sur ♡ sur un article pour l’ajouter à tes favoris. Connecté, tu les retrouves sur tous tes appareils.</p><a class="pill" href="#/favoris">Mes favoris</a>`;
-  if(!CONFIG.paiementIntegre&&/panier|acheter|commander/.test(t))return`<p>Pour acheter, clique sur « 💬 Je suis intéressé(e) » sur l’annonce : la conversation avec le vendeur s’ouvre et vous vous mettez d’accord sur la remise et le paiement.</p><a class="pill" href="#/acheter">Comment acheter</a>`;
+  if(/favori/.test(t))return`<p>Appuie sur le cœur d’un article pour l’ajouter à tes favoris. Connecté, tu les retrouves sur tous tes appareils.</p><a class="pill" href="#/favoris">Mes favoris</a>`;
+  if(!CONFIG.paiementIntegre&&/panier|acheter|commander/.test(t))return`<p>Pour acheter, clique sur « <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e) » sur l’annonce : la conversation avec le vendeur s’ouvre et vous vous mettez d’accord sur la remise et le paiement.</p><a class="pill" href="#/acheter">Comment acheter</a>`;
   if(/panier/.test(t))return`<p>Ton panier contient ${state.cart.length} article${state.cart.length>1?"s":""}.</p><a class="pill" href="#/panier">Voir mon panier</a>`;
   if(/aide|contact|probleme|support|assistance|souci|bug/.test(t))return`<p>Je suis là pour ça ! Tu peux aussi consulter la page d’aide. Les coordonnées officielles de Revoo y seront ajoutées dès qu’elles seront définies.</p><a class="pill" href="#/aide">Page d’aide</a>`;
   if(/^trouver un vetement$/.test(t))return`<p>Écris-moi ce que tu cherches, par exemple « veste en jean » ou « pull », ou choisis une catégorie :</p>${CATEGORIES.map(c=>`<button type="button" class="pill" data-category="${c}">${c}</button>`).join("")}`;
@@ -2223,7 +2252,7 @@ function rebootReply(raw){
   if(q){const res=available().filter(p=>(!cat||p.category===cat)&&matchesQuery(p,q));
     if(res.length)return`<p>J’ai trouvé <b>${res.length} article${res.length>1?"s":""}</b> pour « ${esc(q)} »${cat?` en ${cat}`:""} :</p><p>${res.slice(0,3).map(p=>`• <a class="link" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a> — ${eur(p.price)}`).join("<br>")}</p><button type="button" class="pill" data-reboot-search="${esc(q)}">Voir tous les résultats</button>`;
   }
-  return`<p>Je n’ai pas bien compris 🤔 Je peux t’aider sur : trouver un vêtement, les frais, la livraison, la vente, ton compte ou tes commandes.</p>`;
+  return`<p>Je n’ai pas bien compris. Je peux t’aider sur : trouver un vêtement, les frais, la livraison, la vente, ton compte ou tes commandes.</p>`;
 }
 document.querySelectorAll(".chatQuick").forEach(b=>b.addEventListener("click",()=>{userSay(b.textContent);botSay(rebootReply(b.textContent==="Vendre un article"?"vendre":b.textContent==="Comprendre les frais"?"frais":b.textContent==="Obtenir de l’aide"?"aide":b.textContent))}));
 $("chatForm").addEventListener("submit",e=>{e.preventDefault();const v=$("chatMessage").value.trim();if(!v)return;userSay(v);$("chatMessage").value="";setTimeout(()=>botSay(rebootReply(v)),250)});
