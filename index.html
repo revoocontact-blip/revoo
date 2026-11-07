@@ -1265,6 +1265,75 @@ function renderCheckout(id){
   });
 }
 
+/* Panier Revoo Pay : articles regroupés par vendeur, un seul paiement */
+const cartDelivery={};   // vendeur -> "main_propre" | "colis"
+function renderPayCart(){
+  cleanCart();
+  const el=$("cartContent");
+  const items=state.cart.map(findProduct).filter(p=>p&&!p.demo);
+  const demoCount=state.cart.map(findProduct).filter(p=>p&&p.demo).length;
+  if(!items.length){el.innerHTML=state.loading?`<div class="empty"><p>Chargement…</p></div>`:`<div class="empty"><p>Ton panier est vide pour le moment.</p>${demoCount?`<p class="small">Les articles « Démo » ne peuvent pas être achetés.</p>`:""}<a class="btn btn-primary" href="#/catalogue">Découvrir les vêtements</a></div>`;return}
+  if(!state.user){el.innerHTML=`<div class="panel"><h2>Connecte-toi pour finaliser ton achat</h2><p class="muted">Ton panier est gardé sur cet appareil.</p><a class="btn btn-primary" href="#/compte">Se connecter</a></div>`;return}
+  const groups={};items.forEach(p=>{(groups[p.sellerId]=groups[p.sellerId]||{seller:p.seller,items:[]}).items.push(p)});
+  Object.keys(groups).forEach(k=>{if(!cartDelivery[k])cartDelivery[k]="main_propre"});
+  const anyColis=()=>Object.keys(groups).some(k=>cartDelivery[k]==="colis");
+  const subtotal=items.reduce((t,p)=>t+p.price,0),fees=ORDER_FEE*items.length;
+  el.innerHTML=`<div class="cart-layout"><form id="payCartForm" novalidate>
+    ${Object.entries(groups).map(([sid,g])=>`<div class="panel">
+      <h2 style="font-size:17px">Vendu par ${esc(g.seller)} <span class="muted small">· ${g.items.length} article${g.items.length>1?"s":""}</span></h2>
+      ${g.items.map(p=>`<div class="cart-item">
+        <a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}"></a>
+        <div><h3><a href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a></h3><p>${esc(p.size)} · ${esc(p.condition)}</p></div>
+        <div class="price-col"><div class="price">${eur(p.price)}</div><button type="button" class="link" data-remove="${esc(p.id)}" aria-label="Retirer ${esc(p.name)} du panier">Retirer</button></div>
+      </div>`).join("")}
+      <fieldset class="carriers" style="margin-top:12px"><legend class="label">Livraison pour ${esc(g.seller)}</legend>
+        <label class="carrier"><input type="radio" name="dlv-${sid}" value="main_propre" data-seller-dlv="${sid}" ${cartDelivery[sid]==="main_propre"?"checked":""}><span><b>Remise en main propre</b><small>Rendez-vous à convenir dans la messagerie.</small></span></label>
+        <label class="carrier"><input type="radio" name="dlv-${sid}" value="colis" data-seller-dlv="${sid}" ${cartDelivery[sid]==="colis"?"checked":""}><span><b>Envoi par colis</b><small>${g.items.length>1?"Tous les articles de ce vendeur dans un seul colis.":"Avec un numéro de suivi."}</small></span></label>
+      </fieldset>
+    </div>`).join("")}
+    <div class="panel" id="cartAddr" ${anyColis()?"":"hidden"}><h2>Adresse de livraison</h2>
+      <div class="field"><label for="cName">Nom et prénom</label><input class="input" id="cName" autocomplete="name" maxlength="80"><span class="error" id="cNameErr"></span></div>
+      <div class="field"><label for="cAddr">Adresse</label><input class="input" id="cAddr" autocomplete="street-address" maxlength="200"><span class="error" id="cAddrErr"></span></div>
+      <div class="grid-2"><div class="field"><label for="cZip">Code postal</label><input class="input" id="cZip" autocomplete="postal-code" inputmode="numeric" maxlength="10"><span class="error" id="cZipErr"></span></div>
+      <div class="field"><label for="cCity">Ville</label><input class="input" id="cCity" autocomplete="address-level2" maxlength="80"><span class="error" id="cCityErr"></span></div></div>
+      <p class="muted small">Ton adresse n’est visible que par les vendeurs qui t’envoient un colis.</p>
+    </div>
+    <div class="panel"><h2>Paiement</h2><p class="small">💳 Paiement par carte bancaire, sécurisé par notre prestataire de paiement agréé.</p>
+      <p class="note warn small"><b>Mode démo :</b> le paiement par carte n’est pas encore branché. Le bouton crée des commandes de test, <b>sans aucun paiement</b>.</p></div>
+  </form>
+  <aside class="summary" aria-labelledby="pcSum"><h2 id="pcSum">Récapitulatif</h2>
+    <div class="line"><span>Articles (${items.length})</span><span>${eur(subtotal)}</span></div>
+    <div class="line"><span>Frais Revoo Pay<br><small class="muted">${eur(ORDER_FEE)} par article</small></span><span>${eur(fees)}</span></div>
+    <div class="line"><span>Livraison</span><span class="muted" id="pcShip">${anyColis()?"À régler avec le vendeur":"Gratuite"}</span></div>
+    <div class="line total"><span>Total</span><span>${eur(subtotal+fees)}</span></div>
+    <button type="submit" form="payCartForm" class="btn btn-primary btn-block" id="pcPay">Simuler le paiement (démo)</button>
+    <p class="error" id="pcErr" role="alert"></p>
+    <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px"><li>🛡️ Ton argent reste bloqué jusqu’à ce que tu confirmes chaque réception.</li><li>↩️ Problème ? Signale-le avant de confirmer.</li></ul>
+    ${demoCount?`<p class="muted small">${demoCount} article${demoCount>1?"s":""} « Démo » ignoré${demoCount>1?"s":""} : ils ne peuvent pas être achetés.</p>`:""}
+  </aside></div>`;
+  watchImages(el);
+  el.querySelectorAll("[data-seller-dlv]").forEach(r=>r.addEventListener("change",()=>{cartDelivery[r.dataset.sellerDlv]=r.value;$("cartAddr").hidden=!anyColis();$("pcShip").textContent=anyColis()?"À régler avec le vendeur":"Gratuite"}));
+  $("payCartForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const colis=anyColis(),val=i=>$(i).value.trim();
+    if(colis){
+      let ok=fieldError("cName","cNameErr",val("cName").length<3?"Indique ton nom et prénom.":"");
+      ok&=fieldError("cAddr","cAddrErr",val("cAddr").length<5?"Indique ton adresse.":"");
+      ok&=fieldError("cZip","cZipErr",!/^\d{5}$/.test(val("cZip"))?"Code postal à 5 chiffres.":"");
+      ok&=fieldError("cCity","cCityErr",val("cCity").length<2?"Indique ta ville.":"");
+      if(!ok)return;
+    }
+    const b=$("pcPay");b.disabled=true;b.textContent="Commande en cours…";$("pcErr").textContent="";
+    const payload=items.map(p=>({listing:p.id,delivery:cartDelivery[p.sellerId]}));
+    const {error}=await sb.rpc("create_cart_orders",{p_items:payload,p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null});
+    if(error){b.disabled=false;b.textContent="Simuler le paiement (démo)";$("pcErr").textContent=frenchError(error);await loadListings();return}
+    state.cart=state.cart.filter(id=>!items.some(p=>p.id===id));save("cart");
+    await Promise.all([loadOrders(),loadListings(),loadConversations()]);
+    toast(`${items.length} commande${items.length>1?"s":""} créée${items.length>1?"s":""} (démo, aucun paiement).`);
+    location.hash="#/compte/achats";
+  });
+}
+
 /* =========================================================
    PROFIL VENDEUR (public)
    ========================================================= */
@@ -1302,7 +1371,8 @@ function card(p){
   const fav=isFav(p.id), c=inCart(p.id), s=sellerInfo(p);
   const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : "";
   const cartBtn = p.mine ? `<a class="btn btn-outline" href="#/compte/annonces">Gérer l’annonce</a>`
-    : !CONFIG.paiementIntegre ? `<button type="button" class="btn btn-outline" data-contact="${esc(p.id)}" aria-label="Je suis intéressé(e) par ${esc(p.name)}">💬 Intéressé(e)</button>`
+    : payOn()&&!p.demo ? `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`
+    : !CONFIG.paiementIntegre||p.demo ? `<button type="button" class="btn btn-outline" data-contact="${esc(p.id)}" aria-label="Je suis intéressé(e) par ${esc(p.name)}">💬 Intéressé(e)</button>`
     : `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`;
   return `<article class="card">
     <a class="card-link" href="#/article/${encodeURIComponent(p.id)}">
@@ -1423,7 +1493,7 @@ function renderProduct(id){
   if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
-  else if(payOn()&&!p.demo) actions=`<div class="buy-actions"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}">🛡️ Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" id="contactSeller">💬 Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥":"♡"}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
+  else if(payOn()&&!p.demo) actions=`<div class="buy-actions"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}">🛡️ Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller">💬 Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥":"♡"}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
   else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions"><button type="button" class="btn btn-primary" id="contactSeller">💬 Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div><div id="contactNote"></div>`;
   else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${fav?"♥ Dans tes favoris":"♡ Ajouter aux favoris"}</button></div>`;
   const eyebrow=p.mine?"Ton annonce":p.demo?"Annonce de démonstration":"";
@@ -1816,6 +1886,7 @@ function renderView(){
   if(name==="catalogue"){view="catalogue";renderCatalogue()}
   else if(name==="article"){view="product";renderProduct(arg)}
   else if(name==="favoris"){view="favoris";renderFavorites()}
+  else if(name==="panier"&&payOn()){view="panier";renderPayCart()}
   else if(name==="panier"&&!CONFIG.paiementIntegre){view="page";$("pageContent").innerHTML=PAGES["acheter"]()}
   else if(name==="panier"){view="panier";renderCart()}
   else if(name==="vendre"){view="vendre";renderSell(arg)}
@@ -2014,7 +2085,7 @@ chatLog.addEventListener("click",e=>{if(e.target.closest("a")&&innerWidth<680)op
    DÉMARRAGE
    ========================================================= */
 $("dailyQuote").textContent=["Le style n’a pas besoin d’être neuf.","Chaque vêtement mérite une nouvelle histoire.","Ton prochain coup de cœur existe peut-être déjà.","Un vêtement, une nouvelle aventure.","Les belles trouvailles ont parfois déjà vécu.","Change de style, pas forcément de planète.","Donne une nouvelle chance à un vêtement."][new Date().getDay()];
-if(!CONFIG.paiementIntegre)document.body.classList.add("phase1");
+if(!payOn())document.body.classList.add("phase1");
 if(PAY_DEMO&&!CONFIG.paiementIntegre){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=`<b>Mode démo Revoo Pay</b> — aucun paiement réel, visible seulement par toi. <a href="?revoopay=off">Quitter le mode démo</a>`}
 watchImages();renderView();
 (async()=>{

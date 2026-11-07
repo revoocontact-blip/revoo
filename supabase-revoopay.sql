@@ -141,3 +141,45 @@ grant execute on function public.confirm_received(uuid) to authenticated;
 grant execute on function public.report_order_problem(uuid,text) to authenticated;
 grant execute on function public.cancel_order(uuid) to authenticated;
 grant execute on function public.admin_close_problem(uuid) to authenticated;
+
+-- =====================================================================
+-- PANIER : plusieurs articles payés en une seule fois
+-- =====================================================================
+alter table public.orders add column if not exists payment_id uuid;
+create index if not exists orders_payment_idx on public.orders (payment_id);
+
+-- p_items : [{"listing":"<id>","delivery":"main_propre"|"colis"}, …]
+-- Tout ou rien : si un article n'est plus disponible, aucune commande n'est créée.
+create or replace function public.create_cart_orders(
+  p_items jsonb, p_name text default null, p_address text default null, p_zip text default null, p_city text default null)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare it jsonb; l record; pay uuid := gen_random_uuid(); dlv text; n int := 0;
+begin
+  if auth.uid() is null then raise exception 'Connexion requise'; end if;
+  if jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then raise exception 'Panier vide'; end if;
+  if jsonb_array_length(p_items) > 30 then raise exception 'Trop d’articles dans le panier'; end if;
+  for it in select * from jsonb_array_elements(p_items) loop
+    dlv := it->>'delivery';
+    select * into l from public.listings where id = (it->>'listing')::uuid for update;
+    if l is null or l.status <> 'active' then raise exception 'Un article de ton panier n’est plus disponible'; end if;
+    if l.seller_id = auth.uid() then raise exception 'Tu ne peux pas acheter ton propre article'; end if;
+    if dlv not in ('main_propre','colis') then raise exception 'Mode de livraison invalide'; end if;
+    if dlv = 'colis' and (coalesce(trim(p_name),'') = '' or coalesce(trim(p_address),'') = ''
+       or coalesce(trim(p_zip),'') = '' or coalesce(trim(p_city),'') = '') then
+      raise exception 'Adresse de livraison incomplète';
+    end if;
+    insert into public.orders (listing_id, buyer_id, seller_id, title, photo, price, fee, delivery,
+                               ship_name, ship_address, ship_zip, ship_city, demo, payment_id)
+    values (l.id, auth.uid(), l.seller_id, l.title, l.photos[1], l.price, 1.00, dlv,
+            case when dlv='colis' then nullif(trim(p_name),'') end, case when dlv='colis' then nullif(trim(p_address),'') end,
+            case when dlv='colis' then nullif(trim(p_zip),'') end, case when dlv='colis' then nullif(trim(p_city),'') end,
+            true, pay);
+    update public.listings set status = 'sold' where id = l.id;
+    insert into public.conversations (listing_id, buyer_id, seller_id)
+    values (l.id, auth.uid(), l.seller_id) on conflict (listing_id, buyer_id) do nothing;
+    n := n + 1;
+  end loop;
+  return pay;
+end $$;
+revoke all on function public.create_cart_orders(jsonb,text,text,text,text) from public, anon;
+grant execute on function public.create_cart_orders(jsonb,text,text,text,text) to authenticated;
