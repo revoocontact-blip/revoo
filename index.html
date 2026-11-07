@@ -527,6 +527,14 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 /* ---------- Finitions ---------- */
+.avatar img,.mini-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.avatar,.mini-avatar{overflow:hidden}
+.avatar-edit{display:flex;align-items:center;gap:16px;margin:10px 0 16px}
+.avatar-xl{width:84px;height:84px;margin:0;font-size:32px;font-weight:800;background:var(--brand);color:var(--on-brand);border:0;box-shadow:none;flex:none}
+.at-input{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);padding-left:12px}
+.at-input span{color:var(--muted);font-weight:700}
+.at-input .input{border:0;padding-left:4px;background:transparent}
+.at-input:focus-within{border-color:var(--navy)}
 /* Tactile : pas d'effets de survol « collés » */
 @media (hover:none){.card:hover{transform:none;background:var(--ice)}.card:hover .card-img img{transform:none}.season-band .card:hover{background:var(--surface)}}
 .filters-head{display:flex;align-items:center;justify-content:space-between}
@@ -1071,11 +1079,13 @@ function frenchError(err){
 }
 
 /* Vendeurs */
+const USERNAME_RE=/^[A-Za-z0-9._-]{3,20}$/;
+const avatarInner=(name,url)=>url?`<img src="${esc(url)}" alt="" loading="lazy" decoding="async">`:esc((name||"?").trim()[0]?.toUpperCase()||"?");
 function sellerInfo(p){
   if(typeof p==="string")p={seller:p};
   const demo=SELLERS.find(s=>s.name===p.seller&&!p.sellerId);
   if(demo)return {...demo,emoji:esc(demo.name[0])};
-  return {name:p.seller,emoji:esc((p.seller||"?").trim()[0]?.toUpperCase()||"?"),since:p.sellerSince?`Membre depuis ${new Date(p.sellerSince).toLocaleDateString("fr-FR",{month:"long",year:"numeric"})}`:"Membre Revoo"};
+  return {name:p.seller,emoji:avatarInner(p.seller,p.sellerAvatar),since:p.sellerSince?`Membre depuis ${new Date(p.sellerSince).toLocaleDateString("fr-FR",{month:"long",year:"numeric"})}`:"Membre Revoo"};
 }
 
 /* Produits disponibles = annonces réelles + démo, sans les articles vendus */
@@ -1099,13 +1109,14 @@ const SEASON_UI = {printemps:{emoji:"🌸",text:"Des pièces légères et intemp
 function mapListing(r){
   return {id:r.id,name:r.title,description:r.description,category:r.category,brand:r.brand,size:r.size,condition:r.condition,style:r.style||"",
     price:Number(r.price),photos:r.photos||[],img:(r.photos||[])[0]||"",status:r.status,addedAt:Date.parse(r.created_at),
-    seller:r.profiles?.name||"Membre",sellerId:r.seller_id,sellerSince:r.profiles?.created_at,sellerVacation:!!r.profiles?.vacation,likes:0,seasons:ALL_SEASONS,
+    seller:r.profiles?.name||"Membre",sellerId:r.seller_id,sellerSince:r.profiles?.created_at,sellerVacation:!!r.profiles?.vacation,sellerAvatar:r.profiles?.avatar_url||"",likes:0,seasons:ALL_SEASONS,
     real:true,mine:!!state.user&&state.user.id===r.seller_id};
 }
 async function loadListings(){
   if(!sb){state.loading=false;return}
   const cols="id,seller_id,title,description,category,brand,size,condition,style,price,photos,status,created_at,";
-  let {data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation)").order("created_at",{ascending:false}).limit(300);
+  let {data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300);
+  if(error&&/avatar_url/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation)").order("created_at",{ascending:false}).limit(300));
   if(error&&/vacation/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at)").order("created_at",{ascending:false}).limit(300));
   state.loading=false;
   if(error){state.loadError=frenchError(error);console.warn(error);return}
@@ -1118,6 +1129,11 @@ async function loadProfile(session){
   const {data}=await sb.from("profiles").select("name,city,bio,created_at").eq("id",u.id).maybeSingle();
   state.user={id:u.id,email:u.email,name:data?.name||u.user_metadata?.name||u.email.split("@")[0],city:data?.city||"",bio:data?.bio||"",createdAt:data?.created_at,notify:null};
   try{const r=await sb.from("profiles").select("notify_messages").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.notify=r.data.notify_messages!==false}catch(e){}
+  state.user.v2=false;state.user.avatar="";state.user.cityPublic=false;state.user.firstName="";state.user.lastName="";
+  try{const r=await sb.from("profiles").select("avatar_url,city_public").eq("id",u.id).maybeSingle();
+    if(!r.error&&r.data){state.user.v2=true;state.user.avatar=r.data.avatar_url||"";state.user.cityPublic=!!r.data.city_public;
+      const q=await sb.from("profiles_private").select("first_name,last_name,city").eq("id",u.id).maybeSingle();
+      if(!q.error&&q.data){state.user.firstName=q.data.first_name||"";state.user.lastName=q.data.last_name||"";state.user.city=q.data.city||state.user.city}}}catch(e){}
   state.user.vacation=null;
   try{const r=await sb.from("profiles").select("vacation").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.vacation=!!r.data.vacation}catch(e){}
 }
@@ -1617,7 +1633,8 @@ async function renderSellerProfile(id){
   const v=$("view-vendeur");
   if(!sb||!isUuid(id||"")){v.innerHTML=`<div class="page-head"><h1 class="page-title">Profil introuvable</h1><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
   v.innerHTML=`<div class="page-head"><p class="muted">Chargement du profil…</p></div>`;
-  const {data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at").eq("id",id).maybeSingle();
+  let {data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at,avatar_url").eq("id",id).maybeSingle();
+  if(error&&/avatar_url/.test(error.message||""))({data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at").eq("id",id).maybeSingle());
   let vac=false;try{const r=await sb.from("profiles").select("vacation").eq("id",id).maybeSingle();vac=!!(r.data&&r.data.vacation)}catch(e){}
   if(location.hash!=="#/vendeur/"+id)return;
   if(error||!pr){v.innerHTML=`<div class="page-head"><h1 class="page-title">Profil introuvable</h1><p class="muted">Ce membre n’existe pas ou a supprimé son compte.</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
@@ -1626,10 +1643,10 @@ async function renderSellerProfile(id){
   const since=new Date(pr.created_at).toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
   v.innerHTML=`
     <div class="profile-head">
-      <span class="avatar" aria-hidden="true">${esc((pr.name||"?").trim()[0]?.toUpperCase()||"?")}</span>
+      <span class="avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
       <div style="flex:1;min-width:200px">
         <p class="crumbs"><a href="#/">Accueil</a> › Profil</p>
-        <h1>${esc(pr.name)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1>
+        <h1>@${esc(pr.name)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1>
         <div class="profile-meta">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span><span>${items.length} article${items.length>1?"s":""} en vente</span>${ratingHtml(id)}</div>
       </div>
       ${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}
@@ -1926,8 +1943,8 @@ function renderAccount(tab){
     </form>`:`
     <form class="panel" id="signupForm" novalidate>
       <div class="grid-2">
-        <div class="field"><label for="sName">Prénom ou pseudo</label><input class="input" id="sName" autocomplete="nickname" required maxlength="30"><span class="hint">Visible sur tes annonces.</span><span class="error" id="sNameErr"></span></div>
-        <div class="field"><label for="sCity">Ville <span class="hint">(facultatif)</span></label><input class="input" id="sCity" autocomplete="address-level2" maxlength="40"></div>
+        <div class="field"><label for="sName">Identifiant <span class="hint">(public)</span></label><div class="at-input"><span aria-hidden="true">@</span><input class="input" id="sName" autocomplete="username" required maxlength="20" placeholder="camille_75" autocapitalize="off" spellcheck="false"></div><span class="hint">3 à 20 caractères : lettres, chiffres, point, tiret ou _. Visible sur tes annonces.</span><span class="error" id="sNameErr"></span></div>
+        <div class="field"><label for="sCity">Ville <span class="hint">(facultatif, privée)</span></label><input class="input" id="sCity" autocomplete="address-level2" maxlength="40"></div>
       </div>
       <div class="field"><label for="sEmail">Adresse e-mail</label><input class="input" id="sEmail" type="email" autocomplete="email" required><span class="error" id="sEmailErr"></span></div>
       ${pwdField("sPwd","Mot de passe","new-password")}
@@ -1969,13 +1986,26 @@ function renderAccount(tab){
     body=`<div class="settings">
     <div class="settings-col">
       <form class="panel" id="profileForm" novalidate>
-        <h2>Mes infos</h2>
-        <div class="grid-2">
-          <div class="field"><label for="pName">Prénom ou pseudo</label><input class="input" id="pName" value="${esc(state.user.name)}" required maxlength="30"><span class="error" id="pNameErr"></span></div>
-          <div class="field"><label for="pCity">Ville</label><input class="input" id="pCity" value="${esc(state.user.city||"")}" maxlength="40"></div>
-        </div>
-        <div class="field"><label for="pEmail">Adresse e-mail</label><input class="input" id="pEmail" type="email" value="${esc(state.user.email)}" disabled><span class="hint">Non visible par les autres membres.</span></div>
-        <div class="field"><label for="pBio">Présentation <span class="hint">(facultatif, visible par tous)</span></label><textarea class="input" id="pBio" maxlength="300" placeholder="Quelques mots sur toi et ton style…">${esc(state.user.bio||"")}</textarea></div>
+        <h2>Profil public</h2>
+        <p class="muted small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg> Visible par tous les membres, sur ton profil et tes annonces.</p>
+        ${state.user.v2?`<div class="avatar-edit">
+          <span class="avatar avatar-xl" aria-hidden="true">${avatarInner(state.user.name,state.user.avatar)}</span>
+          <div><label for="avatarInput" class="btn btn-outline">${state.user.avatar?"Changer la photo":"Ajouter une photo"}</label>
+          <input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">
+          ${state.user.avatar?`<button type="button" class="link small" id="avatarRemove">Retirer la photo</button>`:""}
+          <p class="hint" style="margin:6px 0 0">Une photo carrée et nette rend ton profil plus rassurant.</p><span class="error" id="avatarErr"></span></div>
+        </div>`:""}
+        <div class="field"><label for="pName">Identifiant</label><div class="at-input"><span aria-hidden="true">@</span><input class="input" id="pName" value="${esc(state.user.name)}" required maxlength="20" autocapitalize="off" spellcheck="false"></div><span class="hint">3 à 20 caractères : lettres, chiffres, point, tiret ou _.</span><span class="error" id="pNameErr"></span></div>
+        <div class="field"><label for="pBio">Bio <span class="hint">(facultatif)</span></label><textarea class="input" id="pBio" maxlength="300" placeholder="Quelques mots sur toi et ton style…">${esc(state.user.bio||"")}</textarea></div>
+        ${state.user.v2?`<div class="set-row"><div><b>Afficher ma ville sur mon profil</b><small>${state.user.city?`Ta ville : ${esc(state.user.city)}.`:"Ajoute ta ville dans tes informations privées ci-dessous."}</small></div><label class="switch"><input type="checkbox" id="pCityPublic" ${state.user.cityPublic?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Afficher ma ville sur mon profil</span></label></div>`:""}
+        <h2 style="margin-top:22px">Informations privées</h2>
+        <p class="muted small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;vertical-align:-2px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg> Visibles par toi seul. Elles serviront plus tard pour les envois et le paiement.</p>
+        ${state.user.v2?`<div class="grid-2">
+          <div class="field"><label for="pFirst">Prénom</label><input class="input" id="pFirst" value="${esc(state.user.firstName)}" autocomplete="given-name" maxlength="50"></div>
+          <div class="field"><label for="pLast">Nom</label><input class="input" id="pLast" value="${esc(state.user.lastName)}" autocomplete="family-name" maxlength="50"></div>
+        </div>`:""}
+        <div class="field"><label for="pCity">Ville</label><input class="input" id="pCity" value="${esc(state.user.city||"")}" autocomplete="address-level2" maxlength="40"></div>
+        <div class="field"><label for="pEmail">Adresse e-mail</label><input class="input" id="pEmail" type="email" value="${esc(state.user.email)}" disabled></div>
         <div class="buy-actions"><button class="btn btn-primary" type="submit">Enregistrer</button><a class="btn btn-outline" href="#/vendeur/${state.user.id}">Voir mon profil public</a></div>
         <p class="error" id="profileErr" role="alert"></p>
       </form>
@@ -2021,9 +2051,9 @@ function renderAccount(tab){
   const since=state.user.createdAt?new Date(state.user.createdAt).toLocaleDateString("fr-FR",{month:"long",year:"numeric"}):"";
   $("accountTitle").textContent="Mon compte";
   el.innerHTML=`<div class="acc-head">
-      <span class="avatar acc-avatar" aria-hidden="true">${esc((state.user.name||"?")[0].toUpperCase())}</span>
-      <div class="acc-id"><h2>${esc(state.user.name)}${state.user.vacation?' <span class="vac-badge">En vacances</span>':""}</h2>
-        <p class="muted small">${[state.user.city&&esc(state.user.city),since&&"Membre depuis "+since].filter(Boolean).join(" · ")}</p>
+      <span class="avatar acc-avatar" aria-hidden="true">${avatarInner(state.user.name,state.user.avatar)}</span>
+      <div class="acc-id"><h2>@${esc(state.user.name)}${state.user.vacation?' <span class="vac-badge">En vacances</span>':""}</h2>
+        <p class="muted small">${[state.user.firstName&&esc(state.user.firstName+" "+state.user.lastName).trim()+" (privé)",since&&"Membre depuis "+since].filter(Boolean).join(" · ")}</p>
         ${rt?ratingHtml(state.user.id,true):""}</div>
       <div class="acc-stats">
         <a href="#/compte/portemonnaie" class="acc-stat" data-acc="${payOn()?"portemonnaie":"profil"}"><b>${eur(walletTotals().ready)}</b><span>Solde</span></a>
@@ -2054,7 +2084,7 @@ function renderSell(editId){
   draftPhotos=l?[...l.photos]:[];
   const opt=(arr,v,ph)=>`<option value="">${ph}</option>`+arr.map(a=>`<option ${a===v?"selected":""}>${a}</option>`).join("");
   el.innerHTML=`
-  <p class="note">Ton annonce sera <b>visible par tous les visiteurs</b> de Revoo. Ton prénom ou pseudo apparaîtra comme vendeur.</p>
+  <p class="note">Ton annonce sera <b>visible par tous les visiteurs</b> de Revoo. Ton identifiant apparaîtra comme vendeur.</p>
   <form class="panel" id="sellForm" novalidate>
     <div class="field">
       <span class="label" id="photoLabel">Photos <span class="hint">(1 à ${CONFIG.maxPhotos}, la première sert de couverture)</span></span>
@@ -2197,7 +2227,7 @@ const LEGAL_PAGES={
 <h2>2. Les données utilisées</h2>
 <table class="legal-table"><thead><tr><th>Données</th><th>Pourquoi</th><th>Base légale</th><th>Durée de conservation</th></tr></thead><tbody>
 <tr><td>Compte : adresse e-mail, mot de passe (chiffré, jamais visible par Revoo)</td><td>Créer et sécuriser ton compte</td><td>Exécution du contrat (conditions d’utilisation)</td><td>Tant que ton compte existe</td></tr>
-<tr><td>Profil : prénom ou pseudo, ville, présentation (facultatives)</td><td>Te présenter aux autres membres</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
+<tr><td>Profil public : identifiant, photo de profil, bio, ville (seulement si tu choisis de l’afficher)</td><td>Te présenter aux autres membres</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr><tr><td>Informations privées : prénom, nom, ville</td><td>Préparer les envois et le paiement ; visibles par toi seul</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
 <tr><td>Annonces et photos</td><td>Les publier sur Revoo (elles sont publiques)</td><td>Exécution du contrat</td><td>Jusqu’à leur suppression, ou celle de ton compte</td></tr>
 <tr><td>Messages</td><td>Échanger avec les autres membres (visibles uniquement par les 2 personnes concernées)</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
 <tr><td>Favoris</td><td>Retrouver tes articles préférés</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
@@ -2208,7 +2238,7 @@ const LEGAL_PAGES={
 </tbody></table>
 <p>Revoo n’utilise <b>aucun cookie publicitaire ni outil de mesure d’audience</b>. Ton navigateur garde seulement ce qui est nécessaire au fonctionnement du site (ta connexion, ton panier, tes réglages) : aucun consentement n’est donc demandé.</p>
 <h2>3. Qui peut voir tes données ?</h2>
-<ul><li><b>Les autres membres</b> : ton prénom ou pseudo, ta ville, ta présentation, tes annonces et les avis te concernant.</li>
+<ul><li><b>Les autres membres</b> : ton identifiant, ta photo de profil, ta bio, ta ville si tu as choisi de l’afficher, tes annonces et les avis te concernant. Jamais ton prénom, ton nom ni ton e-mail.</li>
 <li><b>L’autre personne d’une conversation</b> : vos messages. <b>Le vendeur</b> : ton adresse si tu choisis l’envoi par colis.</li>
 <li><b>Revoo (modération)</b> : uniquement pour traiter les signalements et les litiges.</li>
 <li><b>Nos prestataires</b>, qui agissent pour le compte de Revoo : Supabase (données, serveurs à Paris), Brevo (e-mails, France), GitHub (hébergement du site, États-Unis), jsDelivr (chargement d’un composant technique) et Unsplash (photos d’illustration). En chargeant le site, ton adresse IP peut être transmise à ces services ; les transferts hors de l’Union européenne sont encadrés par les garanties prévues par le RGPD (clauses contractuelles types ou décision d’adéquation).</li>
@@ -2414,7 +2444,9 @@ document.addEventListener("submit",async e=>{
     toast("Merci pour ton avis !");await loadListings();renderView();return}
   if(f.id==="signupForm"){e.preventDefault();
     const name=$("sName").value.trim(),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();
-    const ok=fieldError("sName","sNameErr",name.length<2?"Indique ton prénom ou un pseudo (2 caractères minimum).":"") & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"");
+    let nameMsg=!USERNAME_RE.test(name)?"3 à 20 caractères : lettres sans accent, chiffres, point, tiret ou _ (pas d’espace).":"";
+    if(!nameMsg){try{const r=await sb.rpc("username_available",{p_name:name});if(!r.error&&r.data===false)nameMsg="Cet identifiant est déjà pris. Essaie une variante (ex. "+name+"_75).";}catch(x){}}
+    const ok=fieldError("sName","sNameErr",nameMsg) & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"");
     if(!ok)return;
     busy(f,true,"Création…");$("signupErr").textContent="";
     const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city},emailRedirectTo:redirectUrl()}});
@@ -2459,17 +2491,41 @@ document.addEventListener("submit",async e=>{
     if(error){fieldError("pw1","pw1Err",frenchError(error));return}
     f.reset();toast("Mot de passe modifié.");return}
   if(f.id==="profileForm"){e.preventDefault();
-    const name=$("pName").value.trim();
-    if(!fieldError("pName","pNameErr",name.length<2?"2 caractères minimum.":""))return;
-    busy(f,true,"Enregistrement…");
-    const row={name,city:$("pCity").value.trim()||null,bio:$("pBio").value.trim()||null};
-    const {error}=await sb.from("profiles").update(row).eq("id",state.user.id);
+    const name=$("pName").value.trim(),bio=$("pBio").value.trim()||null,city=$("pCity").value.trim()||null;
+    if(!fieldError("pName","pNameErr",!USERNAME_RE.test(name)?"3 à 20 caractères : lettres sans accent, chiffres, point, tiret ou _ (pas d’espace).":""))return;
+    busy(f,true,"Enregistrement…");$("profileErr").textContent="";
+    let error;
+    if(state.user.v2){
+      const cityPublic=$("pCityPublic")?$("pCityPublic").checked:false;
+      ({error}=await sb.from("profiles").update({name,bio,city_public:cityPublic,city:cityPublic?city:null}).eq("id",state.user.id));
+      if(!error)({error}=await sb.from("profiles_private").upsert({id:state.user.id,first_name:$("pFirst").value.trim()||null,last_name:$("pLast").value.trim()||null,city,updated_at:new Date().toISOString()}));
+      if(!error)Object.assign(state.user,{cityPublic,firstName:$("pFirst").value.trim(),lastName:$("pLast").value.trim()});
+    } else ({error}=await sb.from("profiles").update({name,bio,city}).eq("id",state.user.id));
     busy(f,false);
-    if(error){$("profileErr").textContent=frenchError(error);return}
-    Object.assign(state.user,{name,city:row.city||"",bio:row.bio||""});if("notify_messages" in row)state.user.notify=row.notify_messages;
+    if(error){if(error.code==="23505"||/duplicate|unique/i.test(error.message||""))fieldError("pName","pNameErr","Cet identifiant est déjà pris. Essaie une variante.");else $("profileErr").textContent=frenchError(error);return}
+    Object.assign(state.user,{name,city:city||"",bio:bio||""});
     await loadListings();toast("Profil enregistré.");renderView();
   }
 });
+
+/* Photo de profil */
+function squareAvatar(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error("image"));img.onload=()=>{const side=Math.min(img.width,img.height),S=400,c=document.createElement("canvas");c.width=c.height=S;const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,S,S);ctx.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,S,S);c.toBlob(b=>b?res(b):rej(new Error("blob")),"image/jpeg",.85)};img.src=r.result};r.readAsDataURL(file)})}
+async function setAvatar(file){
+  const err=$("avatarErr");if(err)err.textContent="";
+  try{
+    let url=null;
+    if(file){if(!file.type.startsWith("image/"))throw new Error("Choisis une image (JPG, PNG ou WebP).");
+      const blob=await squareAvatar(file),path=`${state.user.id}/avatar-${Date.now()}.jpg`;
+      const up=await sb.storage.from("avatars").upload(path,blob,{contentType:"image/jpeg",upsert:false});if(up.error)throw up.error;
+      url=sb.storage.from("avatars").getPublicUrl(path).data.publicUrl}
+    const old=state.user.avatar;
+    const {error}=await sb.from("profiles").update({avatar_url:url}).eq("id",state.user.id);if(error)throw error;
+    if(old){const i=old.indexOf("/object/public/avatars/");if(i>=0)sb.storage.from("avatars").remove([decodeURIComponent(old.slice(i+23))]).catch(()=>{})}
+    state.user.avatar=url||"";await loadListings();toast(url?"Photo de profil mise à jour.":"Photo retirée.");renderView();
+  }catch(e){if(err)err.textContent=e.message&&!e.code?e.message:frenchError(e)}
+}
+document.addEventListener("change",e=>{if(e.target.id==="avatarInput"&&e.target.files[0]){const f=e.target.files[0];e.target.value="";setAvatar(f)}});
+document.addEventListener("click",e=>{if(e.target.closest("#avatarRemove")){if(confirm("Retirer ta photo de profil ?"))setAvatar(null)}});
 
 /* Paramètres du profil */
 document.addEventListener("change",async e=>{
@@ -2550,7 +2606,7 @@ const KB=[
   [/message|contacter|discuter avec|ecrire au vendeur|vendeur ne repond/, ()=>`<p>Pour écrire à un vendeur, ouvre son annonce et clique sur « Je suis intéressé(e) ». Toutes tes conversations sont dans <b>Messages</b>.</p>${go("#/messages","Mes messages")}`],
   // Vendre
   [/interdit|autorise|accepte|quoi vendre|chaussure|accessoire|sac|bijou/, ()=>`<p>Pour l’instant, Revoo est réservé aux <b>vêtements</b> (Femme, Homme, Enfant, Unisexe). D’autres catégories arriveront plus tard.</p><p>Tout ce qui est illégal est interdit : contrefaçons, articles volés ou dangereux…</p>${go("#/conditions","Conditions d’utilisation")}`],
-  [/photo|image/, ()=>`<p>Des photos qui donnent envie :</p><p>• <b>Lumière du jour</b>, près d’une fenêtre, sans flash.<br>• <b>Fond simple</b> et clair (mur, drap).<br>• Le vêtement à plat, sur un cintre ou porté.<br>• 3 à 5 photos : face, dos, étiquette, et chaque défaut de près.<br>• La première photo sert de couverture : choisis la plus belle.</p>${ask("Bien rédiger mon annonce","Fixer le bon prix")}`],
+  [/^(?!.*profil)(?!.*avatar).*(photo|image)/, ()=>`<p>Des photos qui donnent envie :</p><p>• <b>Lumière du jour</b>, près d’une fenêtre, sans flash.<br>• <b>Fond simple</b> et clair (mur, drap).<br>• Le vêtement à plat, sur un cintre ou porté.<br>• 3 à 5 photos : face, dos, étiquette, et chaque défaut de près.<br>• La première photo sert de couverture : choisis la plus belle.</p>${ask("Bien rédiger mon annonce","Fixer le bon prix")}`],
   [/prix|combien vendre|estimer|valeur/, t=>/vend|fixe|estim|valeur|mettre/.test(t)?`<p>Pour fixer un bon prix :</p><p>• Regarde les articles similaires sur Revoo.<br>• En général, une pièce d’occasion se vend nettement moins cher que neuve : plus l’état est bon et la marque recherchée, plus tu peux viser haut.<br>• Un prix rond et raisonnable part plus vite.<br>• Tu peux modifier ton prix à tout moment dans Mon compte.</p>`:null],
   [/description|rediger|titre|bien decrire/, ()=>`<p>Une bonne annonce :</p><p>• <b>Titre clair</b> : type + couleur + marque (ex. « Pull en laine bleu marine Zara »).<br>• <b>Description honnête</b> : matière, coupe, comment ça taille, défauts éventuels.<br>• Les <b>mesures</b> si possible (longueur, tour de poitrine…).<br>• Le bon état et la bonne taille.</p>`],
   [/modifier|supprimer (mon|une|l)?.?annonce|marquer vendu|retirer (mon|une)? ?annonce/, ()=>`<p>Dans <b>Mon compte › Mes annonces</b>, tu peux :</p><p>• <b>Modifier</b> une annonce (photos, prix, description) ;<br>• la <b>marquer vendue</b> : elle disparaît du catalogue ;<br>• la <b>supprimer</b> définitivement.</p>${go("#/compte/annonces","Mes annonces")}`],
@@ -2567,7 +2623,7 @@ const KB=[
   // Compte
   [/mot de passe|oubli|connecter impossible|n.?arrive pas a me connecter/, ()=>`<p>Sur la page de connexion, clique sur « Mot de passe oublié ? » : tu recevras un lien par e-mail. Pense à regarder dans tes courriers indésirables.</p>${go("#/compte","Connexion")}`],
   [/supprimer (mon )?compte|desinscri|mes donnees|rgpd|donnees personnelles/, ()=>`<p>Pour supprimer ton compte ou exercer tes droits sur tes données (accès, correction, suppression…), écris à <b>${LEGAL.email}</b>. Réponse sous un mois maximum.</p>${go("#/confidentialite","Politique de confidentialité")}`],
-  [/profil|pseudo|prenom|presentation|ville/, ()=>`<p>Dans <b>Mon compte › Profil</b>, tu peux changer ton prénom ou pseudo, ta ville et ta présentation. Une petite présentation rassure les acheteurs !</p>${go("#/compte/profil","Mon profil")}`],
+  [/profil|pseudo|identifiant|prenom|presentation|ville|photo de profil|avatar|bio/, ()=>`<p>Dans <b>Mon compte › Profil et paramètres</b> :</p><p>• <b>Public</b> : ton identifiant, ta photo de profil, ta bio, et ta ville si tu le choisis.<br>• <b>Privé</b> (toi seul) : ton prénom, ton nom et ta ville.</p><p>Une photo et une petite bio rassurent les acheteurs !</p>${go("#/compte/profil","Mon profil")}`],
   [/notification|e.?mail|mail|spam|indesirable/, ()=>`<p>Revoo t’envoie un e-mail quand tu reçois un nouveau message (au plus un toutes les 30 minutes par conversation). Tu peux le désactiver dans <b>Mon compte › Profil</b>.</p><p>Tu ne reçois rien ? Regarde dans les courriers indésirables ou l’onglet « Promotions ».</p>`],
   [/\bage\b|mineur|quel age|parents|\b1[0-7] ans\b/, ()=>`<p>Revoo est accessible dès <b>${LEGAL.ageMin} ans</b>. Entre ${LEGAL.ageMin} et 15 ans, il faut l’accord des parents pour s’inscrire, et avant 18 ans pour vendre ou acheter.</p>`],
   [/compte|inscri|connect|creer/, ()=>`<p>Crée ton compte gratuitement : prénom, e-mail et mot de passe, c’est tout.</p>${go("#/compte","Créer mon compte")}`],
@@ -2605,7 +2661,7 @@ const RB_ABBR={sa:"ca",frai:"frais",fré:"frais",fre:"frais",foto:"photo",fotos:
   annonces:"annonce",photos:"photo",pics:"photo",trucs:"article",truc:"article",articles:"article",fringuer:"vetement",
   achete:"acheter",achat:"acheter",vente:"vendre",vends:"vendre",vend:"vendre",vendu:"vendre",livre:"livraison",livrer:"livraison",livraisons:"livraison",
   login:"connexion",connecte:"connexion",inscrire:"inscription",inscris:"inscription",sinscrire:"inscription"};
-const RB_VOCAB="vacances solde apparence parametre parametres bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot revoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange".split(" ");
+const RB_VOCAB="identifiant avatar bio vacances solde apparence parametre parametres bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot revoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange".split(" ");
 const RB_VSET=new Set(RB_VOCAB);
 const RB_KEEP4=new Set("mais veux peux sais fais fait avec pour dans sans tout tous bien tres plus elle nous vous leur quoi quel faut doit dois sont suis avez etes sera mois jour cela ceci voir vois dire dit lien site page code cool trop vite deja aussi fois oui non moi toi lui eux mien tien tant donc meme ici quoi part fini bout coin haut gros fort beau vrai faux aide sale chat chez vers avant hier noel".split(" "));
 const RB_KEEP=new Set("quand comme alors aussi encore jamais toute toutes cette celle celui ceux elles leurs quelle quels quelles savoir trouve trouver cherche chercher besoin envie voudrais pourrais pouvez pourquoi mettre prendre donner depuis avant apres semaine couleur faire peux veux peut veut votre notre vraiment maintenant comment autre autres combien merci bonjour salut moins plus entre chez vers sans avec pour dans sous mais rien tout tous etre avoir suis sont avez faut fallait doit dois sait sais connais aimer adore aime marche marcher tester essaye essayer bonne petite petit grand grande taille ensemble quelque chose aider pense crois question reponse simple facile rapide gros grosse jolie joli beau belle".split(" "));
