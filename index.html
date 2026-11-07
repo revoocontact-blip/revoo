@@ -527,6 +527,19 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 /* ---------- Finitions ---------- */
+#messagesBtn,#favoritesBtn{display:none!important}
+.acct-btn{width:48px!important;height:48px!important;padding:3px!important;background:linear-gradient(135deg,var(--sky),var(--brand))!important;transition:transform .15s ease,filter .15s ease}
+.acct-btn:hover{transform:scale(1.04);filter:brightness(1.05)}
+.acct-btn[aria-expanded="true"]{background:linear-gradient(135deg,var(--brand),var(--navy))!important}
+.acct-btn .acct-av{width:100%;height:100%;box-shadow:none!important;border:2px solid var(--bg)}
+.acct-btn.has-unread::after{content:"";position:absolute;top:1px;right:1px;width:13px;height:13px;border-radius:50%;background:var(--danger);border:2px solid var(--bg)}
+.acct-btn{position:relative}
+.pp-cover{background-size:cover;background-position:center;position:relative}
+.pp-avatar{position:relative;z-index:2}
+.pp-cover-edit{position:absolute;right:14px;bottom:12px;display:inline-flex;align-items:center;gap:6px;background:var(--glass);color:var(--ink);border-radius:99px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(6px)}
+.pp-cover-edit:hover{background:var(--surface)}
+.banner-edit{margin:10px 0 16px}
+.banner-prev{height:110px;border-radius:14px;background:linear-gradient(120deg,var(--sky),var(--brand));background-size:cover;background-position:center;margin-bottom:10px;border:1px solid var(--line)}
 .acct{position:relative}
 .acct-btn{display:grid;place-items:center;width:46px;height:46px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer}
 .acct-btn .acct-name,.acct-btn .acct-chev{display:none}
@@ -787,7 +800,7 @@ body{transition:background .2s ease,color .2s ease}
           <div class="acct-menu-head"><span class="avatar acct-av-lg" id="acctAv2" aria-hidden="true"></span><div><b id="acctName2"></b><small>Voir mon profil public</small></div></div>
           <a href="#/compte/profil">Profil et paramètres</a>
           <a href="#/compte/annonces">Mes annonces</a>
-          <a href="#/messages">Messages</a>
+          <a href="#/messages">Messages <span class="badge has" id="menuMsg" hidden></span></a>
           <a href="#/favoris">Favoris</a>
           <a href="#/vendre">Vendre un vêtement</a>
           <button type="button" id="acctLogout">Se déconnecter</button>
@@ -977,7 +990,7 @@ body{transition:background .2s ease,color .2s ease}
       </div>
       <nav aria-label="Revoo"><h2>Revoo</h2><ul><li><a href="#/a-propos">À propos de Revoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
       <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/securite">Conseils de sécurité</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
-      <nav aria-label="Aide"><h2>Aide</h2><ul><li><a href="#/aide">Aide et contact</a></li><li><a href="#/compte">Mon compte</a></li></ul></nav>
+      <nav aria-label="Aide"><h2>Aide</h2><ul><li><a href="#/aide">Aide et contact</a></li><li><a href="#/compte">Mon compte</a></li><li><a href="#/favoris">Mes favoris</a></li><li><a href="#/messages">Messages</a></li></ul></nav>
       <nav aria-label="Informations légales"><h2>Légal</h2><ul><li><a href="#/conditions">Conditions</a></li><li><a href="#/confidentialite">Confidentialité</a></li><li><a href="#/mentions-legales">Informations légales</a></li></ul></nav>
     </div>
     <div class="foot-bottom"><span>© 2026 Revoo · Tes vêtements ont de l’avenir.</span><span>Fait en France</span></div>
@@ -1181,6 +1194,8 @@ async function loadProfile(session){
   const {data}=await sb.from("profiles").select("name,city,bio,created_at").eq("id",u.id).maybeSingle();
   state.user={id:u.id,email:u.email,name:data?.name||u.user_metadata?.name||u.email.split("@")[0],city:data?.city||"",bio:data?.bio||"",createdAt:data?.created_at,notify:null};
   try{const r=await sb.from("profiles").select("notify_messages").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.notify=r.data.notify_messages!==false}catch(e){}
+  state.user.banner="";
+  try{const r=await sb.from("profiles").select("banner_url").eq("id",u.id).maybeSingle();if(!r.error&&r.data){state.user.hasBanner=true;state.user.banner=r.data.banner_url||""}}catch(e){}
   state.user.v2=false;state.user.avatar="";state.user.cityPublic=false;state.user.firstName="";state.user.lastName="";
   try{const r=await sb.from("profiles").select("avatar_url,city_public").eq("id",u.id).maybeSingle();
     if(!r.error&&r.data){state.user.v2=true;state.user.avatar=r.data.avatar_url||"";state.user.cityPublic=!!r.data.city_public;
@@ -1687,7 +1702,8 @@ async function renderSellerProfile(id){
   const v=$("view-vendeur");
   if(!sb||!isUuid(id||"")){v.innerHTML=`<div class="page-head"><h1 class="page-title">Profil introuvable</h1><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
   v.innerHTML=`<div class="page-head"><p class="muted">Chargement du profil…</p></div>`;
-  let {data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at,avatar_url").eq("id",id).maybeSingle();
+  let {data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at,avatar_url,banner_url").eq("id",id).maybeSingle();
+  if(error&&/banner_url/.test(error.message||""))({data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at,avatar_url").eq("id",id).maybeSingle());
   if(error&&/avatar_url/.test(error.message||""))({data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at").eq("id",id).maybeSingle());
   let vac=false;try{const r=await sb.from("profiles").select("vacation").eq("id",id).maybeSingle();vac=!!(r.data&&r.data.vacation)}catch(e){}
   if(location.hash!=="#/vendeur/"+id)return;
@@ -1699,7 +1715,7 @@ async function renderSellerProfile(id){
   v.innerHTML=`
     <p class="crumbs" style="padding-top:18px"><a href="#/">Accueil</a> › Profil</p>
     <section class="pp">
-      <div class="pp-cover" aria-hidden="true"></div>
+      <div class="pp-cover" ${pr.banner_url?`style="background-image:url('${esc(pr.banner_url)}')"`:""}>${me&&state.user.hasBanner?`<label for="bannerInput2" class="pp-cover-edit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> ${pr.banner_url?"Changer la bannière":"Ajouter une bannière"}</label><input id="bannerInput2" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">`:""}</div>
       <div class="pp-body">
         <span class="avatar pp-avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
         <div class="pp-id">
@@ -2060,6 +2076,13 @@ function renderAccount(tab){
       <form class="panel" id="profileForm" novalidate>
         <h2>Profil public</h2>
         <p class="muted small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg> Visible par tous les membres, sur ton profil et tes annonces.</p>
+        ${state.user.hasBanner?`<div class="banner-edit">
+          <div class="banner-prev" style="${state.user.banner?`background-image:url('${esc(state.user.banner)}')`:""}" role="img" aria-label="Aperçu de ta bannière"></div>
+          <label for="bannerInput" class="btn btn-outline">${state.user.banner?"Changer la bannière":"Ajouter une bannière"}</label>
+          <input id="bannerInput" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">
+          ${state.user.banner?`<button type="button" class="link small" id="bannerRemove">Retirer la bannière</button>`:""}
+          <p class="hint" style="margin:6px 0 0">Format paysage conseillé (par exemple 1500 × 500). L’image est recadrée automatiquement.</p><span class="error" id="bannerErr"></span>
+        </div>`:""}
         ${state.user.v2?`<div class="avatar-edit">
           <span class="avatar avatar-xl" aria-hidden="true">${avatarInner(state.user.name,state.user.avatar)}</span>
           <div><label for="avatarInput" class="btn btn-outline">${state.user.avatar?"Changer la photo":"Ajouter une photo"}</label>
@@ -2423,6 +2446,7 @@ function updateCounts(){
   $("cartCount").textContent=state.cart.length;$("cartCount").classList.toggle("has",state.cart.length>0);
   $("favoritesBtn").setAttribute("aria-label",`Favoris (${f})`);$("cartBtn").setAttribute("aria-label",`Panier (${state.cart.length} article${state.cart.length>1?"s":""})`);
   $("tabMsg").textContent=chat.unread;$("tabMsg").hidden=!chat.unread;
+  $("acctBtn").classList.toggle("has-unread",chat.unread>0);$("menuMsg").textContent=chat.unread;$("menuMsg").hidden=!chat.unread;
   $("msgCount").textContent=chat.unread;$("msgCount").classList.toggle("has",chat.unread>0);
   $("messagesBtn").setAttribute("aria-label",`Messages (${chat.unread} non lu${chat.unread>1?"s":""})`);
   $("loginLabel").textContent="Se connecter";$("loginBtn").setAttribute("aria-label","Se connecter");
@@ -2612,6 +2636,23 @@ async function setAvatar(file){
     state.user.avatar=url||"";await loadListings();toast(url?"Photo de profil mise à jour.":"Photo retirée.");renderView();
   }catch(e){if(err)err.textContent=e.message&&!e.code?e.message:frenchError(e)}
 }
+function wideBanner(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error("image"));img.onload=()=>{const W=1500,H=500,ratio=W/H;let sw=img.width,sh=img.width/ratio;if(sh>img.height){sh=img.height;sw=sh*ratio}const c=document.createElement("canvas");c.width=W;c.height=H;c.getContext("2d").drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,W,H);c.toBlob(b=>b?res(b):rej(new Error("blob")),"image/jpeg",.82)};img.src=r.result};r.readAsDataURL(file)})}
+async function setBanner(file){
+  const err=$("bannerErr");if(err)err.textContent="";
+  try{
+    let url=null;
+    if(file){if(!file.type.startsWith("image/"))throw new Error("Choisis une image (JPG, PNG ou WebP).");
+      const blob=await wideBanner(file),path=`${state.user.id}/banner-${Date.now()}.jpg`;
+      const up=await sb.storage.from("avatars").upload(path,blob,{contentType:"image/jpeg",upsert:false});if(up.error)throw up.error;
+      url=sb.storage.from("avatars").getPublicUrl(path).data.publicUrl}
+    const old=state.user.banner;
+    const {error}=await sb.from("profiles").update({banner_url:url}).eq("id",state.user.id);if(error)throw error;
+    if(old){const i=old.indexOf("/object/public/avatars/");if(i>=0)sb.storage.from("avatars").remove([decodeURIComponent(old.slice(i+23))]).catch(()=>{})}
+    state.user.banner=url||"";toast(url?"Bannière mise à jour.":"Bannière retirée.");renderView();
+  }catch(e){const m=e.message&&!e.code?e.message:frenchError(e);if(err)err.textContent=m;else toast(m)}
+}
+document.addEventListener("change",e=>{if((e.target.id==="bannerInput"||e.target.id==="bannerInput2")&&e.target.files[0]){const f=e.target.files[0];e.target.value="";setBanner(f)}});
+document.addEventListener("click",e=>{if(e.target.closest("#bannerRemove")){if(confirm("Retirer ta bannière ?"))setBanner(null)}});
 document.addEventListener("change",e=>{if(e.target.id==="avatarInput"&&e.target.files[0]){const f=e.target.files[0];e.target.value="";setAvatar(f)}});
 document.addEventListener("click",e=>{if(e.target.closest("#avatarRemove")){if(confirm("Retirer ta photo de profil ?"))setAvatar(null)}});
 
