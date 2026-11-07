@@ -526,6 +526,65 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 /* ---------- Finitions ---------- */
+/* Tactile : pas d'effets de survol « collés » */
+@media (hover:none){.card:hover{transform:none;background:var(--ice)}.card:hover .card-img img{transform:none}.season-band .card:hover{background:var(--surface)}}
+.filters-head{display:flex;align-items:center;justify-content:space-between}
+.filters-close,.filters-foot{display:none}
+.search-go .icon{display:none;color:inherit}
+.top{transition:transform .25s ease}
+/* Tablette */
+@media (min-width:681px) and (max-width:1024px){
+  .head{flex-wrap:wrap;row-gap:8px;padding:10px 0}
+  .search{order:3;flex-basis:100%}
+  .action .label,.account-btn .label{display:none}
+  .account-btn{padding:10px 12px}
+  .how{grid-template-columns:repeat(3,1fr)}
+  .how li{flex-direction:column;align-items:flex-start;gap:8px}
+  #latestProducts,.products-row,.products,.products.cols-4{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .catalogue .products.cols-4{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .product-page{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px}
+  .product-page>div:first-child{position:sticky;top:130px}
+  .product-info{padding:22px 18px}
+  .specs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero-photo{height:280px}
+  .foot-grid{grid-template-columns:repeat(4,1fr)}
+}
+/* Filtres en panneau plein écran (téléphone et tablette) */
+@media (max-width:920px){
+  .filters.open{position:fixed;inset:0;z-index:90;display:block;max-height:none;border-radius:0;border:0;padding:16px 18px 96px;overflow-y:auto;background:var(--bg);animation:sheetIn .25s ease both}
+  .filters.open .filters-close{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--ice);color:var(--ink);font-size:26px}
+  .filters.open .filters-foot{display:block;position:fixed;left:0;right:0;bottom:0;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:var(--glass);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+  .filters.open .filters-foot .btn{min-height:52px}
+  body.sheet-open{overflow:hidden}
+  body.sheet-open .top,body.sheet-open .demo-bar{visibility:hidden}
+  body.sheet-open .tabbar,body.sheet-open .reboot{display:none}
+  .results-bar{flex-wrap:nowrap}
+  .results-bar .count{order:3;margin-left:auto;white-space:nowrap}
+  .sort{font-size:0;gap:0}
+  .sort select{font-size:14px}
+}
+@media (max-width:400px){.results-bar{flex-wrap:wrap}.results-bar .count{flex-basis:100%;order:3;margin:0}}
+@keyframes sheetIn{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+/* Téléphone */
+@media (max-width:680px){
+  input,select,textarea{font-size:16px!important}
+  .search-go{width:44px;min-height:40px;padding:0!important;border-radius:50%}
+  .search-go .icon{display:block;width:20px;height:20px}
+  .search-go-label{display:none}
+  .search{padding-left:14px}
+  .demo-bar{padding:6px 10px}
+  body.hdr-hide .top{transform:translateY(calc(-100% + 0px))}
+  .top{position:sticky}
+  .page-head{padding-top:18px}
+  .results-bar{gap:8px}
+  .filters-toggle{min-height:40px;padding:6px 14px}
+  .buy-sticky{position:sticky;bottom:calc(72px + env(safe-area-inset-bottom));z-index:5;background:var(--glass);backdrop-filter:blur(10px);margin:0 -18px;padding:10px 18px;border-top:1px solid var(--line)}
+  .product-info{padding:22px 18px}
+  .products-row>.card{flex:0 0 44%}
+  .hero h1{font-size:34px}
+  .hero-inner{padding-block:20px}
+  .section{margin:38px 0}
+}
 .more-wrap{grid-column:1/-1;display:flex;justify-content:center;padding:10px 0}
 .net-bar{position:sticky;top:0;z-index:70;background:var(--danger);color:#fff;text-align:center;font-size:13px;font-weight:650;padding:8px 12px}
 #accountContent,#view-compte .page-head{max-width:1100px}
@@ -575,8 +634,8 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 [hidden]{display:none!important}
 h1,h2,h3,.page-title{letter-spacing:-.02em}
 .section{margin:52px 0}
-.view:not([hidden]){animation:viewIn .28s ease both}
-@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.view:not([hidden]){animation:viewIn .28s ease}
+@keyframes viewIn{from{opacity:0}to{opacity:1}}
 .card-img img{transition:transform .45s ease}
 .card:hover .card-img img{transform:scale(1.045)}
 .card-tag{font-size:10px;padding:2px 8px;opacity:.9}
@@ -654,7 +713,7 @@ body{transition:background .2s ease,color .2s ease}
       <label for="searchInput" class="sr-only">Rechercher des vêtements</label>
       <input id="searchInput" type="search" placeholder="Que recherches-tu aujourd’hui ?" autocomplete="off" list="searchSuggest">
       <datalist id="searchSuggest"></datalist>
-      <button class="btn btn-primary" type="submit">Rechercher</button>
+      <button class="btn btn-primary search-go" type="submit" aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="search-go-label">Rechercher</span></button>
     </form>
     <div class="actions">
       <a class="action" href="#/messages" id="messagesBtn" aria-label="Messages">
@@ -755,7 +814,7 @@ body{transition:background .2s ease,color .2s ease}
   </div>
   <div class="catalogue">
     <aside class="filters" id="filters" aria-label="Filtres">
-      <h2>Filtres</h2>
+      <div class="filters-head"><h2>Filtres</h2><button type="button" class="filters-close" id="filtersClose" aria-label="Fermer les filtres">×</button></div>
       <form id="filterForm">
         <div class="filter-group">
           <label class="filter-label" for="fQuery">Recherche</label>
@@ -775,6 +834,7 @@ body{transition:background .2s ease,color .2s ease}
         <div class="filter-group"><label class="filter-label" for="fBrand">Marque</label><select class="input" id="fBrand"></select></div>
         <div class="filter-group"><label class="filter-label" for="fStyle">Style</label><select class="input" id="fStyle"></select></div>
         <button type="button" class="btn btn-outline btn-block" id="resetFilters">Réinitialiser les filtres</button>
+        <div class="filters-foot"><button type="button" class="btn btn-primary btn-block" id="filtersApply">Voir les résultats</button></div>
       </form>
     </aside>
     <section aria-labelledby="catalogueTitle">
@@ -1686,6 +1746,7 @@ function renderCatalogue(rebuild=true){
   const title=filters.q?`Résultats pour « ${filters.q} »`:filters.seller?`Les articles de ${filters.seller}`:filters.category?`Vêtements · ${filters.category}`:filters.style?`Style · ${filters.style}`:filters.season?`Sélection de saison · ${filters.season}`:filters.sort==="populaires"?"Les plus appréciés":"Tous les vêtements";
   $("catalogueTitle").textContent=title;
   $("resultCount").textContent=`${list.length} article${list.length>1?"s":""}`;
+  $("filtersApply").textContent=list.length?`Voir ${list.length} article${list.length>1?"s":""}`:"Aucun article";
   const act=[];
   if(filters.q)act.push(["q","",`« ${filters.q} »`]);
   if(filters.category)act.push(["category","",filters.category]);
@@ -1721,8 +1782,8 @@ function renderProduct(id){
   if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
-  else if(payOn()&&!p.demo) actions=`<div class="buy-actions"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/></svg> Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
-  else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions"><button type="button" class="btn btn-primary" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div><div id="contactNote"></div>`;
+  else if(payOn()&&!p.demo) actions=`<div class="buy-actions buy-sticky"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/></svg> Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
+  else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions buy-sticky"><button type="button" class="btn btn-primary" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div><div id="contactNote"></div>`;
   else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div>`;
   const eyebrow=p.mine?"Ton annonce":p.demo?"Annonce de démonstration":p.sellerVacation?"Vendeur en vacances":"";
   v.innerHTML=`
@@ -1753,7 +1814,7 @@ function renderProduct(id){
       ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">Signaler cette annonce</button><div id="reportBox"></div>`:""}
     </div>
   </div>
-  ${similar.length?`<section class="section"><div class="section-head"><h2>Articles similaires</h2></div><div class="products" id="similarProducts"></div></section>`:""}`;
+  ${similar.length?`<section class="section"><div class="section-head"><h2>Articles similaires</h2></div><div class="products products-row" id="similarProducts"></div></section>`:""}`;
   if(similar.length)grid($("similarProducts"),similar,"");
   watchImages(v);
   v.querySelectorAll("[data-photo]").forEach(b=>b.addEventListener("click",()=>{$("mainPhoto").src=photos[+b.dataset.photo];v.querySelectorAll("[data-photo]").forEach(x=>x.setAttribute("aria-current",x===b))}));
@@ -2289,7 +2350,7 @@ function renderView(){
   updateCounts();fillSuggestions();
 }
 let lastHash=location.hash;
-window.addEventListener("hashchange",()=>{const was=lastHash;lastHash=location.hash;renderView();if(!(was.startsWith("#/compte")&&location.hash.startsWith("#/compte")))window.scrollTo(0,0);$("filters").classList.remove("open");$("filtersToggle").setAttribute("aria-expanded","false")});
+window.addEventListener("hashchange",()=>{const was=lastHash;lastHash=location.hash;renderView();if(!(was.startsWith("#/compte")&&location.hash.startsWith("#/compte")))window.scrollTo(0,0);$("filters").classList.remove("open");$("filtersToggle").setAttribute("aria-expanded","false");document.body.classList.remove("sheet-open")});
 
 /* =========================================================
    ÉVÉNEMENTS
@@ -2438,7 +2499,11 @@ $("fQuery").addEventListener("input",e=>{clearTimeout(qTimer);qTimer=setTimeout(
 ["fMin","fMax"].forEach(id=>$(id).addEventListener("input",e=>{filters[id==="fMin"?"min":"max"]=e.target.value===""||+e.target.value<0?"":e.target.value;renderCatalogue(false)}));
 $("sortSelect").addEventListener("change",e=>{filters.sort=e.target.value;renderCatalogue(false)});
 $("resetFilters").addEventListener("click",()=>{resetFilters();$("searchInput").value="";renderCatalogue()});
-$("filtersToggle").addEventListener("click",()=>{const o=$("filters").classList.toggle("open");$("filtersToggle").setAttribute("aria-expanded",o)});
+function setFiltersOpen(o){$("filters").classList.toggle("open",o);$("filtersToggle").setAttribute("aria-expanded",o);document.body.classList.toggle("sheet-open",o&&innerWidth<=920);if(o&&innerWidth<=920)setTimeout(()=>$("filtersClose").focus(),50);else if(!o)$("filtersToggle").focus()}
+$("filtersToggle").addEventListener("click",()=>setFiltersOpen(!$("filters").classList.contains("open")));
+$("filtersClose").addEventListener("click",()=>setFiltersOpen(false));
+$("filtersApply").addEventListener("click",()=>{setFiltersOpen(false);$("catalogueTitle").scrollIntoView({block:"start"})});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("filters").classList.contains("open")&&innerWidth<=920)setFiltersOpen(false)});
 const seasonGo=()=>openCatalogue({season:currentSeason()});
 $("seasonBtn").addEventListener("click",seasonGo);$("discoverSeason").addEventListener("click",seasonGo);
 
@@ -2672,6 +2737,10 @@ function setTheme(mode){
 function paintTheme(){const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=effectiveTheme()==="dark"?"#102233":"#294B68"}
 if(darkMQ&&darkMQ.addEventListener)darkMQ.addEventListener("change",paintTheme);
 paintTheme();
+/* En-tête compact au défilement (téléphone) */
+let lastY=scrollY;
+addEventListener("scroll",()=>{if(innerWidth>680){document.body.classList.remove("hdr-hide");return}
+  const y=scrollY;if(y>140&&y>lastY+6)document.body.classList.add("hdr-hide");else if(y<lastY-6||y<140)document.body.classList.remove("hdr-hide");lastY=y},{passive:true});
 /* Hors connexion */
 function netBanner(){let b=$("netBar");if(navigator.onLine){if(b)b.remove();return}
   if(!b){document.body.insertAdjacentHTML("afterbegin",`<div id="netBar" class="net-bar" role="status">Tu es hors connexion. Certaines actions ne fonctionneront pas avant le retour du réseau.</div>`)}}
