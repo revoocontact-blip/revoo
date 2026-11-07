@@ -222,6 +222,15 @@ textarea.input{min-height:110px;resize:vertical}
 .seller-box .avatar{margin:0;width:46px;height:46px;font-size:19px}
 .seller-box div{flex:1}
 .phase1 #cartBtn{display:none}
+.rating{color:#B07B12;font-weight:700;font-size:14px;white-space:nowrap}
+.review{border-bottom:1px solid var(--line);padding:12px 0}
+.review:last-child{border-bottom:0}
+.review p{margin:4px 0 0}
+.star-pick{display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:4px;border:0;padding:0;margin:0 0 10px}
+.star-pick input{position:absolute;opacity:0;width:1px;height:1px}
+.star-pick label{font-size:30px;color:var(--line);cursor:pointer;line-height:1}
+.star-pick input:checked~label,.star-pick label:hover,.star-pick label:hover~label{color:#E0A526}
+.star-pick input:focus-visible+label{outline:3px solid var(--navy);border-radius:4px}
 .order-body{display:flex;gap:14px;align-items:flex-start}
 .order-img{width:64px;height:80px;border-radius:10px;flex:none}
 .order-steps{list-style:none;display:flex;gap:6px;padding:0;margin:0 0 4px;flex-wrap:wrap}
@@ -706,7 +715,8 @@ const CONFIG = {
                               // true  = PHASE 2 : panier, paiement intégré et frais ci-dessous
   fraisPar: "article",        // "article" = 1 € par article (10 articles = 10 €) · "commande" = 1 € par commande
   maxPhotos: 5,
-  afficherDemo: true,         // true = afficher aussi les 12 articles d'exemple (marqués « Démo »)
+  afficherDemo: "auto",       // "auto" = articles d'exemple affichés tant qu'il y a moins de 12 vraies annonces · true = toujours · false = jamais
+  seuilDemo: 12,
   supabase: {
     url: "https://htisbuqxnqdahtedgiiz.supabase.co",
     cle: "sb_publishable_cLjICW9P_sAFA-lRKpjHdw_LRrlcNeM"   // clé PUBLIQUE (faite pour être dans le site)
@@ -818,8 +828,13 @@ function sellerInfo(p){
 }
 
 /* Produits disponibles = annonces réelles + démo, sans les articles vendus */
-function allProducts(){return [...state.remote, ...(CONFIG.afficherDemo?DEMO_PRODUCTS:[])]}
+function showDemo(){return CONFIG.afficherDemo===true||(CONFIG.afficherDemo==="auto"&&state.remote.filter(p=>p.status==="active").length<CONFIG.seuilDemo)}
+function allProducts(){return [...state.remote, ...(showDemo()?DEMO_PRODUCTS:[])]}
 function available(){return allProducts().filter(p=>p.status==="active"&&!state.sold.includes(p.id))}
+function sellerReviews(id){return (state.reviews||[]).filter(r=>r.seller_id===id&&(!r.demo||(typeof PAY_DEMO!=="undefined"&&PAY_DEMO)))}
+function ratingOf(id){const l=sellerReviews(id);return l.length?{avg:l.reduce((t,r)=>t+r.rating,0)/l.length,n:l.length}:null}
+const starsTxt=n=>"★".repeat(Math.round(n))+"☆".repeat(5-Math.round(n));
+function ratingHtml(id,small){const r=ratingOf(id);if(!r)return small?"":`<span class="muted small">Pas encore d’avis</span>`;return `<span class="rating" aria-label="Note ${r.avg.toFixed(1).replace(".",",")} sur 5, ${r.n} avis"><span aria-hidden="true">${starsTxt(r.avg)}</span> ${r.avg.toFixed(1).replace(".",",")} · ${r.n} avis</span>`}
 function findProduct(id){return allProducts().find(p=>p.id===id)}
 const isFav = id => state.favorites.includes(id);
 const inCart = id => state.cart.includes(id);
@@ -845,6 +860,7 @@ async function loadListings(){
   if(error){state.loadError=frenchError(error);console.warn(error);return}
   state.loadError="";
   state.remote=(data||[]).map(mapListing);
+  try{const r=await sb.from("reviews").select("id,order_id,seller_id,buyer_id,rating,comment,demo,created_at,buyer:profiles!reviews_buyer_id_fkey(name)").order("created_at",{ascending:false}).limit(1000);if(!r.error)state.reviews=r.data||[]}catch(e){}
 }
 async function loadProfile(session){
   const u=session.user;
@@ -1116,6 +1132,7 @@ function orderSteps(o){
 function orderCard(o,role){
   const me=role==="buyer";
   let actions="";
+  if(me&&o.status==="received"){const rv=(state.reviews||[]).find(r=>r.order_id===o.id);actions=rv?`<span class="rating">Ton avis : ${starsTxt(rv.rating)}</span>`:`<button type="button" class="btn btn-primary" data-order="review-form" data-id="${o.id}">⭐ Laisser un avis</button>`}
   if(me&&["paid","shipped"].includes(o.status))actions=`<button type="button" class="btn btn-primary" data-order="received" data-id="${o.id}">J’ai bien reçu l’article</button><button type="button" class="btn btn-outline" data-order="problem-form" data-id="${o.id}">Signaler un problème</button>`;
   if(!me&&o.status==="paid"){
     actions=o.delivery==="colis"
@@ -1173,6 +1190,12 @@ async function orderAction(action,id){
   else if(action==="cancel"){if(!confirm("Annuler cette vente ? L’acheteur sera remboursé et l’article remis en vente."))return;r=await sb.rpc("cancel_order",{p_order:id})}
   else if(action==="admin-cancel"){if(!confirm("Annuler la commande et rembourser l’acheteur ?"))return;r=await sb.rpc("cancel_order",{p_order:id})}
   else if(action==="admin-close"){if(!confirm("Clore le litige en faveur du vendeur ?"))return;r=await sb.rpc("admin_close_problem",{p_order:id})}
+  else if(action==="review-form"){
+    const box=$("pf-"+id);if(!box)return;if(box.innerHTML){box.innerHTML="";return}
+    box.innerHTML=`<form class="panel" style="margin-top:10px" data-review="${id}" novalidate><fieldset class="star-pick"><legend class="label" style="width:100%">Ta note</legend>${[5,4,3,2,1].map(n=>`<input type="radio" name="stars-${id}" id="st-${id}-${n}" value="${n}"><label for="st-${id}-${n}" title="${n} étoile${n>1?"s":""}"><span aria-hidden="true">★</span><span class="sr-only">${n} étoile${n>1?"s":""}</span></label>`).join("")}</fieldset><span class="error" id="st-${id}Err"></span>
+      <div class="field"><label for="rv-${id}">Ton commentaire <span class="hint">(facultatif, public)</span></label><textarea class="input" id="rv-${id}" maxlength="500" placeholder="Article conforme, envoi rapide…"></textarea></div><button class="btn btn-primary" type="submit">Publier mon avis</button></form>`;
+    return;
+  }
   else if(action==="problem-form"){
     const box=$("pf-"+id);if(!box)return;if(box.innerHTML){box.innerHTML="";return}
     box.innerHTML=`<form class="panel" style="margin-top:10px" data-problem="${id}" novalidate><div class="field"><label for="pr-${id}">Quel est le problème ?</label><textarea class="input" id="pr-${id}" maxlength="1000" placeholder="Ex. : je n’ai rien reçu, l’article ne correspond pas…"></textarea><span class="error" id="pr-${id}Err"></span></div><button class="btn btn-primary" type="submit">Envoyer</button></form>`;
@@ -1353,13 +1376,14 @@ async function renderSellerProfile(id){
       <div style="flex:1;min-width:200px">
         <p class="crumbs"><a href="#/">Accueil</a> › Profil</p>
         <h1>${esc(pr.name)}</h1>
-        <div class="profile-meta">${pr.city?`<span>📍 ${esc(pr.city)}</span>`:""}<span>🗓️ Membre depuis ${since}</span><span>👕 ${items.length} article${items.length>1?"s":""} en vente</span></div>
+        <div class="profile-meta">${pr.city?`<span>📍 ${esc(pr.city)}</span>`:""}<span>🗓️ Membre depuis ${since}</span><span>👕 ${items.length} article${items.length>1?"s":""} en vente</span>${ratingHtml(id)}</div>
       </div>
       ${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}
     </div>
     ${pr.bio?`<p class="profile-bio">${esc(pr.bio)}</p>`:me?`<p class="muted small">Ajoute une présentation depuis « Modifier mon profil » : les acheteurs aiment savoir à qui ils achètent.</p>`:""}
     ${!me&&items.length?`<p class="note small">Pour écrire à ${esc(pr.name)}, ouvre une de ses annonces et clique sur « Contacter ».</p>`:""}
-    <section class="section" style="margin-top:24px"><div class="section-head"><h2>Ses articles</h2></div><div class="products" id="profileProducts"></div></section>`;
+    <section class="section" style="margin-top:24px"><div class="section-head"><h2>Ses articles</h2></div><div class="products" id="profileProducts"></div></section>
+    ${sellerReviews(id).length?`<section class="section"><div class="section-head"><h2>Avis (${sellerReviews(id).length})</h2></div><div class="panel">${sellerReviews(id).map(r=>`<div class="review"><span class="rating" aria-label="${r.rating} sur 5">${starsTxt(r.rating)}</span> <b>${esc(r.buyer?.name||"Acheteur")}</b> <span class="muted small">· ${new Date(r.created_at).toLocaleDateString("fr-FR")}${r.demo?" · démo":""}</span>${r.comment?`<p>${esc(r.comment)}</p>`:""}${state.isAdmin?`<p><button type="button" class="link small" data-delreview="${r.id}">Supprimer cet avis (modération)</button></p>`:""}</div>`).join("")}</div></section>`:""}`;
   grid($("profileProducts"),items,me?`<p>Tu n’as aucun article en vente pour le moment.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a>`:`<p>${esc(pr.name)} n’a aucun article en vente pour le moment.</p>`);
   document.title=`${pr.name} — Revoo`;
 }
@@ -1406,7 +1430,7 @@ function renderHome(){
     .map(o=>`<button type="button" class="pill" data-category="${o.c}">${o.c}<span>${o.n}</span></button>`).join("");
   // nouveaux vendeurs : vrais membres récents d'abord, puis vendeurs de démonstration
   const real=[];state.remote.filter(p=>p.status==="active").sort((a,b)=>Date.parse(b.sellerSince||0)-Date.parse(a.sellerSince||0)).forEach(p=>{if(!real.find(r=>r.id===p.sellerId))real.push({id:p.sellerId,name:p.seller,emoji:sellerInfo(p).emoji})});
-  const list=[...real,...(CONFIG.afficherDemo?SELLERS:[])].slice(0,6);
+  const list=[...real,...(showDemo()?SELLERS:[])].slice(0,6);
   $("sellers").innerHTML=list.map(s=>{const n=av.filter(p=>s.id?p.sellerId===s.id:(p.seller===s.name&&!p.sellerId)).length;const inner=`<span class="avatar" aria-hidden="true">${s.emoji}</span><small>${esc(s.name)}</small><em>${n} article${n>1?"s":""}</em>`;
     return s.id?`<a class="seller" href="#/vendeur/${s.id}" aria-label="Profil de ${esc(s.name)}">${inner}</a>`:`<button type="button" class="seller" data-seller="${esc(s.name)}" aria-label="Voir les articles de ${esc(s.name)}">${inner}</button>`}).join("")
     + `<a class="seller seller-join" href="#/vendre"><span class="avatar" aria-hidden="true">＋</span><small>Vendre</small><em>Rejoins-les</em></a>`;
@@ -1519,7 +1543,7 @@ function renderProduct(id){
       ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
       ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">🛡️ Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
-      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span></div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
+      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
       ${p.mine||sold||!CONFIG.paiementIntegre?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px">💬 Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
       ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">🚩 Signaler cette annonce</button><div id="reportBox"></div>`:""}
     </div>
@@ -1933,6 +1957,7 @@ document.addEventListener("click",async e=>{
   const del=t.closest("[data-delete]");if(del){deleteListing(del.dataset.delete);return}
   const oa=t.closest("[data-order]");if(oa){orderAction(oa.dataset.order,oa.dataset.id);return}
   const ct=t.closest("[data-contact]");if(ct){const pr=findProduct(ct.dataset.contact);if(pr)contactSeller(pr);return}
+  const dr=t.closest("[data-delreview]");if(dr){if(confirm("Supprimer cet avis ?")){const {error}=await sb.from("reviews").delete().eq("id",dr.dataset.delreview);if(error)toast(frenchError(error));else{toast("Avis supprimé.");await loadListings();renderView()}}return}
   const md=t.closest("[data-mod]");if(md){md.disabled=true;moderate(md.dataset.mod,md.dataset.report,md.dataset.listing);return}
   const sta=t.closest("[data-status]");if(sta){sta.disabled=true;toggleStatus(sta.dataset.status);return}
   const un=t.closest("[data-unfilter]");if(un){const k=un.dataset.unfilter;if(Array.isArray(filters[k]))filters[k]=filters[k].filter(x=>x!==un.dataset.value);else filters[k]=k==="sort"?"recent":"";if(k==="q")$("searchInput").value="";renderCatalogue();return}
@@ -1956,6 +1981,11 @@ const redirectUrl=()=>location.origin+location.pathname;
 document.addEventListener("submit",async e=>{
   const f=e.target;
   if(f.dataset.problem){e.preventDefault();submitProblem(f.dataset.problem,f);return}
+  if(f.dataset.review){e.preventDefault();const id=f.dataset.review;const st=f.querySelector('input[name="stars-'+id+'"]:checked');
+    if(!st){$("st-"+id+"Err").textContent="Choisis une note de 1 à 5 étoiles.";return}
+    busy(f,true,"Publication…");const {error}=await sb.rpc("leave_review",{p_order:id,p_rating:+st.value,p_comment:$("rv-"+id).value.trim()||null});busy(f,false);
+    if(error){toast(frenchError(error));return}
+    toast("Merci pour ton avis !");await loadListings();renderView();return}
   if(f.id==="signupForm"){e.preventDefault();
     const name=$("sName").value.trim(),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();
     const ok=fieldError("sName","sNameErr",name.length<2?"Indique ton prénom ou un pseudo (2 caractères minimum).":"") & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"");
