@@ -1661,8 +1661,7 @@ function renderAccount(tab){
       </div>
       <div class="field"><label for="sEmail">Adresse e-mail</label><input class="input" id="sEmail" type="email" autocomplete="email" required><span class="error" id="sEmailErr"></span></div>
       ${pwdField("sPwd","Mot de passe","new-password")}
-      <label class="check-line"><input type="checkbox" id="sTerms"><span>J’ai lu et j’accepte les <a class="link" href="#/conditions" target="_blank">conditions d’utilisation</a> et la <a class="link" href="#/confidentialite" target="_blank">politique de confidentialité</a>. J’ai au moins ${LEGAL.ageMin} ans ; si j’ai moins de 18 ans, mes parents sont d’accord.</span></label>
-      <span class="error" id="sTermsErr"></span>
+      <p class="muted small">En créant ton compte, tu acceptes les <a class="link" href="#/conditions" target="_blank">conditions d’utilisation</a> et la <a class="link" href="#/confidentialite" target="_blank">politique de confidentialité</a>.</p>
       <button class="btn btn-primary" type="submit">Créer mon compte</button>
       <p class="error" id="signupErr" role="alert"></p><p class="note small" id="signupOk" hidden></p>
     </form>`}`;
@@ -1758,8 +1757,6 @@ function renderSell(editId){
       <div class="field"><label for="tStyle">Style <span class="hint">(facultatif)</span></label><select class="input" id="tStyle">${opt(STYLES,l?.style,"Aucun")}</select></div>
       <div class="field"><label for="tPrice">Prix (€)</label><input class="input" id="tPrice" type="number" inputmode="decimal" min="1" max="10000" step="0.5" value="${l?l.price:""}"><span class="hint" id="priceHint"></span><span class="error" id="tPriceErr"></span></div>
     </div>
-    <label class="check-line"><input type="checkbox" id="tLegal" ${l?"checked":""}><span>Je certifie que cet article m’appartient, qu’il est légal et que l’annonce respecte les <a class="link" href="#/conditions" target="_blank">conditions d’utilisation</a>.</span></label>
-    <span class="error" id="tLegalErr"></span>
     <div class="buy-actions"><button class="btn btn-primary" type="submit" id="sellSubmit">${l?"Enregistrer les modifications":"Publier l’annonce"}</button>${l?`<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button>`:""}</div>
     <p class="error" id="sellErr" role="alert"></p>
   </form>`;
@@ -1809,7 +1806,6 @@ async function submitListing(existing){
   ok&=fieldError("tCond","tCondErr",v("tCond")?"":"Choisis l’état du vêtement.");
   ok&=fieldError("tPrice","tPriceErr",!(price>=1&&price<=10000)?"Indique un prix entre 1 € et 10 000 €.":"");
   $("photoErr").textContent=draftPhotos.length?"":"Ajoute au moins une photo.";if(!draftPhotos.length)ok=false;
-  ok&=fieldError("tLegal","tLegalErr",$("tLegal").checked?"":"Coche la case pour confirmer.");
   if(!ok){$("sellErr").textContent="Certains champs sont à corriger.";document.querySelector('#sellForm [aria-invalid="true"]')?.focus();return}
   const btn=$("sellSubmit"),label=btn.textContent;btn.disabled=true;btn.textContent="Publication en cours…";$("sellErr").textContent="";
   try{
@@ -2097,7 +2093,7 @@ document.addEventListener("submit",async e=>{
     toast("Merci pour ton avis !");await loadListings();renderView();return}
   if(f.id==="signupForm"){e.preventDefault();
     const name=$("sName").value.trim(),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();
-    const ok=fieldError("sName","sNameErr",name.length<2?"Indique ton prénom ou un pseudo (2 caractères minimum).":"") & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"") & fieldError("sTerms","sTermsErr",$("sTerms").checked?"":"Coche la case pour accepter les conditions.");
+    const ok=fieldError("sName","sNameErr",name.length<2?"Indique ton prénom ou un pseudo (2 caractères minimum).":"") & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"");
     if(!ok)return;
     busy(f,true,"Création…");$("signupErr").textContent="";
     const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city},emailRedirectTo:redirectUrl()}});
