@@ -527,6 +527,38 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 /* ---------- Finitions ---------- */
+.acct{position:relative}
+.acct-btn{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 10px 4px 4px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font-weight:700;font-size:14px}
+.acct-btn:hover{border-color:var(--sky);background:var(--ice)}
+.acct-av{width:34px;height:34px;margin:0;font-size:15px;font-weight:800;background:var(--brand);color:var(--on-brand);border:0;box-shadow:none}
+.acct-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-chev{width:16px;height:16px;color:var(--muted);transition:transform .2s}
+.acct-btn[aria-expanded="true"] .acct-chev{transform:rotate(180deg)}
+.acct-menu{position:absolute;right:0;top:calc(100% + 8px);width:250px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:8px;z-index:60}
+.acct-menu-head{display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;cursor:pointer;margin-bottom:4px}
+.acct-menu-head:hover{background:var(--ice)}
+.acct-menu-head small{display:block;color:var(--muted);font-size:12px}
+.acct-av-lg{width:42px;height:42px;margin:0;font-size:18px;font-weight:800;background:var(--brand);color:var(--on-brand);border:0;box-shadow:none}
+.acct-menu a,.acct-menu button{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;border:0;background:none;font-size:14px;font-weight:600;color:var(--ink)}
+.acct-menu a:hover,.acct-menu button:hover{background:var(--ice)}
+.acct-menu button{color:var(--danger);border-top:1px solid var(--line);border-radius:0 0 10px 10px;margin-top:4px}
+.pp{background:var(--surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:var(--ring)}
+.pp-cover{height:120px;background:linear-gradient(120deg,var(--sky),var(--brand))}
+.pp-body{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;padding:12px 24px 0}
+.pp-avatar{width:108px;height:108px;margin:-66px 0 0;font-size:44px;font-weight:800;background:var(--brand);color:var(--on-brand);border:5px solid var(--surface);box-shadow:none;flex:none}
+.pp-id{flex:1;min-width:200px;padding-top:4px}
+.pp-id h1{margin:0;font-size:26px;color:var(--heading);letter-spacing:-.02em}
+.pp-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.pp-chips span{font-size:12px;font-weight:650;color:var(--navy);background:var(--ice);border-radius:99px;padding:4px 10px}
+.pp-actions{display:flex;gap:8px;padding-top:4px}
+.pp-actions .btn{min-height:40px;padding:8px 16px;font-size:14px}
+.pp-bio{margin:14px 24px 0;white-space:pre-line;max-width:720px}
+.pp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line);margin-top:18px}
+.pp-stats div{background:var(--surface);padding:14px;text-align:center}
+.pp-stats b{display:block;font-size:20px;color:var(--heading)}
+.pp-stats span{font-size:12px;color:var(--muted)}
+@media (max-width:680px){.acct{display:none!important}}
+@media (max-width:680px){.pp-cover{height:90px}.pp-body{padding:10px 16px 0;gap:12px}.pp-avatar{width:88px;height:88px;font-size:36px;margin-top:-54px}.pp-id h1{font-size:22px}.pp-bio{margin:12px 16px 0}.pp-actions{width:100%}.pp-actions .btn{flex:1}}
 .avatar img,.mini-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 .avatar,.mini-avatar{overflow:hidden}
 .avatar-edit{display:flex;align-items:center;gap:16px;margin:10px 0 16px}
@@ -741,6 +773,20 @@ body{transition:background .2s ease,color .2s ease}
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
         <span class="label" id="loginLabel">Se connecter</span>
       </a>
+      <div class="acct" id="acctWrap" hidden>
+        <button type="button" class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false" aria-controls="acctMenu">
+          <span class="avatar acct-av" id="acctAv" aria-hidden="true"></span><span class="acct-name" id="acctName"></span><svg class="icon acct-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="acct-menu" id="acctMenu" hidden>
+          <div class="acct-menu-head"><span class="avatar acct-av-lg" id="acctAv2" aria-hidden="true"></span><div><b id="acctName2"></b><small>Voir mon profil public</small></div></div>
+          <a href="#/compte/profil">Profil et paramètres</a>
+          <a href="#/compte/annonces">Mes annonces</a>
+          <a href="#/messages">Messages</a>
+          <a href="#/favoris">Favoris</a>
+          <a href="#/vendre">Vendre un vêtement</a>
+          <button type="button" id="acctLogout">Se déconnecter</button>
+        </div>
+      </div>
     </div>
   </div>
   <nav class="wrap subnav" aria-label="Catégories">
@@ -1134,6 +1180,8 @@ async function loadProfile(session){
     if(!r.error&&r.data){state.user.v2=true;state.user.avatar=r.data.avatar_url||"";state.user.cityPublic=!!r.data.city_public;
       const q=await sb.from("profiles_private").select("first_name,last_name,city").eq("id",u.id).maybeSingle();
       if(!q.error&&q.data){state.user.firstName=q.data.first_name||"";state.user.lastName=q.data.last_name||"";state.user.city=q.data.city||state.user.city}}}catch(e){}
+  state.user.uChanges=null;state.user.uChangedAt=null;
+  try{const r=await sb.from("profiles").select("username_changes,username_changed_at").eq("id",u.id).maybeSingle();if(!r.error&&r.data){state.user.uChanges=r.data.username_changes||0;state.user.uChangedAt=r.data.username_changed_at}}catch(e){}
   state.user.vacation=null;
   try{const r=await sb.from("profiles").select("vacation").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.vacation=!!r.data.vacation}catch(e){}
 }
@@ -1641,22 +1689,36 @@ async function renderSellerProfile(id){
   const items=available().filter(p=>p.sellerId===id).sort((a,b)=>b.addedAt-a.addedAt);
   const me=state.user&&state.user.id===id;
   const since=new Date(pr.created_at).toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+  const revs=sellerReviews(id), rt=ratingOf(id), tab=(location.hash.split("?")[1]==="avis")?"avis":"articles";
   v.innerHTML=`
-    <div class="profile-head">
-      <span class="avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
-      <div style="flex:1;min-width:200px">
-        <p class="crumbs"><a href="#/">Accueil</a> › Profil</p>
-        <h1>@${esc(pr.name)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1>
-        <div class="profile-meta">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span><span>${items.length} article${items.length>1?"s":""} en vente</span>${ratingHtml(id)}</div>
+    <p class="crumbs" style="padding-top:18px"><a href="#/">Accueil</a> › Profil</p>
+    <section class="pp">
+      <div class="pp-cover" aria-hidden="true"></div>
+      <div class="pp-body">
+        <span class="avatar pp-avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
+        <div class="pp-id">
+          <h1>@${esc(pr.name)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1>
+          <div class="pp-chips">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span></div>
+        </div>
+        <div class="pp-actions">${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}<button type="button" class="btn btn-outline" id="shareProfile">Partager</button></div>
       </div>
-      ${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}
+      ${pr.bio?`<p class="pp-bio">${esc(pr.bio)}</p>`:me?`<p class="pp-bio muted small">Ajoute une bio depuis « Modifier mon profil » : les acheteurs aiment savoir à qui ils achètent.</p>`:""}
+      <div class="pp-stats">
+        <div><b>${items.length}</b><span>Article${items.length>1?"s":""} en vente</span></div>
+        <div><b>${revs.length}</b><span>Avis</span></div>
+        <div><b>${rt?rt.avg.toFixed(1).replace(".",",")+" ★":"—"}</b><span>Note moyenne</span></div>
+      </div>
+    </section>
+    ${vac?`<p class="note small">${me?"Ton mode vacances est activé : tes annonces sont masquées pour les autres membres.":`@${esc(pr.name)} est en vacances : ses annonces sont temporairement masquées.`}</p>`:""}
+    <div class="tabs" role="tablist" style="margin-top:22px">
+      <button type="button" role="tab" aria-selected="${tab==="articles"}" data-pptab="articles">Articles (${items.length})</button>
+      <button type="button" role="tab" aria-selected="${tab==="avis"}" data-pptab="avis">Avis (${revs.length})</button>
     </div>
-    ${pr.bio?`<p class="profile-bio">${esc(pr.bio)}</p>`:me?`<p class="muted small">Ajoute une présentation depuis « Modifier mon profil » : les acheteurs aiment savoir à qui ils achètent.</p>`:""}
-    ${vac?`<p class="note small">${me?"Ton mode vacances est activé : tes annonces sont masquées pour les autres membres.":`${esc(pr.name)} est en vacances : ses annonces sont temporairement masquées.`}</p>`:""}
-    ${!me&&items.length?`<p class="note small">Pour écrire à ${esc(pr.name)}, ouvre une de ses annonces et clique sur « Contacter ».</p>`:""}
-    <section class="section" style="margin-top:24px"><div class="section-head"><h2>Ses articles</h2></div><div class="products" id="profileProducts"></div></section>
-    ${sellerReviews(id).length?`<section class="section"><div class="section-head"><h2>Avis (${sellerReviews(id).length})</h2></div><div class="panel">${sellerReviews(id).map(r=>`<div class="review"><span class="rating" aria-label="${r.rating} sur 5">${starsTxt(r.rating)}</span> <b>${esc(r.buyer?.name||"Acheteur")}</b> <span class="muted small">· ${new Date(r.created_at).toLocaleDateString("fr-FR")}${r.demo?" · démo":""}</span>${r.comment?`<p>${esc(r.comment)}</p>`:""}${state.isAdmin?`<p><button type="button" class="link small" data-delreview="${r.id}">Supprimer cet avis (modération)</button></p>`:""}</div>`).join("")}</div></section>`:""}`;
-  grid($("profileProducts"),items,me?`<p>Tu n’as aucun article en vente pour le moment.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a>`:`<p>${esc(pr.name)} n’a aucun article en vente pour le moment.</p>`);
+    <div id="ppArticles" ${tab==="articles"?"":"hidden"}><div class="products" id="profileProducts"></div>${!me&&items.length?`<p class="muted small" style="margin-top:14px">Pour écrire à @${esc(pr.name)}, ouvre une de ses annonces et clique sur « Je suis intéressé(e) ».</p>`:""}</div>
+    <div id="ppAvis" ${tab==="avis"?"":"hidden"}>${revs.length?`<div class="panel">${revs.map(r=>`<div class="review"><span class="rating" aria-label="${r.rating} sur 5">${starsTxt(r.rating)}</span> <b>@${esc(r.buyer?.name||"acheteur")}</b> <span class="muted small">· ${new Date(r.created_at).toLocaleDateString("fr-FR")}${r.demo?" · démo":""}</span>${r.comment?`<p>${esc(r.comment)}</p>`:""}${state.isAdmin?`<p><button type="button" class="link small" data-delreview="${r.id}">Supprimer cet avis (modération)</button></p>`:""}</div>`).join("")}</div>`:`<div class="empty"><p>Pas encore d’avis.</p></div>`}</div>`;
+  grid($("profileProducts"),items,me?`<p>Tu n’as aucun article en vente pour le moment.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a>`:`<p>@${esc(pr.name)} n’a aucun article en vente pour le moment.</p>`);
+  v.querySelectorAll("[data-pptab]").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.pptab;v.querySelectorAll("[data-pptab]").forEach(x=>x.setAttribute("aria-selected",x===b));$("ppArticles").hidden=t!=="articles";$("ppAvis").hidden=t!=="avis"}));
+  $("shareProfile").addEventListener("click",async()=>{const url=location.origin+location.pathname+"#/vendeur/"+id;try{if(navigator.share){await navigator.share({title:"@"+pr.name+" sur Revoo",url});return}await navigator.clipboard.writeText(url);toast("Lien du profil copié !")}catch(e){if(e&&e.name==="AbortError")return;prompt("Copie ce lien :",url)}});
   document.title=`${pr.name} — Revoo`;
 }
 
@@ -1909,6 +1971,14 @@ let accountTab="profil";
 const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 function fieldError(inputId,errId,msg){const i=$(inputId),e=$(errId);if(e)e.textContent=msg||"";if(i)i.setAttribute("aria-invalid",msg?"true":"false");return !msg}
 const pwdField=(id,label,auto)=>`<div class="field"><label for="${id}">${label}</label><input class="input" id="${id}" type="password" autocomplete="${auto}" minlength="8" required><span class="hint">8 caractères minimum.</span><span class="error" id="${id}Err"></span></div>`;
+function usernameRule(){
+  const u=state.user;if(!u||u.uChanges===null)return {can:true,msg:"3 à 20 caractères : lettres, chiffres, point, tiret ou _."};
+  const left=2-u.uChanges;
+  if(left<=0)return {can:false,msg:"Ton identifiant est définitif : tu l’as déjà modifié 2 fois."};
+  const next=new Date(Date.parse(u.uChangedAt||u.createdAt)+30*DAY);
+  if(Date.now()<next)return {can:false,msg:`Tu pourras le modifier à partir du ${next.toLocaleDateString("fr-FR")} (encore ${left} changement${left>1?"s":""} possible${left>1?"s":""}).`};
+  return {can:true,msg:`Tu peux le modifier encore ${left} fois, avec 30 jours d’attente entre deux changements. Ensuite, il sera définitif.`};
+}
 function walletTotals(){const sales=(typeof orders!=="undefined"?orders.mine:[]).filter(o=>state.user&&o.seller_id===state.user.id);
   return {pending:sales.filter(o=>["paid","shipped","problem"].includes(o.status)).reduce((t,o)=>t+Number(o.price),0),ready:sales.filter(o=>o.status==="received").reduce((t,o)=>t+Number(o.price),0)}}
 function appearanceHtml(){const tm=themeMode();return `<div class="panel"><h2>Apparence</h2><div class="set-row"><div><b>Thème du site</b><small>Clair, sombre, ou automatique selon ton appareil.</small></div><div class="segmented" role="radiogroup" aria-label="Apparence">${[["light","Clair"],["dark","Sombre"],["auto","Auto"]].map(([v,l])=>`<label><input type="radio" name="themeMode" value="${v}" ${tm===v?"checked":""}><span>${l}</span></label>`).join("")}</div></div></div>`}
@@ -1995,7 +2065,7 @@ function renderAccount(tab){
           ${state.user.avatar?`<button type="button" class="link small" id="avatarRemove">Retirer la photo</button>`:""}
           <p class="hint" style="margin:6px 0 0">Une photo carrée et nette rend ton profil plus rassurant.</p><span class="error" id="avatarErr"></span></div>
         </div>`:""}
-        <div class="field"><label for="pName">Identifiant</label><div class="at-input"><span aria-hidden="true">@</span><input class="input" id="pName" value="${esc(state.user.name)}" required maxlength="20" autocapitalize="off" spellcheck="false"></div><span class="hint">3 à 20 caractères : lettres, chiffres, point, tiret ou _.</span><span class="error" id="pNameErr"></span></div>
+        <div class="field"><label for="pName">Identifiant</label><div class="at-input"><span aria-hidden="true">@</span><input class="input" id="pName" value="${esc(state.user.name)}" required maxlength="20" autocapitalize="off" spellcheck="false" ${usernameRule().can?"":"disabled"}></div><span class="hint">${usernameRule().msg}</span><span class="error" id="pNameErr"></span></div>
         <div class="field"><label for="pBio">Bio <span class="hint">(facultatif)</span></label><textarea class="input" id="pBio" maxlength="300" placeholder="Quelques mots sur toi et ton style…">${esc(state.user.bio||"")}</textarea></div>
         ${state.user.v2?`<div class="set-row"><div><b>Afficher ma ville sur mon profil</b><small>${state.user.city?`Ta ville : ${esc(state.user.city)}.`:"Ajoute ta ville dans tes informations privées ci-dessous."}</small></div><label class="switch"><input type="checkbox" id="pCityPublic" ${state.user.cityPublic?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Afficher ma ville sur mon profil</span></label></div>`:""}
         <h2 style="margin-top:22px">Informations privées</h2>
@@ -2353,8 +2423,12 @@ function updateCounts(){
   $("tabMsg").textContent=chat.unread;$("tabMsg").hidden=!chat.unread;
   $("msgCount").textContent=chat.unread;$("msgCount").classList.toggle("has",chat.unread>0);
   $("messagesBtn").setAttribute("aria-label",`Messages (${chat.unread} non lu${chat.unread>1?"s":""})`);
-  $("loginLabel").textContent=state.user?state.user.name:"Se connecter";
-  $("loginBtn").setAttribute("aria-label",state.user?`Mon compte (${state.user.name})`:"Se connecter");
+  $("loginLabel").textContent="Se connecter";$("loginBtn").setAttribute("aria-label","Se connecter");
+  $("loginBtn").hidden=!!state.user;$("acctWrap").hidden=!state.user;
+  if(state.user){const n=state.user.name;$("acctName").textContent=n;$("acctName2").textContent="@"+n;
+    $("acctAv").innerHTML=avatarInner(n,state.user.avatar);$("acctAv2").innerHTML=avatarInner(n,state.user.avatar);
+    $("acctBtn").setAttribute("aria-label",`Mon compte (@${n})`);
+    document.querySelector(".acct-menu-head").onclick=()=>{location.hash="#/vendeur/"+state.user.id;setAcctMenu(false)}}
 }
 function renderView(){
   const [name="",arg]=location.hash.replace(/^#\/?/,"").split("/").map(decodeURIComponent);
@@ -2493,20 +2567,32 @@ document.addEventListener("submit",async e=>{
   if(f.id==="profileForm"){e.preventDefault();
     const name=$("pName").value.trim(),bio=$("pBio").value.trim()||null,city=$("pCity").value.trim()||null;
     if(!fieldError("pName","pNameErr",!USERNAME_RE.test(name)?"3 à 20 caractères : lettres sans accent, chiffres, point, tiret ou _ (pas d’espace).":""))return;
+    const nameChanged=name!==state.user.name;
+    if(nameChanged&&state.user.uChanges!==null){const left=2-state.user.uChanges;if(!confirm(`Changer ton identifiant en @${name} ?\n\n${left===1?"C’est ton dernier changement possible : il sera ensuite définitif.":"Tu pourras le changer une dernière fois dans 30 jours."}`))return}
     busy(f,true,"Enregistrement…");$("profileErr").textContent="";
     let error;
     if(state.user.v2){
       const cityPublic=$("pCityPublic")?$("pCityPublic").checked:false;
-      ({error}=await sb.from("profiles").update({name,bio,city_public:cityPublic,city:cityPublic?city:null}).eq("id",state.user.id));
+      const upd={bio,city_public:cityPublic,city:cityPublic?city:null};if(nameChanged)upd.name=name;
+      ({error}=await sb.from("profiles").update(upd).eq("id",state.user.id));
       if(!error)({error}=await sb.from("profiles_private").upsert({id:state.user.id,first_name:$("pFirst").value.trim()||null,last_name:$("pLast").value.trim()||null,city,updated_at:new Date().toISOString()}));
       if(!error)Object.assign(state.user,{cityPublic,firstName:$("pFirst").value.trim(),lastName:$("pLast").value.trim()});
-    } else ({error}=await sb.from("profiles").update({name,bio,city}).eq("id",state.user.id));
+    } else ({error}=await sb.from("profiles").update(nameChanged?{name,bio,city}:{bio,city}).eq("id",state.user.id));
+    if(!error&&nameChanged&&state.user.uChanges!==null){state.user.uChanges++;state.user.uChangedAt=new Date().toISOString()}
     busy(f,false);
     if(error){if(error.code==="23505"||/duplicate|unique/i.test(error.message||""))fieldError("pName","pNameErr","Cet identifiant est déjà pris. Essaie une variante.");else $("profileErr").textContent=frenchError(error);return}
     Object.assign(state.user,{name,city:city||"",bio:bio||""});
     await loadListings();toast("Profil enregistré.");renderView();
   }
 });
+
+/* Menu du compte (en-tête) */
+function setAcctMenu(o){$("acctMenu").hidden=!o;$("acctBtn").setAttribute("aria-expanded",o)}
+$("acctBtn").addEventListener("click",e=>{e.stopPropagation();setAcctMenu($("acctMenu").hidden)});
+$("acctMenu").addEventListener("click",e=>{if(e.target.closest("a"))setAcctMenu(false)});
+document.addEventListener("click",e=>{if(!e.target.closest("#acctWrap"))setAcctMenu(false)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("acctMenu").hidden){setAcctMenu(false);$("acctBtn").focus()}});
+$("acctLogout").addEventListener("click",async()=>{setAcctMenu(false);await sb.auth.signOut();state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0;toast("Tu es déconnecté.");location.hash="#/";renderView()});
 
 /* Photo de profil */
 function squareAvatar(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error("image"));img.onload=()=>{const side=Math.min(img.width,img.height),S=400,c=document.createElement("canvas");c.width=c.height=S;const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,S,S);ctx.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,S,S);c.toBlob(b=>b?res(b):rej(new Error("blob")),"image/jpeg",.85)};img.src=r.result};r.readAsDataURL(file)})}
