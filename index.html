@@ -515,6 +515,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 /* ---------- Finitions ---------- */
+.rb-sep{border:0;border-top:1px dashed var(--line);margin:10px 0}
 .reboot-next{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 [hidden]{display:none!important}
 h1,h2,h3,.page-title{letter-spacing:-.02em}
@@ -2340,7 +2341,7 @@ const KB=[
   // Vendre
   [/interdit|autorise|accepte|quoi vendre|chaussure|accessoire|sac|bijou/, ()=>`<p>Pour l’instant, Revoo est réservé aux <b>vêtements</b> (Femme, Homme, Enfant, Unisexe). D’autres catégories arriveront plus tard.</p><p>Tout ce qui est illégal est interdit : contrefaçons, articles volés ou dangereux…</p>${go("#/conditions","Conditions d’utilisation")}`],
   [/photo|image/, ()=>`<p>Des photos qui donnent envie :</p><p>• <b>Lumière du jour</b>, près d’une fenêtre, sans flash.<br>• <b>Fond simple</b> et clair (mur, drap).<br>• Le vêtement à plat, sur un cintre ou porté.<br>• 3 à 5 photos : face, dos, étiquette, et chaque défaut de près.<br>• La première photo sert de couverture : choisis la plus belle.</p>${ask("Bien rédiger mon annonce","Fixer le bon prix")}`],
-  [/prix|combien vendre|estimer|valeur/, t=>/vend|fixer|estimer|valeur|mettre/.test(t)?`<p>Pour fixer un bon prix :</p><p>• Regarde les articles similaires sur Revoo.<br>• En général, une pièce d’occasion se vend nettement moins cher que neuve : plus l’état est bon et la marque recherchée, plus tu peux viser haut.<br>• Un prix rond et raisonnable part plus vite.<br>• Tu peux modifier ton prix à tout moment dans Mon compte.</p>`:null],
+  [/prix|combien vendre|estimer|valeur/, t=>/vend|fixe|estim|valeur|mettre/.test(t)?`<p>Pour fixer un bon prix :</p><p>• Regarde les articles similaires sur Revoo.<br>• En général, une pièce d’occasion se vend nettement moins cher que neuve : plus l’état est bon et la marque recherchée, plus tu peux viser haut.<br>• Un prix rond et raisonnable part plus vite.<br>• Tu peux modifier ton prix à tout moment dans Mon compte.</p>`:null],
   [/description|rediger|titre|bien decrire/, ()=>`<p>Une bonne annonce :</p><p>• <b>Titre clair</b> : type + couleur + marque (ex. « Pull en laine bleu marine Zara »).<br>• <b>Description honnête</b> : matière, coupe, comment ça taille, défauts éventuels.<br>• Les <b>mesures</b> si possible (longueur, tour de poitrine…).<br>• Le bon état et la bonne taille.</p>`],
   [/modifier|supprimer (mon|une|l)?.?annonce|marquer vendu|retirer (mon|une)? ?annonce/, ()=>`<p>Dans <b>Mon compte › Mes annonces</b>, tu peux :</p><p>• <b>Modifier</b> une annonce (photos, prix, description) ;<br>• la <b>marquer vendue</b> : elle disparaît du catalogue ;<br>• la <b>supprimer</b> définitivement.</p>${go("#/compte/annonces","Mes annonces")}`],
   [/vend|annonce|deposer|publier|mettre en vente/, ()=>`<p>Vendre sur Revoo, c’est gratuit :</p><p>1. Crée ton compte.<br>2. Clique sur « Vendre », ajoute 1 à 5 photos.<br>3. Remplis titre, description, catégorie, marque, taille, état et prix.<br>4. Publie : ton annonce est visible par tous.</p>${go("#/vendre","Vendre un vêtement")}${ask("Conseils photos","Fixer le bon prix","Bien rédiger mon annonce")}`],
@@ -2349,7 +2350,7 @@ const KB=[
   [/guide des tailles|correspondance|quelle taille|ma taille|taille (enfant|bebe)|xs|xxl/, ()=>`<p>Les tailles sur Revoo :</p><p>• <b>Adultes</b> : XS, S, M, L, XL, XXL.<br>• <b>Enfants</b> : de 2 à 14 ans.</p><p>Les tailles varient selon les marques : demande les <b>mesures</b> au vendeur (longueur, largeur à plat) et compare avec un vêtement à toi qui te va bien.</p>`],
   [/marque/, ()=>`<p>Tu peux filtrer par marque dans le catalogue : ouvre « Explorer », puis le filtre <b>Marque</b>. Tu peux aussi taper directement la marque dans la recherche.</p>${go("#/catalogue","Ouvrir le catalogue")}`],
   [/entretien|laver|lavage|tache|repasser|bouloch/, ()=>`<p>Pour donner une longue vie à tes vêtements :</p><p>• Lave à 30 °C, à l’envers, avec des couleurs proches.<br>• Sèche à l’air libre plutôt qu’au sèche-linge.<br>• Un rasoir anti-bouloches redonne un coup de neuf aux pulls.<br>• Lave toujours un vêtement acheté d’occasion avant de le porter.</p>`],
-  [/ecolo|planete|environnement|seconde main pourquoi|pourquoi la seconde main/, ()=>`<p>Acheter d’occasion, c’est prolonger la vie d’un vêtement au lieu d’en produire un nouveau : moins de ressources et moins de déchets. Et ça fait des économies ! <b>Tes vêtements ont de l’avenir.</b></p>`],
+  [/ecolo|planete|environnement|pourquoi.*(occasion|seconde main)|interet (de|d).*(occasion|seconde main)/, ()=>`<p>Acheter d’occasion, c’est prolonger la vie d’un vêtement au lieu d’en produire un nouveau : moins de ressources et moins de déchets. Et ça fait des économies ! <b>Tes vêtements ont de l’avenir.</b></p>`],
   [/nouveaute|nouveau|recent/, ()=>`<p>Les derniers articles ajoutés sont sur la page d’accueil, dans « Les dernières trouvailles », ou dans le catalogue trié par « Plus récents ».</p><button type="button" class="pill" data-new="1">Voir les nouveautés</button>`],
   [/tendance|style|vintage|streetwear|chic/, ()=>`<p>Choisis un style :</p>${STYLES.map(s=>`<button type="button" class="pill" data-style="${s}">${s}</button>`).join("")}`],
   [/saison|hiver|\bete\b|printemps|automne/, ()=>`<p>La sélection de saison regroupe les pièces idéales pour la période (${currentSeason()}).</p><button type="button" class="pill" id="rbSeason" data-reboot-season>Voir la sélection</button>`],
@@ -2371,34 +2372,133 @@ const KB=[
   [/aide|contact|probleme|support|assistance|souci|bug|joindre/, ()=>`<p>Je suis là pour ça ! Dis-moi ton problème en quelques mots. Tu peux aussi consulter la page d’aide, ou écrire à <b>${LEGAL.email}</b>.</p>${go("#/aide","Page d’aide")}${ask("Paiement et sécurité","Je n’ai pas reçu mon article","Mot de passe oublié")}`],
 ];
 /* Recherche intelligente : « pull taille M moins de 20 € femme » */
-const KB_ARTICLE=/pull|jean|veste|robe|jupe|chemise|t ?shirt|sweat|manteau|pantalon|short|blouson|cardigan|gilet|top|debardeur|polo|doudoune|parka|combinaison|legging|survet|hoodie|costume|blazer|trench|body|pyjama|maillot|chaussette|echarpe|bonnet/;
+/* ---------- Compréhension de Reboot : abréviations, synonymes, fautes de frappe, contexte ---------- */
+const RB_ABBR={sa:"ca",frai:"frais",fré:"frais",fre:"frais",foto:"photo",fotos:"photo",coli:"colis",colie:"colis",payement:"paiement",paiment:"paiement",pseudonyme:"pseudo",g:"j ai",jai:"j ai",occaz:"occasion",bjr:"bonjour",bsr:"bonsoir",slt:"salut",cc:"coucou",mrc:"merci",mrci:"merci",thx:"merci",thanks:"merci",stp:"",svp:"",plz:"",pls:"",
+  cmt:"comment",cmnt:"comment",koman:"comment",commen:"comment",pk:"pourquoi",pq:"pourquoi",pkoi:"pourquoi",pourkoi:"pourquoi",koi:"quoi",kwa:"quoi",
+  jsp:"je sais pas",chai:"je sais",tkt:"",dc:"donc",ds:"dans",tt:"tout",tjrs:"toujours",bcp:"beaucoup",qd:"quand",qqn:"quelqu un",qq:"quelque",
+  pb:"probleme",pbm:"probleme",prob:"probleme",pblm:"probleme",rdv:"rendez vous",msg:"message",msgs:"message",mp:"message",dm:"message",
+  mdp:"mot de passe",pwd:"mot de passe",cb:"carte",vs:"vous",ns:"nous",jveux:"je veux",jvx:"je veux",jvoudrais:"je voudrais",chui:"je suis",jsuis:"je suis",
+  ya:"il y a",pr:"pour",ac:"avec",avc:"avec",dacc:"d accord",dac:"d accord",oki:"ok",okay:"ok",daccord:"d accord",
+  appli:"application",app:"application",apli:"application",dispo:"disponible",tel:"telephone",info:"information",infos:"information",
+  fringue:"vetement",fringues:"vetement",habit:"vetement",habits:"vetement",sape:"vetement",sapes:"vetement",fripe:"vetement",fripes:"vetement",vetements:"vetement",
+  basket:"chaussure",baskets:"chaussure",sneakers:"chaussure",sneaker:"chaussure",bottes:"chaussure",chaussures:"chaussure",
+  thune:"argent",thunes:"argent",tune:"argent",fric:"argent",tshirt:"t shirt",teeshirt:"t shirt",tee:"t shirt",sweatshirt:"sweat",hoodie:"sweat",
+  jogging:"survetement",jogg:"survetement",survet:"survetement",
+  copain:"homme",frere:"homme",pere:"homme",papa:"homme",mari:"homme",mec:"homme",gars:"homme",garcons:"enfant",
+  copine:"femme",soeur:"femme",mere:"femme",maman:"femme",meuf:"femme",epouse:"femme",
+  fils:"enfant",fille:"enfant",garcon:"enfant",bebe:"enfant",gamin:"enfant",gamins:"enfant",gosse:"enfant",gosses:"enfant",ado:"enfant",
+  daron:"parents",darons:"parents",daronne:"parents",
+  expedition:"envoyer",expedier:"envoyer",expedie:"envoyer",envoie:"envoyer",envoi:"envoyer",
+  remboursement:"rembourser",rembourse:"rembourser",arnaquer:"arnaque",arnaque:"arnaque",escroquerie:"arnaque",arnaqueur:"arnaque",
+  annonces:"annonce",photos:"photo",pics:"photo",trucs:"article",truc:"article",articles:"article",fringuer:"vetement",
+  achete:"acheter",achat:"acheter",vente:"vendre",vends:"vendre",vend:"vendre",vendu:"vendre",livre:"livraison",livrer:"livraison",livraisons:"livraison",
+  login:"connexion",connecte:"connexion",inscrire:"inscription",inscris:"inscription",sinscrire:"inscription"};
+const RB_VOCAB="bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot revoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange".split(" ");
+const RB_VSET=new Set(RB_VOCAB);
+const RB_KEEP4=new Set("mais veux peux sais fais fait avec pour dans sans tout tous bien tres plus elle nous vous leur quoi quel faut doit dois sont suis avez etes sera mois jour cela ceci voir vois dire dit lien site page code cool trop vite deja aussi fois oui non moi toi lui eux mien tien tant donc meme ici quoi part fini bout coin haut gros fort beau vrai faux aide sale chat chez vers avant hier noel".split(" "));
+const RB_KEEP=new Set("quand comme alors aussi encore jamais toute toutes cette celle celui ceux elles leurs quelle quels quelles savoir trouve trouver cherche chercher besoin envie voudrais pourrais pouvez pourquoi mettre prendre donner depuis avant apres semaine couleur faire peux veux peut veut votre notre vraiment maintenant comment autre autres combien merci bonjour salut moins plus entre chez vers sans avec pour dans sous mais rien tout tous etre avoir suis sont avez faut fallait doit dois sait sais connais aimer adore aime marche marcher tester essaye essayer bonne petite petit grand grande taille ensemble quelque chose aider pense crois question reponse simple facile rapide gros grosse jolie joli beau belle".split(" "));
+function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1),i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1]?d[i-2][j-2]+1:9);return d[a.length][b.length]}
+function fixWord(w){
+  if(w in RB_ABBR)return RB_ABBR[w];
+  if(w.length<4||RB_VSET.has(w)||RB_KEEP.has(w)||RB_KEEP4.has(w)||/\d/.test(w))return w;
+  const max=w.length>=8?2:1;let best=w,bd=max+1;
+  for(const v of RB_VOCAB){if(Math.abs(v.length-w.length)>max)continue;const d=lev(w,v);if(d<bd||(d===bd&&v[0]===w[0]&&best[0]!==w[0])){bd=d;best=v}}
+  return bd<=max?best:w;
+}
+function rbNormalize(raw){
+  let t=norm(raw).replace(/[’'`´]/g," ").replace(/€/g," euros ").replace(/[^a-z0-9 ?!.,;:\-]/g," ");
+  t=t.replace(/\bc (koi|kwa|quoi)\b/g,"c est quoi").replace(/\bt es\b/g,"tu es").replace(/\bj ai\b/g,"j ai");
+  t=t.split(/(\s+|[?!.,;:])/).map(x=>/^[a-z0-9\-]+$/.test(x)?fixWord(x):x).join("");
+  return t.replace(/\s+/g," ").trim();
+}
+
+const rbCtx={last:null};
+const KB_ARTICLE=/pull|jean|veste|robe|jupe|chemise|t shirt|sweat|manteau|pantalon|short|blouson|cardigan|gilet|top|debardeur|polo|doudoune|parka|combinaison|legging|survetement|costume|blazer|trench|body|pyjama|maillot|chaussette|echarpe|bonnet|vetement/;
 function parseSearch(t){
   const f={};const words=t.replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean);
-  const cat=CATEGORIES.find(c=>words.some(w=>w===norm(c)||w===norm(c)+"s"||(c==="Enfant"&&/^(enfants?|bebe|fille|garcon)$/.test(w))));
+  const cat=CATEGORIES.find(c=>words.some(w=>w===norm(c)||w===norm(c)+"s"));
   if(cat)f.category=cat;
-  const max=t.match(/(?:moins de|max(?:imum)?|sous|jusqu.?a|<)\s*(\d+)/);if(max)f.max=max[1];
+  const max=t.match(/(?:moins de|max(?:imum)?|sous|jusqu.?a|pas plus de|<|a)\s*(\d+)\s*(?:euros?|e)?\b/);if(max&&/moins|max|sous|jusqu|pas plus|<|euros/.test(max[0]))f.max=max[1];
   const min=t.match(/(?:plus de|min(?:imum)?|a partir de|>)\s*(\d+)/);if(min)f.min=min[1];
-  const sz=t.match(/taille\s+(xxl|xl|xs|s|m|l|\d{1,2}\s*ans)\b/);if(sz)f.sizes=[/ans/.test(sz[1])?sz[1].replace(/\s*ans/," ans"):sz[1].toUpperCase()];
+  const sz=t.match(/(?:taille|en)\s+(xxl|xl|xs|s|m|l|\d{1,2}\s*ans)\b/)||t.match(/\b(xxl|xl|xs)\b/);if(sz)f.sizes=[/ans/.test(sz[1])?sz[1].replace(/\s*ans/," ans"):sz[1].toUpperCase()];
   const st=STYLES.find(s=>words.includes(norm(s)));if(st)f.style=st;
-  const skip=new Set(["femme","femmes","homme","hommes","enfant","enfants","unisexe","bebe","fille","garcon","taille",...(sz?sz[1].split(/\s+/):[]),...(st?[norm(st)]:[])]);
-  f.q=words.filter(w=>w.length>1&&!STOP.has(w)&&!skip.has(w)&&!/^\d+$/.test(w)).join(" ");
+  if(/pas cher|moins cher|petit prix|bon marche/.test(t))f.sort="prix-asc";
+  const skip=new Set(["femme","femmes","homme","hommes","enfant","enfants","unisexe","taille","en","cher","marche","petit","euros","euro","article","dispo","disponible","combien","coute","coutent","voir","montre","montrer","donne","propose","quel","quels","quelle","quelles","ya","il","as","avez","t","un","une","pas",...(sz?sz[1].split(/\s+/):[]),...(st?[norm(st)]:[])]);
+  f.q=words.filter(w=>w.length>1&&!STOP.has(w)&&!skip.has(w)&&!/^\d+$/.test(w)&&!/^(xxl|xl|xs|s|m|l)$/.test(w)).join(" ");
   return f;
 }
+function searchAnswer(f){
+  const arts=(f.q||"").split(" ").filter(w=>KB_ARTICLE.test(w));
+  const qOk=p=>!f.q||(arts.length>=2?arts.some(w=>matchesQuery(p,w)):matchesQuery(p,f.q));
+  let res=available().filter(p=>(!f.category||p.category===f.category)&&(!f.style||p.style===f.style)&&(!f.sizes||f.sizes.includes(p.size))&&(!f.max||p.price<=+f.max)&&(!f.min||p.price>=+f.min)&&qOk(p));
+  if(f.sort==="prix-asc")res=res.sort((a,b)=>a.price-b.price);
+  const crit=[f.q&&`« ${esc(arts.length>=2?arts.join(" ou "):f.q)} »`,f.category,f.style,f.sizes&&`taille ${f.sizes[0]}`,f.min&&`dès ${f.min} €`,f.max&&`jusqu’à ${f.max} €`,f.sort==="prix-asc"&&"les moins chers d’abord"].filter(Boolean).join(", ")||"tous les articles";
+  rbCtx.last=f;
+  const payload=esc(JSON.stringify(f));
+  if(res.length)return`<p>J’ai trouvé <b>${res.length} article${res.length>1?"s":""}</b> (${crit}) :</p><p>${res.slice(0,3).map(p=>`• <a class="link" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a> — <b>${eur(p.price)}</b>, ${esc(p.size)}, ${esc(p.condition.toLowerCase())}`).join("<br>")}</p>${arts.length>=2?arts.map(w=>`<button type="button" class="pill" data-reboot-filters="${esc(JSON.stringify({...f,q:w}))}">Voir les ${esc(w)}s</button>`).join(""):`<button type="button" class="pill" data-reboot-filters="${payload}">Voir tous les résultats</button>`}${ask("Moins cher ?","Autre taille")}`;
+  return`<p>Je n’ai rien trouvé pour ${crit}. Essaie avec moins de critères, ou reviens plus tard : de nouveaux articles arrivent régulièrement.</p>${ask("Trouver un vêtement")}`;
+}
+/* Réponses rapides du quotidien et statistiques */
+const RB_DAILY=[
+  [/(ca|site) (marche|fonctionne) (pas|plus)|ca bug|beug|bloque|erreur|plante|ne charge pas|page blanche/, ()=>`<p>Désolé ! Essaie dans l’ordre :</p><p>1. Recharge la page (sur ordinateur : Ctrl + F5).<br>2. Vérifie ta connexion internet.<br>3. Essaie dans une fenêtre de navigation privée.</p><p>Si ça bloque encore, écris à <b>${LEGAL.email}</b> en expliquant ce qui se passe.</p>`],
+  [/^(?!.*\bpas\b)(ok|d accord|cool|parfait|super|nickel|top|genial|ca marche|entendu|compris)\b.{0,12}$/, ()=>`<p>Super ! Autre chose ?</p>`],
+  [/perdu|comprends (pas|rien)|sais pas quoi|par ou commencer|je debute|premiere fois/, ()=>`<p>Pas de panique, c’est simple ! Revoo permet d’<b>acheter</b> et de <b>vendre</b> des vêtements d’occasion entre particuliers.</p>${ask("Comment ça marche ?","Acheter un article","Vendre un article")}`],
+  [/au revoir|bye|a plus|a bientot|bonne (journee|soiree|nuit)|ciao|salut a plus/, ()=>`<p>À bientôt sur Revoo ! Tes vêtements ont de l’avenir.</p>`],
+  [/humain|conseiller|vraie personne|quelqu un|parler a (une|un|quelqu)|service client/, ()=>`<p>Je suis un assistant automatique. Pour parler à une personne de l’équipe Revoo, écris à <b>${LEGAL.email}</b> : on te répond au plus vite.</p>`],
+  [/\b(con|connard|conne|nul|nulle|merde|debile|idiot)\b/, ()=>`<p>Je suis désolé si je ne t’ai pas aidé comme il faut. Reformule ta question simplement, ou écris à <b>${LEGAL.email}</b> pour parler à quelqu’un.</p>`],
+  [/heure|horaire|ouvert|ferme|dimanche|week end/, ()=>`<p>Revoo est ouvert 24 h/24 et 7 j/7 : tu peux acheter et vendre quand tu veux. L’équipe répond aux e-mails au plus vite.</p>`],
+  [/combien (d|de) (article|annonce|vetement)/, ()=>{const n=available().length;return`<p>Il y a actuellement <b>${n} article${n>1?"s":""}</b> en vente sur Revoo.</p><button type="button" class="pill" data-new="1">Tout voir</button>`}],
+  [/combien (de )?(vendeur|membre|utilisateur)/, ()=>{const n=new Set(available().map(p=>p.sellerId||p.seller)).size;return`<p>${n} vendeur${n>1?"s":""} propose${n>1?"nt":""} des articles en ce moment.</p>`}],
+  [/le (moins|plus) cher|moins chere|plus chere/, t=>{const asc=/moins/.test(t);const p=[...available()].sort((a,b)=>asc?a.price-b.price:b.price-a.price)[0];return p?`<p>L’article le ${asc?"moins":"plus"} cher en ce moment : <a class="link" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a> à <b>${eur(p.price)}</b>.</p>`:null}],
+  [/le (plus recent|dernier)|derniere annonce|dernier article/, ()=>{const p=[...available()].sort((a,b)=>b.addedAt-a.addedAt)[0];return p?`<p>Le dernier article ajouté : <a class="link" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a> à <b>${eur(p.price)}</b>.</p>`:null}],
+];
+function rbIntent(c){
+  for(const [re,fn] of RB_DAILY){if(re.test(c)){const r=fn(c);if(r)return r}}
+  const priceQ=/combien|prix|coute|dispo|disponible|il y a|ya|avez|as tu|cherche|veux|voudrais|montre|trouve/.test(c);
+  const sellProcess=/vendre|annonce|photo|entretien|laver|emballer|envoyer|guide|rediger|description|estime|fixe|a quel prix|combien vendre|mettre en vente/.test(c);
+  const looksLikeSearch=/(taille|en) (xxl|xl|xs|s|m|l|\d)\b|\b(xxl|xl|xs)\b|moins de \d|sous \d|\d+ euros|pas cher|petit prix/.test(c)||(KB_ARTICLE.test(c)&&!sellProcess&&(priceQ||c.split(" ").length<=4));
+  if(!looksLikeSearch)for(const [re,fn] of KB){if(re.test(c)){const r=fn(c);if(r)return r}}
+  const f=parseSearch(c);
+  if(f.category||f.max||f.min||f.sizes||f.style||f.sort||(f.q&&KB_ARTICLE.test(f.q)))return searchAnswer(f);
+  if(f.q&&available().some(p=>matchesQuery(p,f.q)))return searchAnswer(f);
+  return null;
+}
+function rbFollowUp(c){
+  if(!rbCtx.last)return null;
+  const isFollow=/^(et|plutot|sinon|ou|autre|aussi|en|pour)\b/.test(c)||(!KB_ARTICLE.test(c)&&(/^(moins|plus) cher|autre taille/.test(c)||c.split(" ").length<=3));
+  if(!isFollow)return null;
+  if(/autre taille/.test(c))return`<p>Quelle taille ? Par exemple « en M », « en L » ou « en 8 ans ».</p>`;
+  const f=parseSearch(c);
+  if(!(f.category||f.max||f.min||f.sizes||f.style||f.sort||/moins cher|plus cher/.test(c)))return null;
+  const nf={...rbCtx.last};
+  ["category","max","min","sizes","style"].forEach(k=>{if(f[k])nf[k]=f[k]});
+  if(/moins cher|pas cher/.test(c))nf.sort="prix-asc";
+  if(f.q&&KB_ARTICLE.test(f.q))nf.q=f.q;
+  return searchAnswer(nf);
+}
 function rebootReply(raw){
-  const t=norm(raw).replace(/[’']/g," ").replace(/\s+/g," ").trim();
-  if(/^trouver un vetement$/.test(t))return`<p>Dis-moi ce que tu cherches, par exemple <b>« jean taille M moins de 25 € »</b> ou <b>« robe vintage femme »</b>, ou choisis une catégorie :</p>${CATEGORIES.map(c=>`<button type="button" class="pill" data-category="${c}">${c}</button>`).join("")}`;
-  const looksLikeSearch=/taille (xxl|xl|xs|s|m|l|\d)\b|moins de \d|sous \d|\d+ ?(€|euros?)/.test(t);
-  if(!looksLikeSearch)for(const [re,fn] of KB){if(re.test(t)){const r=fn(t);if(r)return r}}
-  const f=parseSearch(t);
-  const hasFilter=f.category||f.max||f.min||f.sizes||f.style;
-  if(f.q||hasFilter){
-    const res=available().filter(p=>(!f.category||p.category===f.category)&&(!f.style||p.style===f.style)&&(!f.sizes||f.sizes.includes(p.size))&&(!f.max||p.price<=+f.max)&&(!f.min||p.price>=+f.min)&&(!f.q||matchesQuery(p,f.q)));
-    const crit=[f.q&&`« ${esc(f.q)} »`,f.category,f.style,f.sizes&&`taille ${f.sizes[0]}`,f.min&&`dès ${f.min} €`,f.max&&`jusqu’à ${f.max} €`].filter(Boolean).join(", ");
-    const payload=esc(JSON.stringify(f));
-    if(res.length)return`<p>J’ai trouvé <b>${res.length} article${res.length>1?"s":""}</b> (${crit}) :</p><p>${res.slice(0,3).map(p=>`• <a class="link" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a> — ${eur(p.price)}, ${esc(p.size)}`).join("<br>")}</p><button type="button" class="pill" data-reboot-filters="${payload}">Voir tous les résultats</button>`;
-    if(hasFilter||KB_ARTICLE.test(f.q))return`<p>Je n’ai rien trouvé pour ${crit}. Essaie avec moins de critères, ou reviens plus tard : de nouveaux articles arrivent régulièrement.</p>${ask("Trouver un vêtement")}`;
+  const t=rbNormalize(raw);
+  if(!t)return`<p>Je t’écoute !</p>`;
+  if(/^trouver un vetement$/.test(t))return`<p>Dis-moi ce que tu cherches, comme tu le dirais à quelqu’un : <b>« jean taille M moins de 25 € »</b>, <b>« robe vintage pour ma copine »</b>… ou choisis une catégorie :</p>${CATEGORIES.map(c=>`<button type="button" class="pill" data-category="${c}">${c}</button>`).join("")}`;
+  if(/^moins cher/.test(t)&&rbCtx.last)return searchAnswer({...rbCtx.last,sort:"prix-asc"});
+  // Plusieurs questions dans un même message
+  const clauses=t.split(/\s(?:et aussi|et puis|et|puis|aussi|sinon)\s(?=(?:comment|combien|c est|quel|quelle|quels|est ce|ou|pourquoi|je|j|tu|on|il|les|la|le|mon|ma|mes)\b)|[?!.;]+/).map(x=>x.trim()).filter(x=>x.length>1);
+  const answers=[];
+  for(const c of clauses.length?clauses:[t]){
+    let r=null;for(const [re,fn] of RB_DAILY){if(re.test(c)){r=fn(c);if(r)break}}
+    r=r||rbFollowUp(c)||rbIntent(c);
+    if(r&&!answers.includes(r))answers.push(r);
+    if(answers.length===2)break;
   }
-  return`<p>Je n’ai pas bien compris. Voici ce que je sais faire :</p>${ask("Trouver un vêtement","Comment ça marche ?","Vendre un article","Paiement et sécurité","Livraison","Mon compte")}`;
+  if(answers.length<2&&/ et /.test(t)){
+    const kbOnly=c=>{for(const [re,fn] of KB){if(re.test(c)){const r=fn(c);if(r)return r}}return null};
+    const parts=t.split(/ et (?:aussi |puis )?/).map(x=>x.trim()).filter(x=>x.split(" ").length>=2);
+    if(parts.length>=2){const extra=parts.map(kbOnly);if(extra.every(Boolean)){answers.length=0;for(const r of extra){if(!answers.includes(r))answers.push(r);if(answers.length===2)break}}}
+  }
+  if(!answers.length){const r=rbIntent(t);if(r)answers.push(r)}
+  if(answers.length)return answers.join('<hr class="rb-sep">');
+  return`<p>Je n’ai pas bien compris. Essaie avec d’autres mots, ou choisis un sujet :</p>${ask("Trouver un vêtement","Comment ça marche ?","Vendre un article","Paiement et sécurité","Livraison","Mon compte","Parler à quelqu’un")}`;
 }
 document.querySelectorAll(".chatQuick").forEach(b=>b.addEventListener("click",()=>{userSay(b.textContent);setTimeout(()=>botSay(rebootReply(b.textContent)),200)}));
 $("chatForm").addEventListener("submit",e=>{e.preventDefault();const v=$("chatMessage").value.trim();if(!v)return;userSay(v);$("chatMessage").value="";setTimeout(()=>botSay(rebootReply(v)),250)});
