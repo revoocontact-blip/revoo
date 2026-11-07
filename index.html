@@ -515,6 +515,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 /* ---------- Finitions ---------- */
+.reboot-next{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 [hidden]{display:none!important}
 h1,h2,h3,.page-title{letter-spacing:-.02em}
 .section{margin:52px 0}
@@ -816,10 +817,12 @@ body{transition:background .2s ease,color .2s ease}
   <div class="chat-log" id="chatLog" aria-live="polite"></div>
   <div class="chat-quick" aria-label="Suggestions">
     <button type="button" class="pill chatQuick">Trouver un vêtement</button>
+    <button type="button" class="pill chatQuick">Comment ça marche ?</button>
     <button type="button" class="pill chatQuick">Vendre un article</button>
-    <button type="button" class="pill chatQuick">Comprendre les frais</button>
+    <button type="button" class="pill chatQuick">Paiement et sécurité</button>
     <button type="button" class="pill chatQuick">Livraison</button>
-    <button type="button" class="pill chatQuick">Obtenir de l’aide</button>
+    <button type="button" class="pill chatQuick">Conseils photos</button>
+    <button type="button" class="pill chatQuick">Mon compte</button>
   </div>
   <form class="chat-input" id="chatForm">
     <label for="chatMessage" class="sr-only">Message à Reboot</label>
@@ -2303,48 +2306,108 @@ function userSay(text){const d=document.createElement("div");d.className="msg us
 let chatStarted=false;
 function openChat(open){
   const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);
-  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Reboot.</b> 👋</p><p>Je peux t’aider à trouver un vêtement, comprendre les frais ou t’orienter sur Revoo. Que souhaites-tu faire ?</p>`)}setTimeout(()=>$("chatMessage").focus(),50)}
+  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Reboot.</b> 👋</p><p>Je peux trouver un vêtement pour toi (essaie « pull taille M moins de 20 € »), t’expliquer le fonctionnement de Revoo ou te donner des conseils pour vendre. Que souhaites-tu faire ?</p>`)}setTimeout(()=>$("chatMessage").focus(),50)}
   else $("rebootBtn").focus();
 }
 $("rebootBtn").addEventListener("click",()=>openChat(!$("chat").classList.contains("open")));
 $("closeChat").addEventListener("click",()=>openChat(false));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("chat").classList.contains("open"))openChat(false)});
-const STOP=new Set("je tu il elle on nous vous un une des de du la le les et ou a au aux en pour avec sur dans mon ma mes ton ta tes cherche chercher recherche trouve trouver veux voudrais voir besoin quoi est ce que qui il y as avez taille prix moins euros euro".split(" "));
-function rebootReply(raw){
-  const t=norm(raw);
-  const fees=!CONFIG.paiementIntegre?`<p><b>0 € de frais pendant le lancement !</b> Tu paies uniquement le prix de l’article, directement au vendeur (et l’envoi si vous choisissez le colis).</p>`:`<p>Sur Revoo, l’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()}</b>, quel que soit le prix. La livraison est en plus.</p><p>${feeExample()}</p>`;
-  if(/^(bonjour|salut|hello|coucou|hey|bonsoir)\b/.test(t)&&t.split(" ").length<4)return`<p>Salut ! Dis-moi ce que tu cherches (par exemple « pull taille M ») ou pose-moi une question sur Revoo.</p>`;
-  if(/merci/.test(t))return`<p>Avec plaisir ! Je reste là si tu as besoin.</p>`;
-  if(/\b(ia|intelligence|chatgpt|robot|humain|qui es)/.test(t))return`<p>Je suis Reboot, l’assistant de Revoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle.</p>`;
-  if(/frais|commission|combien.*(coute|paye)|cout|tarif revoo/.test(t))return fees;
-  if(!CONFIG.paiementIntegre&&/livr|colis|envoi|expedi|transporteur|mondial|colissimo|chrono|dpd|relais/.test(t))return`<p>Pendant le lancement, l’acheteur et le vendeur choisissent ensemble dans la messagerie : <b>remise en main propre</b> ou <b>envoi par colis avec suivi</b> (Colissimo, Mondial Relay…). Les frais d’envoi se règlent entre vous.</p>`;
-  if(/livr|colis|envoi|expedi|transporteur|mondial|colissimo|chrono|dpd|relais/.test(t))return`<p>Tu pourras choisir entre <b>Colissimo, Mondial Relay, Chronopost, DPD et Relais Colis</b> au moment du panier.</p><p>Les tarifs de livraison ne sont pas encore connectés.</p>`;
-  if(/signal|arnaque|fraude|contrefa|faux|interdit|abus/.test(t))return`<p>Pour signaler une annonce suspecte, ouvre-la et clique sur « Signaler cette annonce ». Ton signalement est confidentiel et sera examiné par Revoo.</p>`;
-  if(!CONFIG.paiementIntegre&&/paie|paye|paiement|carte|paypal|rembours|cb\b|arnaque|securi/.test(t))return`<p>Pendant le lancement, tu paies <b>directement le vendeur</b> :</p><p>En <b>main propre</b>, au moment de la remise ; ou à distance, uniquement avec <b>PayPal « Biens et services »</b>, qui te protège.</p><p>Jamais de virement, Wero ou PayPal « entre proches » à un inconnu.</p><a class="pill" href="#/securite">Conseils de sécurité</a>`;
-  if(/paie|paye|paiement|carte|paypal|rembours|cb\b/.test(t))return`<p>Le paiement n’est pas encore disponible : aucun prestataire de paiement n’est connecté. Tu peux seulement simuler une commande pour tester le parcours.</p>`;
-  if(/message|contacter|discuter avec|ecrire au vendeur/.test(t))return`<p>Pour écrire à un vendeur, ouvre son annonce et clique sur « Contacter ». Tu retrouves toutes tes conversations dans <b>Messages</b>, en haut de la page.</p><a class="pill" href="#/messages">Mes messages</a>`;
-  if(/vend|annonce|deposer|publier|mettre en vente/.test(t))return`<p>Pour vendre : crée ton compte, puis remplis le formulaire (photos, titre, description, catégorie, marque, taille, état, prix). Ton annonce sera visible par tous.</p><a class="pill" href="#/vendre">Vendre un vêtement</a>`;
-  if(/mot de passe|oubli/.test(t))return`<p>Sur la page de connexion, clique sur « Mot de passe oublié ? » : tu recevras un lien par e-mail pour en choisir un nouveau.</p><a class="pill" href="#/compte">Connexion</a>`;
-  if(/compte|inscri|connect|profil/.test(t))return`<p>Crée ton compte gratuitement avec ton prénom, ton e-mail et un mot de passe.</p><a class="pill" href="#/compte">Mon compte</a>`;
-  if(/command|suivi|suivre/.test(t))return`<p>Tes commandes simulées sont dans <b>Mon compte › Mes commandes</b>. Le suivi réel des colis arrivera avec l’intégration d’un transporteur.</p><a class="pill" href="#/compte/commandes">Mes commandes</a>`;
-  if(/favori/.test(t))return`<p>Appuie sur le cœur d’un article pour l’ajouter à tes favoris. Connecté, tu les retrouves sur tous tes appareils.</p><a class="pill" href="#/favoris">Mes favoris</a>`;
-  if(!CONFIG.paiementIntegre&&/panier|acheter|commander/.test(t))return`<p>Pour acheter, clique sur « <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e) » sur l’annonce : la conversation avec le vendeur s’ouvre et vous vous mettez d’accord sur la remise et le paiement.</p><a class="pill" href="#/acheter">Comment acheter</a>`;
-  if(/panier/.test(t))return`<p>Ton panier contient ${state.cart.length} article${state.cart.length>1?"s":""}.</p><a class="pill" href="#/panier">Voir mon panier</a>`;
-  if(/aide|contact|probleme|support|assistance|souci|bug/.test(t))return`<p>Je suis là pour ça ! Tu peux aussi consulter la page d’aide. Les coordonnées officielles de Revoo y seront ajoutées dès qu’elles seront définies.</p><a class="pill" href="#/aide">Page d’aide</a>`;
-  if(/^trouver un vetement$/.test(t))return`<p>Écris-moi ce que tu cherches, par exemple « veste en jean » ou « pull », ou choisis une catégorie :</p>${CATEGORIES.map(c=>`<button type="button" class="pill" data-category="${c}">${c}</button>`).join("")}`;
-  const words=t.replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(w=>w.length>1&&!STOP.has(w));
-  const cat=CATEGORIES.find(c=>words.includes(norm(c))||(c==="Enfant"&&words.includes("enfants")));
-  const rest=words.filter(w=>!["femme","homme","enfant","enfants","unisexe","femmes","hommes"].includes(w));
-  const q=rest.join(" ");
-  if(cat&&!q){const n=available().filter(p=>p.category===cat).length;return`<p>J’ai ${n} article${n>1?"s":""} dans la catégorie <b>${cat}</b>.</p><button type="button" class="pill" data-category="${cat}">Voir ${cat}</button>`}
-  if(q){const res=available().filter(p=>(!cat||p.category===cat)&&matchesQuery(p,q));
-    if(res.length)return`<p>J’ai trouvé <b>${res.length} article${res.length>1?"s":""}</b> pour « ${esc(q)} »${cat?` en ${cat}`:""} :</p><p>${res.slice(0,3).map(p=>`• <a class="link" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a> — ${eur(p.price)}`).join("<br>")}</p><button type="button" class="pill" data-reboot-search="${esc(q)}">Voir tous les résultats</button>`;
-  }
-  return`<p>Je n’ai pas bien compris. Je peux t’aider sur : trouver un vêtement, les frais, la livraison, la vente, ton compte ou tes commandes.</p>`;
+/* ---------- Base de connaissances de Reboot (réponses préparées, aucune IA) ---------- */
+const STOP=new Set("je tu il elle on nous vous un une des de du la le les et ou a au aux en pour avec sur dans mon ma mes ton ta tes cherche chercher recherche trouve trouver veux voudrais voir besoin quoi est ce que qui il y as avez taille prix moins euros euro eur max maximum sous pas cher chere bon bonne plus".split(" "));
+const ask=(...q)=>`<div class="reboot-next">${q.map(x=>`<button type="button" class="pill" data-ask="${esc(x)}">${esc(x)}</button>`).join("")}</div>`;
+const go=(href,label)=>`<a class="pill" href="${href}">${label}</a>`;
+const KB=[
+  // Conversation
+  [/^(bonjour|salut|hello|coucou|hey|bonsoir|yo|wesh)\b/, t=>t.split(" ").length<4?`<p>Salut ! Je suis Reboot, l’assistant de Revoo. Dis-moi ce que tu cherches, par exemple « pull taille M moins de 20 € », ou pose-moi une question.</p>${ask("Comment ça marche ?","Vendre un article","Paiement et sécurité")}`:null],
+  [/merci|super|parfait|top\b|genial/, ()=>`<p>Avec plaisir ! Je reste là si tu as besoin.</p>`],
+  [/\b(ia|intelligence|chatgpt|robot|humain|qui es)/, ()=>`<p>Je suis Reboot, l’assistant de Revoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle et je ne lis pas tes messages privés.</p>`],
+  // Revoo
+  [/comment (ca|ça) marche|fonctionne|c.?est quoi revoo|qu.?est.?ce que revoo|presentation/, ()=>`<p><b>Revoo</b>, c’est une marketplace française de vêtements d’occasion entre particuliers. En 3 étapes :</p><p>1. <b>Trouve</b> une pièce (recherche, catégories, filtres).<br>2. <b>Échange</b> avec le vendeur dans la messagerie.<br>3. <b>Récupère</b>-la en main propre ou par colis.</p>${ask("Acheter un article","Vendre un article","Combien ça coûte ?")}`],
+  [/qui (est|sont) derriere|createur|fondateur|a propos/, ()=>`<p>Revoo est un projet français, en cours de lancement. Son slogan : <b>« Tes vêtements ont de l’avenir. »</b></p>${go("#/a-propos","À propos de Revoo")}`],
+  // Frais / paiement
+  [/(cout|prix|tarif|combien).*(livr|envoi|colis|port)|frais de port|frais d.envoi/, ()=>`<p>Le prix de l’envoi dépend du transporteur et du poids du colis : compare directement sur les sites de Colissimo, Mondial Relay, Relais Colis… Il se règle entre l’acheteur et le vendeur. La remise en main propre, elle, est gratuite.</p>${ask("Bien envoyer un colis","Rendez-vous en main propre")}`],
+  [/frais|commission|combien.*(coute|paye)|cout|gratuit|tarif revoo|combien ca coute/, ()=>!CONFIG.paiementIntegre?`<p><b>0 € de frais pendant le lancement !</b> Tu paies seulement le prix de l’article, directement au vendeur, et l’envoi si vous choisissez le colis.</p><p>Plus tard, avec le paiement intégré Revoo Pay, il y aura ${eur(CONFIG.fraisFixes)} de frais par article, en échange d’un paiement protégé.</p>${ask("Comment payer ?","Revoo Pay, c’est quoi ?")}`:`<p>L’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais par article</b>, quel que soit le prix. La livraison est en plus.</p><p>${feeExample()}</p>`],
+  [/revoo ?pay|paiement integre|paiement protege/, ()=>`<p><b>Revoo Pay</b> sera le paiement intégré de Revoo : tu paies par carte sur le site, l’argent reste <b>bloqué</b> jusqu’à ce que tu confirmes la réception, puis il est versé au vendeur. En cas de problème, tu es remboursé.</p><p>Il n’est pas encore actif : pour l’instant, le paiement se fait directement entre membres.</p>${ask("Comment payer ?")}`],
+  [/paie|paye|paiement|payer|carte|paypal|virement|wero|lydia|cb\b|especes/, ()=>!CONFIG.paiementIntegre?`<p>Pendant le lancement, tu paies <b>directement le vendeur</b> :</p><p>• en <b>main propre</b>, au moment de la remise ;<br>• à distance, uniquement avec <b>PayPal « Biens et services »</b>, qui te protège si l’article n’arrive pas.</p><p><b>Jamais</b> de virement, Wero, Lydia ou PayPal « entre proches » à un inconnu : ces moyens ne te protègent pas.</p>${go("#/securite","Conseils de sécurité")}${ask("Rendez-vous en main propre","Je n’ai pas reçu mon article")}`:`<p>Le paiement se fait par carte avec Revoo Pay. L’argent reste bloqué jusqu’à ta confirmation de réception.</p>`],
+  [/arnaque|fraude|escroc|suspect|faux compte|mefier|securi/, ()=>`<p>Quelques réflexes simples :</p><p>• Reste sur la messagerie Revoo pour échanger.<br>• Paie en main propre ou avec PayPal « Biens et services ».<br>• Méfie-toi des prix trop bas, des demandes de paiement par virement et des liens reçus par SMS.<br>• Ne donne jamais tes codes ni ton mot de passe.</p><p>Un doute ? Utilise le bouton « Signaler cette annonce ».</p>${go("#/securite","Tous les conseils")}`],
+  [/pas recu|jamais recu|rien recu|ne repond (plus|pas)|probleme (avec|de) (ma|la) commande|litige|rembours/, ()=>`<p>Désolé pour ce souci. Voici quoi faire :</p><p>1. Écris au vendeur dans la messagerie Revoo.<br>2. Si tu as payé avec <b>PayPal « Biens et services »</b>, ouvre un litige dans ton compte PayPal : il peut te rembourser.<br>3. Signale l’annonce avec le bouton « Signaler cette annonce ».</p><p>Revoo ne peut pas rembourser un paiement fait en dehors du site.</p>`],
+  [/retour|retourner|echang|retractation|annuler (un )?achat/, ()=>`<p>Entre particuliers, il n’y a pas de droit de rétractation de 14 jours comme chez un professionnel. Un retour ou un échange est possible seulement si le vendeur est d’accord : discutez-en dans la messagerie.</p><p>Conseil : pose toutes tes questions (taille, défauts, mesures) <b>avant</b> d’acheter.</p>`],
+  // Livraison / remise
+  [/main propre|rendez.?vous|rencontr|se voir/, ()=>`<p>Pour une remise en main propre en toute sécurité :</p><p>• Choisis un <b>lieu public</b> et fréquenté (gare, centre commercial, café), en journée.<br>• Vérifie l’article avant de payer.<br>• Paie au moment de la remise.<br>• Pour les mineurs : viens accompagné d’un adulte.</p>`],
+  [/emball|envoyer (un|le|mon) colis|expedier|comment envoyer|numero de suivi/, ()=>`<p>Pour bien envoyer un colis :</p><p>• Plie l’article proprement, dans un sachet puis une enveloppe ou un carton.<br>• Choisis un envoi <b>avec suivi</b> (Colissimo, Mondial Relay, Relais Colis…).<br>• Envoie le numéro de suivi à l’acheteur dans la messagerie.<br>• Garde la preuve de dépôt.</p>`],
+  [/livr|colis|transporteur|mondial|colissimo|chrono|dpd|relais|frais de port|frais d.envoi/, ()=>`<p>Vous choisissez ensemble dans la messagerie : <b>remise en main propre</b> (gratuite) ou <b>envoi par colis avec suivi</b> (Colissimo, Mondial Relay, Chronopost, DPD, Relais Colis…).</p><p>Le prix de l’envoi dépend du transporteur et du poids : compare sur leurs sites. Il se règle entre vous.</p>${ask("Bien envoyer un colis","Rendez-vous en main propre")}`],
+  [/message|contacter|discuter avec|ecrire au vendeur|vendeur ne repond/, ()=>`<p>Pour écrire à un vendeur, ouvre son annonce et clique sur « Je suis intéressé(e) ». Toutes tes conversations sont dans <b>Messages</b>.</p>${go("#/messages","Mes messages")}`],
+  // Vendre
+  [/interdit|autorise|accepte|quoi vendre|chaussure|accessoire|sac|bijou/, ()=>`<p>Pour l’instant, Revoo est réservé aux <b>vêtements</b> (Femme, Homme, Enfant, Unisexe). D’autres catégories arriveront plus tard.</p><p>Tout ce qui est illégal est interdit : contrefaçons, articles volés ou dangereux…</p>${go("#/conditions","Conditions d’utilisation")}`],
+  [/photo|image/, ()=>`<p>Des photos qui donnent envie :</p><p>• <b>Lumière du jour</b>, près d’une fenêtre, sans flash.<br>• <b>Fond simple</b> et clair (mur, drap).<br>• Le vêtement à plat, sur un cintre ou porté.<br>• 3 à 5 photos : face, dos, étiquette, et chaque défaut de près.<br>• La première photo sert de couverture : choisis la plus belle.</p>${ask("Bien rédiger mon annonce","Fixer le bon prix")}`],
+  [/prix|combien vendre|estimer|valeur/, t=>/vend|fixer|estimer|valeur|mettre/.test(t)?`<p>Pour fixer un bon prix :</p><p>• Regarde les articles similaires sur Revoo.<br>• En général, une pièce d’occasion se vend nettement moins cher que neuve : plus l’état est bon et la marque recherchée, plus tu peux viser haut.<br>• Un prix rond et raisonnable part plus vite.<br>• Tu peux modifier ton prix à tout moment dans Mon compte.</p>`:null],
+  [/description|rediger|titre|bien decrire/, ()=>`<p>Une bonne annonce :</p><p>• <b>Titre clair</b> : type + couleur + marque (ex. « Pull en laine bleu marine Zara »).<br>• <b>Description honnête</b> : matière, coupe, comment ça taille, défauts éventuels.<br>• Les <b>mesures</b> si possible (longueur, tour de poitrine…).<br>• Le bon état et la bonne taille.</p>`],
+  [/modifier|supprimer (mon|une|l)?.?annonce|marquer vendu|retirer (mon|une)? ?annonce/, ()=>`<p>Dans <b>Mon compte › Mes annonces</b>, tu peux :</p><p>• <b>Modifier</b> une annonce (photos, prix, description) ;<br>• la <b>marquer vendue</b> : elle disparaît du catalogue ;<br>• la <b>supprimer</b> définitivement.</p>${go("#/compte/annonces","Mes annonces")}`],
+  [/vend|annonce|deposer|publier|mettre en vente/, ()=>`<p>Vendre sur Revoo, c’est gratuit :</p><p>1. Crée ton compte.<br>2. Clique sur « Vendre », ajoute 1 à 5 photos.<br>3. Remplis titre, description, catégorie, marque, taille, état et prix.<br>4. Publie : ton annonce est visible par tous.</p>${go("#/vendre","Vendre un vêtement")}${ask("Conseils photos","Fixer le bon prix","Bien rédiger mon annonce")}`],
+  // Articles
+  [/\betat\b|neuf|tres bon|satisfaisant|\buse\b/, ()=>`<p>Les états sur Revoo :</p><p>• <b>Neuf avec étiquette</b> : jamais porté, étiquette encore attachée.<br>• <b>Très bon état</b> : porté quelques fois, aucun défaut visible.<br>• <b>Bon état</b> : porté, petites traces d’usure.<br>• <b>Satisfaisant</b> : usure visible ou petit défaut, signalé dans l’annonce.</p>`],
+  [/guide des tailles|correspondance|quelle taille|ma taille|taille (enfant|bebe)|xs|xxl/, ()=>`<p>Les tailles sur Revoo :</p><p>• <b>Adultes</b> : XS, S, M, L, XL, XXL.<br>• <b>Enfants</b> : de 2 à 14 ans.</p><p>Les tailles varient selon les marques : demande les <b>mesures</b> au vendeur (longueur, largeur à plat) et compare avec un vêtement à toi qui te va bien.</p>`],
+  [/marque/, ()=>`<p>Tu peux filtrer par marque dans le catalogue : ouvre « Explorer », puis le filtre <b>Marque</b>. Tu peux aussi taper directement la marque dans la recherche.</p>${go("#/catalogue","Ouvrir le catalogue")}`],
+  [/entretien|laver|lavage|tache|repasser|bouloch/, ()=>`<p>Pour donner une longue vie à tes vêtements :</p><p>• Lave à 30 °C, à l’envers, avec des couleurs proches.<br>• Sèche à l’air libre plutôt qu’au sèche-linge.<br>• Un rasoir anti-bouloches redonne un coup de neuf aux pulls.<br>• Lave toujours un vêtement acheté d’occasion avant de le porter.</p>`],
+  [/ecolo|planete|environnement|seconde main pourquoi|pourquoi la seconde main/, ()=>`<p>Acheter d’occasion, c’est prolonger la vie d’un vêtement au lieu d’en produire un nouveau : moins de ressources et moins de déchets. Et ça fait des économies ! <b>Tes vêtements ont de l’avenir.</b></p>`],
+  [/nouveaute|nouveau|recent/, ()=>`<p>Les derniers articles ajoutés sont sur la page d’accueil, dans « Les dernières trouvailles », ou dans le catalogue trié par « Plus récents ».</p><button type="button" class="pill" data-new="1">Voir les nouveautés</button>`],
+  [/tendance|style|vintage|streetwear|chic/, ()=>`<p>Choisis un style :</p>${STYLES.map(s=>`<button type="button" class="pill" data-style="${s}">${s}</button>`).join("")}`],
+  [/saison|hiver|\bete\b|printemps|automne/, ()=>`<p>La sélection de saison regroupe les pièces idéales pour la période (${currentSeason()}).</p><button type="button" class="pill" id="rbSeason" data-reboot-season>Voir la sélection</button>`],
+  // Compte
+  [/mot de passe|oubli|connecter impossible|n.?arrive pas a me connecter/, ()=>`<p>Sur la page de connexion, clique sur « Mot de passe oublié ? » : tu recevras un lien par e-mail. Pense à regarder dans tes courriers indésirables.</p>${go("#/compte","Connexion")}`],
+  [/supprimer (mon )?compte|desinscri|mes donnees|rgpd|donnees personnelles/, ()=>`<p>Pour supprimer ton compte ou exercer tes droits sur tes données (accès, correction, suppression…), écris à <b>${LEGAL.email}</b>. Réponse sous un mois maximum.</p>${go("#/confidentialite","Politique de confidentialité")}`],
+  [/profil|pseudo|prenom|presentation|ville/, ()=>`<p>Dans <b>Mon compte › Profil</b>, tu peux changer ton prénom ou pseudo, ta ville et ta présentation. Une petite présentation rassure les acheteurs !</p>${go("#/compte/profil","Mon profil")}`],
+  [/notification|e.?mail|mail|spam|indesirable/, ()=>`<p>Revoo t’envoie un e-mail quand tu reçois un nouveau message (au plus un toutes les 30 minutes par conversation). Tu peux le désactiver dans <b>Mon compte › Profil</b>.</p><p>Tu ne reçois rien ? Regarde dans les courriers indésirables ou l’onglet « Promotions ».</p>`],
+  [/\bage\b|mineur|quel age|parents|\b1[0-7] ans\b/, ()=>`<p>Revoo est accessible dès <b>${LEGAL.ageMin} ans</b>. Entre ${LEGAL.ageMin} et 15 ans, il faut l’accord des parents pour s’inscrire, et avant 18 ans pour vendre ou acheter.</p>`],
+  [/compte|inscri|connect|creer/, ()=>`<p>Crée ton compte gratuitement : prénom, e-mail et mot de passe, c’est tout.</p>${go("#/compte","Créer mon compte")}`],
+  // Fonctions
+  [/avis|note|etoile|evaluation/, ()=>`<p>Les avis aident à choisir un vendeur de confiance. Tu les vois sur son profil et sous son nom dans les annonces. Avec Revoo Pay, tu pourras laisser un avis après avoir reçu ta commande.</p>`],
+  [/command|suivi|suivre|mes achats/, ()=>`<p>Pendant le lancement, les achats se font directement entre membres : retrouve tes échanges dans <b>Messages</b>. Le suivi des commandes arrivera avec Revoo Pay.</p>${go("#/messages","Mes messages")}`],
+  [/favori|coeur|sauvegard/, ()=>`<p>Touche le cœur d’un article pour l’ajouter à tes favoris. Connecté, tu les retrouves sur tous tes appareils.</p>${go("#/favoris","Mes favoris")}`],
+  [/panier|acheter|commander|achat/, ()=>!CONFIG.paiementIntegre?`<p>Pour acheter, ouvre l’annonce et clique sur « Je suis intéressé(e) » : la conversation avec le vendeur s’ouvre. Mettez-vous d’accord sur la remise et le paiement.</p>${go("#/acheter","Comment acheter")}`:`<p>Ton panier contient ${state.cart.length} article${state.cart.length>1?"s":""}.</p>${go("#/panier","Voir mon panier")}`],
+  [/signal|contrefa|faux|abus|harcel|insulte/, ()=>`<p>Pour signaler une annonce, ouvre-la et clique sur « Signaler cette annonce ». C’est confidentiel et sans compte. Pour un membre qui te harcèle, signale une de ses annonces en précisant le problème, ou écris à <b>${LEGAL.email}</b>.</p>`],
+  [/sombre|clair|theme|dark|nuit/, ()=>`<p>Touche l’icône lune ou soleil en haut de l’écran pour passer en mode sombre ou clair. Ton choix est mémorisé.</p>`],
+  [/appli|application|telecharg|play store|app store/, ()=>`<p>Revoo n’a pas encore d’application à télécharger, mais le site s’utilise très bien sur téléphone. Astuce : ajoute-le à ton écran d’accueil depuis le menu de ton navigateur.</p>`],
+  [/aide|contact|probleme|support|assistance|souci|bug|joindre/, ()=>`<p>Je suis là pour ça ! Dis-moi ton problème en quelques mots. Tu peux aussi consulter la page d’aide, ou écrire à <b>${LEGAL.email}</b>.</p>${go("#/aide","Page d’aide")}${ask("Paiement et sécurité","Je n’ai pas reçu mon article","Mot de passe oublié")}`],
+];
+/* Recherche intelligente : « pull taille M moins de 20 € femme » */
+const KB_ARTICLE=/pull|jean|veste|robe|jupe|chemise|t ?shirt|sweat|manteau|pantalon|short|blouson|cardigan|gilet|top|debardeur|polo|doudoune|parka|combinaison|legging|survet|hoodie|costume|blazer|trench|body|pyjama|maillot|chaussette|echarpe|bonnet/;
+function parseSearch(t){
+  const f={};const words=t.replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean);
+  const cat=CATEGORIES.find(c=>words.some(w=>w===norm(c)||w===norm(c)+"s"||(c==="Enfant"&&/^(enfants?|bebe|fille|garcon)$/.test(w))));
+  if(cat)f.category=cat;
+  const max=t.match(/(?:moins de|max(?:imum)?|sous|jusqu.?a|<)\s*(\d+)/);if(max)f.max=max[1];
+  const min=t.match(/(?:plus de|min(?:imum)?|a partir de|>)\s*(\d+)/);if(min)f.min=min[1];
+  const sz=t.match(/taille\s+(xxl|xl|xs|s|m|l|\d{1,2}\s*ans)\b/);if(sz)f.sizes=[/ans/.test(sz[1])?sz[1].replace(/\s*ans/," ans"):sz[1].toUpperCase()];
+  const st=STYLES.find(s=>words.includes(norm(s)));if(st)f.style=st;
+  const skip=new Set(["femme","femmes","homme","hommes","enfant","enfants","unisexe","bebe","fille","garcon","taille",...(sz?sz[1].split(/\s+/):[]),...(st?[norm(st)]:[])]);
+  f.q=words.filter(w=>w.length>1&&!STOP.has(w)&&!skip.has(w)&&!/^\d+$/.test(w)).join(" ");
+  return f;
 }
-document.querySelectorAll(".chatQuick").forEach(b=>b.addEventListener("click",()=>{userSay(b.textContent);botSay(rebootReply(b.textContent==="Vendre un article"?"vendre":b.textContent==="Comprendre les frais"?"frais":b.textContent==="Obtenir de l’aide"?"aide":b.textContent))}));
+function rebootReply(raw){
+  const t=norm(raw).replace(/[’']/g," ").replace(/\s+/g," ").trim();
+  if(/^trouver un vetement$/.test(t))return`<p>Dis-moi ce que tu cherches, par exemple <b>« jean taille M moins de 25 € »</b> ou <b>« robe vintage femme »</b>, ou choisis une catégorie :</p>${CATEGORIES.map(c=>`<button type="button" class="pill" data-category="${c}">${c}</button>`).join("")}`;
+  const looksLikeSearch=/taille (xxl|xl|xs|s|m|l|\d)\b|moins de \d|sous \d|\d+ ?(€|euros?)/.test(t);
+  if(!looksLikeSearch)for(const [re,fn] of KB){if(re.test(t)){const r=fn(t);if(r)return r}}
+  const f=parseSearch(t);
+  const hasFilter=f.category||f.max||f.min||f.sizes||f.style;
+  if(f.q||hasFilter){
+    const res=available().filter(p=>(!f.category||p.category===f.category)&&(!f.style||p.style===f.style)&&(!f.sizes||f.sizes.includes(p.size))&&(!f.max||p.price<=+f.max)&&(!f.min||p.price>=+f.min)&&(!f.q||matchesQuery(p,f.q)));
+    const crit=[f.q&&`« ${esc(f.q)} »`,f.category,f.style,f.sizes&&`taille ${f.sizes[0]}`,f.min&&`dès ${f.min} €`,f.max&&`jusqu’à ${f.max} €`].filter(Boolean).join(", ");
+    const payload=esc(JSON.stringify(f));
+    if(res.length)return`<p>J’ai trouvé <b>${res.length} article${res.length>1?"s":""}</b> (${crit}) :</p><p>${res.slice(0,3).map(p=>`• <a class="link" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a> — ${eur(p.price)}, ${esc(p.size)}`).join("<br>")}</p><button type="button" class="pill" data-reboot-filters="${payload}">Voir tous les résultats</button>`;
+    if(hasFilter||KB_ARTICLE.test(f.q))return`<p>Je n’ai rien trouvé pour ${crit}. Essaie avec moins de critères, ou reviens plus tard : de nouveaux articles arrivent régulièrement.</p>${ask("Trouver un vêtement")}`;
+  }
+  return`<p>Je n’ai pas bien compris. Voici ce que je sais faire :</p>${ask("Trouver un vêtement","Comment ça marche ?","Vendre un article","Paiement et sécurité","Livraison","Mon compte")}`;
+}
+document.querySelectorAll(".chatQuick").forEach(b=>b.addEventListener("click",()=>{userSay(b.textContent);setTimeout(()=>botSay(rebootReply(b.textContent)),200)}));
 $("chatForm").addEventListener("submit",e=>{e.preventDefault();const v=$("chatMessage").value.trim();if(!v)return;userSay(v);$("chatMessage").value="";setTimeout(()=>botSay(rebootReply(v)),250)});
-chatLog.addEventListener("click",e=>{if(e.target.closest("a")&&innerWidth<680)openChat(false)});
+chatLog.addEventListener("click",e=>{
+  const a=e.target.closest("[data-ask]");if(a){userSay(a.dataset.ask);setTimeout(()=>botSay(rebootReply(a.dataset.ask)),200);return}
+  const rf=e.target.closest("[data-reboot-filters]");if(rf){let f={};try{f=JSON.parse(rf.dataset.rebootFilters)}catch(x){}$("searchInput").value=f.q||"";openCatalogue({q:f.q||"",category:f.category||"",style:f.style||"",sizes:f.sizes||[],min:f.min||"",max:f.max||""});if(innerWidth<680)openChat(false);return}
+  if(e.target.closest("[data-reboot-season]")){openCatalogue({season:currentSeason()});if(innerWidth<680)openChat(false);return}
+  if(e.target.closest("a")&&innerWidth<680)openChat(false);
+});
 
 /* =========================================================
    DÉMARRAGE
