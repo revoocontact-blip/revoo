@@ -21,6 +21,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <script>try{var t=localStorage.getItem("revoo.theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var q=new URLSearchParams(location.search).get("design");if(q==="1"||q==="2")localStorage.setItem("revoo.design",q);if(localStorage.getItem("revoo.design")==="2")document.documentElement.dataset.design="2"}catch(e){}</script>
 <link rel="preload" href="fonts/plus-jakarta-sans-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32.png?v=4">
@@ -913,6 +914,112 @@ body{transition:background .2s ease,color .2s ease}
  :root:not([data-theme="light"]) .hero{background:linear-gradient(180deg,#0F2030,#0B1620)}
  :root:not([data-theme="light"]) .subnav .sell{color:var(--heading)}
  :root:not([data-theme="light"]) .top{border-bottom-color:#1A2E40}}
+
+/* =========================================================
+   DESIGN N°2 « Édition » — activé avec ?design=2 (comparaison)
+   Même palette : bleu nuit, bleu ciel, blanc. Formes droites, contrastes forts.
+   ========================================================= */
+html[data-design="2"]{--radius:10px;--radius-sm:8px;--shadow:none}
+html[data-design="2"] .btn{border-radius:10px;font-weight:700;letter-spacing:.1px}
+html[data-design="2"] .btn-outline{border:1.5px solid var(--heading);color:var(--heading);background:transparent}
+html[data-design="2"] .btn-outline:hover{background:var(--heading);color:var(--bg)}
+html[data-design="2"] .btn-danger{border-width:1.5px}
+html[data-design="2"] .pill{border-radius:8px}
+/* En-tête bleu nuit */
+html[data-design="2"] .demo-bar{background:#A8C4D8;color:#16293A}
+html[data-design="2"] .demo-bar.paydemo{background:#A8C4D8;color:#16293A}
+html[data-design="2"] .top{background:var(--bar);border-bottom:0;backdrop-filter:none}
+html[data-design="2"] .top img[data-logo="bleu"]{filter:brightness(0) invert(1)}
+html[data-design="2"] .top .search{background:#fff;border:0;border-radius:10px}
+html[data-design="2"] .top .search input{color:#1F3446}
+html[data-design="2"] .top .search .icon{color:#586A7C}
+html[data-design="2"] .top .search .btn{border-radius:8px;background:#A8C4D8;color:#16293A}
+html[data-design="2"] .top .search-go .icon{color:#16293A}
+html[data-design="2"] .top .action{color:var(--on-bar)}
+html[data-design="2"] .top .action:hover{background:rgba(255,255,255,.1)}
+html[data-design="2"] .top .badge{background:rgba(255,255,255,.18);color:#fff}
+html[data-design="2"] .top .badge.has{background:#A8C4D8;color:#16293A}
+html[data-design="2"] .top .account-btn{background:#A8C4D8;color:#16293A}
+html[data-design="2"] .top .acct-name{color:var(--on-bar)}
+html[data-design="2"] .subnav{border-top:1px solid rgba(255,255,255,.12)}
+html[data-design="2"] .subnav button{background:transparent;border:0;color:var(--on-bar);border-radius:0;padding:10px 6px;margin-right:10px;border-bottom:2px solid transparent;font-weight:700;letter-spacing:.2px}
+html[data-design="2"] .subnav button:hover{background:transparent;border-bottom-color:#A8C4D8}
+html[data-design="2"] .subnav button[aria-current="true"]{background:transparent;color:#fff;border-bottom-color:#A8C4D8}
+html[data-design="2"] .subnav button.sell{background:#A8C4D8;color:#16293A!important;border-radius:8px;padding:8px 14px;border:0}
+/* Bannière */
+html[data-design="2"] .hero{background:var(--bar);color:var(--on-bar)}
+html[data-design="2"] .hero h1{color:#fff;font-size:clamp(38px,5.4vw,68px);letter-spacing:-2px;line-height:1}
+html[data-design="2"] .hero p.lead{color:var(--on-bar);opacity:.85}
+html[data-design="2"] .hero .eyebrow{background:transparent;color:#A8C4D8;padding:0;text-transform:uppercase;letter-spacing:2px;font-size:12px}
+html[data-design="2"] .hero .btn-primary{background:#A8C4D8;color:#16293A}
+html[data-design="2"] .hero .btn-primary:hover{background:#fff}
+html[data-design="2"] .hero .btn-outline{border-color:rgba(255,255,255,.6);color:#fff}
+html[data-design="2"] .hero .btn-outline:hover{background:#fff;color:#16293A}
+html[data-design="2"] .hero-quote,html[data-design="2"] .hero-quote-label{color:var(--on-bar)}
+html[data-design="2"] .hero-photo{border-radius:10px;box-shadow:14px 14px 0 #A8C4D8}
+html[data-design="2"] .photo-label{border-radius:8px}
+/* Titres de section */
+html[data-design="2"] .section-head h2,html[data-design="2"] .page-title{font-size:28px;letter-spacing:-.8px;color:var(--heading)}
+html[data-design="2"] .section-head h2::before{content:"";display:block;width:34px;height:4px;background:#A8C4D8;border-radius:2px;margin-bottom:10px}
+html[data-design="2"] .viewall{border:1.5px solid var(--heading);border-radius:8px;padding:7px 12px;color:var(--heading)}
+html[data-design="2"] .viewall:hover{background:var(--heading);color:var(--bg);text-decoration:none}
+/* Étapes et compteur */
+html[data-design="2"] .how li{background:transparent;border:1.5px solid var(--line);border-radius:10px}
+html[data-design="2"] .how-n{border-radius:8px;background:#A8C4D8;color:#16293A}
+html[data-design="2"] .impact-band{background:var(--bar);color:var(--on-bar);box-shadow:none;border-radius:10px}
+html[data-design="2"] .impact-band:hover{background:var(--bar)}
+html[data-design="2"] .impact-txt b{color:#fff}
+html[data-design="2"] .impact-live{color:var(--on-bar)}
+/* Cartes produits : épurées */
+html[data-design="2"] .card{background:transparent;border-radius:0;padding:0}
+html[data-design="2"] .card:hover{background:transparent;transform:none}
+html[data-design="2"] .card-img{border-radius:10px}
+html[data-design="2"] .card:hover .card-img img{transform:scale(1.03)}
+html[data-design="2"] .card-img img{transition:transform .3s ease}
+html[data-design="2"] .card-body{padding:10px 2px 4px}
+html[data-design="2"] .price-tag{background:#A8C4D8;color:#16293A;border-radius:6px;padding:5px 10px}
+html[data-design="2"] .price-tag::before{display:none}
+html[data-design="2"] .chip-mini{border-radius:6px;background:transparent}
+html[data-design="2"] .heart{border-radius:50%;left:10px;top:10px}
+html[data-design="2"] .card-tag{right:10px;top:10px;border-radius:6px}
+html[data-design="2"] .card-actions .btn{border-radius:8px}
+html[data-design="2"] .mini{border-radius:8px}
+html[data-design="2"] .community,html[data-design="2"] .season,html[data-design="2"] .daily{border-radius:10px}
+html[data-design="2"] .season-band{border-radius:10px}
+/* Fiche article, compte, panneaux */
+html[data-design="2"] .product-info{border-radius:10px}
+html[data-design="2"] .product-price{border-radius:8px}
+html[data-design="2"] .panel,html[data-design="2"] .order,html[data-design="2"] .wallet-box,html[data-design="2"] .empty{border-radius:10px;border-width:1.5px}
+html[data-design="2"] .acc-head,html[data-design="2"] .mod-head{border-radius:10px}
+html[data-design="2"] .tabs button[aria-selected="true"]{border-bottom-color:#A8C4D8}
+html[data-design="2"] .handoff,html[data-design="2"] .trade-lock,html[data-design="2"] .impact-line,html[data-design="2"] .trade-rules{border-radius:8px}
+html[data-design="2"] .order-steps li{border-radius:6px}
+html[data-design="2"] .input,html[data-design="2"] select.input,html[data-design="2"] textarea.input{border-radius:8px}
+html[data-design="2"] .segmented{border-radius:8px}html[data-design="2"] .segmented span{border-radius:6px}
+html[data-design="2"] .image-frame.gallery-main,html[data-design="2"] .gallery-main{border-radius:10px}
+/* Pied de page sombre */
+html[data-design="2"] footer{background:var(--bar);color:var(--on-bar);border-top:0}
+html[data-design="2"] footer h2{color:#fff}
+html[data-design="2"] footer a:hover{color:#fff}
+html[data-design="2"] footer img[data-logo="bleu"]{filter:brightness(0) invert(1)}
+/* Mobile */
+@media (max-width:680px){
+  html[data-design="2"] .tabbar{background:var(--bar);border-top:0;backdrop-filter:none}
+  html[data-design="2"] .tabbar a{color:var(--on-bar);opacity:.75}
+  html[data-design="2"] .tabbar a[aria-current]{color:#fff;opacity:1}
+  html[data-design="2"] .tabbar a[aria-current]::after{content:"";position:absolute;bottom:0;width:22px;height:3px;border-radius:2px;background:#A8C4D8}
+  html[data-design="2"] .tab-plus{background:#A8C4D8;color:#16293A;border-radius:8px}
+  html[data-design="2"] .tab-sell{color:#fff!important;opacity:1!important}
+  html[data-design="2"] .tabs button{border-radius:8px}
+  html[data-design="2"] .tabs button[aria-selected="true"]{background:var(--heading);color:var(--bg)}
+  html[data-design="2"] .hero h1{font-size:40px}
+  html[data-design="2"] .hero-photo{box-shadow:8px 8px 0 #A8C4D8}
+  html[data-design="2"] .section-head h2,html[data-design="2"] .page-title{font-size:24px}
+}
+/* Interrupteur de comparaison des designs */
+.design-switch{display:inline-flex;gap:2px;margin-left:10px;background:rgba(0,0,0,.12);border-radius:8px;padding:2px;vertical-align:middle}
+.design-switch a{padding:2px 9px;border-radius:6px;font-weight:700;text-decoration:none!important;font-size:12px}
+.design-switch a[aria-current="true"]{background:#fff;color:#16293A}
 </style>
 </head>
 <body>
@@ -3492,6 +3599,7 @@ addEventListener("offline",netBanner);addEventListener("online",()=>{netBanner()
 if(!payOn())document.body.classList.add("phase1");
 if(matchMedia("(max-width:680px)").matches)$("searchInput").placeholder="Rechercher un vêtement";
 if(PAY_DEMO&&!CONFIG.paiementIntegre){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=CONFIG.revooPayDemo?`<b>Démo Revoo Pay</b> · aucun paiement réel`:`<b>Démo Revoo Pay</b> · aucun paiement réel · <a href="?revoopay=off">Quitter</a>`}
+{const d=document.documentElement.dataset.design==="2"?"2":"1";$("demoBar").insertAdjacentHTML("beforeend",`<span class="design-switch" role="group" aria-label="Choisir le design"><a href="?design=1${location.hash}" aria-current="${d==="1"}">Design 1</a><a href="?design=2${location.hash}" aria-current="${d==="2"}">Design 2</a></span>`)}
 watchImages();renderView();
 (async()=>{
   if(!sb){toast("Le service de comptes est momentanément indisponible.");return}
