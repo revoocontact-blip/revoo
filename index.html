@@ -835,6 +835,51 @@ h1,h2,h3,.page-title{letter-spacing:-.02em}
   .subnav .sell{display:none}
 }
 
+
+/* =========================================================
+   Finitions : espacements et version mobile
+   ========================================================= */
+.buy-main .btn-icon{flex:0 0 52px;padding:0;display:grid;place-items:center}
+.buy-more{margin-top:10px}
+.buy-more .btn{font-size:14px}
+.order header .status{white-space:nowrap}
+.row-actions{gap:8px}
+@media (max-width:680px){
+  .demo-bar{font-size:12px;padding:5px 10px;line-height:1.3}
+  /* Fiche article : barre d'achat compacte sur une seule ligne */
+  .buy-main{flex-wrap:nowrap}
+  .buy-main>.btn-primary{flex:1 1 0;min-width:0;white-space:nowrap;font-size:15px}
+  .buy-sticky{padding:10px 18px calc(10px + 0px)}
+  .buy-more .btn{min-height:44px;padding:8px 10px}
+  /* Onglets du compte : tous visibles, en grille */
+  .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;border-bottom:0;margin:14px 0 18px}
+  .tabs button{background:var(--ice);border:0;border-radius:12px;padding:10px 12px;margin:0;min-height:46px;text-align:center;font-size:14px;line-height:1.25;color:var(--heading)}
+  .tabs button[aria-selected="true"]{background:var(--brand);color:var(--on-brand);border:0}
+  /* Reboot ne masque plus les formulaires */
+  body[data-view="compte"] .reboot,body[data-view="vendre"] .reboot,body[data-view="paiement"] .reboot,body[data-view="panier"] .reboot,body[data-view="messages"] .reboot,body[data-view="article"] .reboot{display:none}
+  /* Cartes de commande et d'échange plus aérées */
+  .order{padding:14px;margin-bottom:14px}
+  .order-img{width:54px;height:68px}
+  .order-steps li{font-size:11.5px;padding:3px 9px}
+  .order .row-actions .btn,.handoff-row .btn,.deadline-ext .btn{flex:1 1 auto}
+  .handoff-row .input{max-width:none}
+  .deadline{flex-direction:column;align-items:stretch}
+  .deadline-ext{width:100%}
+  .deadline-ext .input{flex:0 0 auto}
+  .panel{padding:18px;margin-bottom:16px}
+  .photo-label{font-size:13px;padding:8px 12px;right:10px;bottom:10px;max-width:170px}
+  .section-head{gap:10px}
+}
+@media (min-width:681px) and (max-width:920px){
+  body[data-view="article"] .reboot{display:none}
+  .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border-bottom:0}
+  .tabs button{background:var(--ice);border:0;border-radius:12px;margin:0;min-height:46px;color:var(--heading)}
+  .tabs button[aria-selected="true"]{background:var(--brand);color:var(--on-brand)}
+}
+@media (max-width:480px){
+  .wallet{grid-template-columns:1fr}
+  .trade-pair b{white-space:normal}
+}
 /* ---------- Mode sombre ---------- */
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0B1620;--surface:#122230;--glass:rgba(14,27,38,.92);--on-navy:#0B1620;
@@ -1140,7 +1185,7 @@ body{transition:background .2s ease,color .2s ease}
     <button class="btn btn-primary" type="submit">Envoyer</button>
   </form>
 </section>
-<button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat">
+<button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat" aria-label="Reboot, l’assistant Revoo">
   <span class="reboot-bubble"><img src="logos/revoo-icone-carre-192.png?v=4" data-logo="icone" alt="" width="36" height="36"></span><span class="reboot-label">Reboot</span>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1156,6 +1201,7 @@ body{transition:background .2s ease,color .2s ease}
 const CONFIG = {
   fraisFixes: 1,              // 1 € payé par l'acheteur
   paiementIntegre: false,     // false = PHASE 1 : 0 € de frais, l'acheteur paie le vendeur directement (main propre ou PayPal « Biens et services »)
+  revooPayDemo: true,         // true = Revoo Pay en DÉMO pour tout le monde (aucun argent réel). ⚠️ À METTRE SUR false AVANT L'OUVERTURE AU PUBLIC tant que Mangopay n'est pas branché
                               // true  = PHASE 2 : panier, paiement intégré et frais ci-dessous
   fraisPar: "article",        // "article" = 1 € par article (10 articles = 10 €) · "commande" = 1 € par commande
   maxPhotos: 5,
@@ -1640,7 +1686,7 @@ async function moderate(action,reportId,listingId){
    Visible uniquement en mode démo : ajouter ?revoopay=demo à l'adresse du site
    (et ?revoopay=off pour le cacher à nouveau).
    ========================================================= */
-const PAY_DEMO=(()=>{try{const q=new URLSearchParams(location.search);if(q.get("revoopay")==="demo")sessionStorage.setItem("revoo.paydemo","1");if(q.get("revoopay")==="off")sessionStorage.removeItem("revoo.paydemo");return sessionStorage.getItem("revoo.paydemo")==="1"}catch(e){return false}})();
+const PAY_DEMO=(()=>{try{const q=new URLSearchParams(location.search);if(q.get("revoopay")==="demo")sessionStorage.setItem("revoo.paydemo","1");if(q.get("revoopay")==="off")sessionStorage.removeItem("revoo.paydemo");if(q.get("revoopay")==="off")return false;return CONFIG.revooPayDemo===true||sessionStorage.getItem("revoo.paydemo")==="1"}catch(e){return CONFIG.revooPayDemo===true}})();
 const payOn=()=>CONFIG.paiementIntegre||PAY_DEMO;
 const ORDER_FEE=1;
 const orders={mine:[],all:[],loaded:false,codes:{}};
@@ -2329,8 +2375,8 @@ function renderProduct(id){
   else if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
-  else if(payOn()&&!p.demo) actions=`<div class="buy-actions buy-sticky"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/></svg> Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
-  else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions buy-sticky"><button type="button" class="btn btn-primary" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div><div id="contactNote"></div>`;
+  else if(payOn()&&!p.demo) actions=`<div class="buy-actions buy-sticky buy-main"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/></svg> Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline btn-icon" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div class="buy-actions buy-more"><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Poser une question</button></div><div id="contactNote"></div>`;
+  else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions buy-sticky buy-main"><button type="button" class="btn btn-primary" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div><div id="contactNote"></div>`;
   else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div>`;
   const eyebrow=p.mine?"Ton annonce":p.demo?"Annonce de démonstration":p.sellerVacation?"Vendeur en vacances":"";
   v.innerHTML=`
@@ -2929,6 +2975,7 @@ function renderView(){
   if(name!=="messages")chat.current=null;
   document.title="Revoo — Tes vêtements ont de l’avenir";
   let view="home";
+  document.body.dataset.view=name||"accueil";
   const isMod=!!(state.user&&state.isAdmin);
   document.body.classList.toggle("mod-mode",isMod);
   if(isMod&&!["compte","article","vendeur"].includes(name)){if(["vendre","panier","paiement","favoris","messages"].includes(name))toast("Ce compte est réservé à la modération.");location.replace("#/compte/moderation");return}
@@ -3443,7 +3490,8 @@ function netBanner(){let b=$("netBar");if(navigator.onLine){if(b)b.remove();retu
   if(!b){document.body.insertAdjacentHTML("afterbegin",`<div id="netBar" class="net-bar" role="status">Tu es hors connexion. Certaines actions ne fonctionneront pas avant le retour du réseau.</div>`)}}
 addEventListener("offline",netBanner);addEventListener("online",()=>{netBanner();toast("Connexion rétablie.");loadListings().then(renderView)});netBanner();
 if(!payOn())document.body.classList.add("phase1");
-if(PAY_DEMO&&!CONFIG.paiementIntegre){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=`<b>Mode démo Revoo Pay</b> — aucun paiement réel, visible seulement par toi. <a href="?revoopay=off">Quitter le mode démo</a>`}
+if(matchMedia("(max-width:680px)").matches)$("searchInput").placeholder="Rechercher un vêtement";
+if(PAY_DEMO&&!CONFIG.paiementIntegre){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=CONFIG.revooPayDemo?`<b>Démo Revoo Pay</b> · aucun paiement réel`:`<b>Démo Revoo Pay</b> · aucun paiement réel · <a href="?revoopay=off">Quitter</a>`}
 watchImages();renderView();
 (async()=>{
   if(!sb){toast("Le service de comptes est momentanément indisponible.");return}
