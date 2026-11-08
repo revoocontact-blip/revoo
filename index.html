@@ -549,6 +549,38 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .mod-mode .mod-head h2{color:#fff}
 .mod-mode .mod-head .mod-badge{background:#A8C4D8;color:#16293A}
 .mod-search{margin-bottom:12px}
+/* Remise en main propre : code */
+.handoff{margin-top:12px;padding:14px 16px;border-radius:14px;background:var(--ice);box-shadow:var(--ring)}
+.handoff-label{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.handoff-code{display:block;font-size:34px;letter-spacing:.12em;color:var(--heading);font-variant-numeric:tabular-nums;margin:4px 0 6px}
+.handoff p{margin:6px 0 0}
+.handoff-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.handoff-row .input{flex:1 1 160px;max-width:260px}
+.handoff-input{font-size:20px;letter-spacing:.15em;font-variant-numeric:tabular-nums}
+/* Échanges */
+.trade-lock{display:flex;gap:12px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--ice);color:var(--ink)}
+.trade-lock>span{font-size:20px}
+.trade-progress{display:block;height:6px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden;max-width:220px}
+.trade-progress i{display:block;height:100%;background:var(--navy);border-radius:99px}
+.trade-pick{display:grid;gap:8px;border:0;padding:0;margin:0 0 14px}
+.trade-form fieldset{border:0;padding:0;margin:0 0 6px;min-width:0}
+.trade-form legend{padding:0;margin-bottom:6px}
+.trade-opt{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.trade-opt:has(input:checked){border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);background:var(--ice)}
+.trade-opt input{accent-color:var(--navy);width:18px;height:18px;flex:none}
+.trade-opt .image-frame{width:48px;height:60px;border-radius:8px;flex:none}
+.trade-opt small{display:block;color:var(--muted)}
+.trade-rules{background:var(--ice);border-radius:12px;padding:10px 14px;margin:6px 0 14px}
+.trade-rules ol{margin:6px 0 0;padding-left:18px}
+.trade-pair{display:flex;align-items:center;gap:12px;margin-top:8px}
+.trade-pair>div{flex:1;min-width:0;display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center}
+.trade-pair .order-img{grid-row:span 2}
+.trade-pair small{color:var(--muted);font-size:12px}
+.trade-pair b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trade-arrow{font-size:22px;color:var(--navy);flex:none}
+.eur-input{display:flex;align-items:center;gap:8px;max-width:180px}
+.eur-input span{font-weight:700;color:var(--muted)}
+@media (max-width:520px){.trade-pair{flex-direction:column;align-items:stretch}.trade-arrow{align-self:center;transform:rotate(90deg)}}
 /* Compteur d'impact */
 .impact-band{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:22px 0 0;padding:16px 20px;border-radius:18px;background:var(--ice);box-shadow:var(--ring);color:var(--ink);text-decoration:none}
 .impact-band[hidden]{display:none}
@@ -1550,7 +1582,7 @@ function modRow(r){const l=r.listings;const img=(l?.photos||[])[0]||"";
 function renderModeration(el){
   $("accountTitle").textContent="Espace modération";
   const todo=mod.reports.filter(r=>r.status==="nouveau"), done=mod.reports.filter(r=>r.status!=="nouveau");
-  const removed=state.remote.filter(p=>p.status==="removed"), disputes=(typeof orders!=="undefined"?orders.all:[]).filter(o=>o.status==="problem");
+  const removed=state.remote.filter(p=>p.status==="removed"), disputes=[...(typeof orders!=="undefined"?orders.all:[]).filter(o=>o.status==="problem"),...(typeof trades!=="undefined"?trades.list:[]).filter(t=>t.status==="problem")];
   const online=state.remote.filter(p=>p.status!=="removed");
   const tabs=[["atraiter","À traiter",todo.length],["enligne","Annonces en ligne",online.length],["retirees","Annonces retirées",removed.length],...(payOn()?[["litiges","Litiges",disputes.length]]:[]),["historique","Historique",done.length]];
   if(!tabs.some(t=>t[0]===modTab))modTab="atraiter";
@@ -1605,7 +1637,7 @@ async function moderate(action,reportId,listingId){
 const PAY_DEMO=(()=>{try{const q=new URLSearchParams(location.search);if(q.get("revoopay")==="demo")sessionStorage.setItem("revoo.paydemo","1");if(q.get("revoopay")==="off")sessionStorage.removeItem("revoo.paydemo");return sessionStorage.getItem("revoo.paydemo")==="1"}catch(e){return false}})();
 const payOn=()=>CONFIG.paiementIntegre||PAY_DEMO;
 const ORDER_FEE=1;
-const orders={mine:[],all:[],loaded:false};
+const orders={mine:[],all:[],loaded:false,codes:{}};
 const ORDER_STATUS={paid:"Payée · à envoyer",shipped:"Envoyée",received:"Reçue",problem:"Problème signalé",cancelled:"Annulée"};
 async function loadOrders(){
   orders.mine=[];orders.all=[];orders.loaded=false;
@@ -1615,12 +1647,18 @@ async function loadOrders(){
     if(error){console.warn(error);return}
     orders.all=data||[];
     orders.mine=orders.all.filter(o=>o.buyer_id===state.user.id||o.seller_id===state.user.id);
+    orders.codes={};
+    try{const c=await sb.from("order_codes").select("order_id,code");if(!c.error)(c.data||[]).forEach(x=>orders.codes[x.order_id]=x.code)}catch(e){}
     orders.loaded=true;
   }catch(e){console.warn(e)}
+  await loadTrades();
 }
+const fmtDT=d=>new Date(d).toLocaleString("fr-FR",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"});
+const orderStatus=o=>o.delivery==="main_propre"&&o.status==="paid"?"Payée · rendez-vous à fixer":o.delivery==="main_propre"&&o.status==="received"?"Remise faite":ORDER_STATUS[o.status]||o.status;
 const orderTotal=o=>Number(o.price)+Number(o.fee);
 function orderSteps(o){
-  const steps=[["paid","Payée"],["shipped",o.delivery==="main_propre"?"Remise":"Envoyée"],["received","Reçue"]];
+  if(o.delivery==="main_propre"){const i={paid:0,received:1,problem:0}[o.status]??-1;return `<ol class="order-steps">${[["Payée · argent bloqué"],["Code validé · article remis"]].map(([l],k)=>`<li class="${k<=i?"done":""}">${l}</li>`).join("")}</ol>`}
+  const steps=[["paid","Payée"],["shipped","Envoyée"],["received","Reçue"]];
   const idx={paid:0,shipped:1,received:2,problem:1,cancelled:-1}[o.status];
   return `<ol class="order-steps">${steps.map(([k,l],i)=>`<li class="${i<=idx?"done":""}">${l}</li>`).join("")}</ol>`;
 }
@@ -1628,17 +1666,29 @@ function orderCard(o,role){
   const me=role==="buyer";
   let actions="";
   if(me&&o.status==="received"){const rv=(state.reviews||[]).find(r=>r.order_id===o.id);actions=rv?`<span class="rating">Ton avis : ${starsTxt(rv.rating)}</span>`:`<button type="button" class="btn btn-primary" data-order="review-form" data-id="${o.id}">Laisser un avis</button>`}
-  if(me&&["paid","shipped"].includes(o.status))actions=`<button type="button" class="btn btn-primary" data-order="received" data-id="${o.id}">J’ai bien reçu l’article</button><button type="button" class="btn btn-outline" data-order="problem-form" data-id="${o.id}">Signaler un problème</button>`;
-  if(!me&&o.status==="paid"){
+  let handoff="";
+  if(me&&o.delivery==="main_propre"&&o.status==="paid"){
+    const code=orders.codes[o.id]||"";
+    handoff=`<div class="handoff"><span class="handoff-label">Finaliser l’achat</span><b class="handoff-code" aria-label="Code ${code.split("").join(" ")}">${code?code.slice(0,3)+" "+code.slice(3):"······"}</b>
+      <p class="small">Au rendez-vous, <b>vérifie l’article</b>. S’il te convient, donne ce code au vendeur : le paiement lui est alors versé. <b>Ne le donne jamais avant</b>, ni par message.</p></div>`;
+    actions=`<button type="button" class="btn btn-danger" data-order="buyer-cancel" data-id="${o.id}">Annuler l’achat</button>`;
+  } else if(me&&["paid","shipped"].includes(o.status))actions=`<button type="button" class="btn btn-primary" data-order="received" data-id="${o.id}">J’ai bien reçu l’article</button><button type="button" class="btn btn-outline" data-order="problem-form" data-id="${o.id}">Signaler un problème</button>`;
+  if(!me&&role!=="admin"&&o.delivery==="main_propre"&&o.status==="paid"){
+    handoff=`<form class="handoff" data-handoff="${o.id}" novalidate><label class="handoff-label" for="hc-${o.id}">Code de l’acheteur</label>
+      <div class="handoff-row"><input class="input handoff-input" id="hc-${o.id}" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000 000"><button class="btn btn-primary" type="submit">Valider le code</button></div>
+      <span class="error" id="hc-${o.id}Err"></span>
+      <p class="small">Au rendez-vous, l’acheteur vérifie l’article puis te donne son code. <b>Remets l’article seulement après « Paiement validé ✅ ».</b></p></form>`;
+    actions=`<button type="button" class="btn btn-outline" data-order="cancel" data-id="${o.id}">Annuler la vente</button>`;
+  } else if(!me&&role!=="admin"&&o.status==="paid"){
     actions=o.delivery==="colis"
       ?`<label class="sr-only" for="trk-${o.id}">Numéro de suivi</label><input class="input" id="trk-${o.id}" placeholder="Numéro de suivi du colis" maxlength="60" style="max-width:240px"><button type="button" class="btn btn-primary" data-order="shipped" data-id="${o.id}">Marquer comme envoyé</button>`
       :`<button type="button" class="btn btn-primary" data-order="shipped" data-id="${o.id}">J’ai remis l’article</button>`;
     actions+=`<button type="button" class="btn btn-danger" data-order="cancel" data-id="${o.id}">Annuler la vente</button>`;
   }
   const addr=!me&&o.delivery==="colis"&&o.ship_address?`<p class="small"><b>Adresse d’envoi :</b><br>${esc(o.ship_name)}<br>${esc(o.ship_address)}<br>${esc(o.ship_zip)} ${esc(o.ship_city)}</p>`:"";
-  const money=me?`Payé : <b>${eur(orderTotal(o))}</b> (article ${eur(Number(o.price))} + frais ${eur(Number(o.fee))})`:`Tu recevras <b>${eur(Number(o.price))}</b> ${o.status==="received"?"(disponible)":"après confirmation de réception"}`;
+  const money=me?`Payé : <b>${eur(orderTotal(o))}</b> (article ${eur(Number(o.price))} + frais ${eur(Number(o.fee))})`:`Tu recevras <b>${eur(Number(o.price))}</b> ${o.status==="received"?"(disponible)":o.delivery==="main_propre"?"dès que le code est validé":"après confirmation de réception"}`;
   return `<div class="order">
-    <header><b>${esc(o.title)}</b><span class="status">${ORDER_STATUS[o.status]||o.status}${o.demo?" · démo":""}</span></header>
+    <header><b>${esc(o.title)}</b><span class="status">${orderStatus(o)}${o.demo?" · démo":""}</span></header>
     <div class="order-body">
       <span class="image-frame order-img">${o.photo?`<img data-safe-image src="${esc(o.photo)}" alt="">`:""}</span>
       <div style="flex:1;min-width:0">
@@ -1646,9 +1696,11 @@ function orderCard(o,role){
         <p class="small" style="margin:6px 0">${money} · ${o.delivery==="colis"?"Envoi par colis":"Remise en main propre"} · ${new Date(o.created_at).toLocaleDateString("fr-FR")}</p>
         ${o.tracking?`<p class="small">Suivi du colis : <b>${esc(o.tracking)}</b></p>`:""}
         ${o.problem?`<p class="small note warn">Problème signalé : « ${esc(o.problem)} »</p>`:""}
+        ${o.status==="cancelled"&&o.refund_due_at?`<p class="small note">${me?`Achat annulé${o.cancelled_by==="acheteur"?" par toi":""}. Tu es remboursé(e) au plus tard le <b>${fmtDT(o.refund_due_at)}</b>.`:`Vente annulée${o.cancelled_by==="acheteur"?" par l’acheteur":""}. L’article est de nouveau en ligne.`}</p>`:""}
         ${addr}
       </div>
     </div>
+    ${handoff}
     ${actions?`<div class="row-actions" style="justify-content:flex-start;margin-top:10px">${actions}</div>`:""}
     <div id="pf-${o.id}"></div>
   </div>`;
@@ -1683,6 +1735,7 @@ async function orderAction(action,id){
   if(action==="received"){if(!confirm("Confirmer la bonne réception ? L’argent sera alors versé au vendeur."))return;r=await sb.rpc("confirm_received",{p_order:id})}
   else if(action==="shipped"){const t=$("trk-"+id);r=await sb.rpc("mark_shipped",{p_order:id,p_tracking:t?t.value.trim():null})}
   else if(action==="cancel"){if(!confirm("Annuler cette vente ? L’acheteur sera remboursé et l’article remis en vente."))return;r=await sb.rpc("cancel_order",{p_order:id})}
+  else if(action==="buyer-cancel"){if(!confirm("Annuler l’achat ? Tu seras remboursé(e) sous 48 h maximum et l’article sera remis en vente."))return;r=await sb.rpc("cancel_order",{p_order:id})}
   else if(action==="admin-cancel"){if(!confirm("Annuler la commande et rembourser l’acheteur ?"))return;r=await sb.rpc("cancel_order",{p_order:id})}
   else if(action==="admin-close"){if(!confirm("Clore le litige en faveur du vendeur ?"))return;r=await sb.rpc("admin_close_problem",{p_order:id})}
   else if(action==="review-form"){
@@ -1697,8 +1750,20 @@ async function orderAction(action,id){
     return;
   }
   if(r&&r.error){toast(frenchError(r.error));return}
-  toast({received:"Merci ! La vente est terminée.",shipped:"C’est noté : l’acheteur est prévenu dans sa commande.",cancel:"Vente annulée.","admin-cancel":"Commande annulée.","admin-close":"Litige clos."}[action]||"C’est fait.");
+  toast({received:"Merci ! La vente est terminée.",shipped:"C’est noté : l’acheteur est prévenu dans sa commande.",cancel:"Vente annulée.","buyer-cancel":"Achat annulé : remboursement sous 48 h maximum.","admin-cancel":"Commande annulée.","admin-close":"Litige clos."}[action]||"C’est fait.");
   await Promise.all([loadOrders(),loadListings()]);renderView();
+}
+async function submitHandoff(id,form){
+  const inp=$("hc-"+id),code=inp.value.replace(/\D/g,"");
+  if(!fieldError("hc-"+id,"hc-"+id+"Err",code.length!==6?"Le code contient 6 chiffres.":""))return;
+  busy(form,true,"Vérification…");
+  const {data,error}=await sb.rpc("confirm_handoff",{p_order:id,p_code:code});
+  busy(form,false);
+  if(error){toast(frenchError(error));return}
+  if(data==="ok"){toast("Paiement validé ✅ Tu peux remettre l’article.");await Promise.all([loadOrders(),loadListings()]);renderView();return}
+  if(data==="locked"){fieldError("hc-"+id,"hc-"+id+"Err","Trop d’essais : le code est bloqué. Contacte la modération.");return}
+  const left=+(String(data).split(":")[1]||0);
+  fieldError("hc-"+id,"hc-"+id+"Err",`Code incorrect. Il te reste ${left} essai${left>1?"s":""}.`);inp.select();
 }
 async function submitProblem(id,form){
   const reason=$("pr-"+id).value.trim();
@@ -1713,7 +1778,179 @@ async function submitProblem(id,form){
 function disputesHtml(){
   const list=orders.all.filter(o=>o.status==="problem");
   if(!payOn())return"";
+  const tl=trades.list.filter(t=>t.status==="problem");
+  const tradeDisputes=`<div class="panel"><h2>Échanges en litige (${tl.length})</h2>${tl.length?tl.map(t=>tradeCard(t,"admin")).join(""):`<p class="muted">Aucun échange en litige.</p>`}</div>`;
+  return orderDisputes(list)+tradeDisputes;
+}
+function orderDisputes(list){
   return `<div class="panel"><h2>Litiges Revoo Pay (${list.length})</h2>${list.length?list.map(o=>`${orderCard(o,"admin")}<div class="row-actions" style="justify-content:flex-start;margin:-6px 0 14px"><button type="button" class="btn btn-danger" data-order="admin-cancel" data-id="${o.id}">Annuler et rembourser l’acheteur</button><button type="button" class="btn btn-outline" data-order="admin-close" data-id="${o.id}">Clore en faveur du vendeur</button></div>`).join(""):`<p class="muted">Aucun litige en cours.</p>`}</div>`;
+}
+
+
+/* =========================================================
+   ÉCHANGES (avec complément d'argent possible)
+   Débloqué après 3 achats confirmés · suivi obligatoire · 48 h après le dernier colis reçu
+   ========================================================= */
+const TRADE_UNLOCK=3;
+const trades={list:[],addr:[],loaded:false};
+const TRADE_STATUS={proposed:"Proposition en attente",accepted:"En cours",completed:"Échange terminé",problem:"Problème signalé",declined:"Refusé",cancelled:"Annulé"};
+async function loadTrades(){
+  trades.list=[];trades.addr=[];trades.loaded=false;
+  if(!sb||!state.user||!payOn())return;
+  try{
+    try{await sb.rpc("settle_trades")}catch(e){}
+    const {data,error}=await sb.from("trades").select("*").order("created_at",{ascending:false}).limit(200);
+    if(error){console.warn(error);return}
+    trades.list=data||[];
+    const a=await sb.from("trade_addresses").select("*");if(!a.error)trades.addr=a.data||[];
+    trades.loaded=true;
+  }catch(e){console.warn(e)}
+}
+const purchasesDone=()=>state.user?orders.mine.filter(o=>o.buyer_id===state.user.id&&o.status==="received").length:0;
+function tradeBlock(p){
+  if(!payOn()||p.demo||p.mine||state.isAdmin)return"";
+  if(!state.user)return `<p class="trade-lock small"><span aria-hidden="true">⇄</span> <a href="#/compte">Connecte-toi</a> pour proposer un échange.</p>`;
+  const n=purchasesDone();
+  if(n<TRADE_UNLOCK)return `<div class="trade-lock"><span aria-hidden="true">🔒</span><div><b>Échange</b><br><span class="small">Débloqué après ${TRADE_UNLOCK} achats confirmés : tu en es à <b>${n}/${TRADE_UNLOCK}</b>.</span><span class="trade-progress" aria-hidden="true"><i style="width:${Math.min(100,n/TRADE_UNLOCK*100)}%"></i></span></div></div>`;
+  return `<button type="button" class="btn btn-outline btn-block" data-trade="open" data-id="${esc(p.id)}" style="margin-top:12px"><span aria-hidden="true">⇄</span> Proposer un échange</button><div id="tradeBox"></div>`;
+}
+function tradeFormHtml(p){
+  const mine=state.remote.filter(x=>x.mine&&x.status==="active");
+  if(!mine.length)return `<div class="panel" style="margin-top:12px"><p>Pour proposer un échange, mets d’abord en ligne un article à donner.</p><a class="btn btn-primary" href="#/vendre">Mettre un article en ligne</a></div>`;
+  const last=trades.addr.find(a=>a.user_id===state.user.id)||{};
+  return `<form class="panel trade-form" data-tradeform="${esc(p.id)}" novalidate style="margin-top:12px">
+    <h2 style="font-size:17px">Proposer un échange contre « ${esc(p.name)} »</h2>
+    <fieldset class="trade-pick"><legend class="label">Ce que tu donnes</legend>
+      ${mine.map((x,i)=>`<label class="trade-opt"><input type="radio" name="tradeOffer" value="${esc(x.id)}" ${i===0?"checked":""}><span class="image-frame"><img data-safe-image src="${esc(x.img)}" alt=""></span><span><b>${esc(x.name)}</b><small>${eur(x.price)} · ${esc(x.size)}</small></span></label>`).join("")}
+    </fieldset>
+    <div class="field"><label for="tTopup">Tu ajoutes de l’argent ? <span class="hint">(facultatif, 500 € max)</span></label><div class="eur-input"><input class="input" id="tTopup" type="number" min="0" max="500" step="0.5" inputmode="decimal" placeholder="0"><span>€</span></div><span class="error" id="tTopupErr"></span></div>
+    <div class="field"><label for="tMsg">Un mot pour ${esc(p.seller)} <span class="hint">(facultatif)</span></label><textarea class="input" id="tMsg" maxlength="500" placeholder="Salut ! Ton article me plaît…"></textarea></div>
+    <fieldset><legend class="label">Ton adresse d’envoi <span class="hint">(visible par l’autre seulement s’il accepte)</span></legend>
+      <div class="field"><label for="taName">Nom et prénom</label><input class="input" id="taName" autocomplete="name" maxlength="80" value="${esc(last.name||"")}"></div>
+      <div class="field"><label for="taAddr">Adresse</label><input class="input" id="taAddr" autocomplete="street-address" maxlength="200" value="${esc(last.address||"")}"></div>
+      <div class="grid-2"><div class="field"><label for="taZip">Code postal</label><input class="input" id="taZip" autocomplete="postal-code" inputmode="numeric" maxlength="10" value="${esc(last.zip||"")}"></div><div class="field"><label for="taCity">Ville</label><input class="input" id="taCity" autocomplete="address-level2" maxlength="80" value="${esc(last.city||"")}"></div></div>
+      <span class="error" id="taErr"></span>
+    </fieldset>
+    <div class="trade-rules small"><b>Comment ça marche</b><ol>
+      <li>Si ${esc(p.seller)} accepte, ton complément éventuel et les frais (${eur(ORDER_FEE)} chacun) sont <b>payés et bloqués</b>.</li>
+      <li>Chacun envoie son colis <b>avec un numéro de suivi</b> (obligatoire).</li>
+      <li>Quand les <b>deux</b> colis sont arrivés, vous avez <b>48 h</b> pour vérifier. Sans problème signalé, l’échange est validé et le complément versé.</li></ol></div>
+    <button class="btn btn-primary" type="submit">Envoyer la proposition</button>
+  </form>`;
+}
+const addrVals=pfx=>({p_name:$(pfx+"Name").value.trim(),p_address:$(pfx+"Addr").value.trim(),p_zip:$(pfx+"Zip").value.trim(),p_city:$(pfx+"City").value.trim()});
+async function submitTradeProposal(wanted,f){
+  const off=f.querySelector('input[name="tradeOffer"]:checked'),top=$("tTopup").value===""?0:+$("tTopup").value,ad=addrVals("ta");
+  const okTop=fieldError("tTopup","tTopupErr",isNaN(top)||top<0||top>500?"Indique un montant entre 0 et 500 €.":"");
+  const okAd=Object.values(ad).every(Boolean);$("taErr").textContent=okAd?"":"Complète ton adresse d’envoi.";
+  if(!off||!okTop||!okAd)return;
+  busy(f,true,"Envoi…");
+  const {error}=await sb.rpc("propose_trade",{p_offered:off.value,p_wanted:wanted,p_topup:Math.round(top*100)/100,p_message:$("tMsg").value.trim()||null,...ad});
+  busy(f,false);
+  if(error){toast(frenchError(error));return}
+  toast("Proposition envoyée ! Tu seras prévenu(e) de la réponse.");await loadTrades();location.hash="#/compte/echanges";
+}
+function tradeSteps(t){
+  const both=t.proposer_received_at&&t.receiver_received_at;
+  const i=t.status==="completed"?4:t.status==="proposed"?0:both?3:(t.proposer_shipped_at&&t.receiver_shipped_at)?2:1;
+  return `<ol class="order-steps">${["Proposé","Accepté","Colis envoyés","Colis reçus","Terminé"].map((l,k)=>`<li class="${k<=i&&!["declined","cancelled"].includes(t.status)?"done":""}">${l}</li>`).join("")}</ol>`;
+}
+function tradeCard(t,role){
+  const me=state.user&&state.user.id, iAmP=t.proposer_id===me, admin=role==="admin";
+  const give=iAmP?{title:t.offered_title,photo:t.offered_photo}:{title:t.wanted_title,photo:t.wanted_photo};
+  const get=iAmP?{title:t.wanted_title,photo:t.wanted_photo}:{title:t.offered_title,photo:t.offered_photo};
+  const top=Number(t.topup);
+  const topTxt=top>0?(admin?`Complément : <b>${eur(top)}</b> (payé par celui qui propose)`:iAmP?`Tu ajoutes <b>${eur(top)}</b>`:`Tu reçois <b>${eur(top)}</b> en plus`):"Sans complément d’argent";
+  const myShip=iAmP?t.proposer_shipped_at:t.receiver_shipped_at, otherShip=iAmP?t.receiver_shipped_at:t.proposer_shipped_at;
+  const myRec=iAmP?t.proposer_received_at:t.receiver_received_at, myOk=iAmP?t.proposer_ok:t.receiver_ok;
+  const otherTrk=iAmP?t.receiver_tracking:t.proposer_tracking, myTrk=iAmP?t.proposer_tracking:t.receiver_tracking;
+  const otherAddr=trades.addr.find(a=>a.trade_id===t.id&&a.user_id!==me);
+  let info="",actions="";
+  if(admin){info=`<p class="small">Colis de celui qui propose : <b>${esc(t.proposer_tracking||"pas encore envoyé")}</b> · Colis de l’autre : <b>${esc(t.receiver_tracking||"pas encore envoyé")}</b></p>`;
+    actions=`<button type="button" class="btn btn-outline" data-trade="admin-complete" data-id="${t.id}">Valider l’échange</button><button type="button" class="btn btn-danger" data-trade="admin-cancel" data-id="${t.id}">Annuler et rembourser</button>`}
+  else if(t.status==="proposed"){
+    if(iAmP){info=`<p class="small muted">En attente de la réponse.</p>`;actions=`<button type="button" class="btn btn-outline" data-trade="cancel" data-id="${t.id}">Retirer ma proposition</button>`}
+    else actions=`<button type="button" class="btn btn-primary" data-trade="accept-form" data-id="${t.id}">Accepter</button><button type="button" class="btn btn-outline" data-trade="decline" data-id="${t.id}">Refuser</button>`;
+  } else if(t.status==="accepted"){
+    if(!myShip){
+      info+=otherAddr?`<p class="small"><b>Envoie ton colis à :</b><br>${esc(otherAddr.name)}<br>${esc(otherAddr.address)}<br>${esc(otherAddr.zip)} ${esc(otherAddr.city)}</p>`:"";
+      info+=`<form class="trade-ship" data-tradeship="${t.id}" novalidate><label class="label" for="ts-${t.id}">Numéro de suivi de ton colis <span class="hint">(obligatoire)</span></label><div class="handoff-row"><input class="input" id="ts-${t.id}" maxlength="60" placeholder="Ex. : 6A12345678901"><button class="btn btn-primary" type="submit">J’ai envoyé mon colis</button></div><span class="error" id="ts-${t.id}Err"></span></form>`;
+    } else info+=`<p class="small">Ton colis est parti · suivi <b>${esc(myTrk||"")}</b></p>`;
+    if(otherShip&&!myRec){info+=`<p class="small">Le colis de l’autre est parti · suivi <b>${esc(otherTrk||"")}</b></p>`;actions+=`<button type="button" class="btn btn-primary" data-trade="received" data-id="${t.id}">J’ai reçu son colis</button>`}
+    else if(!otherShip)info+=`<p class="small muted">En attente de l’envoi de l’autre colis.</p>`;
+    if(t.review_deadline){
+      const h=Math.max(0,Math.ceil((Date.parse(t.review_deadline)-Date.now())/36e5));
+      info+=`<p class="small note">Les deux colis sont arrivés. Vérification jusqu’au <b>${fmtDT(t.review_deadline)}</b> (encore ${h} h). Sans problème signalé, l’échange sera validé automatiquement.</p>`;
+      if(!myOk)actions+=`<button type="button" class="btn btn-primary" data-trade="validate" data-id="${t.id}">Tout est conforme</button>`;else info+=`<p class="small">Tu as validé ✅ En attente de l’autre (ou de la fin des 48 h).</p>`;
+    } else if(myRec)info+=`<p class="small muted">Tu as reçu ton colis. Les 48 h de vérification démarreront quand l’autre aura reçu le sien.</p>`;
+    if(myShip||otherShip)actions+=`<button type="button" class="btn btn-outline" data-trade="problem-form" data-id="${t.id}">Signaler un problème</button>`;
+    else actions+=`<button type="button" class="btn btn-outline" data-trade="cancel-accepted" data-id="${t.id}">Annuler l’échange</button>`;
+  } else if(t.status==="problem")info=`<p class="small note warn">Problème signalé : « ${esc(t.problem||"")} ». Tout reste bloqué : la modération va trancher.</p>`;
+  else if(t.status==="completed")info=`<p class="small">Échange terminé ✅${top>0&&!iAmP?` · ${eur(top)} ajoutés à ton porte-monnaie`:""}</p>`;
+  else if(t.status==="cancelled"&&t.refund_due_at&&iAmP&&top>0)info=`<p class="small note">Échange annulé. Ton complément est remboursé au plus tard le <b>${fmtDT(t.refund_due_at)}</b>.</p>`;
+  return `<div class="order trade-card">
+    <header><b>Échange${admin?"":iAmP?" proposé":" reçu"}</b><span class="status">${TRADE_STATUS[t.status]||t.status}${t.demo?" · démo":""}</span></header>
+    <div class="trade-pair">
+      <div><span class="image-frame order-img">${give.photo?`<img data-safe-image src="${esc(give.photo)}" alt="">`:""}</span><small>${admin?"Proposé":"Tu donnes"}</small><b>${esc(give.title)}</b></div>
+      <span class="trade-arrow" aria-hidden="true">⇄</span>
+      <div><span class="image-frame order-img">${get.photo?`<img data-safe-image src="${esc(get.photo)}" alt="">`:""}</span><small>${admin?"Demandé":"Tu reçois"}</small><b>${esc(get.title)}</b></div>
+    </div>
+    <p class="small" style="margin:8px 0 0">${topTxt} · ${new Date(t.created_at).toLocaleDateString("fr-FR")}</p>
+    ${t.message&&t.status==="proposed"?`<p class="small" style="white-space:pre-line">« ${esc(t.message)} »</p>`:""}
+    ${!["declined","cancelled"].includes(t.status)?tradeSteps(t):""}
+    ${info}
+    ${actions?`<div class="row-actions" style="justify-content:flex-start;margin-top:10px">${actions}</div>`:""}
+    <div id="tf-${t.id}"></div>
+  </div>`;
+}
+function tradesHtml(){
+  if(!trades.loaded)return`<p class="muted">Chargement…</p>`;
+  const n=purchasesDone();
+  const head=n<TRADE_UNLOCK?`<div class="trade-lock" style="margin-bottom:14px"><span aria-hidden="true">🔒</span><div><b>L’échange se débloque après ${TRADE_UNLOCK} achats confirmés</b><br><span class="small">Tu en es à <b>${n}/${TRADE_UNLOCK}</b>. Tu peux quand même répondre aux propositions une fois débloqué.</span><span class="trade-progress" aria-hidden="true"><i style="width:${Math.min(100,n/TRADE_UNLOCK*100)}%"></i></span></div></div>`
+    :`<p class="muted small">Pour proposer un échange, ouvre une annonce qui te plaît et clique sur « ⇄ Proposer un échange ».</p>`;
+  return head+(trades.list.length?trades.list.map(t=>tradeCard(t)).join(""):`<div class="empty"><p>Aucun échange pour le moment.</p><a class="btn btn-primary" href="#/catalogue">Trouver une pièce</a></div>`);
+}
+async function tradeAction(action,id){
+  let r;
+  if(action==="open"){const box=$("tradeBox");if(!box)return;if(box.innerHTML){box.innerHTML="";return}const p=findProduct(id);if(!p)return;box.innerHTML=tradeFormHtml(p);watchImages(box);box.querySelector("input,a")?.focus();return}
+  if(action==="accept-form"){const box=$("tf-"+id);if(!box)return;if(box.innerHTML){box.innerHTML="";return}
+    const last=trades.addr.find(a=>a.user_id===state.user.id)||{};
+    box.innerHTML=`<form class="panel" style="margin-top:10px" data-tradeaccept="${id}" novalidate><p class="small">Indique ton adresse : elle sera transmise à l’autre personne pour l’envoi.</p>
+      <div class="field"><label for="tc${id}Name">Nom et prénom</label><input class="input" id="tc${id}Name" autocomplete="name" maxlength="80" value="${esc(last.name||"")}"></div>
+      <div class="field"><label for="tc${id}Addr">Adresse</label><input class="input" id="tc${id}Addr" autocomplete="street-address" maxlength="200" value="${esc(last.address||"")}"></div>
+      <div class="grid-2"><div class="field"><label for="tc${id}Zip">Code postal</label><input class="input" id="tc${id}Zip" autocomplete="postal-code" maxlength="10" value="${esc(last.zip||"")}"></div><div class="field"><label for="tc${id}City">Ville</label><input class="input" id="tc${id}City" autocomplete="address-level2" maxlength="80" value="${esc(last.city||"")}"></div></div>
+      <span class="error" id="tc${id}Err"></span><button class="btn btn-primary" type="submit">Accepter l’échange</button></form>`;box.querySelector("input").focus();return}
+  if(action==="problem-form"){const box=$("tf-"+id);if(!box)return;if(box.innerHTML){box.innerHTML="";return}
+    box.innerHTML=`<form class="panel" style="margin-top:10px" data-tradeproblem="${id}" novalidate><div class="field"><label for="tp-${id}">Quel est le problème ?</label><textarea class="input" id="tp-${id}" maxlength="1000" placeholder="Ex. : colis jamais arrivé, article différent des photos…"></textarea><span class="error" id="tp-${id}Err"></span></div><button class="btn btn-primary" type="submit">Envoyer</button></form>`;box.querySelector("textarea").focus();return}
+  if(action==="decline"){if(!confirm("Refuser cette proposition d’échange ?"))return;r=await sb.rpc("respond_trade",{p_trade:id,p_accept:false})}
+  else if(action==="cancel"){if(!confirm("Retirer ta proposition ?"))return;r=await sb.rpc("cancel_trade",{p_trade:id})}
+  else if(action==="cancel-accepted"){if(!confirm("Annuler l’échange ? Les deux articles seront remis en ligne et le complément remboursé sous 48 h maximum."))return;r=await sb.rpc("cancel_trade",{p_trade:id})}
+  else if(action==="received"){if(!confirm("Confirmer que tu as bien reçu le colis ?"))return;r=await sb.rpc("receive_trade",{p_trade:id})}
+  else if(action==="validate"){if(!confirm("Tout est conforme ? L’échange sera validé de ton côté."))return;r=await sb.rpc("validate_trade",{p_trade:id})}
+  else if(action==="admin-complete"){if(!confirm("Valider cet échange (le complément est versé) ?"))return;r=await sb.rpc("admin_resolve_trade",{p_trade:id,p_outcome:"complete"})}
+  else if(action==="admin-cancel"){if(!confirm("Annuler cet échange et rembourser le complément ?"))return;r=await sb.rpc("admin_resolve_trade",{p_trade:id,p_outcome:"cancel"})}
+  else return;
+  if(r&&r.error){toast(frenchError(r.error));return}
+  toast({decline:"Proposition refusée.",cancel:"Proposition retirée.","cancel-accepted":"Échange annulé.",received:"C’est noté !",validate:"Merci ! Validé de ton côté.","admin-complete":"Échange validé.","admin-cancel":"Échange annulé."}[action]||"C’est fait.");
+  await Promise.all([loadTrades(),loadListings()]);renderView();
+}
+async function submitTradeAccept(id,f){
+  const ad=addrVals("tc"+id);if(!Object.values(ad).every(Boolean)){$("tc"+id+"Err").textContent="Complète ton adresse d’envoi.";return}
+  busy(f,true,"Validation…");const {error}=await sb.rpc("respond_trade",{p_trade:id,p_accept:true,...ad});busy(f,false);
+  if(error){toast(frenchError(error));return}
+  toast("Échange accepté ! Envoie ton colis avec un numéro de suivi.");await Promise.all([loadTrades(),loadListings()]);renderView();
+}
+async function submitTradeShip(id,f){
+  const v=$("ts-"+id).value.trim();if(!fieldError("ts-"+id,"ts-"+id+"Err",v.length<6?"Indique le numéro de suivi (6 caractères minimum).":""))return;
+  busy(f,true,"Envoi…");const {error}=await sb.rpc("ship_trade",{p_trade:id,p_tracking:v});busy(f,false);
+  if(error){toast(frenchError(error));return}
+  toast("Colis enregistré. L’autre personne est prévenue.");await loadTrades();renderView();
+}
+async function submitTradeProblem(id,f){
+  const v=$("tp-"+id).value.trim();if(!fieldError("tp-"+id,"tp-"+id+"Err",v.length<5?"Décris le problème en quelques mots.":""))return;
+  busy(f,true,"Envoi…");const {error}=await sb.rpc("report_trade_problem",{p_trade:id,p_reason:v});busy(f,false);
+  if(error){toast(frenchError(error));return}
+  toast("Problème signalé. Tout reste bloqué le temps que la modération tranche.");await loadTrades();renderView();
 }
 
 /* Page de paiement */
@@ -1733,7 +1970,7 @@ function renderCheckout(id){
         <div class="price">${eur(p.price)}</div></div></div>
       <div class="panel"><h2>Livraison</h2>
         <fieldset class="carriers" style="margin:0"><legend class="sr-only">Mode de livraison</legend>
-          <label class="carrier"><input type="radio" name="dlv" value="main_propre" ${checkoutDelivery==="main_propre"?"checked":""}><span><b>Remise en main propre</b><small>Vous vous donnez rendez-vous via la messagerie.</small></span></label>
+          <label class="carrier"><input type="radio" name="dlv" value="main_propre" ${checkoutDelivery==="main_propre"?"checked":""}><span><b>Remise en main propre</b><small>Vous fixez le rendez-vous ensemble. Tu reçois un code à donner au vendeur seulement si l’article te convient.</small></span></label>
           <label class="carrier"><input type="radio" name="dlv" value="colis" ${checkoutDelivery==="colis"?"checked":""}><span><b>Envoi par colis</b><small>Le vendeur t’envoie l’article avec un numéro de suivi.</small></span></label>
         </fieldset>
         <div id="addrBox" ${checkoutDelivery==="colis"?"":"hidden"} style="margin-top:14px">
@@ -1805,7 +2042,7 @@ function renderPayCart(){
         <div class="price-col"><div class="price">${eur(p.price)}</div><button type="button" class="link" data-remove="${esc(p.id)}" aria-label="Retirer ${esc(p.name)} du panier">Retirer</button></div>
       </div>`).join("")}
       <fieldset class="carriers" style="margin-top:12px"><legend class="label">Livraison pour ${esc(g.seller)}</legend>
-        <label class="carrier"><input type="radio" name="dlv-${sid}" value="main_propre" data-seller-dlv="${sid}" ${cartDelivery[sid]==="main_propre"?"checked":""}><span><b>Remise en main propre</b><small>Rendez-vous à convenir dans la messagerie.</small></span></label>
+        <label class="carrier"><input type="radio" name="dlv-${sid}" value="main_propre" data-seller-dlv="${sid}" ${cartDelivery[sid]==="main_propre"?"checked":""}><span><b>Remise en main propre</b><small>Rendez-vous à convenir ensemble. Paiement validé par code, sur place.</small></span></label>
         <label class="carrier"><input type="radio" name="dlv-${sid}" value="colis" data-seller-dlv="${sid}" ${cartDelivery[sid]==="colis"?"checked":""}><span><b>Envoi par colis</b><small>${g.items.length>1?"Tous les articles de ce vendeur dans un seul colis.":"Avec un numéro de suivi."}</small></span></label>
       </fieldset>
     </div>`).join("")}
@@ -2066,6 +2303,7 @@ function renderProduct(id){
       <p class="impact-line"><span aria-hidden="true">🌱</span> <span>Le choisir d’occasion plutôt que neuf évite environ <b>${impactKg(p.name)} kg de CO₂</b>. <a href="#/impact">Estimation</a></span></p>
       ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">🛡️ Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
+      ${sold?"":tradeBlock(p)}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
       ${p.mine||sold||!CONFIG.paiementIntegre?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
       <button type="button" class="link small" id="shareBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Partager</button>
@@ -2207,12 +2445,13 @@ function renderAccount(tab){
   const myOrders=state.orders.filter(o=>!o.userId||o.userId===state.user.id);
   if(state.isAdmin){renderModeration(el);return}
   const tabs=[["profil","Profil et paramètres"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]].filter(t=>CONFIG.paiementIntegre||t[0]!=="commandes");
-  if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["portemonnaie","Porte-monnaie"])}
+  if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["echanges",`Échanges (${trades.list.filter(t=>["proposed","accepted","problem"].includes(t.status)).length})`],["portemonnaie","Porte-monnaie"])}
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
   let body="";
   if(accountTab==="achats"&&payOn()){body=purchasesHtml()}
   else if(accountTab==="ventes"&&payOn()){body=salesHtml()}
   else if(accountTab==="portemonnaie"&&payOn()){body=walletHtml()}
+  else if(accountTab==="echanges"&&payOn()){body=tradesHtml()}
   else if(accountTab==="moderation"&&state.isAdmin){
     body=moderationHtml()+disputesHtml();
   } else if(accountTab==="annonces"){
@@ -2691,6 +2930,7 @@ document.addEventListener("click",async e=>{
   const rm=t.closest("[data-remove]");if(rm){state.cart=state.cart.filter(x=>x!==rm.dataset.remove);save("cart");toast("Retiré du panier");refresh();return}
   const del=t.closest("[data-delete]");if(del){deleteListing(del.dataset.delete);return}
   const oa=t.closest("[data-order]");if(oa){orderAction(oa.dataset.order,oa.dataset.id);return}
+  const ta=t.closest("[data-trade]");if(ta){tradeAction(ta.dataset.trade,ta.dataset.id);return}
   const ct=t.closest("[data-contact]");if(ct){const pr=findProduct(ct.dataset.contact);if(pr)contactSeller(pr);return}
   const dr=t.closest("[data-delreview]");if(dr){if(confirm("Supprimer cet avis ?")){const {error}=await sb.from("reviews").delete().eq("id",dr.dataset.delreview);if(error)toast(frenchError(error));else{toast("Avis supprimé.");await loadListings();renderView()}}return}
   const md=t.closest("[data-mod]");if(md){md.disabled=true;moderate(md.dataset.mod,md.dataset.report,md.dataset.listing);return}
@@ -2717,6 +2957,11 @@ const redirectUrl=()=>location.origin+location.pathname;
 document.addEventListener("submit",async e=>{
   const f=e.target;
   if(f.dataset.problem){e.preventDefault();submitProblem(f.dataset.problem,f);return}
+  if(f.dataset.handoff){e.preventDefault();submitHandoff(f.dataset.handoff,f);return}
+  if(f.dataset.tradeform){e.preventDefault();submitTradeProposal(f.dataset.tradeform,f);return}
+  if(f.dataset.tradeaccept){e.preventDefault();submitTradeAccept(f.dataset.tradeaccept,f);return}
+  if(f.dataset.tradeship){e.preventDefault();submitTradeShip(f.dataset.tradeship,f);return}
+  if(f.dataset.tradeproblem){e.preventDefault();submitTradeProblem(f.dataset.tradeproblem,f);return}
   if(f.dataset.review){e.preventDefault();const id=f.dataset.review;const st=f.querySelector('input[name="stars-'+id+'"]:checked');
     if(!st){$("st-"+id+"Err").textContent="Choisis une note de 1 à 5 étoiles.";return}
     busy(f,true,"Publication…");const {error}=await sb.rpc("leave_review",{p_order:id,p_rating:+st.value,p_comment:$("rv-"+id).value.trim()||null});busy(f,false);
