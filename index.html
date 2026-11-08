@@ -549,6 +549,24 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .mod-mode .mod-head h2{color:#fff}
 .mod-mode .mod-head .mod-badge{background:#A8C4D8;color:#16293A}
 .mod-search{margin-bottom:12px}
+/* Compteur d'impact */
+.impact-band{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:22px 0 0;padding:16px 20px;border-radius:18px;background:var(--ice);box-shadow:var(--ring);color:var(--ink);text-decoration:none}
+.impact-band[hidden]{display:none}
+.impact-band:hover{background:var(--pale)}
+.impact-ico{font-size:26px;line-height:1}
+.impact-txt{flex:1 1 260px;font-size:15px}
+.impact-txt b{font-size:22px;color:var(--heading);font-variant-numeric:tabular-nums}
+.impact-live{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--muted)}
+.impact-dot{width:8px;height:8px;border-radius:50%;background:#2E9D5B;box-shadow:0 0 0 0 rgba(46,157,91,.5);animation:impactPing 2s infinite}
+@keyframes impactPing{70%{box-shadow:0 0 0 8px rgba(46,157,91,0)}100%{box-shadow:0 0 0 0 rgba(46,157,91,0)}}
+.impact-band.pulse{animation:impactPulse 1.2s ease}
+@keyframes impactPulse{30%{box-shadow:0 0 0 3px var(--navy)}}
+@media (prefers-reduced-motion:reduce){.impact-dot,.impact-band.pulse{animation:none}}
+.impact-line{display:flex;gap:8px;align-items:flex-start;background:var(--ice);border-radius:12px;padding:10px 12px;font-size:14px}
+.impact-line a{color:var(--navy);font-weight:700}
+.impact-table{width:100%;border-collapse:collapse;margin:12px 0}
+.impact-table th,.impact-table td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-size:14px}
+.impact-table td:last-child,.impact-table th:last-child{text-align:right;white-space:nowrap}
 /* Recadrage photo de profil / bannière */
 body.crop-open{overflow:hidden}
 .crop-backdrop{position:fixed;inset:0;z-index:300;background:rgba(10,22,34,.6);display:grid;place-items:center;padding:16px}
@@ -902,8 +920,14 @@ body{transition:background .2s ease,color .2s ease}
       <li><span class="how-n">3</span><div><b>Récupère</b><small>En main propre ou par colis.</small></div></li>
     </ol>
 
+    <a class="impact-band" id="impactBand" href="#/impact" hidden aria-live="polite">
+      <span class="impact-ico" aria-hidden="true">🌱</span>
+      <span class="impact-txt"><b id="impactCo2">0 kg</b> de CO₂ évités grâce à <span id="impactItems">0 vêtement revendu</span> sur Revoo</span>
+      <span class="impact-live"><span class="impact-dot" aria-hidden="true"></span>En direct · estimation</span>
+    </a>
+
     <section class="section" aria-labelledby="latestTitle">
-      <div class="section-head"><div><h2 id="latestTitle">Les dernières trouvailles</h2><p class="section-sub">Ajoutées récemment par la communauté.</p></div><button type="button" class="viewall" data-new="1">Voir tout →</button></div>
+      <div class="section-head"><div><h2 id="latestTitle">À la une</h2><p class="section-sub">Chaque heure, d’autres annonces passent en tête. Gratuitement, pour tout le monde.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
       <div class="products" id="latestProducts"></div>
     </section>
 
@@ -976,6 +1000,7 @@ body{transition:background .2s ease,color .2s ease}
         <span class="count" id="resultCount" role="status"></span>
         <label class="sort">Trier par
           <select id="sortSelect">
+            <option value="selection">Sélection Revoo</option>
             <option value="recent">Plus récents</option>
             <option value="prix-asc">Prix croissant</option>
             <option value="prix-desc">Prix décroissant</option>
@@ -1218,6 +1243,31 @@ function sellerReviews(id){return (state.reviews||[]).filter(r=>r.seller_id===id
 function ratingOf(id){const l=sellerReviews(id);return l.length?{avg:l.reduce((t,r)=>t+r.rating,0)/l.length,n:l.length}:null}
 const starsTxt=n=>"★".repeat(Math.round(n))+"☆".repeat(5-Math.round(n));
 function ratingHtml(id,small){const r=ratingOf(id);if(!r)return small?"":`<span class="muted small">Pas encore d’avis</span>`;return `<span class="rating" aria-label="Note ${r.avg.toFixed(1).replace(".",",")} sur 5, ${r.n} avis"><span aria-hidden="true">${starsTxt(r.avg)}</span> ${r.avg.toFixed(1).replace(".",",")} · ${r.n} avis</span>`}
+/* Visibilité : les annonces mises en avant d'abord, puis une rotation qui fait
+   passer chaque annonce en tête à tour de rôle (8 nouvelles places chaque heure). */
+const isBoosted=p=>!!p.boostedUntil&&p.boostedUntil>Date.now();
+function idHash(id){let h=2166136261;for(const ch of String(id)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function rotate(list){const ring=[...list].sort((a,b)=>idHash(a.id)-idHash(b.id));const n=ring.length;if(!n)return ring;const start=(Math.floor(Date.now()/36e5)*8)%n;return ring.slice(start).concat(ring.slice(0,start))}
+const featured=list=>[...rotate(list.filter(isBoosted)),...rotate(list.filter(p=>!isBoosted(p)))];
+/* Impact : estimation du CO2 d'un vêtement neuf équivalent (valeurs basses, ordres de grandeur ADEME).
+   Doit rester identique à impact_kg_for() dans supabase-impact-visibilite.sql */
+function impactKg(title){const t=(title||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  return /(manteau|doudoune|parka|trench|caban)/.test(t)?89:/(veste|blouson|blazer|perfecto|robe|combinaison|jean)/.test(t)?25:/(pantalon|chino|jogging|legging|basket|sneaker|chaussure|botte|bottine|sandale|escarpin|mocassin|derby)/.test(t)?20:/(pull|sweat|hoodie|gilet|cardigan|chemise|blouse)/.test(t)?12:6}
+const impact={ok:false,co2:0,items:0,shown:0,channel:null};
+const fmtKg=n=>n>=1000?(n/1000).toLocaleString("fr-FR",{maximumFractionDigits:1})+" t":Math.round(n).toLocaleString("fr-FR")+" kg";
+async function loadImpact(){
+  try{const {data,error}=await sb.from("impact_stats").select("co2_kg,items").eq("id",1).maybeSingle();if(error||!data)return;
+    impact.ok=true;setImpact(Number(data.co2_kg),data.items,false);
+    if(!impact.channel)impact.channel=sb.channel("revoo-impact").on("postgres_changes",{event:"UPDATE",schema:"public",table:"impact_stats"},pl=>setImpact(Number(pl.new.co2_kg),pl.new.items,true)).subscribe();
+  }catch(e){console.warn(e)}
+}
+function setImpact(co2,items,animate){
+  const from=impact.shown;impact.co2=co2;impact.items=items;const box=$("impactBand");if(!box)return;
+  box.hidden=!impact.ok;$("impactItems").textContent=items.toLocaleString("fr-FR")+" vêtement"+(items>1?"s":"")+" revendu"+(items>1?"s":"");
+  if(!animate||matchMedia("(prefers-reduced-motion: reduce)").matches){impact.shown=co2;$("impactCo2").textContent=fmtKg(co2);return}
+  box.classList.remove("pulse");void box.offsetWidth;box.classList.add("pulse");
+  const t0=performance.now(),d=1200;const step=t=>{const k=Math.min(1,(t-t0)/d),v=from+(co2-from)*(1-Math.pow(1-k,3));impact.shown=v;$("impactCo2").textContent=fmtKg(v);if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step);
+}
 function findProduct(id){return allProducts().find(p=>p.id===id)}
 const isFav = id => state.favorites.includes(id);
 const inCart = id => state.cart.includes(id);
@@ -1232,12 +1282,13 @@ function mapListing(r){
   return {id:r.id,name:r.title,description:r.description,category:r.category,brand:r.brand,size:r.size,condition:r.condition,style:r.style||"",
     price:Number(r.price),photos:r.photos||[],img:(r.photos||[])[0]||"",status:r.status,addedAt:Date.parse(r.created_at),
     seller:r.profiles?.name||"Membre",sellerId:r.seller_id,sellerSince:r.profiles?.created_at,sellerVacation:!!r.profiles?.vacation,sellerAvatar:r.profiles?.avatar_url||"",likes:0,seasons:ALL_SEASONS,
-    real:true,mine:!!state.user&&state.user.id===r.seller_id};
+    real:true,mine:!!state.user&&state.user.id===r.seller_id,boostedUntil:r.boosted_until?Date.parse(r.boosted_until):0};
 }
 async function loadListings(){
   if(!sb){state.loading=false;return}
-  const cols="id,seller_id,title,description,category,brand,size,condition,style,price,photos,status,created_at,";
+  let cols="id,seller_id,title,description,category,brand,size,condition,style,price,photos,status,created_at,boosted_until,";
   let {data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300);
+  if(error&&/boosted_until/.test(error.message||"")){cols=cols.replace("boosted_until,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
   if(error&&/avatar_url/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation)").order("created_at",{ascending:false}).limit(300));
   if(error&&/vacation/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at)").order("created_at",{ascending:false}).limit(300));
   state.loading=false;
@@ -1851,7 +1902,7 @@ async function renderSellerProfile(id){
    ========================================================= */
 function card(p){
   const fav=isFav(p.id), c=inCart(p.id), s=sellerInfo(p);
-  const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : "";
+  const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : isBoosted(p) ? "Sponsorisé" : "";
   const cartBtn = p.mine ? `<a class="btn btn-outline" href="#/compte/annonces">Gérer l’annonce</a>`
     : payOn()&&!p.demo ? `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`
     : !CONFIG.paiementIntegre||p.demo ? `<button type="button" class="btn btn-outline" data-contact="${esc(p.id)}" aria-label="Je suis intéressé(e) par ${esc(p.name)}">💬 Intéressé(e)</button>`
@@ -1885,7 +1936,7 @@ function fillSuggestions(){
 function renderHome(){
   const season=currentSeason(), ui=SEASON_UI[season], av=available();
   const byNew=[...av].sort((a,b)=>b.addedAt-a.addedAt), byLikes=(a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt;
-  const latest=byNew.slice(0,8), shown=new Set(latest.map(p=>p.id));
+  const latest=featured(av).slice(0,8), shown=new Set(latest.map(p=>p.id));
   $("seasonName").textContent=season[0].toUpperCase()+season.slice(1);
   $("seasonText").textContent=ui.text;
   const seasonal=av.filter(p=>!shown.has(p.id)&&(p.seasons||[]).includes(season)).sort(byLikes).slice(0,4);
@@ -1907,9 +1958,9 @@ function renderHome(){
 /* =========================================================
    CATALOGUE : recherche + filtres
    ========================================================= */
-const filters = {q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"recent"};
+const filters = {q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection"};
 const PAGE_SIZE=24;let catalogueLimit=PAGE_SIZE;
-function resetFilters(){catalogueLimit=PAGE_SIZE;Object.assign(filters,{q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"recent"})}
+function resetFilters(){catalogueLimit=PAGE_SIZE;Object.assign(filters,{q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection"})}
 function matchesQuery(p,q){
   const hay=norm([p.name,p.brand,p.category,p.style,p.condition,p.size,p.description,p.seller].join(" "));
   return norm(q).split(/\s+/).filter(Boolean).every(w=>hay.includes(w)||(w.length>3&&w.endsWith("s")&&hay.includes(w.slice(0,-1))));
@@ -1927,7 +1978,8 @@ function filtered(){
     (!filters.season||(p.seasons||[]).includes(filters.season)) &&
     (min==null||p.price>=min) && (max==null||p.price<=max));
   const sorters={recent:(a,b)=>b.addedAt-a.addedAt,"prix-asc":(a,b)=>a.price-b.price,"prix-desc":(a,b)=>b.price-a.price,populaires:(a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt};
-  return list.sort(sorters[filters.sort]||sorters.recent);
+  if(!sorters[filters.sort])return featured(list);
+  return list.sort(sorters[filters.sort]);
 }
 function chip(name,value,checked,type="checkbox"){return `<label class="chip"><input type="${type}" name="${name}" value="${esc(value)}" ${checked?"checked":""}><span>${esc(value||"Toutes")}</span></label>`}
 function buildFilterControls(){
@@ -2011,6 +2063,7 @@ function renderProduct(id){
         <div><dt>Ajouté</dt><dd>${ago(p.addedAt)}</dd></div>
       </dl>
       ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
+      <p class="impact-line"><span aria-hidden="true">🌱</span> <span>Le choisir d’occasion plutôt que neuf évite environ <b>${impactKg(p.name)} kg de CO₂</b>. <a href="#/impact">Estimation</a></span></p>
       ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">🛡️ Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
@@ -2504,6 +2557,18 @@ const PAGES={
     <p>Revoo est une marketplace française dédiée à la vente et à l’achat de vêtements d’occasion entre particuliers. Achète, vends, donne une seconde vie à tes pièces préférées.</p>
     <p>Notre objectif : rendre l’achat de seconde main plus juste et plus abordable, avec des frais simples et identiques quel que soit le prix de l’article.</p>
     <p>Revoo est en cours de lancement, en France, en français, avec des prix en euros.</p>`,
+  "impact":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Notre impact</p><h1>Comment on calcule l’impact</h1>
+    <p>${impact.ok?`Aujourd’hui : <b>${fmtKg(impact.co2)} de CO₂ évités</b> grâce à ${impact.items.toLocaleString("fr-FR")} vêtement${impact.items>1?"s":""} revendu${impact.items>1?"s":""} sur Revoo.`:"Le compteur démarre avec les premières ventes."}</p>
+    <p>Fabriquer un vêtement neuf émet du CO₂ (culture ou production de la matière, teinture, confection, transport). Quand un vêtement trouve une seconde vie sur Revoo, on compte l’émission d’un vêtement neuf équivalent comme <b>évitée</b>.</p>
+    <p>Le compteur augmente <b>en direct</b> à chaque article vendu. Si une annonce est remise en ligne, son estimation est retirée.</p>
+    <table class="impact-table"><thead><tr><th scope="col">Type de vêtement (d’après le titre de l’annonce)</th><th scope="col">CO₂ compté</th></tr></thead><tbody>
+      <tr><td>Manteau, doudoune, parka, trench</td><td>89 kg</td></tr>
+      <tr><td>Veste, blouson, robe, combinaison, jean</td><td>25 kg</td></tr>
+      <tr><td>Pantalon, jogging, chaussures, baskets</td><td>20 kg</td></tr>
+      <tr><td>Pull, sweat, gilet, chemise</td><td>12 kg</td></tr>
+      <tr><td>T-shirt, top, accessoire et autres</td><td>6 kg</td></tr>
+    </tbody></table>
+    <p class="muted small"><b>Ce sont des estimations.</b> Les valeurs reprennent les ordres de grandeur publiés par l’ADEME (Agence de la transition écologique) pour la fabrication de vêtements neufs, en retenant volontairement des valeurs basses pour ne pas exagérer. L’impact réel dépend de la matière, du lieu de fabrication et de l’usage. L’envoi par colis n’est pas déduit.</p>`,
   "securite":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Conseils de sécurité</p><h1>Acheter et vendre en sécurité</h1>
     <p>Pendant le lancement, <b>Revoo ne gère pas le paiement</b> : l’acheteur paie directement le vendeur. Suis ces règles simples pour éviter les mauvaises surprises.</p>
     <h2 class="h-ok">Le plus sûr : la remise en main propre</h2><p>Rencontrez-vous dans un lieu public. L’acheteur regarde l’article et <b>paie au moment de la remise</b>.</p>
@@ -2607,6 +2672,7 @@ document.addEventListener("click",async e=>{
   const t=e.target;
   const cat=t.closest("[data-category]");if(cat){e.preventDefault();$("searchInput").value="";openCatalogue({category:cat.dataset.category});return}
   const nw=t.closest("[data-new]");if(nw){e.preventDefault();openCatalogue({sort:"recent"});return}
+  if(t.closest("[data-selection]")){e.preventDefault();openCatalogue({sort:"selection"});return}
   const so=t.closest("[data-sort]");if(so){openCatalogue({sort:so.dataset.sort});return}
   const st=t.closest("[data-style]");if(st){openCatalogue({style:st.dataset.style});return}
   const se=t.closest("[data-seller]");if(se){openCatalogue({seller:se.dataset.seller});return}
@@ -3092,6 +3158,7 @@ watchImages();renderView();
   const [{data:{session}}]=await Promise.all([sb.auth.getSession(),loadListings()]);
   if(qs.has("code")||qs.has("error_description"))history.replaceState(null,"",location.pathname+location.hash);
   await onSession(session,"INITIAL_SESSION");
+  loadImpact();
   if(state.loadError)toast("Impossible de charger les annonces : "+state.loadError);
 })();
 </script>
