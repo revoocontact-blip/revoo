@@ -14,10 +14,32 @@
 --    Le vendeur tape le code → paiement validé → il remet l'article.
 --    L'acheteur peut « Annuler l'achat » tant que le code n'est pas validé :
 --    remboursement sous 48 h maximum.
+--    Délai de rendez-vous : 7 jours, prolongeable une fois ou plusieurs fois
+--    de 7 jours au total maximum. Sans code validé à temps : annulation
+--    automatique et remboursement sous 48 h maximum.
 -- =====================================================================
 alter table public.orders add column if not exists cancelled_at timestamptz;
 alter table public.orders add column if not exists refund_due_at timestamptz;
 alter table public.orders add column if not exists cancelled_by text;
+alter table public.orders add column if not exists handoff_deadline timestamptz;
+alter table public.orders add column if not exists handoff_extended int not null default 0;
+update public.orders set handoff_deadline = created_at + interval '7 days'
+ where delivery = 'main_propre' and handoff_deadline is null;
+
+create or replace function public.order_set_deadline()
+returns trigger language plpgsql as $$
+begin
+  if new.delivery = 'main_propre' then
+    new.handoff_deadline := now() + interval '7 days';
+    new.handoff_extended := 0;
+  else
+    new.handoff_deadline := null;
+  end if;
+  return new;
+end $$;
+drop trigger if exists orders_set_deadline on public.orders;
+create trigger orders_set_deadline before insert on public.orders
+  for each row execute function public.order_set_deadline();
 
 -- Les codes sont dans une table à part : SEUL l'acheteur peut les lire.
 create table if not exists public.order_codes (
@@ -66,6 +88,9 @@ begin
   end if;
   select * into c from public.order_codes where order_id = p_order for update;
   if c is null then raise exception 'Code introuvable : contacte la modération'; end if;
+  if o.handoff_deadline is not null and o.handoff_deadline <= now() then
+    raise exception 'Le délai de rendez-vous est dépassé : la vente va être annulée et l’acheteur remboursé';
+  end if;
   if c.attempts >= 5 then return 'locked'; end if;
   if c.code <> regexp_replace(coalesce(p_code, ''), '\D', '', 'g') then
     update public.order_codes set attempts = attempts + 1 where order_id = p_order;
@@ -103,6 +128,41 @@ begin
   update public.listings set status = 'active' where id = o.listing_id and status = 'sold';
 end $$;
 
+-- Prolonger le délai de rendez-vous (acheteur ou vendeur) : 7 jours de plus au total, maximum
+create or replace function public.extend_handoff(p_order uuid, p_days int)
+returns void language plpgsql security definer set search_path = public as $$
+declare o record;
+begin
+  select * into o from public.orders where id = p_order for update;
+  if o is null or auth.uid() not in (o.buyer_id, o.seller_id) or o.delivery <> 'main_propre' or o.status <> 'paid' then
+    raise exception 'Action impossible sur cette commande';
+  end if;
+  if p_days is null or p_days < 1 or p_days > 7 then raise exception 'Choisis entre 1 et 7 jours'; end if;
+  if o.handoff_extended + p_days > 7 then
+    raise exception 'Le délai ne peut être prolongé que de 7 jours au total (il reste % jour(s))', 7 - o.handoff_extended;
+  end if;
+  if o.handoff_deadline <= now() then raise exception 'Le délai est déjà dépassé'; end if;
+  update public.orders set handoff_deadline = handoff_deadline + make_interval(days => p_days),
+    handoff_extended = handoff_extended + p_days, updated_at = now() where id = p_order;
+end $$;
+
+-- Annulation automatique des remises en main propre dont le délai est dépassé
+create or replace function public.settle_orders()
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  with c as (
+    update public.orders set status = 'cancelled', cancelled_at = now(), refund_due_at = now() + interval '48 hours',
+      cancelled_by = 'delai', updated_at = now()
+    where delivery = 'main_propre' and status = 'paid' and handoff_deadline <= now()
+    returning listing_id
+  )
+  update public.listings set status = 'active' where id in (select listing_id from c) and status = 'sold';
+end $$;
+
+revoke all on function public.extend_handoff(uuid,int) from public, anon;
+grant execute on function public.extend_handoff(uuid,int) to authenticated;
+revoke all on function public.settle_orders() from public, anon;
+grant execute on function public.settle_orders() to authenticated;
 revoke all on function public.confirm_handoff(uuid,text) from public, anon;
 grant execute on function public.confirm_handoff(uuid,text) to authenticated;
 revoke all on function public.new_handoff_code() from public, anon, authenticated;
@@ -150,6 +210,14 @@ create table if not exists public.trades (
   updated_at            timestamptz not null default now(),
   check (proposer_id <> receiver_id)
 );
+-- Négociation : le complément peut être payé par l'un ou l'autre, et chacun peut faire une contre-proposition
+alter table public.trades add column if not exists topup_payer text not null default 'proposer';
+alter table public.trades add column if not exists turn uuid;
+alter table public.trades add column if not exists rounds int not null default 0;
+do $$ begin
+  alter table public.trades add constraint trades_topup_payer_check check (topup_payer in ('proposer','receiver'));
+exception when duplicate_object then null; end $$;
+update public.trades set turn = receiver_id where status = 'proposed' and turn is null;
 create index if not exists trades_proposer_idx on public.trades (proposer_id, created_at desc);
 create index if not exists trades_receiver_idx on public.trades (receiver_id, created_at desc);
 alter table public.trades enable row level security;
@@ -188,10 +256,11 @@ begin
   end if;
 end $$;
 
--- Proposer un échange
+-- Proposer un échange (p_topup_from : 'proposer' = j'ajoute de l'argent, 'receiver' = je demande de l'argent)
+drop function if exists public.propose_trade(uuid,uuid,numeric,text,text,text,text,text);
 create or replace function public.propose_trade(
   p_offered uuid, p_wanted uuid, p_topup numeric, p_message text,
-  p_name text, p_address text, p_zip text, p_city text)
+  p_name text, p_address text, p_zip text, p_city text, p_topup_from text default 'proposer')
 returns uuid language plpgsql security definer set search_path = public as $$
 declare a record; b record; new_id uuid;
 begin
@@ -203,20 +272,53 @@ begin
   if b is null or b.status <> 'active' then raise exception 'Cet article n’est plus disponible'; end if;
   if b.seller_id = auth.uid() then raise exception 'Tu ne peux pas échanger avec toi-même'; end if;
   if coalesce(p_topup, 0) < 0 or coalesce(p_topup, 0) > 500 then raise exception 'Le complément doit être entre 0 et 500 €'; end if;
+  if coalesce(p_topup_from, 'proposer') not in ('proposer','receiver') then raise exception 'Complément invalide'; end if;
   perform public.check_address(p_name, p_address, p_zip, p_city);
   if exists (select 1 from public.trades where offered_listing = p_offered and wanted_listing = p_wanted and status = 'proposed') then
     raise exception 'Tu as déjà proposé cet échange';
   end if;
   insert into public.trades (proposer_id, receiver_id, offered_listing, wanted_listing, offered_title, offered_photo,
-                             wanted_title, wanted_photo, topup, message)
+                             wanted_title, wanted_photo, topup, topup_payer, turn, message)
   values (auth.uid(), b.seller_id, a.id, b.id, a.title, a.photos[1], b.title, b.photos[1],
-          round(coalesce(p_topup, 0), 2), nullif(left(trim(coalesce(p_message,'')), 500), ''))
+          round(coalesce(p_topup, 0), 2), coalesce(p_topup_from, 'proposer'), b.seller_id,
+          nullif(left(trim(coalesce(p_message,'')), 500), ''))
   returning id into new_id;
   insert into public.trade_addresses values (new_id, auth.uid(), trim(p_name), trim(p_address), trim(p_zip), trim(p_city));
   return new_id;
 end $$;
 
--- Accepter (avec son adresse) ou refuser
+-- Contre-proposition : celui qui doit répondre change le complément (montant et qui le paie).
+-- C'est ensuite à l'autre de répondre. 10 allers-retours maximum.
+create or replace function public.counter_trade(
+  p_trade uuid, p_topup numeric, p_topup_from text,
+  p_name text default null, p_address text default null, p_zip text default null, p_city text default null)
+returns void language plpgsql security definer set search_path = public as $$
+declare t record;
+begin
+  select * into t from public.trades where id = p_trade for update;
+  if t is null or t.status <> 'proposed' or t.turn is distinct from auth.uid() then raise exception 'Ce n’est pas à toi de répondre'; end if;
+  if t.rounds >= 10 then raise exception 'Trop de contre-propositions : accepte ou refuse'; end if;
+  if coalesce(p_topup, 0) < 0 or coalesce(p_topup, 0) > 500 then raise exception 'Le complément doit être entre 0 et 500 €'; end if;
+  if p_topup_from not in ('proposer','receiver') then raise exception 'Complément invalide'; end if;
+  if round(coalesce(p_topup,0),2) = t.topup and (p_topup_from = t.topup_payer or coalesce(p_topup,0) = 0) then
+    raise exception 'Ta contre-proposition est identique : accepte-la directement';
+  end if;
+  if auth.uid() = t.receiver_id then
+    if p_name is not null then
+      perform public.check_address(p_name, p_address, p_zip, p_city);
+      insert into public.trade_addresses values (p_trade, auth.uid(), trim(p_name), trim(p_address), trim(p_zip), trim(p_city))
+      on conflict (trade_id, user_id) do update set name = excluded.name, address = excluded.address, zip = excluded.zip, city = excluded.city;
+    elsif not exists (select 1 from public.trade_addresses where trade_id = p_trade and user_id = auth.uid()) then
+      raise exception 'Adresse d’envoi incomplète';
+    end if;
+  end if;
+  update public.trades set topup = round(coalesce(p_topup,0),2), topup_payer = p_topup_from,
+    turn = case when auth.uid() = proposer_id then receiver_id else proposer_id end,
+    rounds = rounds + 1, updated_at = now() where id = p_trade;
+end $$;
+
+-- Accepter (celui dont c'est le tour) ; refuser / retirer (l'un ou l'autre, tant que rien n'est accepté)
+drop function if exists public.respond_trade(uuid,boolean,text,text,text,text);
 create or replace function public.respond_trade(
   p_trade uuid, p_accept boolean,
   p_name text default null, p_address text default null, p_zip text default null, p_city text default null)
@@ -224,20 +326,30 @@ returns void language plpgsql security definer set search_path = public as $$
 declare t record; n int;
 begin
   select * into t from public.trades where id = p_trade for update;
-  if t is null or t.receiver_id is distinct from auth.uid() or t.status <> 'proposed' then raise exception 'Action impossible sur cet échange'; end if;
+  if t is null or auth.uid() not in (t.proposer_id, t.receiver_id) or t.status <> 'proposed' then raise exception 'Action impossible sur cet échange'; end if;
   if not p_accept then
-    update public.trades set status = 'declined', updated_at = now() where id = p_trade;
+    update public.trades set status = case when auth.uid() = t.proposer_id then 'cancelled' else 'declined' end, updated_at = now() where id = p_trade;
     return;
   end if;
-  if public.purchases_done(auth.uid()) < 3 then raise exception 'L’échange se débloque après 3 achats confirmés'; end if;
-  perform public.check_address(p_name, p_address, p_zip, p_city);
+  if t.turn is distinct from auth.uid() then raise exception 'Attends la réponse de l’autre personne'; end if;
+  if public.purchases_done(t.proposer_id) < 3 or public.purchases_done(t.receiver_id) < 3 then
+    raise exception 'L’échange se débloque après 3 achats confirmés';
+  end if;
+  if auth.uid() = t.receiver_id then
+    if p_name is not null then
+      perform public.check_address(p_name, p_address, p_zip, p_city);
+      insert into public.trade_addresses values (p_trade, auth.uid(), trim(p_name), trim(p_address), trim(p_zip), trim(p_city))
+      on conflict (trade_id, user_id) do update set name = excluded.name, address = excluded.address, zip = excluded.zip, city = excluded.city;
+    end if;
+  end if;
+  if not exists (select 1 from public.trade_addresses where trade_id = p_trade and user_id = t.receiver_id) then
+    raise exception 'Adresse d’envoi incomplète';
+  end if;
   update public.listings set status = 'sold'
    where id in (t.offered_listing, t.wanted_listing) and status = 'active';
   get diagnostics n = row_count;
   if n <> 2 then raise exception 'Un des deux articles n’est plus disponible'; end if;
-  insert into public.trade_addresses values (p_trade, auth.uid(), trim(p_name), trim(p_address), trim(p_zip), trim(p_city))
-  on conflict (trade_id, user_id) do update set name = excluded.name, address = excluded.address, zip = excluded.zip, city = excluded.city;
-  update public.trades set status = 'accepted', accepted_at = now(), updated_at = now() where id = p_trade;
+  update public.trades set status = 'accepted', accepted_at = now(), turn = null, updated_at = now() where id = p_trade;
   -- les autres propositions sur ces articles tombent
   update public.trades set status = 'cancelled', updated_at = now()
    where id <> p_trade and status = 'proposed'
@@ -352,7 +464,8 @@ begin
   end if;
 end $$;
 
-revoke all on function public.propose_trade(uuid,uuid,numeric,text,text,text,text,text) from public, anon;
+revoke all on function public.propose_trade(uuid,uuid,numeric,text,text,text,text,text,text) from public, anon;
+revoke all on function public.counter_trade(uuid,numeric,text,text,text,text,text) from public, anon;
 revoke all on function public.respond_trade(uuid,boolean,text,text,text,text) from public, anon;
 revoke all on function public.cancel_trade(uuid) from public, anon;
 revoke all on function public.ship_trade(uuid,text) from public, anon;
@@ -362,7 +475,8 @@ revoke all on function public.report_trade_problem(uuid,text) from public, anon;
 revoke all on function public.settle_trades() from public, anon;
 revoke all on function public.admin_resolve_trade(uuid,text) from public, anon;
 revoke all on function public.purchases_done(uuid) from public, anon;
-grant execute on function public.propose_trade(uuid,uuid,numeric,text,text,text,text,text) to authenticated;
+grant execute on function public.propose_trade(uuid,uuid,numeric,text,text,text,text,text,text) to authenticated;
+grant execute on function public.counter_trade(uuid,numeric,text,text,text,text,text) to authenticated;
 grant execute on function public.respond_trade(uuid,boolean,text,text,text,text) to authenticated;
 grant execute on function public.cancel_trade(uuid) to authenticated;
 grant execute on function public.ship_trade(uuid,text) to authenticated;
@@ -371,6 +485,19 @@ grant execute on function public.validate_trade(uuid) to authenticated;
 grant execute on function public.report_trade_problem(uuid,text) to authenticated;
 grant execute on function public.settle_trades() to authenticated;
 grant execute on function public.admin_resolve_trade(uuid,text) to authenticated;
+
+-- =====================================================================
+-- 3. VÉRIFICATION AUTOMATIQUE DES DÉLAIS (toutes les 15 minutes)
+--    Utilise l'extension pg_cron de Supabase. Si elle n'est pas disponible,
+--    les délais sont quand même vérifiés à chaque visite du site.
+-- =====================================================================
+do $$ begin
+  create extension if not exists pg_cron;
+  perform cron.unschedule(jobid) from cron.job where jobname = 'revoo-delais';
+  perform cron.schedule('revoo-delais', '*/15 * * * *', 'select public.settle_orders(); select public.settle_trades();');
+exception when others then
+  raise notice 'Vérification automatique non planifiée (%). Les délais sont vérifiés à chaque visite.', sqlerrm;
+end $$;
 
 -- Vérification : doit afficher deux tables (order_codes et trades)
 select table_name from information_schema.tables where table_schema = 'public' and table_name in ('order_codes','trades');

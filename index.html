@@ -558,6 +558,12 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .handoff-row .input{flex:1 1 160px;max-width:260px}
 .handoff-input{font-size:20px;letter-spacing:.15em;font-variant-numeric:tabular-nums}
 /* Échanges */
+.deadline{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line)}
+.deadline-ext{display:flex;gap:8px;align-items:center}
+.deadline-ext .input{width:auto;min-height:40px;padding:6px 10px}
+.topup-dir{border:0;padding:0;margin:0 0 14px;min-width:0}
+.topup-dir .segmented{display:inline-flex}
+.nego-badge{display:inline-block;background:var(--pale);color:var(--heading);border-radius:99px;padding:2px 10px;font-weight:700;font-size:12px}
 .trade-lock{display:flex;gap:12px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--ice);color:var(--ink)}
 .trade-lock>span{font-size:20px}
 .trade-progress{display:block;height:6px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden;max-width:220px}
@@ -1643,6 +1649,7 @@ async function loadOrders(){
   orders.mine=[];orders.all=[];orders.loaded=false;
   if(!sb||!state.user||!payOn())return;
   try{
+    try{await sb.rpc("settle_orders")}catch(e){}
     const {data,error}=await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(300);
     if(error){console.warn(error);return}
     orders.all=data||[];
@@ -1671,13 +1678,14 @@ function orderCard(o,role){
     const code=orders.codes[o.id]||"";
     handoff=`<div class="handoff"><span class="handoff-label">Finaliser l’achat</span><b class="handoff-code" aria-label="Code ${code.split("").join(" ")}">${code?code.slice(0,3)+" "+code.slice(3):"······"}</b>
       <p class="small">Au rendez-vous, <b>vérifie l’article</b>. S’il te convient, donne ce code au vendeur : le paiement lui est alors versé. <b>Ne le donne jamais avant</b>, ni par message.</p></div>`;
+    handoff+=deadlineHtml(o);
     actions=`<button type="button" class="btn btn-danger" data-order="buyer-cancel" data-id="${o.id}">Annuler l’achat</button>`;
   } else if(me&&["paid","shipped"].includes(o.status))actions=`<button type="button" class="btn btn-primary" data-order="received" data-id="${o.id}">J’ai bien reçu l’article</button><button type="button" class="btn btn-outline" data-order="problem-form" data-id="${o.id}">Signaler un problème</button>`;
   if(!me&&role!=="admin"&&o.delivery==="main_propre"&&o.status==="paid"){
     handoff=`<form class="handoff" data-handoff="${o.id}" novalidate><label class="handoff-label" for="hc-${o.id}">Code de l’acheteur</label>
       <div class="handoff-row"><input class="input handoff-input" id="hc-${o.id}" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000 000"><button class="btn btn-primary" type="submit">Valider le code</button></div>
       <span class="error" id="hc-${o.id}Err"></span>
-      <p class="small">Au rendez-vous, l’acheteur vérifie l’article puis te donne son code. <b>Remets l’article seulement après « Paiement validé ✅ ».</b></p></form>`;
+      <p class="small">Au rendez-vous, l’acheteur vérifie l’article puis te donne son code. <b>Remets l’article seulement après « Paiement validé ✅ ».</b></p></form>${deadlineHtml(o)}`;
     actions=`<button type="button" class="btn btn-outline" data-order="cancel" data-id="${o.id}">Annuler la vente</button>`;
   } else if(!me&&role!=="admin"&&o.status==="paid"){
     actions=o.delivery==="colis"
@@ -1696,7 +1704,7 @@ function orderCard(o,role){
         <p class="small" style="margin:6px 0">${money} · ${o.delivery==="colis"?"Envoi par colis":"Remise en main propre"} · ${new Date(o.created_at).toLocaleDateString("fr-FR")}</p>
         ${o.tracking?`<p class="small">Suivi du colis : <b>${esc(o.tracking)}</b></p>`:""}
         ${o.problem?`<p class="small note warn">Problème signalé : « ${esc(o.problem)} »</p>`:""}
-        ${o.status==="cancelled"&&o.refund_due_at?`<p class="small note">${me?`Achat annulé${o.cancelled_by==="acheteur"?" par toi":""}. Tu es remboursé(e) au plus tard le <b>${fmtDT(o.refund_due_at)}</b>.`:`Vente annulée${o.cancelled_by==="acheteur"?" par l’acheteur":""}. L’article est de nouveau en ligne.`}</p>`:""}
+        ${o.status==="cancelled"&&o.refund_due_at?`<p class="small note">${o.cancelled_by==="delai"?(me?`Annulé automatiquement : le rendez-vous n’a pas eu lieu à temps. Tu es remboursé(e) au plus tard le <b>${fmtDT(o.refund_due_at)}</b>.`:`Vente annulée automatiquement : le code n’a pas été validé à temps. L’article est de nouveau en ligne.`):me?`Achat annulé${o.cancelled_by==="acheteur"?" par toi":""}. Tu es remboursé(e) au plus tard le <b>${fmtDT(o.refund_due_at)}</b>.`:`Vente annulée${o.cancelled_by==="acheteur"?" par l’acheteur":""}. L’article est de nouveau en ligne.`}</p>`:""}
         ${addr}
       </div>
     </div>
@@ -1735,6 +1743,7 @@ async function orderAction(action,id){
   if(action==="received"){if(!confirm("Confirmer la bonne réception ? L’argent sera alors versé au vendeur."))return;r=await sb.rpc("confirm_received",{p_order:id})}
   else if(action==="shipped"){const t=$("trk-"+id);r=await sb.rpc("mark_shipped",{p_order:id,p_tracking:t?t.value.trim():null})}
   else if(action==="cancel"){if(!confirm("Annuler cette vente ? L’acheteur sera remboursé et l’article remis en vente."))return;r=await sb.rpc("cancel_order",{p_order:id})}
+  else if(action==="extend"){const n=+$("ext-"+id).value;if(!confirm(`Prolonger le délai de rendez-vous de ${n} jour${n>1?"s":""} ?`))return;r=await sb.rpc("extend_handoff",{p_order:id,p_days:n})}
   else if(action==="buyer-cancel"){if(!confirm("Annuler l’achat ? Tu seras remboursé(e) sous 48 h maximum et l’article sera remis en vente."))return;r=await sb.rpc("cancel_order",{p_order:id})}
   else if(action==="admin-cancel"){if(!confirm("Annuler la commande et rembourser l’acheteur ?"))return;r=await sb.rpc("cancel_order",{p_order:id})}
   else if(action==="admin-close"){if(!confirm("Clore le litige en faveur du vendeur ?"))return;r=await sb.rpc("admin_close_problem",{p_order:id})}
@@ -1750,8 +1759,14 @@ async function orderAction(action,id){
     return;
   }
   if(r&&r.error){toast(frenchError(r.error));return}
-  toast({received:"Merci ! La vente est terminée.",shipped:"C’est noté : l’acheteur est prévenu dans sa commande.",cancel:"Vente annulée.","buyer-cancel":"Achat annulé : remboursement sous 48 h maximum.","admin-cancel":"Commande annulée.","admin-close":"Litige clos."}[action]||"C’est fait.");
+  toast({received:"Merci ! La vente est terminée.",shipped:"C’est noté : l’acheteur est prévenu dans sa commande.",cancel:"Vente annulée.","buyer-cancel":"Achat annulé : remboursement sous 48 h maximum.",extend:"Délai prolongé.","admin-cancel":"Commande annulée.","admin-close":"Litige clos."}[action]||"C’est fait.");
   await Promise.all([loadOrders(),loadListings()]);renderView();
+}
+function deadlineHtml(o){
+  if(!o.handoff_deadline)return"";
+  const left=7-(o.handoff_extended||0), ms=Date.parse(o.handoff_deadline)-Date.now(), d=Math.max(0,Math.ceil(ms/864e5));
+  return `<div class="deadline small"><span>Rendez-vous à faire avant le <b>${fmtDT(o.handoff_deadline)}</b> (${d<=1?"moins de 24 h":`encore ${d} jours`}). Sinon, la vente est annulée et l’acheteur remboursé sous 48 h.</span>
+    ${left>0?`<span class="deadline-ext"><label class="sr-only" for="ext-${o.id}">Nombre de jours à ajouter</label><select class="input" id="ext-${o.id}">${Array.from({length:left},(_,i)=>`<option value="${i+1}">+${i+1} jour${i?"s":""}</option>`).join("")}</select><button type="button" class="btn btn-outline" data-order="extend" data-id="${o.id}">Prolonger</button></span>`:`<span class="muted">Délai déjà prolongé au maximum (7 jours).</span>`}</div>`;
 }
 async function submitHandoff(id,form){
   const inp=$("hc-"+id),code=inp.value.replace(/\D/g,"");
@@ -1823,7 +1838,7 @@ function tradeFormHtml(p){
     <fieldset class="trade-pick"><legend class="label">Ce que tu donnes</legend>
       ${mine.map((x,i)=>`<label class="trade-opt"><input type="radio" name="tradeOffer" value="${esc(x.id)}" ${i===0?"checked":""}><span class="image-frame"><img data-safe-image src="${esc(x.img)}" alt=""></span><span><b>${esc(x.name)}</b><small>${eur(x.price)} · ${esc(x.size)}</small></span></label>`).join("")}
     </fieldset>
-    <div class="field"><label for="tTopup">Tu ajoutes de l’argent ? <span class="hint">(facultatif, 500 € max)</span></label><div class="eur-input"><input class="input" id="tTopup" type="number" min="0" max="500" step="0.5" inputmode="decimal" placeholder="0"><span>€</span></div><span class="error" id="tTopupErr"></span></div>
+    ${topupFields("t","proposer")}
     <div class="field"><label for="tMsg">Un mot pour ${esc(p.seller)} <span class="hint">(facultatif)</span></label><textarea class="input" id="tMsg" maxlength="500" placeholder="Salut ! Ton article me plaît…"></textarea></div>
     <fieldset><legend class="label">Ton adresse d’envoi <span class="hint">(visible par l’autre seulement s’il accepte)</span></legend>
       <div class="field"><label for="taName">Nom et prénom</label><input class="input" id="taName" autocomplete="name" maxlength="80" value="${esc(last.name||"")}"></div>
@@ -1832,20 +1847,36 @@ function tradeFormHtml(p){
       <span class="error" id="taErr"></span>
     </fieldset>
     <div class="trade-rules small"><b>Comment ça marche</b><ol>
-      <li>Si ${esc(p.seller)} accepte, ton complément éventuel et les frais (${eur(ORDER_FEE)} chacun) sont <b>payés et bloqués</b>.</li>
+      <li>${esc(p.seller)} peut accepter, refuser ou <b>contre-proposer</b> un autre montant : vous négociez jusqu’à être d’accord.</li>
+      <li>À l’accord, le complément éventuel et les frais (${eur(ORDER_FEE)} chacun) sont <b>payés et bloqués</b>.</li>
       <li>Chacun envoie son colis <b>avec un numéro de suivi</b> (obligatoire).</li>
       <li>Quand les <b>deux</b> colis sont arrivés, vous avez <b>48 h</b> pour vérifier. Sans problème signalé, l’échange est validé et le complément versé.</li></ol></div>
     <button class="btn btn-primary" type="submit">Envoyer la proposition</button>
   </form>`;
 }
+/* Complément : « j'ajoute » ou « je demande ». me = rôle de la personne qui remplit ("proposer"|"receiver") */
+function topupFields(pfx,me,cur){
+  const other=me==="proposer"?"receiver":"proposer", dir=!cur||!Number(cur.topup)?"none":cur.topup_payer===me?"add":"ask";
+  return `<fieldset class="topup-dir"><legend class="label">Argent en plus <span class="hint">(facultatif, 500 € max)</span></legend>
+    <div class="segmented pe-seg3">${[["none","Sans argent"],["add","J’ajoute"],["ask","Je demande"]].map(([v,l])=>`<label><input type="radio" name="${pfx}Dir" value="${v}" ${dir===v?"checked":""}><span>${l}</span></label>`).join("")}</div>
+    <div class="eur-input" style="margin-top:8px"><label class="sr-only" for="${pfx}Topup">Montant</label><input class="input" id="${pfx}Topup" type="number" min="0" max="500" step="0.5" inputmode="decimal" placeholder="0" value="${cur&&Number(cur.topup)?Number(cur.topup):""}"><span>€</span></div>
+    <span class="error" id="${pfx}TopupErr"></span><input type="hidden" id="${pfx}Me" value="${me}"><input type="hidden" id="${pfx}Other" value="${other}"></fieldset>`;
+}
+function topupVals(pfx){
+  const dir=(document.querySelector(`input[name="${pfx}Dir"]:checked`)||{}).value||"none", raw=$(pfx+"Topup").value;
+  let top=dir==="none"||raw===""?0:+raw;
+  const bad=isNaN(top)||top<0||top>500||(dir!=="none"&&top<=0);
+  fieldError(pfx+"Topup",pfx+"TopupErr",bad?(dir!=="none"&&top<=0?"Indique le montant.":"Indique un montant entre 0 et 500 €."):"");
+  return {top:bad?NaN:top,from:dir==="ask"?$(pfx+"Other").value:$(pfx+"Me").value,bad};
+}
 const addrVals=pfx=>({p_name:$(pfx+"Name").value.trim(),p_address:$(pfx+"Addr").value.trim(),p_zip:$(pfx+"Zip").value.trim(),p_city:$(pfx+"City").value.trim()});
 async function submitTradeProposal(wanted,f){
-  const off=f.querySelector('input[name="tradeOffer"]:checked'),top=$("tTopup").value===""?0:+$("tTopup").value,ad=addrVals("ta");
-  const okTop=fieldError("tTopup","tTopupErr",isNaN(top)||top<0||top>500?"Indique un montant entre 0 et 500 €.":"");
+  const off=f.querySelector('input[name="tradeOffer"]:checked'),{top,from}=topupVals("t",true),ad=addrVals("ta");
+  const okTop=!isNaN(top);
   const okAd=Object.values(ad).every(Boolean);$("taErr").textContent=okAd?"":"Complète ton adresse d’envoi.";
   if(!off||!okTop||!okAd)return;
   busy(f,true,"Envoi…");
-  const {error}=await sb.rpc("propose_trade",{p_offered:off.value,p_wanted:wanted,p_topup:Math.round(top*100)/100,p_message:$("tMsg").value.trim()||null,...ad});
+  const {error}=await sb.rpc("propose_trade",{p_offered:off.value,p_wanted:wanted,p_topup:Math.round(top*100)/100,p_topup_from:from,p_message:$("tMsg").value.trim()||null,...ad});
   busy(f,false);
   if(error){toast(frenchError(error));return}
   toast("Proposition envoyée ! Tu seras prévenu(e) de la réponse.");await loadTrades();location.hash="#/compte/echanges";
@@ -1860,7 +1891,9 @@ function tradeCard(t,role){
   const give=iAmP?{title:t.offered_title,photo:t.offered_photo}:{title:t.wanted_title,photo:t.wanted_photo};
   const get=iAmP?{title:t.wanted_title,photo:t.wanted_photo}:{title:t.offered_title,photo:t.offered_photo};
   const top=Number(t.topup);
-  const topTxt=top>0?(admin?`Complément : <b>${eur(top)}</b> (payé par celui qui propose)`:iAmP?`Tu ajoutes <b>${eur(top)}</b>`:`Tu reçois <b>${eur(top)}</b> en plus`):"Sans complément d’argent";
+  const payerIsP=(t.topup_payer||"proposer")==="proposer", iPay=payerIsP===iAmP;
+  const topTxt=top>0?(admin?`Complément : <b>${eur(top)}</b> (payé par ${payerIsP?"celui qui propose":"l’autre"})`:iPay?`Tu ajoutes <b>${eur(top)}</b>`:`Tu reçois <b>${eur(top)}</b> en plus`):"Sans complément d’argent";
+  const myTurn=t.turn===me, hasMyAddr=trades.addr.some(a=>a.trade_id===t.id&&a.user_id===me);
   const myShip=iAmP?t.proposer_shipped_at:t.receiver_shipped_at, otherShip=iAmP?t.receiver_shipped_at:t.proposer_shipped_at;
   const myRec=iAmP?t.proposer_received_at:t.receiver_received_at, myOk=iAmP?t.proposer_ok:t.receiver_ok;
   const otherTrk=iAmP?t.receiver_tracking:t.proposer_tracking, myTrk=iAmP?t.proposer_tracking:t.receiver_tracking;
@@ -1869,8 +1902,10 @@ function tradeCard(t,role){
   if(admin){info=`<p class="small">Colis de celui qui propose : <b>${esc(t.proposer_tracking||"pas encore envoyé")}</b> · Colis de l’autre : <b>${esc(t.receiver_tracking||"pas encore envoyé")}</b></p>`;
     actions=`<button type="button" class="btn btn-outline" data-trade="admin-complete" data-id="${t.id}">Valider l’échange</button><button type="button" class="btn btn-danger" data-trade="admin-cancel" data-id="${t.id}">Annuler et rembourser</button>`}
   else if(t.status==="proposed"){
-    if(iAmP){info=`<p class="small muted">En attente de la réponse.</p>`;actions=`<button type="button" class="btn btn-outline" data-trade="cancel" data-id="${t.id}">Retirer ma proposition</button>`}
-    else actions=`<button type="button" class="btn btn-primary" data-trade="accept-form" data-id="${t.id}">Accepter</button><button type="button" class="btn btn-outline" data-trade="decline" data-id="${t.id}">Refuser</button>`;
+    if(t.rounds>0)info=`<p class="small"><span class="nego-badge">Négociation · ${t.rounds} contre-proposition${t.rounds>1?"s":""}</span></p>`;
+    if(myTurn){info+=`<p class="small"><b>À toi de répondre.</b> Accepte, refuse, ou fais une contre-proposition.</p>`;
+      actions=`<button type="button" class="btn btn-primary" data-trade="${!iAmP&&!hasMyAddr?"accept-form":"accept"}" data-id="${t.id}">Accepter</button>${(t.rounds||0)<10?`<button type="button" class="btn btn-outline" data-trade="counter-form" data-id="${t.id}">Contre-proposer</button>`:""}<button type="button" class="btn btn-outline" data-trade="decline" data-id="${t.id}">Refuser</button>`}
+    else{info+=`<p class="small muted">En attente de la réponse de l’autre personne.</p>`;actions=`<button type="button" class="btn btn-outline" data-trade="decline" data-id="${t.id}">${iAmP?"Retirer ma proposition":"Refuser l’échange"}</button>`}
   } else if(t.status==="accepted"){
     if(!myShip){
       info+=otherAddr?`<p class="small"><b>Envoie ton colis à :</b><br>${esc(otherAddr.name)}<br>${esc(otherAddr.address)}<br>${esc(otherAddr.zip)} ${esc(otherAddr.city)}</p>`:"";
@@ -1922,7 +1957,17 @@ async function tradeAction(action,id){
       <span class="error" id="tc${id}Err"></span><button class="btn btn-primary" type="submit">Accepter l’échange</button></form>`;box.querySelector("input").focus();return}
   if(action==="problem-form"){const box=$("tf-"+id);if(!box)return;if(box.innerHTML){box.innerHTML="";return}
     box.innerHTML=`<form class="panel" style="margin-top:10px" data-tradeproblem="${id}" novalidate><div class="field"><label for="tp-${id}">Quel est le problème ?</label><textarea class="input" id="tp-${id}" maxlength="1000" placeholder="Ex. : colis jamais arrivé, article différent des photos…"></textarea><span class="error" id="tp-${id}Err"></span></div><button class="btn btn-primary" type="submit">Envoyer</button></form>`;box.querySelector("textarea").focus();return}
-  if(action==="decline"){if(!confirm("Refuser cette proposition d’échange ?"))return;r=await sb.rpc("respond_trade",{p_trade:id,p_accept:false})}
+  if(action==="counter-form"){const box=$("tf-"+id);if(!box)return;if(box.innerHTML){box.innerHTML="";return}
+    const t=trades.list.find(x=>x.id===id),me=state.user.id,role=t.proposer_id===me?"proposer":"receiver",needAddr=role==="receiver"&&!trades.addr.some(a=>a.trade_id===id&&a.user_id===me);
+    const last=trades.addr.find(a=>a.user_id===me)||{};
+    box.innerHTML=`<form class="panel" style="margin-top:10px" data-tradecounter="${id}" novalidate><p class="small"><b>Ta contre-proposition</b> : change le montant ou qui paie le complément. Ce sera ensuite à l’autre de répondre.</p>${topupFields("tk"+id,role,t)}
+      ${needAddr?`<p class="small" style="margin-top:12px">Ton adresse d’envoi (transmise seulement si l’échange est accepté) :</p>
+      <div class="field"><label for="tk${id}Name">Nom et prénom</label><input class="input" id="tk${id}Name" autocomplete="name" maxlength="80" value="${esc(last.name||"")}"></div>
+      <div class="field"><label for="tk${id}Addr">Adresse</label><input class="input" id="tk${id}Addr" autocomplete="street-address" maxlength="200" value="${esc(last.address||"")}"></div>
+      <div class="grid-2"><div class="field"><label for="tk${id}Zip">Code postal</label><input class="input" id="tk${id}Zip" autocomplete="postal-code" maxlength="10" value="${esc(last.zip||"")}"></div><div class="field"><label for="tk${id}City">Ville</label><input class="input" id="tk${id}City" autocomplete="address-level2" maxlength="80" value="${esc(last.city||"")}"></div></div><span class="error" id="tk${id}Err"></span>`:""}
+      <button class="btn btn-primary" type="submit">Envoyer la contre-proposition</button></form>`;box.querySelector("input").focus();return}
+  if(action==="accept"){const t=trades.list.find(x=>x.id===id);if(!confirm(`Accepter cet échange${Number(t.topup)>0?` avec ${eur(Number(t.topup))} de complément`:""} ?`))return;r=await sb.rpc("respond_trade",{p_trade:id,p_accept:true})}
+  else if(action==="decline"){if(!confirm("Mettre fin à cette proposition d’échange ?"))return;r=await sb.rpc("respond_trade",{p_trade:id,p_accept:false})}
   else if(action==="cancel"){if(!confirm("Retirer ta proposition ?"))return;r=await sb.rpc("cancel_trade",{p_trade:id})}
   else if(action==="cancel-accepted"){if(!confirm("Annuler l’échange ? Les deux articles seront remis en ligne et le complément remboursé sous 48 h maximum."))return;r=await sb.rpc("cancel_trade",{p_trade:id})}
   else if(action==="received"){if(!confirm("Confirmer que tu as bien reçu le colis ?"))return;r=await sb.rpc("receive_trade",{p_trade:id})}
@@ -1931,7 +1976,7 @@ async function tradeAction(action,id){
   else if(action==="admin-cancel"){if(!confirm("Annuler cet échange et rembourser le complément ?"))return;r=await sb.rpc("admin_resolve_trade",{p_trade:id,p_outcome:"cancel"})}
   else return;
   if(r&&r.error){toast(frenchError(r.error));return}
-  toast({decline:"Proposition refusée.",cancel:"Proposition retirée.","cancel-accepted":"Échange annulé.",received:"C’est noté !",validate:"Merci ! Validé de ton côté.","admin-complete":"Échange validé.","admin-cancel":"Échange annulé."}[action]||"C’est fait.");
+  toast({accept:"Échange accepté ! Envoie ton colis avec un numéro de suivi.",decline:"Proposition terminée.",cancel:"Proposition retirée.","cancel-accepted":"Échange annulé.",received:"C’est noté !",validate:"Merci ! Validé de ton côté.","admin-complete":"Échange validé.","admin-cancel":"Échange annulé."}[action]||"C’est fait.");
   await Promise.all([loadTrades(),loadListings()]);renderView();
 }
 async function submitTradeAccept(id,f){
@@ -1939,6 +1984,13 @@ async function submitTradeAccept(id,f){
   busy(f,true,"Validation…");const {error}=await sb.rpc("respond_trade",{p_trade:id,p_accept:true,...ad});busy(f,false);
   if(error){toast(frenchError(error));return}
   toast("Échange accepté ! Envoie ton colis avec un numéro de suivi.");await Promise.all([loadTrades(),loadListings()]);renderView();
+}
+async function submitTradeCounter(id,f){
+  const {top,from}=topupVals("tk"+id);if(isNaN(top))return;
+  let ad={};if($("tk"+id+"Name")){ad=addrVals("tk"+id);if(!Object.values(ad).every(Boolean)){$("tk"+id+"Err").textContent="Complète ton adresse d’envoi.";return}}
+  busy(f,true,"Envoi…");const {error}=await sb.rpc("counter_trade",{p_trade:id,p_topup:Math.round(top*100)/100,p_topup_from:from,...ad});busy(f,false);
+  if(error){toast(frenchError(error));return}
+  toast("Contre-proposition envoyée.");await loadTrades();renderView();
 }
 async function submitTradeShip(id,f){
   const v=$("ts-"+id).value.trim();if(!fieldError("ts-"+id,"ts-"+id+"Err",v.length<6?"Indique le numéro de suivi (6 caractères minimum).":""))return;
@@ -2959,6 +3011,7 @@ document.addEventListener("submit",async e=>{
   if(f.dataset.problem){e.preventDefault();submitProblem(f.dataset.problem,f);return}
   if(f.dataset.handoff){e.preventDefault();submitHandoff(f.dataset.handoff,f);return}
   if(f.dataset.tradeform){e.preventDefault();submitTradeProposal(f.dataset.tradeform,f);return}
+  if(f.dataset.tradecounter){e.preventDefault();submitTradeCounter(f.dataset.tradecounter,f);return}
   if(f.dataset.tradeaccept){e.preventDefault();submitTradeAccept(f.dataset.tradeaccept,f);return}
   if(f.dataset.tradeship){e.preventDefault();submitTradeShip(f.dataset.tradeship,f);return}
   if(f.dataset.tradeproblem){e.preventDefault();submitTradeProblem(f.dataset.tradeproblem,f);return}
