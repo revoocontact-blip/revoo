@@ -7,6 +7,22 @@
 -- n'est encaissé ni remboursé pour de vrai.
 -- =====================================================================
 
+-- Vérification : les scripts précédents doivent avoir été lancés
+do $$ begin
+  if to_regclass('public.listings') is null then
+    raise exception 'ÉTAPE MANQUANTE : lance d''abord supabase-revoo.sql, puis relance ce script.';
+  end if;
+  if to_regprocedure('public.is_admin()') is null then
+    raise exception 'ÉTAPE MANQUANTE : lance d''abord supabase-signalements.sql, puis relance ce script.';
+  end if;
+  if to_regclass('public.conversations') is null then
+    raise exception 'ÉTAPE MANQUANTE : lance d''abord supabase-messagerie.sql, puis relance ce script.';
+  end if;
+  if to_regclass('public.orders') is null then
+    raise exception 'ÉTAPE MANQUANTE : lance d''abord supabase-revoopay.sql, puis relance ce script.';
+  end if;
+end $$;
+
 -- =====================================================================
 -- 1. REMISE EN MAIN PROPRE AVEC CODE À 6 CHIFFRES
 --    L'acheteur paie → l'argent est bloqué → il reçoit un code secret.
