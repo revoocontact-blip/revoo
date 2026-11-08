@@ -353,6 +353,34 @@ textarea.input{min-height:110px;resize:vertical}
 .photo-list img{width:100%;height:100%;object-fit:cover;display:block}
 .photo-list button{position:absolute;right:4px;top:4px;width:32px;height:32px;border-radius:50%;border:0;background:var(--glass);color:var(--danger);font-weight:800}
 .photo-list figcaption{position:absolute;left:4px;bottom:4px;background:var(--brand);color:var(--on-brand);font-size:10px;border-radius:99px;padding:2px 7px}
+.photo-list button.ph-edit{left:4px;right:4px;top:auto;bottom:4px;width:auto;height:30px;border-radius:99px;color:var(--heading);font-size:12px;font-weight:700;backdrop-filter:blur(6px)}
+.photo-list figure:first-child button.ph-edit{bottom:26px}
+.photo-list button.ph-edit:focus-visible{outline:3px solid var(--navy)}
+/* Retouche photo */
+body.pe-open{overflow:hidden}
+.pe-backdrop{position:fixed;inset:0;z-index:300;background:rgba(10,22,34,.55);display:grid;place-items:center;padding:16px}
+.pe{background:var(--surface);color:var(--ink);border-radius:18px;width:min(940px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden}
+.pe-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.pe-head h2{margin:0;font-size:18px;color:var(--heading)}
+.pe-x{width:40px;height:40px;border-radius:50%;border:0;background:var(--ice);color:var(--heading);font-size:22px;line-height:1;cursor:pointer}
+.pe-body{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;padding:18px;overflow:auto}
+.pe-stage{background:repeating-conic-gradient(var(--ice) 0 25%,var(--surface) 0 50%) 0 0/18px 18px;border-radius:12px;display:grid;place-items:center;min-height:240px;padding:10px}
+.pe-stage canvas{width:auto;height:auto;max-width:100%;max-height:min(62dvh,600px);border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.15);display:block}
+.pe-tools{display:flex;flex-direction:column;gap:14px}
+.pe-group{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:12px}
+.pe-group>b{color:var(--heading);font-size:14px}
+.pe-group>small{color:var(--muted);font-size:12.5px;line-height:1.4}
+.segmented.pe-seg{display:grid;grid-template-columns:1fr 1fr;gap:3px;width:100%}
+.pe-seg span{text-align:center;padding:8px 6px}
+.pe-range{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:650;color:var(--heading)}
+.pe-range[hidden]{display:none}
+.pe-range input{width:100%;accent-color:var(--navy)}
+.pe-range .hint{font-weight:400}
+.pe-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pe-check{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:var(--heading)}
+.pe-check input{width:18px;height:18px;accent-color:var(--navy)}
+.pe-foot{display:flex;justify-content:flex-end;gap:10px;padding:12px 18px;border-top:1px solid var(--line)}
+@media (max-width:760px){.pe-backdrop{padding:0;place-items:end stretch}.pe{border-radius:18px 18px 0 0;max-height:100dvh}.pe-body{grid-template-columns:1fr;padding:14px}.pe-stage{min-height:0;height:42dvh}.pe-stage canvas{max-height:calc(42dvh - 20px)}.pe-foot .btn{flex:1}}
 .listing-row{display:grid;grid-template-columns:70px 1fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
 .listing-row .image-frame{width:70px;height:86px;border-radius:10px}
 .listing-row h3{margin:0 0 2px;font-size:15px}
@@ -527,6 +555,26 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 /* ---------- Finitions ---------- */
+.mod-only{display:none!important}
+.mod-mode .mod-only{display:block!important}
+.mod-mode .user-only{display:none!important}
+.mod-mode .subnav .sell,.mod-mode .heart,.mod-mode .reboot,.mod-mode .tabbar [data-tab="vendre"],.mod-mode .tabbar [data-tab="messages"],.mod-mode .hero-actions .btn-outline,.mod-mode #reportBtn,.mod-mode #shareBtn,.mod-mode .seller-join,.mod-mode .safety,.mod-mode .fee-box,.mod-mode .buy-sticky{display:none!important}
+.mod-mode .tabbar{grid-template-columns:repeat(3,1fr)}
+.acct-menu-mod{padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.acct-menu-mod small{display:block;color:var(--muted);font-size:12px}
+.mod-head{display:flex;gap:14px;align-items:flex-start;background:var(--ice);border-radius:20px;padding:18px 20px;box-shadow:var(--ring)}
+.mod-head h2{margin:0 0 4px;font-size:20px;color:var(--heading)}
+.mod-head p{margin:0}
+.mod-badge{width:46px;height:46px;flex:none;border-radius:14px;background:var(--brand);color:var(--on-brand);display:grid;place-items:center}
+.mod-badge .icon{width:24px;height:24px}
+.mod-badge.small{width:30px;height:30px;border-radius:10px;display:inline-grid;vertical-align:middle;margin-right:8px}
+.mod-badge.small .icon{width:16px;height:16px}
+.mod-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.mod-stats button{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.mod-stats button b{display:block;font-size:26px;color:var(--heading)}
+.mod-stats button span{font-size:13px;color:var(--muted);font-weight:600}
+.mod-stats button[aria-pressed="true"]{border-color:var(--navy);background:var(--ice);box-shadow:inset 0 0 0 1px var(--navy)}
+.mod-actions{background:var(--surface);border:1px solid var(--danger-line);border-radius:14px;padding:14px;margin-top:6px}
 #messagesBtn,#favoritesBtn{display:none!important}
 .acct-btn{width:48px!important;height:48px!important;padding:3px!important;background:linear-gradient(135deg,var(--sky),var(--brand))!important;transition:transform .15s ease,filter .15s ease}
 .acct-btn:hover{transform:scale(1.04);filter:brightness(1.05)}
@@ -797,12 +845,14 @@ body{transition:background .2s ease,color .2s ease}
           <span class="avatar acct-av" id="acctAv" aria-hidden="true"></span><span class="acct-name" id="acctName"></span><svg class="icon acct-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </button>
         <div class="acct-menu" id="acctMenu" hidden>
-          <div class="acct-menu-head"><span class="avatar acct-av-lg" id="acctAv2" aria-hidden="true"></span><div><b id="acctName2"></b><small>Voir mon profil public</small></div></div>
-          <a href="#/compte/profil">Profil et paramètres</a>
-          <a href="#/compte/annonces">Mes annonces</a>
-          <a href="#/messages">Messages <span class="badge has" id="menuMsg" hidden></span></a>
-          <a href="#/favoris">Favoris</a>
-          <a href="#/vendre">Vendre un vêtement</a>
+          <div class="acct-menu-head user-only"><span class="avatar acct-av-lg" id="acctAv2" aria-hidden="true"></span><div><b id="acctName2"></b><small>Voir mon profil public</small></div></div>
+          <div class="acct-menu-mod mod-only"><b>Compte modérateur</b><small>Revoo · modération</small></div>
+          <a href="#/compte/moderation" class="mod-only">Espace modération</a>
+          <a href="#/compte/profil" class="user-only">Profil et paramètres</a>
+          <a href="#/compte/annonces" class="user-only">Mes annonces</a>
+          <a href="#/messages" class="user-only">Messages <span class="badge has" id="menuMsg" hidden></span></a>
+          <a href="#/favoris" class="user-only">Favoris</a>
+          <a href="#/vendre" class="user-only">Vendre un vêtement</a>
           <button type="button" id="acctLogout">Se déconnecter</button>
         </div>
       </div>
@@ -1423,6 +1473,48 @@ function moderationHtml(){
     <div class="panel"><h2>À traiter (${nouveaux.length})</h2>${nouveaux.length?nouveaux.map(row).join(""):`<p class="muted">Aucun nouveau signalement.</p>`}</div>
     ${mod.reports.length>nouveaux.length?`<div class="panel"><h2>Historique</h2>${mod.reports.filter(r=>r.status!=="nouveau").map(row).join("")}</div>`:""}`;
 }
+let modTab="atraiter";
+function modRow(r){const l=r.listings;const img=(l?.photos||[])[0]||"";
+  return `<div class="listing-row">
+    <a class="image-frame" href="#/article/${encodeURIComponent(r.listing_id)}">${img?`<img data-safe-image src="${esc(img)}" alt="">`:""}</a>
+    <div><h3>${esc(l?.title||"Annonce supprimée")}</h3>
+      <p><b>${esc(r.reason)}</b> · ${new Date(r.created_at).toLocaleDateString("fr-FR")} · vendeur : @${esc(l?.profiles?.name||"?")}</p>
+      ${r.details?`<p style="white-space:pre-line">« ${esc(r.details)} »</p>`:""}
+      ${r.contact_email?`<p>Contact : ${esc(r.contact_email)}</p>`:""}
+      <p><span class="status">${r.status==="nouveau"?"Nouveau":r.status==="traité"?"Traité":"Rejeté"}</span>${l?.status==="removed"?' <span class="status">Annonce retirée</span>':""}</p></div>
+    <div class="row-actions">
+      ${l&&l.status!=="removed"?`<button type="button" class="btn btn-danger" data-mod="remove" data-report="${r.id}" data-listing="${r.listing_id}">Retirer l’annonce</button>`:""}
+      ${l&&l.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-report="${r.id}" data-listing="${r.listing_id}">Remettre en ligne</button>`:""}
+      ${r.status==="nouveau"?`<button type="button" class="btn btn-outline" data-mod="reject" data-report="${r.id}" data-listing="${r.listing_id}">Rien à signaler</button>`:""}
+    </div></div>`}
+function renderModeration(el){
+  $("accountTitle").textContent="Espace modération";
+  const todo=mod.reports.filter(r=>r.status==="nouveau"), done=mod.reports.filter(r=>r.status!=="nouveau");
+  const removed=state.remote.filter(p=>p.status==="removed"), disputes=(typeof orders!=="undefined"?orders.all:[]).filter(o=>o.status==="problem");
+  const tabs=[["atraiter","À traiter",todo.length],["retirees","Annonces retirées",removed.length],...(payOn()?[["litiges","Litiges",disputes.length]]:[]),["historique","Historique",done.length]];
+  if(!tabs.some(t=>t[0]===modTab))modTab="atraiter";
+  let body="";
+  if(!mod.loaded)body=`<p class="muted">Chargement…</p>`;
+  else if(modTab==="atraiter")body=todo.length?`<div class="panel">${todo.map(modRow).join("")}</div>`:`<div class="empty"><p>Aucun signalement à traiter. Tout est en ordre.</p></div>`;
+  else if(modTab==="historique")body=done.length?`<div class="panel">${done.map(modRow).join("")}</div>`:`<div class="empty"><p>Aucun signalement traité pour le moment.</p></div>`;
+  else if(modTab==="retirees")body=removed.length?`<div class="panel">${removed.map(p=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><h3>${esc(p.name)}</h3><p>${eur(p.price)} · vendeur : @${esc(p.seller)}</p><p><span class="status">Retirée par la modération</span></p></div><div class="row-actions"><button type="button" class="btn btn-outline" data-mod="restore" data-listing="${p.id}">Remettre en ligne</button></div></div>`).join("")}</div>`:`<div class="empty"><p>Aucune annonce retirée.</p></div>`;
+  else if(modTab==="litiges")body=disputesHtml();
+  el.innerHTML=`<div class="mod-head">
+      <span class="mod-badge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <div><h2>Compte modérateur</h2><p class="muted small">Ce compte sert uniquement à la modération : il ne peut ni vendre, ni acheter, ni écrire aux membres. Pour consulter une annonce, utilise la recherche ou « Explorer », puis agis directement depuis l’annonce.</p></div>
+    </div>
+    <div class="mod-stats">${tabs.map(([k,l,n])=>`<button type="button" data-modtab="${k}" aria-pressed="${modTab===k}"><b>${n}</b><span>${l}</span></button>`).join("")}</div>
+    <div style="margin-top:18px">${body}</div>
+    <details class="panel" style="margin-top:24px"><summary><b>Sécurité du compte modérateur</b></summary>
+      <form id="pwdForm" novalidate style="margin-top:12px">
+        <div class="field"><label for="pw1">Nouveau mot de passe</label><input class="input" id="pw1" type="password" autocomplete="new-password"><span class="error" id="pw1Err"></span></div>
+        <div class="field"><label for="pw2">Confirmer le mot de passe</label><input class="input" id="pw2" type="password" autocomplete="new-password"><span class="error" id="pw2Err"></span></div>
+        <div class="buy-actions"><button class="btn btn-outline" type="submit">Changer le mot de passe</button><button type="button" class="btn btn-outline" id="logout">Se déconnecter</button></div>
+      </form>
+    </details>`;
+  el.querySelectorAll("[data-modtab]").forEach(b=>b.addEventListener("click",()=>{modTab=b.dataset.modtab;renderModeration(el)}));
+  watchImages(el);
+}
 async function moderate(action,reportId,listingId){
   const now=new Date().toISOString();
   if(action==="remove"){
@@ -1877,7 +1969,8 @@ function renderProduct(id){
   const photos=(p.photos&&p.photos.length?p.photos:[p.img]);
   const similar=available().filter(x=>x.id!==p.id&&(x.category===p.category||x.style===p.style)).slice(0,5);
   let actions;
-  if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
+  if(state.user&&state.isAdmin) actions=p.demo?`<p class="note small">Article de démonstration : aucune action de modération possible.</p>`:`<div class="mod-actions"><span class="mod-badge small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><b>Modération</b><div class="buy-actions" style="margin-top:8px">${p.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-listing="${esc(p.id)}">Remettre en ligne</button>`:`<button type="button" class="btn btn-danger" data-mod="remove" data-listing="${esc(p.id)}">Retirer l’annonce</button>`}<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Profil du vendeur</a></div></div>`;
+  else if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
   else if(payOn()&&!p.demo) actions=`<div class="buy-actions buy-sticky"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/></svg> Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Poser une question</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div id="contactNote"></div>`;
@@ -2045,6 +2138,7 @@ function renderAccount(tab){
   $("accountTitle").textContent=`Bonjour ${state.user.name}`;
   const mine=state.remote.filter(p=>p.mine);
   const myOrders=state.orders.filter(o=>!o.userId||o.userId===state.user.id);
+  if(state.isAdmin){renderModeration(el);return}
   const tabs=[["profil","Profil et paramètres"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]].filter(t=>CONFIG.paiementIntegre||t[0]!=="commandes");
   if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["portemonnaie","Porte-monnaie"])}
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
@@ -2221,9 +2315,111 @@ function renderSell(editId){
   $("sellForm").addEventListener("submit",e=>{e.preventDefault();submitListing(l)});
 }
 function renderPhotos(){
-  $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button>${i===0?"<figcaption>Couverture</figcaption>":""}</figure>`).join("");
+  $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button><button type="button" class="ph-edit" data-editphoto="${i}" aria-label="Retoucher la photo ${i+1}">Retoucher</button>${i===0?"<figcaption>Couverture</figcaption>":""}</figure>`).join("");
   $("photoList").querySelectorAll("[data-delphoto]").forEach(b=>b.addEventListener("click",()=>{draftPhotos.splice(+b.dataset.delphoto,1);renderPhotos()}));
+  $("photoList").querySelectorAll("[data-editphoto]").forEach(b=>b.addEventListener("click",()=>openPhotoEditor(+b.dataset.editphoto)));
 }
+/* =========================================================
+   RETOUCHE PHOTO (vendeurs) — fond uni, lumière, rotation, cadrage
+   Tout est calculé dans le navigateur, sans service extérieur.
+   ========================================================= */
+const PE_BG={none:null,blanc:[255,255,255],gris:[238,240,242],bleu:[232,241,247]};
+const pe={idx:-1,img:null,rot:0,crop:true,bg:"none",tol:32,bri:0,con:0,mask:null,maskKey:""};
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();if(!src.startsWith("data:"))i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=()=>rej(new Error("Impossible d’ouvrir cette photo."));i.src=src})}
+async function openPhotoEditor(i){
+  try{pe.img=await loadImg(draftPhotos[i])}catch(e){toast(e.message);return}
+  Object.assign(pe,{idx:i,rot:0,crop:true,bg:"none",tol:32,bri:0,con:0,mask:null,maskKey:""});
+  document.body.insertAdjacentHTML("beforeend",`<div class="pe-backdrop" id="peBox" role="dialog" aria-modal="true" aria-labelledby="peTitle">
+    <div class="pe">
+      <div class="pe-head"><h2 id="peTitle">Retoucher la photo</h2><button type="button" class="pe-x" id="peClose" aria-label="Fermer sans enregistrer">×</button></div>
+      <div class="pe-body">
+        <div class="pe-stage"><canvas id="peCanvas" aria-label="Aperçu de la photo"></canvas></div>
+        <div class="pe-tools">
+          <div class="pe-group"><b>Fond</b><small>Remplace le fond par une couleur unie. Idéal si le vêtement est photographié sur un fond simple.</small>
+            <div class="segmented pe-seg" role="radiogroup" aria-label="Fond">${[["none","Original"],["blanc","Blanc"],["gris","Gris clair"],["bleu","Bleu Revoo"]].map(([v,l])=>`<label><input type="radio" name="peBg" value="${v}" ${v==="none"?"checked":""}><span>${l}</span></label>`).join("")}</div>
+            <label class="pe-range" id="peTolWrap" hidden>Précision du détourage<input type="range" id="peTol" min="10" max="70" value="32"><span class="hint">Augmente si un reste de fond apparaît, diminue si le vêtement est grignoté.</span></label>
+          </div>
+          <div class="pe-group"><b>Lumière</b>
+            <label class="pe-range">Luminosité<input type="range" id="peBri" min="-60" max="60" value="0"></label>
+            <label class="pe-range">Contraste<input type="range" id="peCon" min="-50" max="50" value="0"></label>
+            <button type="button" class="btn btn-outline" id="peAuto">Réglage automatique</button>
+          </div>
+          <div class="pe-group"><b>Cadrage</b>
+            <div class="pe-row"><button type="button" class="btn btn-outline" id="peRot">Pivoter ↻</button>
+            <label class="pe-check"><input type="checkbox" id="peCrop" checked> Format annonce (4:5)</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="pe-foot"><button type="button" class="btn btn-outline" id="peReset">Annuler les retouches</button><button type="button" class="btn btn-primary" id="peApply">Appliquer</button></div>
+    </div></div>`);
+  document.body.classList.add("pe-open");
+  const box=$("peBox");
+  box.addEventListener("input",peRender);
+  box.addEventListener("change",e=>{if(e.target.name==="peBg"){pe.bg=e.target.value;$("peTolWrap").hidden=pe.bg==="none";peRender()}if(e.target.id==="peCrop"){pe.crop=e.target.checked;peRender()}});
+  $("peRot").onclick=()=>{pe.rot=(pe.rot+90)%360;peRender()};
+  $("peAuto").onclick=()=>{const a=peAutoLevels();$("peBri").value=a.bri;$("peCon").value=a.con;peRender()};
+  $("peReset").onclick=()=>{Object.assign(pe,{rot:0,crop:true,bg:"none"});$("peBri").value=0;$("peCon").value=0;$("peTol").value=32;$("peCrop").checked=true;box.querySelector('input[name="peBg"][value="none"]').checked=true;$("peTolWrap").hidden=true;peRender()};
+  $("peClose").onclick=closePhotoEditor;
+  box.addEventListener("click",e=>{if(e.target===box)closePhotoEditor()});
+  document.addEventListener("keydown",peEsc);
+  $("peApply").onclick=()=>{try{draftPhotos[pe.idx]=$("peCanvas").toDataURL("image/jpeg",.86);closePhotoEditor();renderPhotos();toast("Photo retouchée.")}catch(e){toast("Impossible d’enregistrer cette photo. Ajoute-la à nouveau depuis ton appareil.")}};
+  peRender();setTimeout(()=>$("peClose").focus(),50);
+}
+function peEsc(e){if(e.key==="Escape")closePhotoEditor()}
+function closePhotoEditor(){const b=$("peBox");if(b)b.remove();document.body.classList.remove("pe-open");document.removeEventListener("keydown",peEsc)}
+/* Géométrie : rotation + recadrage 4:5, dans une zone de 1100 px max */
+function peBase(){
+  const img=pe.img,r=pe.rot%180!==0,W0=r?img.height:img.width,H0=r?img.width:img.height;
+  let sx=0,sy=0,sw=W0,sh=H0;
+  if(pe.crop){const ratio=4/5;if(W0/H0>ratio){sw=H0*ratio;sx=(W0-sw)/2}else{sh=W0/ratio;sy=(H0-sh)/2}}
+  const scale=Math.min(1,1100/Math.max(sw,sh)),W=Math.round(sw*scale),H=Math.round(sh*scale);
+  const rc=document.createElement("canvas");rc.width=W0;rc.height=H0;const rx=rc.getContext("2d");
+  rx.translate(W0/2,H0/2);rx.rotate(pe.rot*Math.PI/180);rx.drawImage(img,-img.width/2,-img.height/2);
+  const c=document.createElement("canvas");c.width=W;c.height=H;c.getContext("2d").drawImage(rc,sx,sy,sw,sh,0,0,W,H);
+  return c;
+}
+/* Détourage du fond : remplissage depuis les bords, sur une version réduite, puis adouci */
+function peMask(base,tol){
+  const key=[pe.rot,pe.crop,tol,base.width].join("|");if(pe.mask&&pe.maskKey===key)return pe.mask;
+  const s=Math.min(1,360/Math.max(base.width,base.height)),w=Math.max(8,Math.round(base.width*s)),h=Math.max(8,Math.round(base.height*s));
+  const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.drawImage(base,0,0,w,h);
+  const d=x.getImageData(0,0,w,h).data;
+  let r=0,g=0,b=0,n=0;const add=i=>{r+=d[i];g+=d[i+1];b+=d[i+2];n++};
+  for(let i=0;i<w;i++){add(i*4);add(((h-1)*w+i)*4)}for(let j=0;j<h;j++){add(j*w*4);add((j*w+w-1)*4)}
+  r/=n;g/=n;b/=n;
+  const t2=tol*tol*3,seen=new Uint8Array(w*h),q=new Int32Array(w*h);let qh=0,qt=0;
+  const near=(p,pr,pg,pb)=>{const i=p*4,dr=d[i]-pr,dg=d[i+1]-pg,db=d[i+2]-pb;return dr*dr+dg*dg+db*db<=t2};
+  const push=p=>{if(!seen[p]&&near(p,r,g,b)){seen[p]=1;q[qt++]=p}};
+  for(let i=0;i<w;i++){push(i);push((h-1)*w+i)}for(let j=0;j<h;j++){push(j*w);push(j*w+w-1)}
+  while(qh<qt){const p=q[qh++],px=p%w,py=(p-px)/w,i=p*4;
+    const nb=[px>0?p-1:-1,px<w-1?p+1:-1,py>0?p-w:-1,py<h-1?p+w:-1];
+    for(const k of nb){if(k<0||seen[k])continue;const j=k*4,dr=d[j]-d[i],dg=d[j+1]-d[i+1],db=d[j+2]-d[i+2];
+      if(dr*dr+dg*dg+db*db<=t2/2.2&&near(k,r,g,b)){seen[k]=1;q[qt++]=k}}}
+  const m=document.createElement("canvas");m.width=w;m.height=h;const mx=m.getContext("2d"),md=mx.createImageData(w,h);
+  for(let p=0;p<w*h;p++)md.data[p*4+3]=seen[p]?255:0;mx.putImageData(md,0,0);
+  const big=document.createElement("canvas");big.width=base.width;big.height=base.height;const bx=big.getContext("2d");
+  bx.imageSmoothingEnabled=true;bx.filter="blur(1.5px)";bx.drawImage(m,0,0,base.width,base.height);
+  pe.mask=bx.getImageData(0,0,base.width,base.height).data;pe.maskKey=key;return pe.mask;
+}
+function peAutoLevels(){
+  const b=peBase(),x=b.getContext("2d"),d=x.getImageData(0,0,b.width,b.height).data;let lo=255,hi=0,sum=0,n=0;
+  for(let i=0;i<d.length;i+=16){const l=(d[i]*.3+d[i+1]*.59+d[i+2]*.11);sum+=l;n++;if(l<lo)lo=l;if(l>hi)hi=l}
+  const mean=sum/n;return {bri:Math.max(-40,Math.min(40,Math.round((128-mean)*.45))),con:Math.max(0,Math.min(35,Math.round((200-(hi-lo))*.25)))};
+}
+function peRender(){
+  pe.tol=+$("peTol").value;pe.bri=+$("peBri").value;pe.con=+$("peCon").value;
+  const base=peBase(),cv=$("peCanvas");cv.width=base.width;cv.height=base.height;
+  const x=cv.getContext("2d");x.drawImage(base,0,0);
+  const id=x.getImageData(0,0,cv.width,cv.height),d=id.data,bri=pe.bri*1.6,cf=(259*(pe.con*2+255))/(255*(259-pe.con*2));
+  const bg=PE_BG[pe.bg],mask=bg?peMask(base,pe.tol):null;
+  for(let i=0;i<d.length;i+=4){
+    for(let k=0;k<3;k++){d[i+k]=Math.max(0,Math.min(255,cf*(d[i+k]+bri-128)+128))}
+    if(mask){const a=mask[i+3]/255;if(a>0){d[i]=d[i]*(1-a)+bg[0]*a;d[i+1]=d[i+1]*(1-a)+bg[1]*a;d[i+2]=d[i+2]*(1-a)+bg[2]*a}}
+  }
+  x.putImageData(id,0,0);
+}
+
+
 function compress(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error("image"));img.onload=()=>{const max=1200,s=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.8))};img.src=r.result};r.readAsDataURL(file)})}
 const dataUrlToBlob=d=>fetch(d).then(r=>r.blob());
 function storagePath(url){const i=url.indexOf("/object/public/annonces/");return i<0?null:decodeURIComponent(url.slice(i+"/object/public/annonces/".length))}
@@ -2445,6 +2641,7 @@ function updateCounts(){
   $("favCount").textContent=f;$("favCount").classList.toggle("has",f>0);
   $("cartCount").textContent=state.cart.length;$("cartCount").classList.toggle("has",state.cart.length>0);
   $("favoritesBtn").setAttribute("aria-label",`Favoris (${f})`);$("cartBtn").setAttribute("aria-label",`Panier (${state.cart.length} article${state.cart.length>1?"s":""})`);
+  const tbC=document.querySelector('.tabbar [data-tab="compte"] span:last-child');if(tbC)tbC.textContent=state.user&&state.isAdmin?"Modération":"Compte";
   $("tabMsg").textContent=chat.unread;$("tabMsg").hidden=!chat.unread;
   $("acctBtn").classList.toggle("has-unread",chat.unread>0);$("menuMsg").textContent=chat.unread;$("menuMsg").hidden=!chat.unread;
   $("msgCount").textContent=chat.unread;$("msgCount").classList.toggle("has",chat.unread>0);
@@ -2462,6 +2659,10 @@ function renderView(){
   if(name!=="messages")chat.current=null;
   document.title="Revoo — Tes vêtements ont de l’avenir";
   let view="home";
+  const isMod=!!(state.user&&state.isAdmin);
+  document.body.classList.toggle("mod-mode",isMod);
+  if(isMod&&["vendre","panier","paiement","favoris","messages"].includes(name)){location.replace("#/compte/moderation");toast("Ce compte est réservé à la modération.");return}
+  if(isMod&&name==="compte"&&arg!=="moderation"&&!(arg||"").startsWith("mod-")){location.replace("#/compte/moderation");return}
   if(name==="catalogue"){view="catalogue";renderCatalogue()}
   else if(name==="article"){view="product";renderProduct(arg)}
   else if(name==="favoris"){view="favoris";renderFavorites()}
