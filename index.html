@@ -1806,7 +1806,7 @@ function orderDisputes(list){
    ÉCHANGES (avec complément d'argent possible)
    Débloqué après 3 achats confirmés · suivi obligatoire · 48 h après le dernier colis reçu
    ========================================================= */
-const TRADE_UNLOCK=3;
+const TRADE_UNLOCK=3, TRADE_AUTO_RECEIVE=14*864e5;   // un colis non confirmé 14 jours après l'envoi compte comme reçu
 const trades={list:[],addr:[],loaded:false};
 const TRADE_STATUS={proposed:"Proposition en attente",accepted:"En cours",completed:"Échange terminé",problem:"Problème signalé",declined:"Refusé",cancelled:"Annulé"};
 async function loadTrades(){
@@ -1850,7 +1850,8 @@ function tradeFormHtml(p){
       <li>${esc(p.seller)} peut accepter, refuser ou <b>contre-proposer</b> un autre montant : vous négociez jusqu’à être d’accord.</li>
       <li>À l’accord, le complément éventuel et les frais (${eur(ORDER_FEE)} chacun) sont <b>payés et bloqués</b>.</li>
       <li>Chacun envoie son colis <b>avec un numéro de suivi</b> (obligatoire).</li>
-      <li>Quand les <b>deux</b> colis sont arrivés, vous avez <b>48 h</b> pour vérifier. Sans problème signalé, l’échange est validé et le complément versé.</li></ol></div>
+      <li>Quand les <b>deux</b> colis sont arrivés, vous avez <b>48 h</b> pour vérifier. Sans problème signalé, l’échange est validé et le complément versé.</li>
+      <li>Un colis non confirmé <b>14 jours</b> après son envoi compte comme reçu.</li></ol></div>
     <button class="btn btn-primary" type="submit">Envoyer la proposition</button>
   </form>`;
 }
@@ -1911,7 +1912,7 @@ function tradeCard(t,role){
       info+=otherAddr?`<p class="small"><b>Envoie ton colis à :</b><br>${esc(otherAddr.name)}<br>${esc(otherAddr.address)}<br>${esc(otherAddr.zip)} ${esc(otherAddr.city)}</p>`:"";
       info+=`<form class="trade-ship" data-tradeship="${t.id}" novalidate><label class="label" for="ts-${t.id}">Numéro de suivi de ton colis <span class="hint">(obligatoire)</span></label><div class="handoff-row"><input class="input" id="ts-${t.id}" maxlength="60" placeholder="Ex. : 6A12345678901"><button class="btn btn-primary" type="submit">J’ai envoyé mon colis</button></div><span class="error" id="ts-${t.id}Err"></span></form>`;
     } else info+=`<p class="small">Ton colis est parti · suivi <b>${esc(myTrk||"")}</b></p>`;
-    if(otherShip&&!myRec){info+=`<p class="small">Le colis de l’autre est parti · suivi <b>${esc(otherTrk||"")}</b></p>`;actions+=`<button type="button" class="btn btn-primary" data-trade="received" data-id="${t.id}">J’ai reçu son colis</button>`}
+    if(otherShip&&!myRec){info+=`<p class="small">Le colis de l’autre est parti · suivi <b>${esc(otherTrk||"")}</b></p><p class="small note">Clique sur « J’ai reçu son colis » dès qu’il arrive. Sans réponse de ta part, il sera considéré comme reçu le <b>${fmtDT(Date.parse(otherShip)+TRADE_AUTO_RECEIVE)}</b>. Pas arrivé ? Signale un problème avant cette date.</p>`;actions+=`<button type="button" class="btn btn-primary" data-trade="received" data-id="${t.id}">J’ai reçu son colis</button>`}
     else if(!otherShip)info+=`<p class="small muted">En attente de l’envoi de l’autre colis.</p>`;
     if(t.review_deadline){
       const h=Math.max(0,Math.ceil((Date.parse(t.review_deadline)-Date.now())/36e5));

@@ -172,7 +172,8 @@ revoke all on function public.new_handoff_code() from public, anon, authenticate
 --    • Débloqué après 3 achats confirmés (pour les deux personnes).
 --    • Celui qui propose peut ajouter de l'argent (complément), bloqué dès l'accord.
 --    • Numéro de suivi obligatoire pour chaque colis.
---    • Les 48 h de vérification démarrent quand le DERNIER des deux colis est reçu.
+--    • Les 48 h de vérification démarrent quand le DERNIER des deux colis est reçu
+--      (un colis non confirmé 14 jours après son envoi compte comme reçu).
 --      Sans réponse, l'échange est validé automatiquement.
 --    • En cas de problème, tout reste bloqué et la modération tranche.
 -- =====================================================================
@@ -440,12 +441,24 @@ begin
   if not found then raise exception 'Action impossible sur cet échange'; end if;
 end $$;
 
--- Validation automatique quand les 48 h sont passées sans problème
+-- Vérifications automatiques des échanges :
+--  • un colis envoyé depuis 14 jours sans « reçu » ni problème signalé compte comme reçu
+--    (délai réaliste : acheminement + attente possible en point relais) ;
+--  • quand les deux colis sont reçus, les 48 h démarrent ;
+--  • passé les 48 h sans problème signalé, l'échange est validé.
+drop function if exists public.settle_trades();
 create or replace function public.settle_trades()
-returns void language sql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  update public.trades set proposer_received_at = receiver_shipped_at + interval '14 days', updated_at = now()
+   where status = 'accepted' and proposer_received_at is null and receiver_shipped_at <= now() - interval '14 days';
+  update public.trades set receiver_received_at = proposer_shipped_at + interval '14 days', updated_at = now()
+   where status = 'accepted' and receiver_received_at is null and proposer_shipped_at <= now() - interval '14 days';
+  update public.trades set review_deadline = now() + interval '48 hours', updated_at = now()
+   where status = 'accepted' and review_deadline is null and proposer_received_at is not null and receiver_received_at is not null;
   update public.trades set status = 'completed', completed_at = now(), updated_at = now()
    where status = 'accepted' and review_deadline is not null and review_deadline <= now();
-$$;
+end $$;
 
 -- Modération : trancher un litige
 create or replace function public.admin_resolve_trade(p_trade uuid, p_outcome text)
