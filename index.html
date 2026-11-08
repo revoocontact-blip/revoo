@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-design="2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,7 +21,6 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <script>try{var t=localStorage.getItem("revoo.theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
-<script>try{var q=new URLSearchParams(location.search).get("design");if(q==="1"||q==="2")localStorage.setItem("revoo.design",q);if(localStorage.getItem("revoo.design")==="2")document.documentElement.dataset.design="2"}catch(e){}</script>
 <link rel="preload" href="fonts/plus-jakarta-sans-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32.png?v=4">
@@ -916,7 +915,7 @@ body{transition:background .2s ease,color .2s ease}
  :root:not([data-theme="light"]) .top{border-bottom-color:#1A2E40}}
 
 /* =========================================================
-   DESIGN N°2 « Édition » — activé avec ?design=2 (comparaison)
+   DESIGN « Édition » (design retenu)
    Même palette : bleu nuit, bleu ciel, blanc. Formes droites, contrastes forts.
    ========================================================= */
 html[data-design="2"]{--radius:10px;--radius-sm:8px;--shadow:none}
@@ -1016,10 +1015,63 @@ html[data-design="2"] footer img[data-logo="bleu"]{filter:brightness(0) invert(1
   html[data-design="2"] .hero-photo{box-shadow:8px 8px 0 #A8C4D8}
   html[data-design="2"] .section-head h2,html[data-design="2"] .page-title{font-size:24px}
 }
-/* Interrupteur de comparaison des designs */
-.design-switch{display:inline-flex;gap:2px;margin-left:10px;background:rgba(0,0,0,.12);border-radius:8px;padding:2px;vertical-align:middle}
-.design-switch a{padding:2px 9px;border-radius:6px;font-weight:700;text-decoration:none!important;font-size:12px}
-.design-switch a[aria-current="true"]{background:#fff;color:#16293A}
+
+/* ---------- Édition : mode sombre ---------- */
+html[data-design="2"][data-theme="dark"]{--bg:#0A1520;--surface:#0F1E2C;--glass:rgba(12,25,37,.94);--ice:#112434;--pale:#17304A;--line:#20384E;--ink:#E3ECF3;--muted:#9DB2C4;--navy:#A8C4D8;--heading:#F2F7FB;--brand:#A8C4D8;--brand-hover:#C6DAE8;--on-brand:#0B1620;--bar:#0E2134;--on-bar:#CFE0EC;--ring:inset 0 0 0 1px rgba(168,196,216,.10)}
+html[data-design="2"][data-theme="dark"] .top{border-bottom:1px solid rgba(168,196,216,.14)}
+html[data-design="2"][data-theme="dark"] .hero{background:radial-gradient(120% 90% at 85% 10%,#1C3F5E 0%,#0E2134 45%,#0A1520 100%)}
+html[data-design="2"][data-theme="dark"] .hero .btn-outline{border-color:rgba(168,196,216,.55);color:#E3ECF3}
+html[data-design="2"][data-theme="dark"] .btn-outline{border-color:#A8C4D8;color:#A8C4D8;background:transparent}
+html[data-design="2"][data-theme="dark"] .btn-outline:hover{background:#A8C4D8;color:#0B1620}
+html[data-design="2"][data-theme="dark"] .viewall{border-color:#A8C4D8;color:#A8C4D8}
+html[data-design="2"][data-theme="dark"] .viewall:hover{background:#A8C4D8;color:#0B1620}
+html[data-design="2"][data-theme="dark"] .how li{border-color:var(--line);background:var(--surface)}
+html[data-design="2"][data-theme="dark"] .impact-band{background:linear-gradient(90deg,#14304A,#0E2134);box-shadow:inset 0 0 0 1px rgba(168,196,216,.14)}
+html[data-design="2"][data-theme="dark"] .card:hover{background:transparent}
+html[data-design="2"][data-theme="dark"] .card-img{box-shadow:inset 0 0 0 1px rgba(168,196,216,.08)}
+html[data-design="2"][data-theme="dark"] .chip-mini{border-color:var(--line);color:var(--muted)}
+html[data-design="2"][data-theme="dark"] .heart{background:rgba(10,21,32,.75);color:#E3ECF3}
+html[data-design="2"][data-theme="dark"] .heart[aria-pressed="true"]{background:#A8C4D8;color:#0B1620}
+html[data-design="2"][data-theme="dark"] .heart[aria-pressed="true"] .icon{fill:#0B1620}
+html[data-design="2"][data-theme="dark"] .panel,html[data-design="2"][data-theme="dark"] .order,html[data-design="2"][data-theme="dark"] .wallet-box,html[data-design="2"][data-theme="dark"] .product-info,html[data-design="2"][data-theme="dark"] .acc-head{background:var(--surface)}
+html[data-design="2"][data-theme="dark"] .handoff,html[data-design="2"][data-theme="dark"] .impact-line,html[data-design="2"][data-theme="dark"] .trade-rules,html[data-design="2"][data-theme="dark"] .trade-lock{background:var(--ice)}
+html[data-design="2"][data-theme="dark"] .order-steps li{background:var(--pale);color:var(--muted)}
+html[data-design="2"][data-theme="dark"] .order-steps li.done{background:#A8C4D8;color:#0B1620}
+html[data-design="2"][data-theme="dark"] .subnav button[aria-current="true"]{color:#fff}
+html[data-design="2"][data-theme="dark"] footer{background:#07111A;border-top:1px solid rgba(168,196,216,.10)}
+html[data-design="2"][data-theme="dark"] .demo-bar,html[data-design="2"][data-theme="dark"] .demo-bar.paydemo{background:#A8C4D8;color:#0B1620}
+html[data-design="2"][data-theme="dark"] .badge.has{background:#A8C4D8;color:#0B1620}
+html[data-design="2"][data-theme="dark"] .reboot{background:#A8C4D8;color:#0B1620}
+html[data-design="2"][data-theme="dark"] .toast{background:#E3ECF3;color:#0B1620}
+@media (max-width:680px){html[data-design="2"][data-theme="dark"] .tabbar{background:#0E2134;border-top:1px solid rgba(168,196,216,.14)}html[data-design="2"][data-theme="dark"] .tabs button{background:var(--ice);color:var(--heading)}html[data-design="2"][data-theme="dark"] .tabs button[aria-selected="true"]{background:#A8C4D8;color:#0B1620}}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]){--bg:#0A1520;--surface:#0F1E2C;--glass:rgba(12,25,37,.94);--ice:#112434;--pale:#17304A;--line:#20384E;--ink:#E3ECF3;--muted:#9DB2C4;--navy:#A8C4D8;--heading:#F2F7FB;--brand:#A8C4D8;--brand-hover:#C6DAE8;--on-brand:#0B1620;--bar:#0E2134;--on-bar:#CFE0EC;--ring:inset 0 0 0 1px rgba(168,196,216,.10)}
+html[data-design="2"]:not([data-theme="light"]) .top{border-bottom:1px solid rgba(168,196,216,.14)}
+html[data-design="2"]:not([data-theme="light"]) .hero{background:radial-gradient(120% 90% at 85% 10%,#1C3F5E 0%,#0E2134 45%,#0A1520 100%)}
+html[data-design="2"]:not([data-theme="light"]) .hero .btn-outline{border-color:rgba(168,196,216,.55);color:#E3ECF3}
+html[data-design="2"]:not([data-theme="light"]) .btn-outline{border-color:#A8C4D8;color:#A8C4D8;background:transparent}
+html[data-design="2"]:not([data-theme="light"]) .btn-outline:hover{background:#A8C4D8;color:#0B1620}
+html[data-design="2"]:not([data-theme="light"]) .viewall{border-color:#A8C4D8;color:#A8C4D8}
+html[data-design="2"]:not([data-theme="light"]) .viewall:hover{background:#A8C4D8;color:#0B1620}
+html[data-design="2"]:not([data-theme="light"]) .how li{border-color:var(--line);background:var(--surface)}
+html[data-design="2"]:not([data-theme="light"]) .impact-band{background:linear-gradient(90deg,#14304A,#0E2134);box-shadow:inset 0 0 0 1px rgba(168,196,216,.14)}
+html[data-design="2"]:not([data-theme="light"]) .card:hover{background:transparent}
+html[data-design="2"]:not([data-theme="light"]) .card-img{box-shadow:inset 0 0 0 1px rgba(168,196,216,.08)}
+html[data-design="2"]:not([data-theme="light"]) .chip-mini{border-color:var(--line);color:var(--muted)}
+html[data-design="2"]:not([data-theme="light"]) .heart{background:rgba(10,21,32,.75);color:#E3ECF3}
+html[data-design="2"]:not([data-theme="light"]) .heart[aria-pressed="true"]{background:#A8C4D8;color:#0B1620}
+html[data-design="2"]:not([data-theme="light"]) .heart[aria-pressed="true"] .icon{fill:#0B1620}
+html[data-design="2"]:not([data-theme="light"]) .panel,html[data-design="2"]:not([data-theme="light"]) .order,html[data-design="2"]:not([data-theme="light"]) .wallet-box,html[data-design="2"]:not([data-theme="light"]) .product-info,html[data-design="2"]:not([data-theme="light"]) .acc-head{background:var(--surface)}
+html[data-design="2"]:not([data-theme="light"]) .handoff,html[data-design="2"]:not([data-theme="light"]) .impact-line,html[data-design="2"]:not([data-theme="light"]) .trade-rules,html[data-design="2"]:not([data-theme="light"]) .trade-lock{background:var(--ice)}
+html[data-design="2"]:not([data-theme="light"]) .order-steps li{background:var(--pale);color:var(--muted)}
+html[data-design="2"]:not([data-theme="light"]) .order-steps li.done{background:#A8C4D8;color:#0B1620}
+html[data-design="2"]:not([data-theme="light"]) .subnav button[aria-current="true"]{color:#fff}
+html[data-design="2"]:not([data-theme="light"]) footer{background:#07111A;border-top:1px solid rgba(168,196,216,.10)}
+html[data-design="2"]:not([data-theme="light"]) .demo-bar,html[data-design="2"]:not([data-theme="light"]) .demo-bar.paydemo{background:#A8C4D8;color:#0B1620}
+html[data-design="2"]:not([data-theme="light"]) .badge.has{background:#A8C4D8;color:#0B1620}
+html[data-design="2"]:not([data-theme="light"]) .reboot{background:#A8C4D8;color:#0B1620}
+html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:#0B1620}
+}
+@media (prefers-color-scheme:dark) and (max-width:680px){html[data-design="2"]:not([data-theme="light"]) .tabbar{background:#0E2134;border-top:1px solid rgba(168,196,216,.14)}html[data-design="2"]:not([data-theme="light"]) .tabs button{background:var(--ice);color:var(--heading)}html[data-design="2"]:not([data-theme="light"]) .tabs button[aria-selected="true"]{background:#A8C4D8;color:#0B1620}}
 </style>
 </head>
 <body>
@@ -1878,12 +1930,10 @@ function salesHtml(){
   return list.length?list.map(o=>orderCard(o,"seller")).join(""):`<div class="empty"><p>Aucune vente pour le moment.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
 }
 function walletHtml(){
-  const sales=orders.mine.filter(o=>o.seller_id===state.user.id);
-  const pending=sales.filter(o=>["paid","shipped","problem"].includes(o.status)).reduce((t,o)=>t+Number(o.price),0);
-  const ready=sales.filter(o=>o.status==="received").reduce((t,o)=>t+Number(o.price),0);
-  return `<div class="wallet">
-      <div class="wallet-box"><span class="muted small">En attente</span><b>${eur(pending)}</b><span class="muted small">Ventes pas encore reçues par l’acheteur</span></div>
-      <div class="wallet-box ok"><span class="muted small">Disponible</span><b>${eur(ready)}</b><span class="muted small">Ventes confirmées</span></div>
+  const {pending,ready,demo}=walletTotals();
+  return `${demo?`<p class="note small" style="margin:0 0 14px"><b>Montants de démonstration.</b> Ils viennent de ventes ou d’échanges simulés avec Revoo Pay : aucun argent réel n’a été payé ni ne peut être viré.</p>`:""}<div class="wallet">
+      <div class="wallet-box"><span class="muted small">En attente</span><b>${eur(pending)}</b><span class="muted small">Ventes et échanges pas encore terminés</span></div>
+      <div class="wallet-box ok"><span class="muted small">Disponible</span><b>${eur(ready)}</b><span class="muted small">Ventes et échanges terminés</span></div>
     </div>
     <div class="panel"><h2>Virer sur mon compte bancaire</h2>
       <p class="muted small">Le virement vers ton compte bancaire sera activé avec le paiement sécurisé. Tes coordonnées bancaires seront alors saisies directement chez notre prestataire de paiement : Revoo ne les stockera jamais.</p>
@@ -2601,8 +2651,14 @@ function usernameRule(){
   if(Date.now()<next)return {can:false,msg:`Tu pourras le modifier à partir du ${next.toLocaleDateString("fr-FR")} (encore ${left} changement${left>1?"s":""} possible${left>1?"s":""}).`};
   return {can:true,msg:`Tu peux le modifier encore ${left} fois, avec 30 jours d’attente entre deux changements. Ensuite, il sera définitif.`};
 }
-function walletTotals(){const sales=(typeof orders!=="undefined"?orders.mine:[]).filter(o=>state.user&&o.seller_id===state.user.id);
-  return {pending:sales.filter(o=>["paid","shipped","problem"].includes(o.status)).reduce((t,o)=>t+Number(o.price),0),ready:sales.filter(o=>o.status==="received").reduce((t,o)=>t+Number(o.price),0)}}
+function walletTotals(){
+  const me=state.user&&state.user.id, sales=(typeof orders!=="undefined"?orders.mine:[]).filter(o=>o.seller_id===me);
+  // complément d'échange reçu : payé par l'autre personne
+  const tr=(typeof trades!=="undefined"?trades.list:[]).filter(t=>Number(t.topup)>0&&((t.topup_payer||"proposer")==="proposer"?t.receiver_id===me:t.proposer_id===me));
+  const sum=(l,f)=>l.reduce((t,x)=>t+Number(f(x)),0);
+  return {pending:sum(sales.filter(o=>["paid","shipped","problem"].includes(o.status)),o=>o.price)+sum(tr.filter(t=>["accepted","problem"].includes(t.status)),t=>t.topup),
+    ready:sum(sales.filter(o=>o.status==="received"),o=>o.price)+sum(tr.filter(t=>t.status==="completed"),t=>t.topup),
+    demo:sales.some(o=>o.demo&&o.status!=="cancelled")||tr.some(t=>t.demo)}}
 function appearanceHtml(){const tm=themeMode();return `<div class="panel"><h2>Apparence</h2><div class="set-row"><div><b>Thème du site</b><small>Clair, sombre, ou automatique selon ton appareil.</small></div><div class="segmented" role="radiogroup" aria-label="Apparence">${[["light","Clair"],["dark","Sombre"],["auto","Auto"]].map(([v,l])=>`<label><input type="radio" name="themeMode" value="${v}" ${tm===v?"checked":""}><span>${l}</span></label>`).join("")}</div></div></div>`}
 function renderAccount(tab){
   if(tab)accountTab=tab;
@@ -3599,7 +3655,6 @@ addEventListener("offline",netBanner);addEventListener("online",()=>{netBanner()
 if(!payOn())document.body.classList.add("phase1");
 if(matchMedia("(max-width:680px)").matches)$("searchInput").placeholder="Rechercher un vêtement";
 if(PAY_DEMO&&!CONFIG.paiementIntegre){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=CONFIG.revooPayDemo?`<b>Démo Revoo Pay</b> · aucun paiement réel`:`<b>Démo Revoo Pay</b> · aucun paiement réel · <a href="?revoopay=off">Quitter</a>`}
-{const d=document.documentElement.dataset.design==="2"?"2":"1";$("demoBar").insertAdjacentHTML("beforeend",`<span class="design-switch" role="group" aria-label="Choisir le design"><a href="?design=1${location.hash}" aria-current="${d==="1"}">Design 1</a><a href="?design=2${location.hash}" aria-current="${d==="2"}">Design 2</a></span>`)}
 watchImages();renderView();
 (async()=>{
   if(!sb){toast("Le service de comptes est momentanément indisponible.");return}
