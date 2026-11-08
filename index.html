@@ -2530,7 +2530,7 @@ function renderProduct(id){
   let actions;
   if(state.user&&state.isAdmin) actions=p.demo?`<p class="note small">Article de démonstration : aucune action de modération possible.</p>`:`<div class="mod-actions"><span class="mod-badge small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><b>Modération</b><div class="buy-actions" style="margin-top:8px">${p.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-listing="${esc(p.id)}">Remettre en ligne</button>`:`<button type="button" class="btn btn-danger" data-mod="remove" data-listing="${esc(p.id)}">Retirer l’annonce</button>`}<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Profil du vendeur</a><a class="btn btn-outline" href="#/compte/moderation">Retour à la console</a></div></div>`;
   else if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
-  else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
+  else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions">${lockedBy(p.id)?"":`<a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a>`}<button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
   else if(payOn()&&!p.demo) actions=`<div class="buy-actions buy-sticky buy-main"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/></svg> Acheter avec Revoo Pay</a><button type="button" class="btn btn-outline btn-icon" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div class="buy-actions buy-more"><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Poser une question</button></div><div id="contactNote"></div>`;
   else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions buy-sticky buy-main"><button type="button" class="btn btn-primary" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div><div id="contactNote"></div>`;
@@ -2720,8 +2720,8 @@ function renderAccount(tab){
     if(state.user.vacation)body=`<p class="note small">Mode vacances activé : tes annonces sont masquées pour les autres membres. Désactive-le dans « Profil et paramètres ».</p>`;
     body=mine.length?`<div class="panel">${mine.map(l=>`<div class="listing-row">
       <a class="image-frame" href="#/article/${encodeURIComponent(l.id)}"><img data-safe-image src="${esc(l.img)}" alt="${esc(l.name)}"></a>
-      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p><span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":"Vendue (masquée)"}</span></p></div>
-      <div class="row-actions">${l.status==="removed"?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
+      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p><span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Revoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
+      <div class="row-actions">${l.status==="removed"||lockedBy(l.id)?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
     </div>`).join("")}</div><a class="btn btn-primary" href="#/vendre">Ajouter une annonce</a>`
     :`<div class="empty"><p>Tu n’as pas encore d’annonce.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
   } else if(accountTab==="commandes"){
@@ -2836,6 +2836,7 @@ function renderSell(editId){
   if(!state.user){$("sellTitle").textContent="Vends un vêtement";el.innerHTML=`<div class="panel"><h2>Connecte-toi pour vendre</h2><p class="muted">Pour déposer une annonce, il faut un compte Revoo. C’est gratuit.</p><a class="btn btn-primary" href="#/compte">Créer un compte ou se connecter</a></div>`;return}
   const l=editId?state.remote.find(x=>x.id===editId&&x.mine):null;
   if(l&&l.status==="removed"){el.innerHTML=`<div class="empty"><p>Cette annonce a été retirée par la modération et ne peut plus être modifiée.</p><a class="btn btn-primary" href="#/compte/annonces">Mes annonces</a></div>`;return}
+  if(l&&lockedBy(l.id)){el.innerHTML=`<div class="empty"><p>Cet article est lié à une ${lockedBy(l.id)} Revoo Pay : il ne peut plus être modifié.</p><a class="btn btn-primary" href="#/compte/annonces">Mes annonces</a></div>`;return}
   if(editId&&!l){el.innerHTML=state.loading?`<p class="muted">Chargement…</p>`:`<div class="empty"><p>Cette annonce est introuvable.</p><a class="btn btn-primary" href="#/compte/annonces">Mes annonces</a></div>`;return}
   $("sellTitle").textContent=l?"Modifier mon annonce":"Vends un vêtement";
   draftPhotos=l?[...l.photos]:[];
@@ -2928,7 +2929,7 @@ async function submitListing(existing){
 }
 async function deleteListing(id){
   const l=state.remote.find(x=>x.id===id&&x.mine);if(!l)return;
-  if(!confirm(`Supprimer définitivement l’annonce « ${l.name} » ?`))return;
+  if(!confirm(lockedBy(id)?`Supprimer l’annonce « ${l.name} » ? La vente ou l’échange reste visible dans ton historique.`:`Supprimer définitivement l’annonce « ${l.name} » ?`))return;
   const {error}=await sb.from("listings").delete().eq("id",id);
   if(error){toast(frenchError(error));return}
   await removePhotos(l.photos).catch(()=>{});
@@ -2936,8 +2937,17 @@ async function deleteListing(id){
   await loadListings();toast("Annonce supprimée.");
   if(location.hash==="#/compte/annonces")renderView();else location.hash="#/compte/annonces";
 }
+/* Une annonce liée à une commande ou un échange Revoo Pay ne peut plus être modifiée ni remise en ligne */
+function lockedBy(id){
+  const o=(typeof orders!=="undefined"?orders.mine:[]).find(o=>o.listing_id===id&&o.status!=="cancelled");
+  if(o)return o.status==="received"?"vente terminée":"vente en cours";
+  const t=(typeof trades!=="undefined"?trades.list:[]).find(t=>(t.offered_listing===id||t.wanted_listing===id)&&["accepted","problem","completed"].includes(t.status));
+  if(t)return t.status==="completed"?"échange terminé":"échange en cours";
+  return "";
+}
 async function toggleStatus(id){
   const l=state.remote.find(x=>x.id===id&&x.mine);if(!l)return;
+  if(lockedBy(id)){toast("Cet article est lié à une vente ou un échange Revoo Pay : il ne peut pas être remis en ligne.");return}
   const status=l.status==="active"?"sold":"active";
   const {error}=await sb.from("listings").update({status}).eq("id",id);
   if(error){toast(frenchError(error));return}
