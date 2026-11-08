@@ -927,7 +927,7 @@ body{transition:background .2s ease,color .2s ease}
     </a>
 
     <section class="section" aria-labelledby="latestTitle">
-      <div class="section-head"><div><h2 id="latestTitle">À la une</h2><p class="section-sub">Chaque heure, d’autres annonces passent en tête. Gratuitement, pour tout le monde.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
+      <div class="section-head"><div><h2 id="latestTitle">À la une</h2><p class="section-sub">Toutes les 15 minutes, d’autres annonces passent en tête. Gratuitement, pour tout le monde.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
       <div class="products" id="latestProducts"></div>
     </section>
 
@@ -1244,10 +1244,10 @@ function ratingOf(id){const l=sellerReviews(id);return l.length?{avg:l.reduce((t
 const starsTxt=n=>"★".repeat(Math.round(n))+"☆".repeat(5-Math.round(n));
 function ratingHtml(id,small){const r=ratingOf(id);if(!r)return small?"":`<span class="muted small">Pas encore d’avis</span>`;return `<span class="rating" aria-label="Note ${r.avg.toFixed(1).replace(".",",")} sur 5, ${r.n} avis"><span aria-hidden="true">${starsTxt(r.avg)}</span> ${r.avg.toFixed(1).replace(".",",")} · ${r.n} avis</span>`}
 /* Visibilité : les annonces mises en avant d'abord, puis une rotation qui fait
-   passer chaque annonce en tête à tour de rôle (8 nouvelles places chaque heure). */
+   passer chaque annonce en tête à tour de rôle (8 nouvelles places toutes les 15 minutes). */
 const isBoosted=p=>!!p.boostedUntil&&p.boostedUntil>Date.now();
 function idHash(id){let h=2166136261;for(const ch of String(id)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
-function rotate(list){const ring=[...list].sort((a,b)=>idHash(a.id)-idHash(b.id));const n=ring.length;if(!n)return ring;const start=(Math.floor(Date.now()/36e5)*8)%n;return ring.slice(start).concat(ring.slice(0,start))}
+function rotate(list){const ring=[...list].sort((a,b)=>idHash(a.id)-idHash(b.id));const n=ring.length;if(!n)return ring;const start=(Math.floor(Date.now()/9e5)*8)%n;return ring.slice(start).concat(ring.slice(0,start))}
 const featured=list=>[...rotate(list.filter(isBoosted)),...rotate(list.filter(p=>!isBoosted(p)))];
 /* Impact : estimation du CO2 d'un vêtement neuf équivalent (valeurs basses, ordres de grandeur ADEME).
    Doit rester identique à impact_kg_for() dans supabase-impact-visibilite.sql */

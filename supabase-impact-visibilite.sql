@@ -29,27 +29,29 @@ create policy "impact : lecture publique" on public.impact_stats for select to a
 -- ---------- 2. Estimation par type de vêtement (kg CO2e) ----------
 -- Doit rester identique à la fonction impactKg() du site.
 create or replace function public.impact_kg_for(p_title text)
-returns numeric language sql immutable as $$
-  select case
-    when t ~ '(manteau|doudoune|parka|trench|caban)' then 89
-    when t ~ '(veste|blouson|blazer|perfecto|robe|combinaison|jean)' then 25
-    when t ~ '(pantalon|chino|jogging|legging|basket|sneaker|chaussure|botte|bottine|sandale|escarpin|mocassin|derby)' then 20
-    when t ~ '(pull|sweat|hoodie|gilet|cardigan|chemise|blouse)' then 12
-    else 6
-  end
-  from (select translate(lower(coalesce(p_title,'')), 'àâäéèêëîïôöùûüç', 'aaaeeeeiioouuuc') as t) s;
-$$;
+returns numeric language plpgsql immutable as $$
+declare t text := translate(lower(coalesce(p_title, '')), 'àâäéèêëîïôöùûüç', 'aaaeeeeiioouuuc');
+begin
+  if t ~ '(manteau|doudoune|parka|trench|caban)' then return 89; end if;
+  if t ~ '(veste|blouson|blazer|perfecto|robe|combinaison|jean)' then return 25; end if;
+  if t ~ '(pantalon|chino|jogging|legging|basket|sneaker|chaussure|botte|bottine|sandale|escarpin|mocassin|derby)' then return 20; end if;
+  if t ~ '(pull|sweat|hoodie|gilet|cardigan|chemise|blouse)' then return 12; end if;
+  return 6;
+end $$;
 
 alter table public.listings add column if not exists impact_kg numeric;
 
--- Les articles déjà vendus avant ce script sont comptés une seule fois
-with b as (
-  update public.listings set impact_kg = public.impact_kg_for(title)
-  where status = 'sold' and impact_kg is null
-  returning impact_kg
-)
-update public.impact_stats set co2_kg = co2_kg + coalesce((select sum(impact_kg) from b), 0),
-  items = items + (select count(*) from b where impact_kg is not null), updated_at = now() where id = 1;
+-- Les articles déjà vendus avant ce script sont comptés une seule fois (premier lancement seulement)
+do $$
+declare total numeric; n int;
+begin
+  if not exists (select 1 from pg_trigger where tgname = 'listings_track_impact') then
+    select coalesce(sum(public.impact_kg_for(title)), 0), count(*) into total, n
+      from public.listings where status = 'sold' and impact_kg is null;
+    update public.listings set impact_kg = public.impact_kg_for(title) where status = 'sold' and impact_kg is null;
+    update public.impact_stats set co2_kg = co2_kg + total, items = items + n, updated_at = now() where id = 1;
+  end if;
+end $$;
 
 create or replace function public.track_impact()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -71,8 +73,11 @@ create trigger listings_track_impact before update on public.listings
 
 -- Temps réel : le site reçoit chaque mise à jour du compteur
 do $$ begin
-  alter publication supabase_realtime add table public.impact_stats;
-exception when duplicate_object then null; end $$;
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'impact_stats') then
+    alter publication supabase_realtime add table public.impact_stats;
+  end if;
+exception when others then raise notice 'Temps réel non activé : %', sqlerrm;
+end $$;
 
 -- ---------- 3. Mise en avant payante (préparation) ----------
 alter table public.listings add column if not exists boosted_until timestamptz;
@@ -80,8 +85,8 @@ create or replace function public.protect_boost()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
   if tg_op = 'INSERT' then
-    if not public.is_admin() then new.boosted_until := null; end if;
-  elsif new.boosted_until is distinct from old.boosted_until and not public.is_admin() then
+    if not coalesce(public.is_admin(), false) then new.boosted_until := null; end if;
+  elsif new.boosted_until is distinct from old.boosted_until and not coalesce(public.is_admin(), false) then
     new.boosted_until := old.boosted_until;
   end if;
   return new;
