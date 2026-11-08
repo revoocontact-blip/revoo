@@ -534,6 +534,40 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .mod-mode .tabbar{grid-template-columns:repeat(3,1fr)}
 .acct-menu-mod{padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px}
 .acct-menu-mod small{display:block;color:var(--muted);font-size:12px}
+.mod-mode .demo-bar,.mod-mode #topSearch,.mod-mode .subnav,.mod-mode #cartBtn,.mod-mode .tabbar,.mod-mode footer,.mod-mode .crumbs,.mod-mode .acct-chev{display:none!important}
+.mod-mode .top{background:#16293A;border-bottom:0}
+.mod-mode .top img[data-logo="bleu"]{filter:brightness(0) invert(1)}
+.mod-mode .head{justify-content:flex-start}
+.mod-mode .head .actions{margin-left:auto}
+.mod-pill{align-self:center;background:rgba(168,196,216,.18);color:#DCEAF3;border:1px solid rgba(168,196,216,.4);border-radius:99px;padding:5px 12px;font-size:12.5px;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.mod-mode .mod-pill{display:inline-block!important}
+.mod-mode .acct-btn{color:#fff}
+.mod-mode .acct-name{color:#fff}
+.avatar.mod-av{background:#A8C4D8;color:#16293A;display:grid;place-items:center}
+.avatar.mod-av .icon{width:58%;height:58%}
+.mod-mode .mod-head{background:#16293A;color:#E6EEF4;box-shadow:none}
+.mod-mode .mod-head h2{color:#fff}
+.mod-mode .mod-head .mod-badge{background:#A8C4D8;color:#16293A}
+.mod-search{margin-bottom:12px}
+/* Recadrage photo de profil / bannière */
+body.crop-open{overflow:hidden}
+.crop-backdrop{position:fixed;inset:0;z-index:300;background:rgba(10,22,34,.6);display:grid;place-items:center;padding:16px}
+.crop{background:var(--surface);color:var(--ink);border-radius:20px;width:min(620px,100%);padding:18px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.crop-head{display:flex;align-items:center;justify-content:space-between}
+.crop-head h2{margin:0;font-size:18px;color:var(--heading)}
+.crop-x{width:40px;height:40px;border-radius:50%;border:0;background:var(--ice);color:var(--heading);font-size:22px;line-height:1;cursor:pointer}
+.crop-tip{margin:6px 0 14px;color:var(--muted);font-size:13.5px}
+.crop-frame{position:relative;overflow:hidden;width:100%;max-height:60dvh;margin:0 auto;border-radius:14px;background:#0d1a26;cursor:grab;touch-action:none;user-select:none}
+.crop-frame.round{width:min(100%,340px);border-radius:50%;box-shadow:0 0 0 4px var(--pale)}
+.crop-frame.dragging{cursor:grabbing}
+.crop-frame:focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+.crop-frame img{position:absolute;left:0;top:0;max-width:none;pointer-events:none;transform-origin:0 0}
+.crop-zoom{display:flex;align-items:center;gap:10px;margin:16px auto 0;max-width:420px}
+.crop-zoom input{flex:1;accent-color:var(--navy)}
+.crop-z{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--heading);font-size:20px;font-weight:700;cursor:pointer}
+.crop-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+@media (max-width:600px){.crop-backdrop{padding:0;place-items:end stretch}.crop{border-radius:20px 20px 0 0}.crop-foot .btn{flex:1}}
+@media (max-width:600px){.mod-pill{font-size:11px;padding:4px 9px}.mod-mode .acct-name{display:none}}
 .mod-head{display:flex;gap:14px;align-items:flex-start;background:var(--ice);border-radius:20px;padding:18px 20px;box-shadow:var(--ring)}
 .mod-head h2{margin:0 0 4px;font-size:20px;color:var(--heading)}
 .mod-head p{margin:0}
@@ -788,6 +822,7 @@ body{transition:background .2s ease,color .2s ease}
 <header class="top">
   <div class="wrap head">
     <a href="#/" class="logo" aria-label="Revoo, retour à l’accueil"><img src="logos/revoo-logo.png" data-logo="bleu" alt="Revoo" width="480" height="149"></a>
+    <span class="mod-pill mod-only" aria-hidden="true">Console de modération</span>
     <form class="search" id="topSearch" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <label for="searchInput" class="sr-only">Rechercher des vêtements</label>
@@ -1445,7 +1480,9 @@ function moderationHtml(){
     <div class="panel"><h2>À traiter (${nouveaux.length})</h2>${nouveaux.length?nouveaux.map(row).join(""):`<p class="muted">Aucun nouveau signalement.</p>`}</div>
     ${mod.reports.length>nouveaux.length?`<div class="panel"><h2>Historique</h2>${mod.reports.filter(r=>r.status!=="nouveau").map(row).join("")}</div>`:""}`;
 }
-let modTab="atraiter";
+const rbNorm2=t=>(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+let modTab="atraiter",modQuery="";
+const MOD_SHIELD=`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>`;
 function modRow(r){const l=r.listings;const img=(l?.photos||[])[0]||"";
   return `<div class="listing-row">
     <a class="image-frame" href="#/article/${encodeURIComponent(r.listing_id)}">${img?`<img data-safe-image src="${esc(img)}" alt="">`:""}</a>
@@ -1463,7 +1500,8 @@ function renderModeration(el){
   $("accountTitle").textContent="Espace modération";
   const todo=mod.reports.filter(r=>r.status==="nouveau"), done=mod.reports.filter(r=>r.status!=="nouveau");
   const removed=state.remote.filter(p=>p.status==="removed"), disputes=(typeof orders!=="undefined"?orders.all:[]).filter(o=>o.status==="problem");
-  const tabs=[["atraiter","À traiter",todo.length],["retirees","Annonces retirées",removed.length],...(payOn()?[["litiges","Litiges",disputes.length]]:[]),["historique","Historique",done.length]];
+  const online=state.remote.filter(p=>p.status!=="removed");
+  const tabs=[["atraiter","À traiter",todo.length],["enligne","Annonces en ligne",online.length],["retirees","Annonces retirées",removed.length],...(payOn()?[["litiges","Litiges",disputes.length]]:[]),["historique","Historique",done.length]];
   if(!tabs.some(t=>t[0]===modTab))modTab="atraiter";
   let body="";
   if(!mod.loaded)body=`<p class="muted">Chargement…</p>`;
@@ -1471,9 +1509,12 @@ function renderModeration(el){
   else if(modTab==="historique")body=done.length?`<div class="panel">${done.map(modRow).join("")}</div>`:`<div class="empty"><p>Aucun signalement traité pour le moment.</p></div>`;
   else if(modTab==="retirees")body=removed.length?`<div class="panel">${removed.map(p=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><h3>${esc(p.name)}</h3><p>${eur(p.price)} · vendeur : @${esc(p.seller)}</p><p><span class="status">Retirée par la modération</span></p></div><div class="row-actions"><button type="button" class="btn btn-outline" data-mod="restore" data-listing="${p.id}">Remettre en ligne</button></div></div>`).join("")}</div>`:`<div class="empty"><p>Aucune annonce retirée.</p></div>`;
   else if(modTab==="litiges")body=disputesHtml();
+  else if(modTab==="enligne"){const q=rbNorm2(modQuery),list=online.filter(p=>!q||rbNorm2(`${p.name} ${p.brand||""} ${p.seller||""}`).includes(q));
+    body=`<div class="mod-search"><label for="modQ" class="sr-only">Rechercher une annonce, une marque ou un vendeur</label><input class="input" id="modQ" type="search" placeholder="Rechercher une annonce, une marque ou un vendeur" value="${esc(modQuery)}"></div>`+
+    (list.length?`<div class="panel">${list.slice(0,100).map(p=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><h3>${esc(p.name)}</h3><p>${eur(p.price)} · vendeur : <a href="#/vendeur/${esc(p.sellerId)}">@${esc(p.seller)}</a></p></div><div class="row-actions"><a class="btn btn-outline" href="#/article/${encodeURIComponent(p.id)}">Voir</a><button type="button" class="btn btn-danger" data-mod="remove" data-listing="${p.id}">Retirer</button></div></div>`).join("")}</div>`:`<div class="empty"><p>Aucune annonce trouvée.</p></div>`)}
   el.innerHTML=`<div class="mod-head">
-      <span class="mod-badge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
-      <div><h2>Compte modérateur</h2><p class="muted small">Ce compte sert uniquement à la modération : il ne peut ni vendre, ni acheter, ni écrire aux membres. Pour consulter une annonce, utilise la recherche ou « Explorer », puis agis directement depuis l’annonce.</p></div>
+      <span class="mod-badge">${MOD_SHIELD}</span>
+      <div><h2>Console de modération</h2><p class="small">Ce compte sert uniquement à la modération de Revoo. Il n’a ni profil public, ni annonces, ni achats, ni messages.</p></div>
     </div>
     <div class="mod-stats">${tabs.map(([k,l,n])=>`<button type="button" data-modtab="${k}" aria-pressed="${modTab===k}"><b>${n}</b><span>${l}</span></button>`).join("")}</div>
     <div style="margin-top:18px">${body}</div>
@@ -1485,6 +1526,7 @@ function renderModeration(el){
       </form>
     </details>`;
   el.querySelectorAll("[data-modtab]").forEach(b=>b.addEventListener("click",()=>{modTab=b.dataset.modtab;renderModeration(el)}));
+  const mq=$("modQ");if(mq)mq.addEventListener("input",()=>{modQuery=mq.value;clearTimeout(mq._t);mq._t=setTimeout(()=>{renderModeration(el);const n=$("modQ");n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)});
   watchImages(el);
 }
 async function moderate(action,reportId,listingId){
@@ -1941,7 +1983,7 @@ function renderProduct(id){
   const photos=(p.photos&&p.photos.length?p.photos:[p.img]);
   const similar=available().filter(x=>x.id!==p.id&&(x.category===p.category||x.style===p.style)).slice(0,5);
   let actions;
-  if(state.user&&state.isAdmin) actions=p.demo?`<p class="note small">Article de démonstration : aucune action de modération possible.</p>`:`<div class="mod-actions"><span class="mod-badge small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><b>Modération</b><div class="buy-actions" style="margin-top:8px">${p.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-listing="${esc(p.id)}">Remettre en ligne</button>`:`<button type="button" class="btn btn-danger" data-mod="remove" data-listing="${esc(p.id)}">Retirer l’annonce</button>`}<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Profil du vendeur</a></div></div>`;
+  if(state.user&&state.isAdmin) actions=p.demo?`<p class="note small">Article de démonstration : aucune action de modération possible.</p>`:`<div class="mod-actions"><span class="mod-badge small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><b>Modération</b><div class="buy-actions" style="margin-top:8px">${p.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-listing="${esc(p.id)}">Remettre en ligne</button>`:`<button type="button" class="btn btn-danger" data-mod="remove" data-listing="${esc(p.id)}">Retirer l’annonce</button>`}<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Profil du vendeur</a><a class="btn btn-outline" href="#/compte/moderation">Retour à la console</a></div></div>`;
   else if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions"><a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
@@ -2147,7 +2189,7 @@ function renderAccount(tab){
           <label for="bannerInput" class="btn btn-outline">${state.user.banner?"Changer la bannière":"Ajouter une bannière"}</label>
           <input id="bannerInput" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">
           ${state.user.banner?`<button type="button" class="link small" id="bannerRemove">Retirer la bannière</button>`:""}
-          <p class="hint" style="margin:6px 0 0">Format paysage conseillé (par exemple 1500 × 500). L’image est recadrée automatiquement.</p><span class="error" id="bannerErr"></span>
+          <p class="hint" style="margin:6px 0 0">Format paysage conseillé (par exemple 1500 × 500). Tu peux ensuite la déplacer et ajuster sa taille.</p><span class="error" id="bannerErr"></span>
         </div>`:""}
         ${state.user.v2?`<div class="avatar-edit">
           <span class="avatar avatar-xl" aria-hidden="true">${avatarInner(state.user.name,state.user.avatar)}</span>
@@ -2518,7 +2560,8 @@ function updateCounts(){
   $("messagesBtn").setAttribute("aria-label",`Messages (${chat.unread} non lu${chat.unread>1?"s":""})`);
   $("loginLabel").textContent="Se connecter";$("loginBtn").setAttribute("aria-label","Se connecter");
   $("loginBtn").hidden=!!state.user;$("acctWrap").hidden=!state.user;
-  if(state.user){const n=state.user.name;$("acctName").textContent=n;$("acctName2").textContent="@"+n;
+  if(state.user&&state.isAdmin){$("acctName").textContent="Modération";$("acctAv").innerHTML=MOD_SHIELD;$("acctAv").classList.add("mod-av");$("acctBtn").setAttribute("aria-label","Compte modérateur")}
+  else if(state.user){const n=state.user.name;$("acctName").textContent=n;$("acctName2").textContent="@"+n;$("acctAv").classList.remove("mod-av");
     $("acctAv").innerHTML=avatarInner(n,state.user.avatar);$("acctAv2").innerHTML=avatarInner(n,state.user.avatar);
     $("acctBtn").setAttribute("aria-label",`Mon compte (@${n})`);
     document.querySelector(".acct-menu-head").onclick=()=>{location.hash="#/vendeur/"+state.user.id;setAcctMenu(false)}}
@@ -2531,7 +2574,7 @@ function renderView(){
   let view="home";
   const isMod=!!(state.user&&state.isAdmin);
   document.body.classList.toggle("mod-mode",isMod);
-  if(isMod&&["vendre","panier","paiement","favoris","messages"].includes(name)){location.replace("#/compte/moderation");toast("Ce compte est réservé à la modération.");return}
+  if(isMod&&!["compte","article","vendeur"].includes(name)){if(["vendre","panier","paiement","favoris","messages"].includes(name))toast("Ce compte est réservé à la modération.");location.replace("#/compte/moderation");return}
   if(isMod&&name==="compte"&&arg!=="moderation"&&!(arg||"").startsWith("mod-")){location.replace("#/compte/moderation");return}
   if(name==="catalogue"){view="catalogue";renderCatalogue()}
   else if(name==="article"){view="product";renderProduct(arg)}
@@ -2692,13 +2735,46 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("acctMenu").hidd
 $("acctLogout").addEventListener("click",async()=>{setAcctMenu(false);await sb.auth.signOut();state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0;toast("Tu es déconnecté.");location.hash="#/";renderView()});
 
 /* Photo de profil */
-function squareAvatar(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error("image"));img.onload=()=>{const side=Math.min(img.width,img.height),S=400,c=document.createElement("canvas");c.width=c.height=S;const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,S,S);ctx.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,S,S);c.toBlob(b=>b?res(b):rej(new Error("blob")),"image/jpeg",.85)};img.src=r.result};r.readAsDataURL(file)})}
+/* Recadrage : déplacer l'image et ajuster le zoom avant l'envoi */
+function cropImage(file,o){return new Promise((resolve,reject)=>{
+  const r=new FileReader();r.onerror=()=>reject(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>reject(new Error("Impossible de lire cette image."));img.onload=()=>open(img);img.src=r.result};r.readAsDataURL(file);
+  function open(img){
+    document.body.insertAdjacentHTML("beforeend",`<div class="crop-backdrop" id="cropBox" role="dialog" aria-modal="true" aria-labelledby="cropTitle"><div class="crop">
+      <div class="crop-head"><h2 id="cropTitle">${o.title}</h2><button type="button" class="crop-x" id="cropX" aria-label="Annuler">×</button></div>
+      <p class="crop-tip">Fais glisser l’image pour la placer, puis ajuste la taille.</p>
+      <div class="crop-frame${o.round?" round":""}" id="cropFrame" style="aspect-ratio:${o.w}/${o.h}" tabindex="0" aria-label="Zone de cadrage. Utilise les flèches pour déplacer l’image."><img id="cropImg" src="${img.src}" alt="" draggable="false"></div>
+      <div class="crop-zoom"><button type="button" class="crop-z" id="cropMinus" aria-label="Réduire">−</button><label class="sr-only" for="cropRange">Taille</label><input type="range" id="cropRange" min="1" max="4" step="0.01" value="1"><button type="button" class="crop-z" id="cropPlus" aria-label="Agrandir">+</button></div>
+      <div class="crop-foot"><button type="button" class="btn btn-outline" id="cropCancel">Annuler</button><button type="button" class="btn btn-primary" id="cropOk">Valider</button></div>
+    </div></div>`);
+    document.body.classList.add("crop-open");
+    const fr=$("cropFrame"),im=$("cropImg"),rg=$("cropRange");let z=1,x=0,y=0,F={w:0,h:0},base=1;
+    const clamp=()=>{const sc=base*z,W=img.width*sc,H=img.height*sc;x=Math.min(0,Math.max(F.w-W,x));y=Math.min(0,Math.max(F.h-H,y))};
+    const draw=()=>{clamp();const sc=base*z;im.style.width=img.width*sc+"px";im.style.height=img.height*sc+"px";im.style.transform=`translate(${x}px,${y}px)`};
+    const measure=()=>{const b=fr.getBoundingClientRect(),ow=F.w||b.width,oh=F.h||b.height,cx=(F.w/2-x)/(base*z)||img.width/2,cy=(F.h/2-y)/(base*z)||img.height/2;F={w:b.width,h:b.height};base=Math.max(F.w/img.width,F.h/img.height);x=F.w/2-cx*base*z;y=F.h/2-cy*base*z;draw()};
+    const zoomTo=nz=>{nz=Math.min(4,Math.max(1,nz));const cx=(F.w/2-x)/(base*z),cy=(F.h/2-y)/(base*z);z=nz;x=F.w/2-cx*base*z;y=F.h/2-cy*base*z;rg.value=z;draw()};
+    measure();window.addEventListener("resize",measure);
+    let drag=null;
+    fr.addEventListener("pointerdown",e=>{drag={px:e.clientX,py:e.clientY,x,y};fr.setPointerCapture(e.pointerId);fr.classList.add("dragging")});
+    fr.addEventListener("pointermove",e=>{if(!drag)return;x=drag.x+e.clientX-drag.px;y=drag.y+e.clientY-drag.py;draw()});
+    const up=()=>{drag=null;fr.classList.remove("dragging")};fr.addEventListener("pointerup",up);fr.addEventListener("pointercancel",up);
+    fr.addEventListener("wheel",e=>{e.preventDefault();zoomTo(z*(e.deltaY<0?1.08:1/1.08))},{passive:false});
+    fr.addEventListener("keydown",e=>{const k={ArrowLeft:[10,0],ArrowRight:[-10,0],ArrowUp:[0,10],ArrowDown:[0,-10]}[e.key];if(k){e.preventDefault();x+=k[0];y+=k[1];draw()}});
+    rg.addEventListener("input",()=>zoomTo(+rg.value));
+    $("cropMinus").onclick=()=>zoomTo(z-.25);$("cropPlus").onclick=()=>zoomTo(z+.25);
+    const close=v=>{window.removeEventListener("resize",measure);document.removeEventListener("keydown",esc);$("cropBox").remove();document.body.classList.remove("crop-open");resolve(v)};
+    const esc=e=>{if(e.key==="Escape")close(null)};document.addEventListener("keydown",esc);
+    $("cropX").onclick=$("cropCancel").onclick=()=>close(null);
+    $("cropOk").onclick=()=>{const sc=base*z,c=document.createElement("canvas");c.width=o.w;c.height=o.h;const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,o.w,o.h);
+      ctx.imageSmoothingQuality="high";ctx.drawImage(img,-x/sc,-y/sc,F.w/sc,F.h/sc,0,0,o.w,o.h);c.toBlob(b=>{if(b)close(b);else{close(null);toast("Impossible de préparer l’image.")}},"image/jpeg",o.q||.85)};
+    setTimeout(()=>fr.focus(),50);
+  }
+})}
 async function setAvatar(file){
   const err=$("avatarErr");if(err)err.textContent="";
   try{
     let url=null;
     if(file){if(!file.type.startsWith("image/"))throw new Error("Choisis une image (JPG, PNG ou WebP).");
-      const blob=await squareAvatar(file),path=`${state.user.id}/avatar-${Date.now()}.jpg`;
+      const blob=await cropImage(file,{title:"Ajuster la photo de profil",w:400,h:400,round:true});if(!blob)return;const path=`${state.user.id}/avatar-${Date.now()}.jpg`;
       const up=await sb.storage.from("avatars").upload(path,blob,{contentType:"image/jpeg",upsert:false});if(up.error)throw up.error;
       url=sb.storage.from("avatars").getPublicUrl(path).data.publicUrl}
     const old=state.user.avatar;
@@ -2707,13 +2783,12 @@ async function setAvatar(file){
     state.user.avatar=url||"";await loadListings();toast(url?"Photo de profil mise à jour.":"Photo retirée.");renderView();
   }catch(e){if(err)err.textContent=e.message&&!e.code?e.message:frenchError(e)}
 }
-function wideBanner(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error("image"));img.onload=()=>{const W=1500,H=500,ratio=W/H;let sw=img.width,sh=img.width/ratio;if(sh>img.height){sh=img.height;sw=sh*ratio}const c=document.createElement("canvas");c.width=W;c.height=H;c.getContext("2d").drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,W,H);c.toBlob(b=>b?res(b):rej(new Error("blob")),"image/jpeg",.82)};img.src=r.result};r.readAsDataURL(file)})}
 async function setBanner(file){
   const err=$("bannerErr");if(err)err.textContent="";
   try{
     let url=null;
     if(file){if(!file.type.startsWith("image/"))throw new Error("Choisis une image (JPG, PNG ou WebP).");
-      const blob=await wideBanner(file),path=`${state.user.id}/banner-${Date.now()}.jpg`;
+      const blob=await cropImage(file,{title:"Ajuster la bannière",w:1500,h:500,q:.82});if(!blob)return;const path=`${state.user.id}/banner-${Date.now()}.jpg`;
       const up=await sb.storage.from("avatars").upload(path,blob,{contentType:"image/jpeg",upsert:false});if(up.error)throw up.error;
       url=sb.storage.from("avatars").getPublicUrl(path).data.publicUrl}
     const old=state.user.banner;
