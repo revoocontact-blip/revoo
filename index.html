@@ -1759,6 +1759,7 @@ html[data-design="2"][data-theme="light"] .mod-pill{background:#E3EDF4;color:#16
 :root[data-theme="dark"] .fiche-head.banned,:root[data-theme="dark"] .fiche-signals .bad{background:#3A1E22;border-color:#6B3036}
 :root[data-theme="dark"] .fiche-signals .bad b{color:#F6B8B8}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fiche-head.banned,:root:not([data-theme="light"]) .fiche-signals .bad{background:#3A1E22;border-color:#6B3036}:root:not([data-theme="light"]) .fiche-signals .bad b{color:#F6B8B8}}
+.rb-code{font-family:ui-monospace,Menlo,monospace;letter-spacing:.12em;font-size:1.1em}
 </style>
 </head>
 <body>
@@ -4598,7 +4599,7 @@ function userSay(text){const d=document.createElement("div");d.className="msg us
 let chatStarted=false;
 function openChat(open){
   const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);
-  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Reboot.</b> 👋</p><p>Je peux trouver un vêtement pour toi (essaie « pull taille M moins de 20 € »), t’expliquer le fonctionnement de Revoo ou te donner des conseils pour vendre. Que souhaites-tu faire ?</p>`)}setTimeout(()=>$("chatMessage").focus(),50)}
+  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Reboot.</b></p><p>Je peux trouver un vêtement pour toi (essaie « pull taille M moins de 20 € »), t’expliquer le fonctionnement de Revoo, et regarder ton compte : où en est ta commande, ton code de remise, tes échanges, ton solde…</p>${state.user&&payOn()?ask("Où en est ma commande ?","Mon code de remise","Mes échanges"):ask("Comment ça marche ?","Trouver un vêtement","Vendre un article")}`)}setTimeout(()=>$("chatMessage").focus(),50)}
   else $("rebootBtn").focus();
 }
 $("rebootBtn").addEventListener("click",()=>openChat(!$("chat").classList.contains("open")));
@@ -4687,7 +4688,7 @@ const RB_ABBR={sa:"ca",frai:"frais",fré:"frais",fre:"frais",foto:"photo",fotos:
   annonces:"annonce",photos:"photo",pics:"photo",trucs:"article",truc:"article",articles:"article",fringuer:"vetement",
   achete:"acheter",achat:"acheter",vente:"vendre",vends:"vendre",vend:"vendre",vendu:"vendre",livre:"livraison",livrer:"livraison",livraisons:"livraison",
   login:"connexion",connecte:"connexion",inscrire:"inscription",inscris:"inscription",sinscrire:"inscription"};
-const RB_VOCAB="abonnement abonnements abonne resilier resiliation formule formules premium ultra reprendre identifiant avatar bio vacances solde apparence parametre parametres bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot revoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange".split(" ");
+const RB_VOCAB="abonnement abonnements abonne resilier resiliation formule formules premium ultra reprendre identifiant avatar bio vacances solde apparence parametre parametres bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot revoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange suspendu suspension avertissement litige remboursement rembourse annuler annulation code echanger echanges complement debloquer delai prolonger regles moderation bloque retiree refusee maintenance main achat achats ventes".split(" ");
 const RB_VSET=new Set(RB_VOCAB);
 const RB_KEEP4=new Set("mais veux peux sais fais fait avec pour dans sans tout tous bien tres plus elle nous vous leur quoi quel faut doit dois sont suis avez etes sera mois jour cela ceci voir vois dire dit lien site page code cool trop vite deja aussi fois oui non moi toi lui eux mien tien tant donc meme ici quoi part fini bout coin haut gros fort beau vrai faux aide sale chat chez vers avant hier noel".split(" "));
 const RB_KEEP=new Set("quand comme alors aussi encore jamais toute toutes cette celle celui ceux elles leurs quelle quels quelles savoir trouve trouver cherche chercher besoin envie voudrais pourrais pouvez pourquoi mettre prendre donner depuis avant apres semaine couleur faire peux veux peut veut votre notre vraiment maintenant comment autre autres combien merci bonjour salut moins plus entre chez vers sans avec pour dans sous mais rien tout tous etre avoir suis sont avez faut fallait doit dois sait sais connais aimer adore aime marche marcher tester essaye essayer bonne petite petit grand grande taille ensemble quelque chose aider pense crois question reponse simple facile rapide gros grosse jolie joli beau belle".split(" "));
@@ -4718,7 +4719,7 @@ function parseSearch(t){
   const sz=t.match(/(?:taille|en)\s+(xxl|xl|xs|s|m|l|\d{1,2}\s*ans)\b/)||t.match(/\b(xxl|xl|xs)\b/);if(sz)f.sizes=[/ans/.test(sz[1])?sz[1].replace(/\s*ans/," ans"):sz[1].toUpperCase()];
   const st=STYLES.find(s=>words.includes(norm(s)));if(st)f.style=st;
   if(/pas cher|moins cher|petit prix|bon marche/.test(t))f.sort="prix-asc";
-  const skip=new Set(["femme","femmes","homme","hommes","enfant","enfants","unisexe","taille","en","cher","marche","petit","euros","euro","article","dispo","disponible","combien","coute","coutent","voir","montre","montrer","donne","propose","quel","quels","quelle","quelles","ya","il","as","avez","t","un","une","pas",...(sz?sz[1].split(/\s+/):[]),...(st?[norm(st)]:[])]);
+  const skip=new Set(["acheter","achete","achat","trouver","cherche","veux","voudrais","aimerais","femme","femmes","homme","hommes","enfant","enfants","unisexe","taille","en","cher","marche","petit","euros","euro","article","dispo","disponible","combien","coute","coutent","voir","montre","montrer","donne","propose","quel","quels","quelle","quelles","ya","il","as","avez","t","un","une","pas",...(sz?sz[1].split(/\s+/):[]),...(st?[norm(st)]:[])]);
   f.q=words.filter(w=>w.length>1&&!STOP.has(w)&&!skip.has(w)&&!/^\d+$/.test(w)&&!/^(xxl|xl|xs|s|m|l)$/.test(w)).join(" ");
   return f;
 }
@@ -4752,7 +4753,7 @@ function rbIntent(c){
   const priceQ=/combien|prix|coute|dispo|disponible|il y a|ya|avez|as tu|cherche|veux|voudrais|montre|trouve/.test(c);
   const sellProcess=/vendre|annonce|photo|entretien|laver|emballer|envoyer|guide|rediger|description|estime|fixe|a quel prix|combien vendre|mettre en vente/.test(c);
   const looksLikeSearch=/(taille|en) (xxl|xl|xs|s|m|l|\d)\b|\b(xxl|xl|xs)\b|moins de \d|sous \d|\d+ euros|pas cher|petit prix/.test(c)||(KB_ARTICLE.test(c)&&!sellProcess&&(priceQ||c.split(" ").length<=4));
-  if(!looksLikeSearch)for(const [re,fn] of KB){if(re.test(c)){const r=fn(c);if(r)return r}}
+  if(!looksLikeSearch)for(const [re,fn] of [...KB_NOW,...KB]){if(re.test(c)){const r=fn(c);if(r)return r}}
   const f=parseSearch(c);
   if(f.category||f.max||f.min||f.sizes||f.style||f.sort||(f.q&&KB_ARTICLE.test(f.q)))return searchAnswer(f);
   if(f.q&&available().some(p=>matchesQuery(p,f.q)))return searchAnswer(f);
@@ -4771,6 +4772,108 @@ function rbFollowUp(c){
   if(f.q&&KB_ARTICLE.test(f.q))nf.q=f.q;
   return searchAnswer(nf);
 }
+/* ---------- Reboot personnel : répond avec les vraies infos du membre connecté ---------- */
+const rbLinks=(...l)=>`<div class="reboot-next">${l.map(([h,t])=>`<a class="pill" href="${h}">${t}</a>`).join("")}</div>`;
+function rbOrderLine(o){
+  const me=state.user.id,buyer=o.buyer_id===me,mp=o.delivery==="main_propre",code=orders.codes[o.id];
+  const dl=o.handoff_deadline?` avant le <b>${fmtDT(o.handoff_deadline)}</b>`:"";
+  let next="";
+  if(o.status==="paid")next=buyer?(mp?`Rendez-vous${dl}. Vérifie l’article, puis donne ton code${code?` <b>${esc(code)}</b>`:""} au vendeur.`:"Le vendeur doit maintenant envoyer le colis."):(mp?`Rendez-vous${dl}. Demande le code à 6 chiffres à l’acheteur et saisis-le dans « Mes ventes ».`:"Envoie le colis puis indique le numéro de suivi dans « Mes ventes ».");
+  else if(o.status==="shipped")next=buyer?`Colis envoyé${o.tracking?` (suivi <b>${esc(o.tracking)}</b>)`:""}. À réception, clique « J’ai bien reçu l’article » ou signale un problème.`:"En attente de la confirmation de l’acheteur.";
+  else if(o.status==="problem")next="Litige en cours : l’équipe Revoo examine la situation et tranchera.";
+  else if(o.status==="cancelled")next=o.refund_due_at?`Annulée. Remboursement de l’acheteur avant le <b>${fmtDT(o.refund_due_at)}</b>.`:"Annulée.";
+  else if(o.status==="received")next=buyer?"Terminée. Tu peux laisser un avis.":"Terminée : l’argent est disponible.";
+  return `• <b>${esc(o.title)}</b> (${buyer?"achat":"vente"}, ${eur(Number(o.price))}) — ${next}`;
+}
+function rbPersonal(c){
+  const mine=/\b(mon|ma|mes|j ai|je|moi|m a|m ont|me)\b/.test(c);
+  const needLogin=()=>`<p>Connecte-toi pour que je regarde ton compte.</p>${rbLinks(["#/compte","Me connecter"])}`;
+  // Suspension, avertissements
+  if(/suspendu|suspension|banni|\bban\b|bloque|avertissement|sanction|message de l equipe|(peux|arrive) (pas|plus) (a )?(publier|vendre|ecrire|acheter|envoyer)/.test(c)){
+    if(!state.user)return needLogin();
+    const n=team.notices||[];
+    if(team.ban)return `<p>Ton compte est <b>suspendu${team.ban.until?` jusqu’au ${fmtDT(team.ban.until)}`:" définitivement"}</b>.</p><p>Motif : ${esc(team.ban.reason)}</p><p>Pendant la suspension, tu ne peux ni publier, ni écrire, ni acheter. Tes achats et ventes déjà payés restent protégés. Si tu penses que c’est une erreur, écris à <b>${LEGAL.email}</b>.</p>`;
+    if(n.length)return `<p>Ton compte n’est pas suspendu. Derniers messages de l’équipe :</p><p>${n.slice(0,3).map(x=>`• ${esc(x.message)} <small class="muted">(${fmtD(x.created_at)})</small>`).join("<br>")}</p>${rbLinks(["#/compte","Voir dans Mon compte"])}`;
+    if(/publier|vendre/.test(c)&&site.settings&&site.settings.pause_listings)return `<p>Les nouvelles annonces sont <b>en pause quelques instants</b> à la demande de l’équipe Revoo. Réessaie un peu plus tard.</p>`;
+    if(/avertissement|sanction|suspen|banni|ban/.test(c))return `<p>Bonne nouvelle : ton compte n’a <b>aucune suspension</b> ni avertissement.</p><p>Pour info : en cas d’écart (arnaque, insultes, annonce trompeuse), l’équipe envoie d’abord un avertissement, puis peut suspendre 1, 7 ou 30 jours, ou définitivement en cas de fraude grave. Le membre est toujours prévenu, avec le motif.</p>`;
+    return null;
+  }
+  // Annonce refusée / retirée
+  if(/(annonce|article).*(refus|retire|supprime|disparu|masque|bloque|n apparait|plus visible)|(refus|retire|disparu).*(annonce|article)|mot (interdit|non autorise)|n arrive pas a publier/.test(c)){
+    const out=[];
+    if(state.user){
+      const rem=state.remote.filter(x=>x.mine&&x.status==="removed");
+      if(rem.length)out.push(`<p>${rem.length>1?"Ces annonces ont été retirées":"Cette annonce a été retirée"} par la modération : ${rem.slice(0,3).map(x=>`<b>${esc(x.name)}</b>`).join(", ")}. Elle ne respectait pas les règles (signalement vérifié). Pour en savoir plus, écris à <b>${LEGAL.email}</b>.</p>`);
+      if(state.user.vacation)out.push(`<p>Ton <b>mode vacances</b> est activé : tes annonces sont masquées pour les autres. Désactive-le dans Mon compte › Profil et paramètres.</p>`);
+      if(team.ban)out.push(`<p>Ton compte est suspendu : tes annonces ont été retirées.</p>`);
+    }
+    if(site.settings&&site.settings.pause_listings)out.push(`<p>Les nouvelles annonces sont <b>en pause</b> pour quelques instants à la demande de l’équipe.</p>`);
+    out.push(`<p>Une annonce peut être refusée si elle contient un <b>mot interdit</b> (contrefaçon, réplique…), si elle n’est pas un vêtement, ou au-delà de 50 annonces par jour. Le message d’erreur indique toujours la raison : corrige puis réessaie.</p>`);
+    return out.join("")+rbLinks(["#/compte/annonces","Mes annonces"]);
+  }
+  if(!payOn())return null;
+  // Code de remise en main propre
+  if(/\bcode\b/.test(c)&&/(mon|le|quel|ou|donne|perdu|6|six|remise|main propre|rendez)/.test(c)){
+    if(!state.user)return needLogin();
+    const os=orders.mine.filter(o=>o.buyer_id===state.user.id&&o.status==="paid"&&o.delivery==="main_propre");
+    const sells=orders.mine.filter(o=>o.seller_id===state.user.id&&o.status==="paid"&&o.delivery==="main_propre");
+    if(os.length)return `<p>Ton code de remise en main propre${os.length>1?" (un par achat)":""} :</p><p>${os.map(o=>`• <b>${esc(o.title)}</b> : <b class="rb-code">${esc(orders.codes[o.id]||"visible dans Mes achats")}</b>`).join("<br>")}</p><p><b>Important :</b> donne-le au vendeur <b>seulement après avoir vérifié l’article</b>. Une fois le code saisi, la vente est terminée et l’argent versé.</p>${rbLinks(["#/compte/achats","Mes achats"])}`;
+    if(sells.length)return `<p>C’est l’<b>acheteur</b> qui a le code. Au rendez-vous, il vérifie l’article puis te le donne : saisis-le dans <b>Mes ventes</b> pour être payé. Après 5 codes faux, la saisie est bloquée par sécurité.</p>${rbLinks(["#/compte/ventes","Mes ventes"])}`;
+    return `<p>Tu n’as aucune remise en main propre en cours. Le code à 6 chiffres apparaît dans <b>Mes achats</b> dès que tu paies un article en main propre.</p>`;
+  }
+  // Commandes
+  if(!/annul/.test(c)&&(/(mon|ma|mes|mon dernier|ma derniere) (commande|achat|acheter|vente|colis|paquet|article)/.test(c)||(/(commande|colis|paquet)/.test(c)&&/ou en est|statut|suivi|quand|arrive|recu|envoye/.test(c)))){
+    if(!state.user)return needLogin();
+    const cur=orders.mine.filter(o=>["paid","shipped","problem"].includes(o.status));
+    const recent=orders.mine.filter(o=>o.status==="cancelled"&&o.refund_due_at&&Date.parse(o.refund_due_at)>Date.now());
+    const list=[...cur,...recent].slice(0,4);
+    if(!list.length)return `<p>Tu n’as aucune commande en cours.${orders.mine.length?` Ton historique complet est dans Mes achats et Mes ventes.`:""}</p>${rbLinks(["#/compte/achats","Mes achats"],["#/compte/ventes","Mes ventes"])}`;
+    return `<p>Voici où en ${list.length>1?"sont tes commandes":"est ta commande"} :</p><p>${list.map(rbOrderLine).join("<br>")}</p>${rbLinks(["#/compte/achats","Mes achats"],["#/compte/ventes","Mes ventes"])}`;
+  }
+  // Remboursement
+  if(/rembours/.test(c)&&mine){
+    if(!state.user)return needLogin();
+    const r=orders.mine.filter(o=>o.buyer_id===state.user.id&&o.status==="cancelled");
+    if(r.length)return `<p>${r.slice(0,3).map(o=>`• <b>${esc(o.title)}</b> : annulée${o.refund_due_at?`, remboursement avant le <b>${fmtDT(o.refund_due_at)}</b>`:""}.`).join("<br>")}</p><p>Le remboursement arrive au plus tard 48 h après l’annulation, sur le moyen de paiement utilisé.</p>`;
+    return `<p>Tu n’as aucun remboursement en cours. Un achat annulé (par toi, le vendeur, le délai dépassé ou l’équipe) est remboursé <b>sous 48 h maximum</b>.</p>`;
+  }
+  // Échanges
+  if(/echang|troc/.test(c)&&(mine||/debloqu|pourquoi|bloque|verrouill|peux pas|ou en est/.test(c))){
+    if(!state.user)return needLogin();
+    const n=purchasesDone();
+    if(n<TRADE_UNLOCK&&/debloqu|pourquoi|bloque|verrouill|peux pas|acces/.test(c))return `<p>L’échange se débloque après <b>${TRADE_UNLOCK} achats terminés</b> sur Revoo (pour éviter les faux comptes). Tu en as <b>${n}</b> : encore ${TRADE_UNLOCK-n} !</p>`;
+    const cur=trades.list.filter(t=>["proposed","accepted","problem"].includes(t.status));
+    if(!cur.length)return `<p>Tu n’as aucun échange en cours.${n<TRADE_UNLOCK?` Les échanges se débloquent après ${TRADE_UNLOCK} achats terminés (tu en as ${n}).`:" Pour en proposer un, ouvre l’annonce qui te plaît et clique sur « Proposer un échange »."}</p>`;
+    return `<p>Tes échanges en cours :</p><p>${cur.slice(0,4).map(t=>{const meP=t.proposer_id===state.user.id,give=meP?t.offered_title:t.wanted_title,get=meP?t.wanted_title:t.offered_title;
+      const st=t.status==="proposed"?(t.turn===state.user.id?"<b>à toi de répondre</b>":"en attente de l’autre membre"):t.status==="problem"?"problème signalé, l’équipe examine":"accepté : envoyez vos colis avec suivi, puis 48 h pour vérifier";
+      return `• ${esc(give)} ⇄ ${esc(get)} — ${st}`}).join("<br>")}</p>${rbLinks(["#/compte/echanges","Mes échanges"])}`;
+  }
+  // Solde
+  if(/solde|porte.?monnaie|mon argent|combien j ai (gagne|vendu)|quand (je suis|serai) paye|etre paye/.test(c)){
+    if(!state.user)return needLogin();
+    const w=walletTotals();
+    return `<p>Ton porte-monnaie : <b>${eur(w.ready)}</b> disponible${w.pending?` et <b>${eur(w.pending)}</b> en attente (ventes pas encore terminées)`:""}.</p><p>L’argent d’une vente devient disponible quand l’acheteur confirme la réception (ou saisit le code en main propre).</p>${rbLinks(["#/compte/portemonnaie","Mon porte-monnaie"])}`;
+  }
+  // Délai de rendez-vous
+  if(/delai|prolong|rendez.?vous.*(rate|retard|plus tard|decal)/.test(c)){
+    const d=state.user?myPerk("handoff"):7;
+    return `<p>Après le paiement, vous avez <b>7 jours</b> pour la remise en main propre. Si besoin, l’acheteur ou le vendeur peut <b>prolonger</b> depuis la commande (jusqu’à ${d} jours en plus${state.user?" avec ta formule":""}). Sans rendez-vous à temps, la vente est annulée et l’acheteur remboursé sous 48 h.</p>${state.user?rbLinks(["#/compte/achats","Mes achats"],["#/compte/ventes","Mes ventes"]):""}`;
+  }
+  return null;
+}
+/* Connaissances sur les fonctions actuelles (paiement protégé, main propre, échanges, modération) */
+const KB_NOW=[
+  [/main propre|rendez.?vous|en personne|se voir/, ()=>payOn()?`<p><b>La remise en main propre sécurisée</b> :</p><p>1. L’acheteur <b>paie sur Revoo</b> avant le rendez-vous : l’argent est bloqué.<br>2. Il reçoit un <b>code à 6 chiffres</b>.<br>3. Au rendez-vous (lieu public, en journée), il vérifie l’article puis donne le code.<br>4. Le vendeur saisit le code : la vente est terminée et il est payé.</p><p>Rendez-vous à faire sous 7 jours (prolongeable). L’acheteur peut annuler avant : remboursé sous 48 h.</p>`:null],
+  [/echang|troc|complement/, ()=>payOn()?`<p><b>L’échange Revoo</b> : propose un de tes vêtements contre celui d’un autre membre, avec un <b>complément d’argent</b> si besoin (négociable).</p><p>• Débloqué après <b>${TRADE_UNLOCK} achats</b> terminés.<br>• Une fois accepté, chacun envoie son colis <b>avec suivi</b>.<br>• Après réception du dernier colis, vous avez <b>48 h</b> pour vérifier ou signaler un problème.<br>• Un colis non confirmé 14 jours après l’envoi compte comme reçu.</p>`:null],
+  [/litige|pas recu|jamais recu|pas conforme|abime|probleme (avec|de) (ma|la|mon)|arnaque/, ()=>payOn()?`<p>En cas de problème avec un achat Revoo Pay :</p><p>1. Ne confirme pas la réception.<br>2. Clique sur <b>« Signaler un problème »</b> dans Mes achats et explique ce qui ne va pas.<br>3. L’argent reste bloqué. L’équipe Revoo regarde la commande et vos messages, puis tranche : <b>remboursement</b> de l’acheteur ou paiement du vendeur.</p><p>Garde toujours vos échanges dans la messagerie Revoo : c’est ce qui sert de preuve.</p>${rbLinks(["#/compte/achats","Mes achats"])}`:null],
+  [/revoo ?pay|paiement (protege|integre|securise)|comment (ca se paie|payer)|argent bloque/, ()=>payOn()?`<p><b>Revoo Pay</b> protège l’acheteur et le vendeur : tu paies sur Revoo, l’argent est <b>bloqué</b> jusqu’à la réception (ou la saisie du code en main propre), puis versé au vendeur. Frais : ${eur(CONFIG.fraisFixes)} ${feeLabel()}, payés par l’acheteur.</p>${PAY_DEMO?`<p class="small muted">Pendant le lancement, Revoo Pay fonctionne en démonstration : aucun argent réel n’est débité.</p>`:""}`:null],
+  [/regle|charte|interdit de|droit de|comportement|moderation|equipe revoo|qui modere/, ()=>`<p>Les règles de Revoo, en bref :</p><p>• Des annonces honnêtes : vraies photos, état réel, défauts indiqués.<br>• Pas de contrefaçon ni d’article interdit.<br>• Rester poli et respectueux.<br>• Payer et discuter <b>sur Revoo</b>, jamais en dehors.</p><p>Une équipe de modération vérifie les signalements. En cas d’écart : avertissement, puis suspension (1, 7, 30 jours ou définitive). Le membre est toujours prévenu du motif, sur le site et par e-mail.</p>`],
+  [/signal(e|er)? (un )?(membre|vendeur|acheteur|utilisateur)|harcel|insult|menace/, ()=>`<p>Pour signaler un membre : ouvre une de ses annonces → <b>« Signaler cette annonce »</b> et explique le problème (harcèlement, arnaque…). C’est confidentiel. L’équipe peut l’avertir ou suspendre son compte.</p><p>En cas de menace ou de danger, contacte aussi la police (17).</p>`],
+  [/annul\w* (mon |un |l |la |ma |une )?(achat|acheter|commande|vente)/, ()=>payOn()?`<p><b>Annuler</b> :</p><p>• <b>Acheteur, en main propre</b> : tant que le code n’est pas saisi, « Annuler l’achat » dans Mes achats. Remboursé sous 48 h.<br>• <b>Vendeur</b> : « Annuler la vente » dans Mes ventes, l’acheteur est remboursé.<br>• <b>Colis déjà envoyé</b> : signale un problème, l’équipe tranche.</p>`:null],
+  [/avis|note|etoile/, ()=>payOn()?`<p>Après une commande terminée, l’acheteur peut laisser un <b>avis</b> (1 à 5 étoiles + commentaire) dans Mes achats. Il apparaît sur le profil du vendeur. Un faux avis ou un avis insultant peut être supprimé par l’équipe.</p>`:null],
+  [/maintenance|annonce du site|info importante/, ()=>site.settings&&site.settings.announcement?`<p>Message de l’équipe Revoo : <b>${esc(site.settings.announcement)}</b></p>`:`<p>Aucune annonce particulière de l’équipe en ce moment : tout fonctionne normalement.</p>`],
+];
+
 function rebootReply(raw){
   const t=rbNormalize(raw);
   if(!t)return`<p>Je t’écoute !</p>`;
@@ -4780,7 +4883,7 @@ function rebootReply(raw){
   const clauses=t.split(/\s(?:et aussi|et puis|et|puis|aussi|sinon)\s(?=(?:comment|combien|c est|quel|quelle|quels|est ce|ou|pourquoi|je|j|tu|on|il|les|la|le|mon|ma|mes)\b)|[?!.;]+/).map(x=>x.trim()).filter(x=>x.length>1);
   const answers=[];
   for(const c of clauses.length?clauses:[t]){
-    let r=rbSubs(c);if(!r)for(const [re,fn] of RB_DAILY){if(re.test(c)){r=fn(c);if(r)break}}
+    let r=rbPersonal(c)||rbSubs(c);if(!r)for(const [re,fn] of RB_DAILY){if(re.test(c)){r=fn(c);if(r)break}}
     r=r||rbFollowUp(c)||rbIntent(c);
     if(r&&!answers.includes(r))answers.push(r);
     if(answers.length===2)break;
