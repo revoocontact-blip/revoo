@@ -553,6 +553,39 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .mod-mode .mod-head h2{color:#fff}
 .mod-mode .mod-head .mod-badge{background:#A8C4D8;color:#16293A}
 .mod-search{margin-bottom:12px}
+/* Abonnements */
+.plan-badge{display:inline-block;vertical-align:middle;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;line-height:1.5}
+.plan-pro{background:#A8C4D8;color:#16293A}
+.plan-max{background:#294B68;color:#fff}
+.plan-ultra{background:linear-gradient(135deg,#E9C46A,#C9963B);color:#2B1D05}
+.card-seller .plan-badge{font-size:9.5px;padding:1px 6px}
+.lead-sub{font-size:17px;max-width:640px}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:22px 0}
+.plan{position:relative;border:1.5px solid var(--line);border-radius:14px;padding:22px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.plan h2{margin:0;font-size:20px;color:var(--heading)}
+.plan-popular{border-color:var(--heading);box-shadow:0 0 0 1px var(--heading)}
+.plan-ribbon{position:absolute;top:-12px;left:20px;background:var(--heading);color:var(--bg);font-size:12px;font-weight:800;padding:3px 10px;border-radius:6px}
+.plan-price b{font-size:32px;color:var(--heading)}.plan-price span{color:var(--muted);margin-left:4px}
+.plan-perks{list-style:none;padding:0;margin:6px 0 14px;display:grid;gap:8px;font-size:14px;flex:1;align-content:start}
+.prose:has(.plans){max-width:1100px}
+.plan .btn{white-space:normal}
+.sub-current{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.status.boosted{background:#FFF4D6;color:#5E4513}
+.accent-pick{border:0;padding:0;margin:10px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.accent-pick legend{width:100%;margin-bottom:6px}
+.accent-pick label{position:relative;cursor:pointer}
+.accent-pick input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.accent-pick span:not(.sr-only){display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line)}
+.accent-pick input:checked+span{box-shadow:0 0 0 3px var(--heading)}
+.accent-pick input:focus-visible+span{outline:3px solid var(--navy);outline-offset:2px}
+.accent-none{background:var(--ice);color:var(--muted);font-weight:800}
+.pp-cover.accent-nuit{background:linear-gradient(135deg,#16293A,#294B68)}
+.pp-cover.accent-ciel{background:linear-gradient(135deg,#5E8FB2,#A8C4D8)}
+.pp-cover.accent-sauge{background:linear-gradient(135deg,#6F8F72,#A9C1A5)}
+.pp-cover.accent-terracotta{background:linear-gradient(135deg,#B5654A,#E2A584)}
+.pp-cover.accent-lavande{background:linear-gradient(135deg,#8A7BB8,#C4B8E0)}
+.pp-cover.accent-sable{background:linear-gradient(135deg,#B89A6A,#E3CFA6)}
+@media (max-width:900px){.plans{grid-template-columns:1fr}}
 /* Remise en main propre : code */
 .handoff{margin-top:12px;padding:14px 16px;border-radius:14px;background:var(--ice);box-shadow:var(--ring)}
 .handoff-label{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -1126,6 +1159,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
           <a href="#/messages" class="user-only">Messages <span class="badge has" id="menuMsg" hidden></span></a>
           <a href="#/favoris" class="user-only">Favoris</a>
           <a href="#/vendre" class="user-only">Vendre un vêtement</a>
+          <a href="#/abonnements" class="user-only">💎 Revoo Pro · Max · Ultra</a>
           <button type="button" id="acctLogout">Se déconnecter</button>
         </div>
       </div>
@@ -1319,7 +1353,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
         <p>Tes vêtements ont de l’avenir.</p>
       </div>
       <nav aria-label="Revoo"><h2>Revoo</h2><ul><li><a href="#/a-propos">À propos de Revoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
-      <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/securite">Conseils de sécurité</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
+      <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/securite">Conseils de sécurité</a></li><li><a href="#/abonnements">Revoo Pro · Max · Ultra</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
       <nav aria-label="Aide"><h2>Aide</h2><ul><li><a href="#/aide">Aide et contact</a></li><li><a href="#/compte">Mon compte</a></li><li><a href="#/favoris">Mes favoris</a></li><li><a href="#/messages">Messages</a></li></ul></nav>
       <nav aria-label="Informations légales"><h2>Légal</h2><ul><li><a href="#/conditions">Conditions</a></li><li><a href="#/confidentialite">Confidentialité</a></li><li><a href="#/mentions-legales">Informations légales</a></li></ul></nav>
     </div>
@@ -1531,12 +1565,13 @@ function mapListing(r){
   return {id:r.id,name:r.title,description:r.description,category:r.category,brand:r.brand,size:r.size,condition:r.condition,style:r.style||"",
     price:Number(r.price),photos:r.photos||[],img:(r.photos||[])[0]||"",status:r.status,addedAt:Date.parse(r.created_at),
     seller:r.profiles?.name||"Membre",sellerId:r.seller_id,sellerSince:r.profiles?.created_at,sellerVacation:!!r.profiles?.vacation,sellerAvatar:r.profiles?.avatar_url||"",likes:0,seasons:ALL_SEASONS,
-    real:true,mine:!!state.user&&state.user.id===r.seller_id,boostedUntil:r.boosted_until?Date.parse(r.boosted_until):0};
+    real:true,mine:!!state.user&&state.user.id===r.seller_id,boostedUntil:r.boosted_until?Date.parse(r.boosted_until):0,pinned:!!r.pinned};
 }
 async function loadListings(){
   if(!sb){state.loading=false;return}
-  let cols="id,seller_id,title,description,category,brand,size,condition,style,price,photos,status,created_at,boosted_until,";
+  let cols="id,seller_id,title,description,category,brand,size,condition,style,price,photos,status,created_at,boosted_until,pinned,";
   let {data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300);
+  if(error&&/pinned/.test(error.message||"")){cols=cols.replace("pinned,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
   if(error&&/boosted_until/.test(error.message||"")){cols=cols.replace("boosted_until,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
   if(error&&/avatar_url/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation)").order("created_at",{ascending:false}).limit(300));
   if(error&&/vacation/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at)").order("created_at",{ascending:false}).limit(300));
@@ -1545,7 +1580,32 @@ async function loadListings(){
   state.loadError="";
   state.remote=(data||[]).map(mapListing);
   try{const r=await sb.from("reviews").select("id,order_id,seller_id,buyer_id,rating,comment,demo,created_at,buyer:profiles!reviews_buyer_id_fkey(name)").order("created_at",{ascending:false}).limit(1000);if(!r.error)state.reviews=r.data||[]}catch(e){}
+  await loadSubs();
 }
+/* =========================================================
+   ABONNEMENTS Revoo Pro / Max / Ultra (démo : aucun paiement)
+   Les limites sont vérifiées par la base de données (supabase-abonnements.sql)
+   ========================================================= */
+const PLANS={
+  pro:{name:"Revoo Pro",short:"Pro",price:"2,99 €",boosts:2,photos:8,pins:0,handoff:10,pitch:"Pour vendre de temps en temps, mieux."},
+  max:{name:"Revoo Max",short:"Max",price:"5,99 €",boosts:6,photos:12,pins:3,handoff:14,pitch:"Pour le vendeur régulier."},
+  ultra:{name:"Revoo Ultra",short:"Ultra",price:"9,99 €",boosts:15,photos:20,pins:10,handoff:21,pitch:"Pour les gros vendeurs et les passionnés."}};
+const FREE_PERKS={boosts:0,photos:5,pins:0,handoff:7};
+const ACCENTS={nuit:"#16293A",ciel:"#5E8FB2",sauge:"#6F8F72",terracotta:"#B5654A",lavande:"#8A7BB8",sable:"#B89A6A"};
+const subs={map:{},mine:null};
+async function loadSubs(){
+  subs.map={};subs.mine=null;if(!sb)return;
+  try{
+    if(state.user){try{await sb.rpc("settle_subscriptions")}catch(e){}}
+    const {data,error}=await sb.from("subscriptions").select("user_id,plan,current_period_end,cancel_at_period_end,boosts_used,demo");
+    if(error)return;
+    (data||[]).filter(x=>Date.parse(x.current_period_end)>Date.now()).forEach(x=>{subs.map[x.user_id]=x.plan;if(state.user&&x.user_id===state.user.id)subs.mine=x});
+  }catch(e){}
+}
+const planOf=uid=>(uid&&subs.map[uid])||"";
+const perk=(what,uid)=>{const p=PLANS[planOf(uid)];return p?p[what]:FREE_PERKS[what]};
+const myPerk=what=>perk(what,state.user&&state.user.id);
+const planBadge=uid=>{const p=planOf(uid);return p?` <span class="plan-badge plan-${p}" title="Membre ${PLANS[p].name}">${PLANS[p].short}</span>`:""};
 async function loadProfile(session){
   const u=session.user;
   const {data}=await sb.from("profiles").select("name,city,bio,created_at").eq("id",u.id).maybeSingle();
@@ -1562,6 +1622,8 @@ async function loadProfile(session){
   try{const r=await sb.from("profiles").select("username_changes,username_changed_at").eq("id",u.id).maybeSingle();if(!r.error&&r.data){state.user.uChanges=r.data.username_changes||0;state.user.uChangedAt=r.data.username_changed_at}}catch(e){}
   state.user.vacation=null;
   try{const r=await sb.from("profiles").select("vacation").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.vacation=!!r.data.vacation}catch(e){}
+  state.user.accent="";
+  try{const r=await sb.from("profiles").select("accent").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.accent=r.data.accent||""}catch(e){}
 }
 async function syncFavorites(){
   if(!sb||!state.user)return;
@@ -1576,7 +1638,7 @@ async function onSession(session,event){
   // Re-vérification du mot de passe (ex. suppression du compte) : même personne, rien à recharger
   if(event==="SIGNED_IN"&&session&&state.user&&session.user.id===state.user.id&&state.reauth)return;
   if(event==="PASSWORD_RECOVERY"){state.recovery=true}
-  if(session){await loadProfile(session);await syncFavorites();await loadConversations();await loadAdmin();await loadOrders();startRealtime()}
+  if(session){await loadProfile(session);await loadSubs();await syncFavorites();await loadConversations();await loadAdmin();await loadOrders();startRealtime()}
   else {state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0}
   state.remote.forEach(p=>p.mine=!!state.user&&state.user.id===p.sellerId);
   renderView();
@@ -1976,9 +2038,9 @@ async function orderAction(action,id){
 }
 function deadlineHtml(o){
   if(!o.handoff_deadline)return"";
-  const left=7-(o.handoff_extended||0), ms=Date.parse(o.handoff_deadline)-Date.now(), d=Math.max(0,Math.ceil(ms/864e5));
+  const left=myPerk("handoff")-(o.handoff_extended||0), ms=Date.parse(o.handoff_deadline)-Date.now(), d=Math.max(0,Math.ceil(ms/864e5));
   return `<div class="deadline small"><span>Rendez-vous à faire avant le <b>${fmtDT(o.handoff_deadline)}</b> (${d<=1?"moins de 24 h":`encore ${d} jours`}). Sinon, la vente est annulée et l’acheteur remboursé sous 48 h.</span>
-    ${left>0?`<span class="deadline-ext"><label class="sr-only" for="ext-${o.id}">Nombre de jours à ajouter</label><select class="input" id="ext-${o.id}">${Array.from({length:left},(_,i)=>`<option value="${i+1}">+${i+1} jour${i?"s":""}</option>`).join("")}</select><button type="button" class="btn btn-outline" data-order="extend" data-id="${o.id}">Prolonger</button></span>`:`<span class="muted">Délai déjà prolongé au maximum (7 jours).</span>`}</div>`;
+    ${left>0?`<span class="deadline-ext"><label class="sr-only" for="ext-${o.id}">Nombre de jours à ajouter</label><select class="input" id="ext-${o.id}">${Array.from({length:left},(_,i)=>`<option value="${i+1}">+${i+1} jour${i?"s":""}</option>`).join("")}</select><button type="button" class="btn btn-outline" data-order="extend" data-id="${o.id}">Prolonger</button></span>`:`<span class="muted">Délai déjà prolongé au maximum (${myPerk("handoff")} jours).</span>`}</div>`;
 }
 async function submitHandoff(id,form){
   const inp=$("hc-"+id),code=inp.value.replace(/\D/g,"");
@@ -2218,6 +2280,61 @@ async function submitTradeProblem(id,f){
   toast("Problème signalé. Tout reste bloqué le temps que la modération tranche.");await loadTrades();renderView();
 }
 
+
+/* Abonnements : panneau « Mon abonnement », page des formules, actions */
+function perkList(k){const p=PLANS[k];return [
+  `⭐ <b>${p.boosts} mises en avant</b> offertes par mois (48 h chacune)`,
+  `📸 Jusqu’à <b>${p.photos} photos</b> par annonce`,
+  p.pins?`📌 <b>${p.pins} annonce${p.pins>1?"s":""} épinglée${p.pins>1?"s":""}</b> en haut de ta boutique`:"",
+  k==="ultra"?`🎨 <b>Couleur de boutique</b> au choix`:"",
+  `🤝 Rendez-vous en main propre prolongeable jusqu’à <b>${p.handoff} jours</b>`,
+  `🏅 Badge <b>${p.short}</b> sur ton profil et tes annonces`,
+  k!=="pro"?`💬 <b>Support prioritaire</b>`:"",
+  `<span class="muted">Bientôt : ${k==="pro"?"statistiques simples et 3 alertes":k==="max"?"statistiques détaillées, 10 alertes, accès anticipé 30 min, remise en avant en 1 clic":"statistiques et conseils de prix, alertes illimitées, accès anticipé 1 h, publication programmée, « Vendeurs du moment »"}</span>`
+].filter(Boolean).map(x=>`<li>${x}</li>`).join("")}
+function subscriptionPanel(){
+  const m=subs.mine;
+  if(!m)return `<div class="panel sub-panel"><h2>Mon abonnement</h2><p class="small">Vends plus vite avec des mises en avant offertes chaque mois, plus de photos et un badge de confiance.</p><a class="btn btn-primary" href="#/abonnements">Découvrir Pro, Max et Ultra</a></div>`;
+  const p=PLANS[m.plan], left=Math.max(0,p.boosts-(m.boosts_used||0)), end=new Date(m.current_period_end).toLocaleDateString("fr-FR",{day:"numeric",month:"long"});
+  return `<div class="panel sub-panel" id="subPanel"><h2>Mon abonnement</h2>
+    <p class="sub-current"><span class="plan-badge plan-${m.plan}">${p.short}</span> <b>${p.name}</b> · ${p.price}/mois${m.demo?' <span class="muted small">(démo, aucun paiement)</span>':""}</p>
+    <p class="small">${m.cancel_at_period_end?`Résilié : tes avantages restent actifs jusqu’au <b>${end}</b>, puis l’abonnement s’arrête. Aucun autre prélèvement.`:`Renouvellement automatique le <b>${end}</b>.`}</p>
+    <p class="small">⭐ Mises en avant restantes ce mois-ci : <b>${left} / ${p.boosts}</b>${left?` · à utiliser depuis « Mes annonces »`:""}</p>
+    ${m.plan==="ultra"?`<fieldset class="accent-pick"><legend class="small"><b>Couleur de ta boutique</b></legend>${Object.entries(ACCENTS).map(([k,c])=>`<label title="${k}"><input type="radio" name="accent" value="${k}" ${state.user.accent===k?"checked":""}><span style="background:${c}"></span><span class="sr-only">${k}</span></label>`).join("")}<label title="aucune"><input type="radio" name="accent" value="" ${!state.user.accent?"checked":""}><span class="accent-none">×</span><span class="sr-only">Aucune</span></label></fieldset>`:""}
+    <div class="buy-actions"><a class="btn btn-outline" href="#/abonnements">Changer de formule</a>${m.cancel_at_period_end?`<button type="button" class="btn btn-primary" data-sub="resume">Reprendre mon abonnement</button>`:`<button type="button" class="btn btn-outline" data-sub="cancel-start">Résilier</button>`}</div>
+    <div id="subCancelBox"></div></div>`;
+}
+function subscriptionsPage(){
+  const cur=subs.mine&&subs.mine.plan;
+  return `<p class="crumbs"><a href="#/">Accueil</a> › Abonnements</p><h1>Revoo Pro, Max et Ultra</h1>
+    <p class="lead-sub">Vends plus vite, montre-toi davantage, garde la main sur ta boutique. <b>Sans engagement</b> : tu résilies en 3 clics, quand tu veux.</p>
+    ${CONFIG.revooPayDemo||PAY_DEMO?`<p class="note small"><b>Démo :</b> les abonnements sont activés sans paiement pour l’instant.</p>`:""}
+    <div class="plans">${Object.keys(PLANS).map(k=>{const p=PLANS[k];return `<article class="plan plan-card-${k}${k==="max"?" plan-popular":""}">
+      ${k==="max"?`<span class="plan-ribbon">Le plus choisi</span>`:""}
+      <h2><span class="plan-badge plan-${k}">${p.short}</span> ${p.name}</h2>
+      <p class="plan-price"><b>${p.price}</b><span>/mois TTC</span></p>
+      <p class="small muted">${p.pitch}</p>
+      <ul class="plan-perks">${perkList(k)}</ul>
+      ${!state.user?`<a class="btn btn-primary btn-block" href="#/compte">Se connecter</a>`:cur===k?`<button type="button" class="btn btn-outline btn-block" disabled>Ta formule actuelle</button>`:`<button type="button" class="btn btn-primary btn-block" data-subscribe="${k}">${cur?"Passer à "+p.short:"Choisir "+p.short}</button>`}
+    </article>`}).join("")}</div>
+    <p class="small muted">Prix TTC, renouvelés chaque mois jusqu’à résiliation. La résiliation prend effet à la fin du mois en cours : tu gardes tes avantages jusque-là. Les mises en avant sont toujours affichées « Sponsorisé », et la rotation gratuite « À la une » reste ouverte à tous.</p>`;
+}
+async function subAction(kind,arg){
+  let r;
+  if(kind==="subscribe"){const p=PLANS[arg];if(!confirm(`Passer à ${p.name} (${p.price}/mois) ?${(CONFIG.revooPayDemo||PAY_DEMO)?"\n\nDémo : aucun paiement ne sera demandé.":""}`))return;r=await sb.rpc("subscribe_demo",{p_plan:arg})}
+  else if(kind==="cancel-start"){const b=$("subCancelBox");if(!b)return;const end=new Date(subs.mine.current_period_end).toLocaleDateString("fr-FR",{day:"numeric",month:"long"});
+    b.innerHTML=`<div class="note small" style="margin-top:12px"><p><b>Confirmer la résiliation ?</b> Tu gardes tes avantages jusqu’au ${end}, puis l’abonnement s’arrête. Tes annonces épinglées et ta couleur de boutique seront retirées à ce moment-là.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-sub="cancel">Confirmer la résiliation</button><button type="button" class="btn btn-outline" data-sub="keep">Garder mon abonnement</button></div></div>`;return}
+  else if(kind==="keep"){const b=$("subCancelBox");if(b)b.innerHTML="";return}
+  else if(kind==="cancel")r=await sb.rpc("cancel_subscription");
+  else if(kind==="resume")r=await sb.rpc("resume_subscription");
+  else if(kind==="boost"){if(!confirm("Utiliser une mise en avant offerte sur cette annonce (48 h) ?"))return;r=await sb.rpc("use_boost",{p_listing:arg})}
+  else if(kind==="pin"){const l=state.remote.find(x=>x.id===arg);r=await sb.from("listings").update({pinned:!l.pinned}).eq("id",arg)}
+  else if(kind==="accent"){r=await sb.from("profiles").update({accent:arg||null}).eq("id",state.user.id);if(!r.error)state.user.accent=arg||""}
+  if(r&&r.error){toast(frenchError(r.error));return}
+  toast({subscribe:"Bienvenue chez "+(PLANS[arg]?.name||"Revoo")+" !",cancel:"Abonnement résilié : tu gardes tes avantages jusqu’à la fin du mois.",resume:"Abonnement repris.",boost:"⭐ Annonce mise en avant pendant 48 h.",pin:"C’est noté.",accent:"Couleur de boutique mise à jour."}[kind]||"C’est fait.");
+  await loadListings();renderView();
+}
+
 /* Page de paiement */
 let checkoutDelivery="main_propre";
 function renderCheckout(id){
@@ -2364,21 +2481,21 @@ async function renderSellerProfile(id){
   let {data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at,avatar_url,banner_url").eq("id",id).maybeSingle();
   if(error&&/banner_url/.test(error.message||""))({data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at,avatar_url").eq("id",id).maybeSingle());
   if(error&&/avatar_url/.test(error.message||""))({data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at").eq("id",id).maybeSingle());
-  let vac=false;try{const r=await sb.from("profiles").select("vacation").eq("id",id).maybeSingle();vac=!!(r.data&&r.data.vacation)}catch(e){}
+  let vac=false,accent="";try{let r=await sb.from("profiles").select("vacation,accent").eq("id",id).maybeSingle();if(r.error)r=await sb.from("profiles").select("vacation").eq("id",id).maybeSingle();vac=!!(r.data&&r.data.vacation);accent=(r.data&&ACCENTS[r.data.accent])?r.data.accent:""}catch(e){}
   if(location.hash!=="#/vendeur/"+id)return;
   if(error||!pr){v.innerHTML=`<div class="page-head"><h1 class="page-title">Profil introuvable</h1><p class="muted">Ce membre n’existe pas ou a supprimé son compte.</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
-  const items=available().filter(p=>p.sellerId===id).sort((a,b)=>b.addedAt-a.addedAt);
+  const items=available().filter(p=>p.sellerId===id).sort((a,b)=>(b.pinned-a.pinned)||(b.addedAt-a.addedAt));
   const me=state.user&&state.user.id===id;
   const since=new Date(pr.created_at).toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
   const revs=sellerReviews(id), rt=ratingOf(id), tab=(location.hash.split("?")[1]==="avis")?"avis":"articles";
   v.innerHTML=`
     <p class="crumbs" style="padding-top:18px"><a href="#/">Accueil</a> › Profil</p>
     <section class="pp">
-      <div class="pp-cover" ${pr.banner_url?`style="background-image:url('${esc(pr.banner_url)}')"`:""}>${me&&state.user.hasBanner?`<label for="bannerInput2" class="pp-cover-edit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> ${pr.banner_url?"Changer la bannière":"Ajouter une bannière"}</label><input id="bannerInput2" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">`:""}</div>
+      <div class="pp-cover${accent?" accent-"+accent:""}" ${pr.banner_url?`style="background-image:url('${esc(pr.banner_url)}')"`:""}>${me&&state.user.hasBanner?`<label for="bannerInput2" class="pp-cover-edit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> ${pr.banner_url?"Changer la bannière":"Ajouter une bannière"}</label><input id="bannerInput2" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">`:""}</div>
       <div class="pp-body">
         <span class="avatar pp-avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
         <div class="pp-id">
-          <h1>@${esc(pr.name)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1>
+          <h1>@${esc(pr.name)}${planBadge(id)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1>
           <div class="pp-chips">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span></div>
         </div>
         <div class="pp-actions">${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}<button type="button" class="btn btn-outline" id="shareProfile">Partager</button></div>
@@ -2404,7 +2521,7 @@ async function renderSellerProfile(id){
    ========================================================= */
 function card(p){
   const fav=isFav(p.id), c=inCart(p.id), s=sellerInfo(p);
-  const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : isBoosted(p) ? "Sponsorisé" : "";
+  const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : isBoosted(p) ? "Sponsorisé" : p.pinned&&location.hash.startsWith("#/vendeur/") ? "📌 Épinglée" : "";
   const cartBtn = p.mine ? `<a class="btn btn-outline" href="#/compte/annonces">Gérer l’annonce</a>`
     : payOn()&&!p.demo ? `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`
     : !CONFIG.paiementIntegre||p.demo ? `<button type="button" class="btn btn-outline" data-contact="${esc(p.id)}" aria-label="Je suis intéressé(e) par ${esc(p.name)}">💬 Intéressé(e)</button>`
@@ -2415,7 +2532,7 @@ function card(p){
       <div class="card-body">
         <h3 class="card-title">${esc(p.name)}</h3>
         <p class="card-meta"><span class="chip-mini">${esc(p.size)}</span><span class="chip-mini">${esc(p.condition)}</span></p>
-        <p class="card-seller"><span class="mini-avatar" aria-hidden="true">${s.emoji}</span>${esc(p.seller)}</p>
+        <p class="card-seller"><span class="mini-avatar" aria-hidden="true">${s.emoji}</span>${esc(p.seller)}${planBadge(p.sellerId)}</p>
       </div>
     </a>
     ${tag?`<span class="card-tag">${tag}</span>`:""}
@@ -2569,7 +2686,7 @@ function renderProduct(id){
       ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">🛡️ Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
       ${sold?"":tradeBlock(p)}
-      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b><br><span class="muted small">${esc(s.since||"Membre Revoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
+      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Revoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
       ${p.mine||sold||!CONFIG.paiementIntegre?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
       <button type="button" class="link small" id="shareBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Partager</button>
       ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">Signaler cette annonce</button><div id="reportBox"></div>`:""}
@@ -2729,8 +2846,8 @@ function renderAccount(tab){
     if(state.user.vacation)body=`<p class="note small">Mode vacances activé : tes annonces sont masquées pour les autres membres. Désactive-le dans « Profil et paramètres ».</p>`;
     body=mine.length?`<div class="panel">${mine.map(l=>`<div class="listing-row">
       <a class="image-frame" href="#/article/${encodeURIComponent(l.id)}"><img data-safe-image src="${esc(l.img)}" alt="${esc(l.name)}"></a>
-      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p><span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Revoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
-      <div class="row-actions">${l.status==="removed"||lockedBy(l.id)?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
+      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p>${isBoosted(l)?`<span class="status boosted">⭐ En avant jusqu’au ${fmtDT(l.boostedUntil)}</span> `:""}<span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Revoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
+      <div class="row-actions">${l.status==="removed"||lockedBy(l.id)?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}${l.status==="active"&&subs.mine?`<button type="button" class="btn btn-outline" data-boost="${esc(l.id)}">⭐ Mettre en avant</button>`:""}${l.status==="active"&&myPerk("pins")>0?`<button type="button" class="btn btn-outline" data-pin="${esc(l.id)}" aria-pressed="${l.pinned}">${l.pinned?"📌 Désépingler":"📌 Épingler"}</button>`:""}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
     </div>`).join("")}</div><a class="btn btn-primary" href="#/vendre">Ajouter une annonce</a>`
     :`<div class="empty"><p>Tu n’as pas encore d’annonce.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
   } else if(accountTab==="commandes"){
@@ -2785,6 +2902,7 @@ function renderAccount(tab){
       </form>
     </div>
     <div class="settings-col">
+      ${subscriptionPanel()}
       <div class="panel wallet-mini">
         <h2>Mon solde</h2>
         <div class="wallet-row"><div><span class="muted small">Disponible</span><b>${eur(w.ready)}</b></div><div><span class="muted small">En attente</span><b>${eur(w.pending)}</b></div></div>
@@ -2863,7 +2981,7 @@ function renderSell(editId){
   <p class="note">Ton annonce sera <b>visible par tous les visiteurs</b> de Revoo. Ton identifiant apparaîtra comme vendeur.</p>
   <form class="panel" id="sellForm" novalidate>
     <div class="field">
-      <span class="label" id="photoLabel">Photos <span class="hint">(1 à ${CONFIG.maxPhotos}, la première sert de couverture)</span></span>
+      <span class="label" id="photoLabel">Photos <span class="hint">(1 à ${myPerk("photos")}, la première sert de couverture)</span></span>
       <div class="photo-drop">
         <label for="photoInput" class="btn btn-outline">Ajouter des photos</label>
         <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" multiple class="sr-only" aria-describedby="photoLabel photoErr">
@@ -2893,7 +3011,7 @@ function renderSell(editId){
   $("photoInput").addEventListener("change",async e=>{
     const files=[...e.target.files];e.target.value="";$("photoErr").textContent="";
     for(const f of files){
-      if(draftPhotos.length>=CONFIG.maxPhotos){$("photoErr").textContent=`Maximum ${CONFIG.maxPhotos} photos.`;break}
+      if(draftPhotos.length>=myPerk("photos")){$("photoErr").textContent=`Maximum ${myPerk("photos")} photos.`;break}
       if(!f.type.startsWith("image/")){$("photoErr").textContent=`« ${f.name} » n’est pas une image.`;continue}
       try{draftPhotos.push(await compress(f))}catch(err){$("photoErr").textContent=`Impossible de lire « ${f.name} ».`}
     }
@@ -3096,6 +3214,8 @@ const LEGAL_PAGES={
 <p>Chaque membre est responsable de ses annonces, de ses messages et des ventes qu’il conclut. Revoo agit comme hébergeur des contenus publiés par les membres et s’engage à retirer rapidement tout contenu manifestement illicite qui lui est signalé. Revoo fait de son mieux pour que le site fonctionne en permanence, sans pouvoir le garantir.</p>
 <h2>10. Obligations fiscales</h2>
 <p>Les revenus tirés de la vente occasionnelle de tes propres affaires ne sont en principe pas imposables. Comme toute plateforme, Revoo pourra être tenu de transmettre à l’administration fiscale certaines informations sur les vendeurs, dans les cas prévus par la loi.</p>
+<h2>10 bis. Abonnements Revoo Pro, Max et Ultra</h2>
+<p>Les abonnements sont facultatifs. Leur prix est affiché TTC et renouvelé chaque mois jusqu’à résiliation. Tu peux résilier à tout moment depuis <b>Mon compte → Profil et paramètres → Mon abonnement</b> ; la résiliation prend effet à la fin du mois en cours et tu conserves tes avantages jusque-là. En cas de changement de prix, les abonnés sont prévenus à l’avance et peuvent résilier. Les avantages (mises en avant, photos supplémentaires, annonces épinglées, couleur de boutique, délai de rendez-vous prolongé, badge) sont décrits sur la page des abonnements. Les mises en avant sont toujours signalées comme « Sponsorisé ».</p>
 <h2>11. Supprimer ton compte</h2>
 <p>Tu peux supprimer ton compte à tout moment, toi-même, depuis <b>Mon compte → Profil et paramètres → Zone sensible</b> (ou en écrivant à ${mail}). Ton profil, tes annonces, tes photos et tes informations privées sont alors supprimés. Les ventes, achats, échanges, avis et conversations déjà réalisés sont conservés pour l’autre personne, sans lien avec ton compte (« Membre supprimé »). Une vente, un achat ou un échange en cours doit être terminé ou annulé avant la suppression. Revoo peut supprimer un compte qui ne respecte pas ces conditions.</p>
 <h2>12. Droit applicable</h2>
@@ -3113,6 +3233,7 @@ const PAGES={
     <p>Revoo est une marketplace française dédiée à la vente et à l’achat de vêtements d’occasion entre particuliers. Achète, vends, donne une seconde vie à tes pièces préférées.</p>
     <p>Notre objectif : rendre l’achat de seconde main plus juste et plus abordable, avec des frais simples et identiques quel que soit le prix de l’article.</p>
     <p>Revoo est en cours de lancement, en France, en français, avec des prix en euros.</p>`,
+  "abonnements":()=>subscriptionsPage(),
   "impact":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Notre impact</p><h1>Comment on calcule l’impact</h1>
     <p>${impact.ok?`Aujourd’hui : <b>${fmtKg(impact.co2)} de CO₂ évités</b> grâce à ${impact.items.toLocaleString("fr-FR")} vêtement${impact.items>1?"s":""} revendu${impact.items>1?"s":""} sur Revoo.`:"Le compteur démarre avec les premières ventes."}</p>
     <p>Fabriquer un vêtement neuf émet du CO₂ (culture ou production de la matière, teinture, confection, transport). Quand un vêtement trouve une seconde vie sur Revoo, on compte l’émission d’un vêtement neuf équivalent comme <b>évitée</b>.</p>
@@ -3249,6 +3370,10 @@ document.addEventListener("click",async e=>{
   const del=t.closest("[data-delete]");if(del){deleteListing(del.dataset.delete);return}
   const oa=t.closest("[data-order]");if(oa){orderAction(oa.dataset.order,oa.dataset.id);return}
   const ta=t.closest("[data-trade]");if(ta){tradeAction(ta.dataset.trade,ta.dataset.id);return}
+  const sbx=t.closest("[data-subscribe]");if(sbx){subAction("subscribe",sbx.dataset.subscribe);return}
+  const sa=t.closest("[data-sub]");if(sa){subAction(sa.dataset.sub);return}
+  const bo=t.closest("[data-boost]");if(bo){subAction("boost",bo.dataset.boost);return}
+  const pn=t.closest("[data-pin]");if(pn){subAction("pin",pn.dataset.pin);return}
   const ct=t.closest("[data-contact]");if(ct){const pr=findProduct(ct.dataset.contact);if(pr)contactSeller(pr);return}
   const dr=t.closest("[data-delreview]");if(dr){if(confirm("Supprimer cet avis ?")){const {error}=await sb.from("reviews").delete().eq("id",dr.dataset.delreview);if(error)toast(frenchError(error));else{toast("Avis supprimé.");await loadListings();renderView()}}return}
   const md=t.closest("[data-mod]");if(md){md.disabled=true;moderate(md.dataset.mod,md.dataset.report,md.dataset.listing);return}
@@ -3434,6 +3559,7 @@ async function setBanner(file){
 }
 document.addEventListener("change",e=>{if((e.target.id==="bannerInput"||e.target.id==="bannerInput2")&&e.target.files[0]){const f=e.target.files[0];e.target.value="";setBanner(f)}});
 document.addEventListener("click",e=>{if(e.target.closest("#bannerRemove")){if(confirm("Retirer ta bannière ?"))setBanner(null)}});
+document.addEventListener("change",e=>{if(e.target.name==="accent"&&e.target.closest(".accent-pick"))subAction("accent",e.target.value)});
 document.addEventListener("change",e=>{if(e.target.id==="avatarInput"&&e.target.files[0]){const f=e.target.files[0];e.target.value="";setAvatar(f)}});
 document.addEventListener("click",e=>{if(e.target.closest("#avatarRemove")){if(confirm("Retirer ta photo de profil ?"))setAvatar(null)}});
 
@@ -3532,6 +3658,7 @@ const KB=[
   [/saison|hiver|\bete\b|printemps|automne/, ()=>`<p>La sélection de saison regroupe les pièces idéales pour la période (${currentSeason()}).</p><button type="button" class="pill" id="rbSeason" data-reboot-season>Voir la sélection</button>`],
   // Compte
   [/mot de passe|oubli|connecter impossible|n.?arrive pas a me connecter/, ()=>`<p>Sur la page de connexion, clique sur « Mot de passe oublié ? » : tu recevras un lien par e-mail. Pense à regarder dans tes courriers indésirables.</p>${go("#/compte","Connexion")}`],
+  [/abonnement|abonne|premium|revoo (pro|max|ultra)|\b(pro|max|ultra)\b.*(formule|offre|prix)|resilier/, ()=>`<p>Trois formules sans engagement : <b>Revoo Pro</b> (2,99 €/mois), <b>Revoo Max</b> (5,99 €/mois) et <b>Revoo Ultra</b> (9,99 €/mois). Mises en avant offertes chaque mois, plus de photos, annonces épinglées, badge… Tu résilies en 3 clics depuis Mon compte.</p>${go("#/abonnements","Voir les formules")}`],
   [/supprimer (mon )?compte|desinscri|mes donnees|rgpd|donnees personnelles/, ()=>`<p>Tu peux <b>supprimer ton compte toi-même</b> : Mon compte → Profil et paramètres → <b>Zone sensible</b>. Pour tes autres droits sur tes données (accès, correction…), écris à <b>${LEGAL.email}</b>. Réponse sous un mois maximum.</p>${go("#/confidentialite","Politique de confidentialité")}`],
   [/profil|pseudo|identifiant|prenom|presentation|ville|photo de profil|avatar|bio/, ()=>`<p>Dans <b>Mon compte › Profil et paramètres</b> :</p><p>• <b>Public</b> : ton identifiant, ta photo de profil, ta bio, et ta ville si tu le choisis.<br>• <b>Privé</b> (toi seul) : ton prénom, ton nom et ta ville.</p><p>Une photo et une petite bio rassurent les acheteurs !</p>${go("#/compte/profil","Mon profil")}`],
   [/notification|e.?mail|mail|spam|indesirable/, ()=>`<p>Revoo t’envoie un e-mail quand tu reçois un nouveau message (au plus un toutes les 30 minutes par conversation). Tu peux le désactiver dans <b>Mon compte › Profil</b>.</p><p>Tu ne reçois rien ? Regarde dans les courriers indésirables ou l’onglet « Promotions ».</p>`],
