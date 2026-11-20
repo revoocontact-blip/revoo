@@ -633,9 +633,9 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 }
 .style-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
 .st-4{background:#3E6D8E;color:#fff}
-.st-5{background:#F1E9DC;color:#3B2E1A}
-:root[data-theme="dark"] .st-5{background:#3B3326;color:#F1E9DC}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .st-5{background:#3B3326;color:#F1E9DC}}
+.st-5{background:#F3F8FB;color:#16293A;box-shadow:inset 0 0 0 1.5px #DCE6ED}
+:root[data-theme="dark"] .st-5{background:#132636;color:#E3ECF3;box-shadow:inset 0 0 0 1.5px #24394C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .st-5{background:#132636;color:#E3ECF3;box-shadow:inset 0 0 0 1.5px #24394C}}
 .sell-steps{list-style:none;padding:0;margin:24px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .sell-steps li{border:1.5px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:4px}
 .ss-n{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--accent,#A8C4D8);color:var(--accent-ink,#16293A);font-weight:800;margin-bottom:6px}
@@ -653,7 +653,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .plan-badge{display:inline-block;vertical-align:middle;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;line-height:1.5}
 .plan-pro{background:var(--accent,#A8C4D8);color:var(--accent-ink,#16293A)}
 .plan-max{background:#294B68;color:#fff}
-.plan-ultra{background:linear-gradient(135deg,#E9C46A,#C9963B);color:#2B1D05}
+.plan-ultra{background:#0B141D;color:#CFE0EC;box-shadow:inset 0 0 0 1px #7FB2DA}
 .card-seller .plan-badge{font-size:9.5px;padding:1px 6px}
 .lead-sub{font-size:17px;max-width:640px}
 .plans-page{max-width:1120px}
@@ -673,7 +673,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .plan-sub{margin:18px 24px 8px;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .plan-perks{margin:0 24px;gap:10px;flex:none}
 .plan-perks li{display:flex;gap:10px;align-items:flex-start;line-height:1.4}
-.pk-ic{width:18px;height:18px;flex:none;margin-top:1px;color:#2E8B57;stroke-width:2.4}
+.pk-ic{width:18px;height:18px;flex:none;margin-top:1px;color:var(--heading);stroke-width:2.4}
 .plan-soon{margin-bottom:24px;color:var(--muted)}
 .plan-soon .pk-ic{color:var(--muted);stroke-width:1.8}
 .plans-compare,.plans-faq{margin:46px 0 0}
@@ -684,7 +684,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .cmp tbody tr:last-child th,.cmp tbody tr:last-child td{border-bottom:0}
 .cmp th[scope=row]{text-align:left;font-weight:600;color:var(--ink)}
 .cmp thead th{font-size:13px;font-weight:800;color:var(--heading);background:var(--ice)}
-.cmp-yes{color:#2E8B57;font-weight:800}.cmp-no{color:var(--muted)}
+.cmp-yes{color:var(--heading);font-weight:800}.cmp-no{color:var(--muted)}
 .plans-faq details{border-bottom:1px solid var(--line);padding:4px 0}
 .plans-faq summary{cursor:pointer;font-weight:700;color:var(--heading);padding:12px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
 .plans-faq summary::-webkit-details-marker{display:none}
@@ -695,7 +695,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .pill-danger{border-color:var(--danger-line)!important;color:var(--danger)!important}
 .rb-list{list-style:none;padding:0;margin:6px 0;display:grid;gap:6px;font-size:14px}.rb-list li{display:flex;gap:8px}
 .menu-plans{display:flex!important;align-items:center;gap:8px}
-.menu-plans .icon{width:18px;height:18px;color:#C9963B}
+.menu-plans .icon{width:18px;height:18px;color:var(--heading)}
 .menu-plans small{margin-left:auto;color:var(--muted);font-size:11.5px;font-weight:600}
 :root[data-theme="dark"] .st-3{background:var(--d-glow,#1C3F5E);color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .st-3{background:var(--d-glow,#1C3F5E);color:#fff}}
@@ -710,7 +710,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .prose:has(.plans){max-width:1100px}
 .plan .btn{white-space:normal}
 .sub-current{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.status.boosted{background:#FFF4D6;color:#5E4513}
+.status.boosted{background:#E3EDF4;color:#16293A}
 .accent-pick{border:0;padding:0;margin:10px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .accent-pick legend{width:100%;margin-bottom:6px}
 .accent-pick label{position:relative;cursor:pointer}
@@ -772,8 +772,8 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .impact-txt{flex:1 1 260px;font-size:15px}
 .impact-txt b{font-size:22px;color:var(--heading);font-variant-numeric:tabular-nums}
 .impact-live{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--muted)}
-.impact-dot{width:8px;height:8px;border-radius:50%;background:#2E9D5B;box-shadow:0 0 0 0 rgba(46,157,91,.5);animation:impactPing 2s infinite}
-@keyframes impactPing{70%{box-shadow:0 0 0 8px rgba(46,157,91,0)}100%{box-shadow:0 0 0 0 rgba(46,157,91,0)}}
+.impact-dot{width:8px;height:8px;border-radius:50%;background:#7FB2DA;box-shadow:0 0 0 0 rgba(127,178,218,.5);animation:impactPing 2s infinite}
+@keyframes impactPing{70%{box-shadow:0 0 0 8px rgba(127,178,218,0)}100%{box-shadow:0 0 0 0 rgba(127,178,218,0)}}
 .impact-band.pulse{animation:impactPulse 1.2s ease}
 @keyframes impactPulse{30%{box-shadow:0 0 0 3px var(--navy)}}
 @media (prefers-reduced-motion:reduce){.impact-dot,.impact-band.pulse{animation:none}}
@@ -1272,7 +1272,7 @@ html[data-design="2"] .subnav button:not(.sell):hover,html[data-design="2"] .sub
 html[data-design="2"] .subnav .sell{background:var(--accent,#A8C4D8);color:var(--accent-ink,#16293A)!important;font-weight:800}
 /* Bannière */
 html[data-design="2"] .hero-x{position:relative;overflow:hidden;background:radial-gradient(1000px 620px at 12% -10%,rgba(62,109,142,.95),transparent 62%),radial-gradient(800px 520px at 95% 110%,rgba(41,75,104,.75),transparent 60%),#0B141D}
-html[data-design="2"] .hero-x::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse at 70% 40%,#000 10%,transparent 70%);pointer-events:none}
+html[data-design="2"] .hero-x::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse at 70% 40%,#000 10%,transparent 70%);pointer-events:none}
 html[data-design="2"] .hero-x .hero-inner{position:relative;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);padding-block:64px 72px;gap:56px}
 .hx-chips{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:26px}
 .hx-toggle{display:inline-flex;gap:4px;padding:5px;border-radius:99px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04)}
@@ -1283,14 +1283,14 @@ html[data-design="2"] .hero-x .hero-inner{position:relative;grid-template-column
 .hx-live .dot,.hx-badge .dot{width:8px;height:8px;border-radius:50%;background:#7FB2DA;box-shadow:0 0 0 4px rgba(127,178,218,.25),0 0 14px #7FB2DA}
 html[data-design="2"] .hero-x h1{font-size:clamp(46px,6.6vw,96px);line-height:.94;letter-spacing:-.05em;font-weight:800;color:#fff;margin:0 0 22px;max-width:780px}
 .hx-soft{color:#CFE0EC}
-.hx-accent{background:linear-gradient(90deg,#A8C4D8,#6FA3D1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hx-accent{color:#A8C4D8}
 html[data-design="2"] .hero-x .lead{font-size:clamp(17px,1.5vw,20px);line-height:1.55;color:rgba(255,255,255,.78);max-width:600px;opacity:1}
 html[data-design="2"] .hero-x .hero-actions{gap:12px}
-html[data-design="2"] .hero-x .btn-primary{background:var(--accent,#A8C4D8);color:var(--accent-ink,#16293A);box-shadow:0 12px 40px -8px rgba(127,178,218,.6)}
+html[data-design="2"] .hero-x .btn-primary{background:var(--accent,#A8C4D8);color:var(--accent-ink,#16293A);box-shadow:none}
 html[data-design="2"] .hero-x .btn-primary:hover{background:#fff}
 html[data-design="2"] .hero-x .btn-outline{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.16);color:#fff}
 html[data-design="2"] .hero-x .btn-outline:hover{background:rgba(255,255,255,.1);color:#fff}
-.hx-card{align-self:center;justify-self:end;width:min(100%,430px);background:rgba(14,24,34,.78);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6),0 0 0 1px rgba(127,178,218,.05);backdrop-filter:blur(12px);transform:rotate(-2deg);color:#fff}
+.hx-card{align-self:center;justify-self:end;width:min(100%,430px);background:rgba(14,24,34,.78);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6),0 0 0 1px rgba(127,178,218,.05);backdrop-filter:blur(12px);color:#fff}
 .hx-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .hx-card-head b{font-size:19px;letter-spacing:-.02em}
 .hx-list{display:flex;flex-direction:column;gap:10px}
@@ -1320,6 +1320,12 @@ html[data-design="2"][data-theme="dark"]{--bg:#0B141D}
   html[data-design="2"] .hero-x .hero-actions .btn{flex:1 1 100%}
   .hx-toggle a{padding:7px 12px;font-size:13px}
 }
+.ic-leaf{width:18px;height:18px;color:#5E8FB2;flex:none}
+.impact-ico .ic-leaf{width:26px;height:26px}
+.lock-ic{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--pale);color:var(--heading);flex:none}
+.lock-ic .icon{width:18px;height:18px}
+.home-nav button{gap:0}
+.hb-head{gap:0}
 </style>
 </head>
 <body>
@@ -1395,7 +1401,7 @@ html[data-design="2"][data-theme="dark"]{--bg:#0B141D}
           <span class="hx-live"><span class="dot" aria-hidden="true"></span><span id="heroSeason">Sélection automne en cours</span></span>
         </div>
         <h1 id="heroTitle">Tes vêtements <span class="hx-soft">ont de</span> <span class="hx-accent">l’avenir</span></h1>
-        <p class="lead">Achète, vends et échange tes vêtements en toute sécurité : paiement protégé, remise en main propre avec code, et une seconde vie pour chaque pièce.</p>
+        <p class="lead">Achète, vends et échange entre particuliers. Paiement protégé, remise en main propre sécurisée.</p>
         <div class="hero-actions"><a class="btn btn-primary btn-lg" href="#/catalogue" data-new="1">Découvrir les vêtements <span aria-hidden="true">→</span></a><a class="btn btn-outline btn-lg" href="#/vendre">Vendre un vêtement</a></div>
         <p class="hero-quote"><span class="hero-quote-label">Le mot du jour</span> <span id="dailyQuote">Chaque vêtement mérite une nouvelle histoire.</span></p>
       </div>
@@ -1408,24 +1414,19 @@ html[data-design="2"][data-theme="dark"]{--bg:#0B141D}
   </section>
 
   <div class="wrap">
-    <ol class="how" aria-label="Comment ça marche">
-      <li><span class="how-n">1</span><div><b>Trouve</b><small>Par catégorie, taille, prix ou état.</small></div></li>
-      <li><span class="how-n">2</span><div><b>Échange</b><small>Écris au vendeur dans la messagerie.</small></div></li>
-      <li><span class="how-n">3</span><div><b>Récupère</b><small>En main propre ou par colis.</small></div></li>
-    </ol>
 
     <nav class="home-nav" aria-label="Sur cette page">
-      <button type="button" data-jump="hbDecouvrir"><b>1</b>À découvrir</button>
-      <button type="button" data-jump="hbExplorer"><b>2</b>Explorer</button>
-      <button type="button" data-jump="hbBoutiques"><b>3</b>Boutiques</button>
-      <button type="button" data-jump="hbVendre"><b>4</b>Vendre</button>
-      <button type="button" data-jump="hbImpact"><b>5</b>Notre impact</button>
+      <button type="button" data-jump="hbDecouvrir">À découvrir</button>
+      <button type="button" data-jump="hbExplorer">Explorer</button>
+      <button type="button" data-jump="hbBoutiques">Boutiques</button>
+      <button type="button" data-jump="hbVendre">Vendre</button>
+      <button type="button" data-jump="hbImpact">Notre impact</button>
     </nav>
 
     <section class="home-block" id="hbDecouvrir" aria-labelledby="hbDecouvrirTitle">
-      <header class="hb-head"><span class="hb-num" aria-hidden="true">1</span><div><h2 id="hbDecouvrirTitle">À découvrir</h2><p>Les annonces du moment et les coups de cœur de la communauté.</p></div></header>
+      <header class="hb-head"><div><h2 id="hbDecouvrirTitle">À découvrir</h2><p>Les annonces du moment.</p></div></header>
     <section class="section" aria-labelledby="latestTitle">
-      <div class="section-head"><div><h3 id="latestTitle">À la une</h3><p class="section-sub">Toutes les 5 minutes, d’autres annonces passent en tête. Gratuitement, pour tout le monde.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
+      <div class="section-head"><div><h3 id="latestTitle">À la une</h3><p class="section-sub">Renouvelée toutes les 5 minutes, gratuitement pour tous.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
       <div class="products" id="latestProducts"></div>
     </section>
     <section class="section community" id="communitySection" aria-labelledby="communityTitle">
@@ -1435,7 +1436,7 @@ html[data-design="2"][data-theme="dark"]{--bg:#0B141D}
     </section>
 
     <section class="home-block" id="hbExplorer" aria-labelledby="hbExplorerTitle">
-      <header class="hb-head"><span class="hb-num" aria-hidden="true">2</span><div><h2 id="hbExplorerTitle">Explorer</h2><p>Par catégorie, par style ou selon la saison.</p></div></header>
+      <header class="hb-head"><div><h2 id="hbExplorerTitle">Explorer</h2><p>Par catégorie, style ou saison.</p></div></header>
       <div class="cat-tiles">
         <button type="button" class="cat-tile" data-category="Femme"><span>Femme</span><small>Robes, jeans, pulls…</small></button>
         <button type="button" class="cat-tile" data-category="Homme"><span>Homme</span><small>Vestes, sweats, chemises…</small></button>
@@ -1444,7 +1445,7 @@ html[data-design="2"][data-theme="dark"]{--bg:#0B141D}
       </div>
 
       <section class="section" aria-labelledby="trendTitle">
-        <div class="section-head"><div><h3 id="trendTitle">Par style</h3><p class="section-sub">Six univers, des pièces pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
+        <div class="section-head"><div><h3 id="trendTitle">Par style</h3><p class="section-sub">Six univers pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
         <div class="style-tiles" id="styleTiles"></div>
       </section>
     <section class="section season-ed" aria-labelledby="seasonTitle">
@@ -1462,14 +1463,14 @@ html[data-design="2"][data-theme="dark"]{--bg:#0B141D}
     </section>
 
     <section class="home-block" id="hbBoutiques" aria-labelledby="hbBoutiquesTitle">
-      <header class="hb-head"><span class="hb-num" aria-hidden="true">3</span><div><h2 id="hbBoutiquesTitle">Boutiques</h2><p>Les dressings de nos abonnés, et peut-être bientôt le tien.</p></div></header>
+      <header class="hb-head"><div><h2 id="hbBoutiquesTitle">Boutiques</h2><p>Les dressings de nos abonnés.</p></div></header>
       <section class="section" aria-labelledby="sellerTitle">
         <div class="section-head"><div><h3 id="sellerTitle">Boutiques à la une</h3><p class="section-sub" id="sellerSub">Les dressings Revoo Ultra, à tour de rôle.</p></div></div>
         <div class="sellers" id="sellers"></div>
       </section>
 
     <section class="home-block" id="hbVendre" aria-labelledby="hbVendreTitle">
-      <header class="hb-head"><span class="hb-num" aria-hidden="true">4</span><div><h2 id="hbVendreTitle">Vendre</h2><p>Donne une seconde vie à ton dressing, en quelques minutes.</p></div></header>
+      <header class="hb-head"><div><h2 id="hbVendreTitle">Vendre</h2><p>Publier une annonce est gratuit.</p></div></header>
       <ol class="sell-steps">
         <li><span class="ss-n">1</span><b>Photographie</b><small>Quelques photos à la lumière du jour suffisent.</small></li>
         <li><span class="ss-n">2</span><b>Publie gratuitement</b><small>Titre, taille, état, prix : ton annonce est en ligne.</small></li>
@@ -1479,9 +1480,9 @@ html[data-design="2"][data-theme="dark"]{--bg:#0B141D}
     </section>
 
     <section class="home-block" id="hbImpact" aria-labelledby="hbImpactTitle">
-      <header class="hb-head"><span class="hb-num" aria-hidden="true">5</span><div><h2 id="hbImpactTitle">Notre impact</h2><p>Chaque vêtement revendu, c’est un vêtement neuf en moins à fabriquer.</p></div></header>
+      <header class="hb-head"><div><h2 id="hbImpactTitle">Notre impact</h2><p>Ce que la seconde main évite de produire.</p></div></header>
       <a class="impact-band" id="impactBand" href="#/impact" hidden aria-live="polite">
-        <span class="impact-ico" aria-hidden="true">🌱</span>
+        <span class="impact-ico"><svg class="icon ic-leaf" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14Z"/><path d="M5 19 13 11"/></svg></span>
         <span class="impact-txt"><b id="impactCo2">0 kg</b> de CO₂ évités grâce à <span id="impactItems">0 vêtement revendu</span> sur Revoo</span>
         <span class="impact-live"><span class="impact-dot" aria-hidden="true"></span>En direct · estimation</span>
       </a>
@@ -2214,7 +2215,7 @@ function orderCard(o,role){
     handoff=`<form class="handoff" data-handoff="${o.id}" novalidate><label class="handoff-label" for="hc-${o.id}">Code de l’acheteur</label>
       <div class="handoff-row"><input class="input handoff-input" id="hc-${o.id}" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000 000"><button class="btn btn-primary" type="submit">Valider le code</button></div>
       <span class="error" id="hc-${o.id}Err"></span>
-      <p class="small">Au rendez-vous, l’acheteur vérifie l’article puis te donne son code. <b>Remets l’article seulement après « Paiement validé ✅ ».</b></p></form>${deadlineHtml(o)}`;
+      <p class="small">Au rendez-vous, l’acheteur vérifie l’article puis te donne son code. <b>Remets l’article seulement après « Paiement validé ».</b></p></form>${deadlineHtml(o)}`;
     actions=`<button type="button" class="btn btn-outline" data-order="cancel" data-id="${o.id}">Annuler la vente</button>`;
   } else if(!me&&role!=="admin"&&o.status==="paid"){
     actions=o.delivery==="colis"
@@ -2302,7 +2303,7 @@ async function submitHandoff(id,form){
   const {data,error}=await sb.rpc("confirm_handoff",{p_order:id,p_code:code});
   busy(form,false);
   if(error){toast(frenchError(error));return}
-  if(data==="ok"){toast("Paiement validé ✅ Tu peux remettre l’article.");await Promise.all([loadOrders(),loadListings()]);renderView();return}
+  if(data==="ok"){toast("Paiement validé. Tu peux remettre l’article.");await Promise.all([loadOrders(),loadListings()]);renderView();return}
   if(data==="locked"){fieldError("hc-"+id,"hc-"+id+"Err","Trop d’essais : le code est bloqué. Contacte la modération.");return}
   const left=+(String(data).split(":")[1]||0);
   fieldError("hc-"+id,"hc-"+id+"Err",`Code incorrect. Il te reste ${left} essai${left>1?"s":""}.`);inp.select();
@@ -2353,7 +2354,7 @@ function tradeBlock(p){
   if(!payOn()||p.demo||p.mine||state.isAdmin)return"";
   if(!state.user)return `<p class="trade-lock small"><span aria-hidden="true">⇄</span> <a href="#/compte">Connecte-toi</a> pour proposer un échange.</p>`;
   const n=purchasesDone();
-  if(n<TRADE_UNLOCK)return `<div class="trade-lock"><span aria-hidden="true">🔒</span><div><b>Échange</b><br><span class="small">Débloqué après ${TRADE_UNLOCK} achats confirmés : tu en es à <b>${n}/${TRADE_UNLOCK}</b>.</span><span class="trade-progress" aria-hidden="true"><i style="width:${Math.min(100,n/TRADE_UNLOCK*100)}%"></i></span></div></div>`;
+  if(n<TRADE_UNLOCK)return `<div class="trade-lock"><span class="lock-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div><b>Échange</b><br><span class="small">Débloqué après ${TRADE_UNLOCK} achats confirmés : tu en es à <b>${n}/${TRADE_UNLOCK}</b>.</span><span class="trade-progress" aria-hidden="true"><i style="width:${Math.min(100,n/TRADE_UNLOCK*100)}%"></i></span></div></div>`;
   return `<button type="button" class="btn btn-outline btn-block" data-trade="open" data-id="${esc(p.id)}" style="margin-top:12px"><span aria-hidden="true">⇄</span> Proposer un échange</button><div id="tradeBox"></div>`;
 }
 function tradeFormHtml(p){
@@ -2444,12 +2445,12 @@ function tradeCard(t,role){
     if(t.review_deadline){
       const h=Math.max(0,Math.ceil((Date.parse(t.review_deadline)-Date.now())/36e5));
       info+=`<p class="small note">Les deux colis sont arrivés. Vérification jusqu’au <b>${fmtDT(t.review_deadline)}</b> (encore ${h} h). Sans problème signalé, l’échange sera validé automatiquement.</p>`;
-      if(!myOk)actions+=`<button type="button" class="btn btn-primary" data-trade="validate" data-id="${t.id}">Tout est conforme</button>`;else info+=`<p class="small">Tu as validé ✅ En attente de l’autre (ou de la fin des 48 h).</p>`;
+      if(!myOk)actions+=`<button type="button" class="btn btn-primary" data-trade="validate" data-id="${t.id}">Tout est conforme</button>`;else info+=`<p class="small">Tu as validé. En attente de l’autre (ou de la fin des 48 h).</p>`;
     } else if(myRec)info+=`<p class="small muted">Tu as reçu ton colis. Les 48 h de vérification démarreront quand l’autre aura reçu le sien.</p>`;
     if(myShip||otherShip)actions+=`<button type="button" class="btn btn-outline" data-trade="problem-form" data-id="${t.id}">Signaler un problème</button>`;
     else actions+=`<button type="button" class="btn btn-outline" data-trade="cancel-accepted" data-id="${t.id}">Annuler l’échange</button>`;
   } else if(t.status==="problem")info=`<p class="small note warn">Problème signalé : « ${esc(t.problem||"")} ». Tout reste bloqué : la modération va trancher.</p>`;
-  else if(t.status==="completed")info=`<p class="small">Échange terminé ✅${top>0&&!iAmP?` · ${eur(top)} ajoutés à ton porte-monnaie`:""}</p>`;
+  else if(t.status==="completed")info=`<p class="small">Échange terminé${top>0&&!iAmP?` · ${eur(top)} ajoutés à ton porte-monnaie`:""}</p>`;
   else if(t.status==="cancelled"&&t.refund_due_at&&iAmP&&top>0)info=`<p class="small note">Échange annulé. Ton complément est remboursé au plus tard le <b>${fmtDT(t.refund_due_at)}</b>.</p>`;
   return `<div class="order trade-card">
     <header><b>Échange${admin?"":iAmP?" proposé":" reçu"}</b><span class="status">${TRADE_STATUS[t.status]||t.status}${t.demo?" · démo":""}</span></header>
@@ -2469,7 +2470,7 @@ function tradeCard(t,role){
 function tradesHtml(){
   if(!trades.loaded)return`<p class="muted">Chargement…</p>`;
   const n=purchasesDone();
-  const head=n<TRADE_UNLOCK?`<div class="trade-lock" style="margin-bottom:14px"><span aria-hidden="true">🔒</span><div><b>L’échange se débloque après ${TRADE_UNLOCK} achats confirmés</b><br><span class="small">Tu en es à <b>${n}/${TRADE_UNLOCK}</b>. Tu peux quand même répondre aux propositions une fois débloqué.</span><span class="trade-progress" aria-hidden="true"><i style="width:${Math.min(100,n/TRADE_UNLOCK*100)}%"></i></span></div></div>`
+  const head=n<TRADE_UNLOCK?`<div class="trade-lock" style="margin-bottom:14px"><span class="lock-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div><b>L’échange se débloque après ${TRADE_UNLOCK} achats confirmés</b><br><span class="small">Tu en es à <b>${n}/${TRADE_UNLOCK}</b>. Tu peux quand même répondre aux propositions une fois débloqué.</span><span class="trade-progress" aria-hidden="true"><i style="width:${Math.min(100,n/TRADE_UNLOCK*100)}%"></i></span></div></div>`
     :`<p class="muted small">Pour proposer un échange, ouvre une annonce qui te plaît et clique sur « ⇄ Proposer un échange ».</p>`;
   return head+(trades.list.length?trades.list.map(t=>tradeCard(t)).join(""):`<div class="empty"><p>Aucun échange pour le moment.</p><a class="btn btn-primary" href="#/catalogue">Trouver une pièce</a></div>`);
 }
@@ -2555,7 +2556,7 @@ function subscriptionPanel(){
   return `<div class="panel sub-panel" id="subPanel"><h2>Mon abonnement</h2>
     <p class="sub-current"><span class="plan-badge plan-${m.plan}">${p.short}</span> <b>${p.name}</b> · ${p.price}/mois${m.demo?' <span class="muted small">(démo, aucun paiement)</span>':""}</p>
     <p class="small">${m.cancel_at_period_end?`Résilié : tes avantages restent actifs jusqu’au <b>${end}</b>, puis l’abonnement s’arrête. Aucun autre prélèvement.`:`Renouvellement automatique le <b>${end}</b>.`}</p>
-    <p class="small">⭐ Mises en avant restantes ce mois-ci : <b>${left} / ${p.boosts}</b>${left?` · à utiliser depuis « Mes annonces »`:""}</p>
+    <p class="small">Mises en avant restantes ce mois-ci : <b>${left} / ${p.boosts}</b>${left?` · à utiliser depuis « Mes annonces »`:""}</p>
     ${m.plan==="ultra"?`<fieldset class="accent-pick"><legend class="small"><b>Couleur de ta boutique</b></legend>${Object.entries(ACCENTS).map(([k,c])=>`<label title="${k}"><input type="radio" name="accent" value="${k}" ${state.user.accent===k?"checked":""}><span style="background:${c}"></span><span class="sr-only">${k}</span></label>`).join("")}<label title="aucune"><input type="radio" name="accent" value="" ${!state.user.accent?"checked":""}><span class="accent-none">×</span><span class="sr-only">Aucune</span></label></fieldset>`:""}
     <div class="buy-actions"><a class="btn btn-outline" href="#/abonnements">Changer de formule</a>${m.cancel_at_period_end?`<button type="button" class="btn btn-primary" data-sub="resume">Reprendre mon abonnement</button>`:`<button type="button" class="btn btn-outline" data-sub="cancel-start">Résilier</button>`}</div>
     <div id="subCancelBox"></div></div>`;
@@ -2566,7 +2567,7 @@ function subscriptionsPage(){
   const yes=`<span class="cmp-yes" aria-label="Inclus">✓</span>`, no=`<span class="cmp-no" aria-label="Non inclus">—</span>`;
   return `<div class="plans-page">
     <p class="crumbs"><a href="#/">Accueil</a> › Abonnements</p>
-    <header class="plans-hero"><span class="kicker">Abonnements Revoo</span><h1>Vends plus, et plus vite.</h1>
+    <header class="plans-hero"><h1>Vends plus, et plus vite.</h1>
       <p>Des mises en avant chaque mois, plus de photos et une boutique à ton image. <b>Sans engagement</b>, résiliable en 3 clics.</p>
       ${demo?`<p class="plans-demo">Version de démonstration : l’abonnement s’active sans paiement.</p>`:""}</header>
     <div class="plans">${Object.keys(PLANS).map(k=>{const p=PLANS[k];return `<article class="plan plan-card-${k}${k==="max"?" plan-popular":""}" aria-labelledby="plan-${k}">
@@ -2602,7 +2603,7 @@ async function subAction(kind,arg){
   else if(kind==="pin"){const l=state.remote.find(x=>x.id===arg);r=await sb.from("listings").update({pinned:!l.pinned}).eq("id",arg)}
   else if(kind==="accent"){r=await sb.from("profiles").update({accent:arg||null}).eq("id",state.user.id);if(!r.error)state.user.accent=arg||""}
   if(r&&r.error){toast(frenchError(r.error));return}
-  toast({subscribe:"Bienvenue chez "+(PLANS[arg]?.name||"Revoo")+" !",cancel:"Abonnement résilié : tu gardes tes avantages jusqu’à la fin du mois.",resume:"Abonnement repris.",boost:"⭐ Annonce mise en avant pendant 48 h.",pin:"C’est noté.",accent:"Couleur de boutique mise à jour."}[kind]||"C’est fait.");
+  toast({subscribe:"Bienvenue chez "+(PLANS[arg]?.name||"Revoo")+" !",cancel:"Abonnement résilié : tu gardes tes avantages jusqu’à la fin du mois.",resume:"Abonnement repris.",boost:"Annonce mise en avant pendant 48 h.",pin:"C’est noté.",accent:"Couleur de boutique mise à jour."}[kind]||"C’est fait.");
   await loadListings();renderView();
 }
 
@@ -2792,10 +2793,10 @@ async function renderSellerProfile(id){
    ========================================================= */
 function card(p){
   const fav=isFav(p.id), c=inCart(p.id), s=sellerInfo(p);
-  const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : isBoosted(p) ? "Sponsorisé" : p.pinned&&location.hash.startsWith("#/vendeur/") ? "📌 Épinglée" : "";
+  const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : isBoosted(p) ? "Sponsorisé" : p.pinned&&location.hash.startsWith("#/vendeur/") ? "Épinglée" : "";
   const cartBtn = p.mine ? `<a class="btn btn-outline" href="#/compte/annonces">Gérer l’annonce</a>`
     : payOn()&&!p.demo ? `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`
-    : !CONFIG.paiementIntegre||p.demo ? `<button type="button" class="btn btn-outline" data-contact="${esc(p.id)}" aria-label="Je suis intéressé(e) par ${esc(p.name)}">💬 Intéressé(e)</button>`
+    : !CONFIG.paiementIntegre||p.demo ? `<button type="button" class="btn btn-outline" data-contact="${esc(p.id)}" aria-label="Je suis intéressé(e) par ${esc(p.name)}">Intéressé(e)</button>`
     : `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`;
   return `<article class="card">
     <a class="card-link" href="#/article/${encodeURIComponent(p.id)}">
@@ -2844,13 +2845,13 @@ function renderHome(){
   const ring=arr=>rotate(arr.map(id=>({id}))).map(x=>x.id);
   const ids=[...ring(sellerIds.filter(id=>planOf(id)==="ultra")),...ring(sellerIds.filter(id=>planOf(id)==="max")),...ring(sellerIds.filter(id=>planOf(id)==="pro"))];
   $("sellerTitle").textContent="Boutiques à la une";
-  $("sellerSub").textContent="Les dressings des abonnés Revoo Pro, Max et Ultra. Les Ultra passent en priorité.";
+  $("sellerSub").textContent="Abonnés Pro, Max et Ultra. Les Ultra en premier.";
   const shops=ids.map(id=>{const p=av.find(x=>x.sellerId===id);return {id,name:p.seller,emoji:sellerInfo(p).emoji}}).slice(0,6);
   $("sellers").innerHTML=shops.map(sh=>{const items=av.filter(p=>sh.id?p.sellerId===sh.id:(p.seller===sh.name&&!p.sellerId)),n=items.length;
     const thumbs=items.slice(0,3).map(p=>`<span class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="" loading="lazy" decoding="async"></span>`).join("");
     const inner=`<span class="dress-head"><span class="avatar" aria-hidden="true">${sh.emoji}</span><span class="shop-info"><b>${esc(sh.name)}${sh.id?planBadge(sh.id):""}</b><small>${n} article${n>1?"s":""} en vente</small></span><span class="shop-go" aria-hidden="true">›</span></span><span class="dress-thumbs" aria-hidden="true">${thumbs}</span>`;
     return sh.id?`<a class="shop dress" href="#/vendeur/${sh.id}" aria-label="Dressing de ${esc(sh.name)}, ${n} article${n>1?"s":""}">${inner}</a>`:`<button type="button" class="shop dress" data-seller="${esc(sh.name)}" aria-label="Dressing de ${esc(sh.name)}">${inner}</button>`}).join("")
-    + (state.user&&planOf(state.user.id)?"":`<a class="shop shop-join" href="#/abonnements"><span class="avatar" aria-hidden="true">👑</span><span class="shop-info"><b>${shops.length?"Ton dressing ici ?":"Sois la première boutique à la une"}</b><small>Réservé aux abonnés Pro, Max et Ultra, à tour de rôle</small></span><span class="shop-go" aria-hidden="true">›</span></a>`);
+    + (state.user&&planOf(state.user.id)?"":`<a class="shop shop-join" href="#/abonnements"><span class="avatar" aria-hidden="true">+</span><span class="shop-info"><b>${shops.length?"Ton dressing ici ?":"Sois la première boutique à la une"}</b><small>Réservé aux abonnés Pro, Max et Ultra, à tour de rôle</small></span><span class="shop-go" aria-hidden="true">›</span></a>`);
   const STYLE_DESC={Vintage:"Pièces d’époque et belles matières",Streetwear:"Sweats, baskets et coupes larges",Chic:"Tailleurs, chemises et élégance",Doux:"Mailles, cocooning et confort",Sport:"Joggings, leggings et tenues actives","Bohème":"Robes fluides, imprimés et matières naturelles"};
   $("styleTiles").innerHTML=STYLES.map((st,i)=>{const n=av.filter(p=>p.style===st).length;return `<button type="button" class="style-tile st-${i}" data-style="${st}"><span class="st-name">${st}</span><span class="st-desc">${STYLE_DESC[st]||""}</span><span class="st-count">${n} pièce${n>1?"s":""} <span aria-hidden="true">→</span></span></button>`}).join("");
   const top=av.filter(p=>!shown.has(p.id)).sort(byLikes).slice(0,6);
@@ -2967,8 +2968,8 @@ function renderProduct(id){
         <div><dt>Ajouté</dt><dd>${ago(p.addedAt)}</dd></div>
       </dl>
       ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
-      <p class="impact-line"><span aria-hidden="true">🌱</span> <span>Le choisir d’occasion plutôt que neuf évite environ <b>${impactKg(p.name)} kg de CO₂</b>. <a href="#/impact">Estimation</a></span></p>
-      ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">🛡️ Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
+      <p class="impact-line"><svg class="icon ic-leaf" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14Z"/><path d="M5 19 13 11"/></svg> <span>Le choisir d’occasion plutôt que neuf évite environ <b>${impactKg(p.name)} kg de CO₂</b>. <a href="#/impact">Estimation</a></span></p>
+      ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Revoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Revoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
       ${actions}
       ${sold?"":tradeBlock(p)}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Revoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
@@ -3131,8 +3132,8 @@ function renderAccount(tab){
     if(state.user.vacation)body=`<p class="note small">Mode vacances activé : tes annonces sont masquées pour les autres membres. Désactive-le dans « Profil et paramètres ».</p>`;
     body=mine.length?`<div class="panel">${mine.map(l=>`<div class="listing-row">
       <a class="image-frame" href="#/article/${encodeURIComponent(l.id)}"><img data-safe-image src="${esc(l.img)}" alt="${esc(l.name)}"></a>
-      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p>${isBoosted(l)?`<span class="status boosted">⭐ En avant jusqu’au ${fmtDT(l.boostedUntil)}</span> `:""}<span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Revoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
-      <div class="row-actions">${l.status==="removed"||lockedBy(l.id)?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}${l.status==="active"&&subs.mine?`<button type="button" class="btn btn-outline" data-boost="${esc(l.id)}">⭐ Mettre en avant</button>`:""}${l.status==="active"&&myPerk("pins")>0?`<button type="button" class="btn btn-outline" data-pin="${esc(l.id)}" aria-pressed="${l.pinned}">${l.pinned?"📌 Désépingler":"📌 Épingler"}</button>`:""}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
+      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p>${isBoosted(l)?`<span class="status boosted">En avant jusqu’au ${fmtDT(l.boostedUntil)}</span> `:""}<span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Revoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
+      <div class="row-actions">${l.status==="removed"||lockedBy(l.id)?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}${l.status==="active"&&subs.mine?`<button type="button" class="btn btn-outline" data-boost="${esc(l.id)}">Mettre en avant</button>`:""}${l.status==="active"&&myPerk("pins")>0?`<button type="button" class="btn btn-outline" data-pin="${esc(l.id)}" aria-pressed="${l.pinned}">${l.pinned?"Désépingler":"Épingler"}</button>`:""}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
     </div>`).join("")}</div><a class="btn btn-primary" href="#/vendre">Ajouter une annonce</a>`
     :`<div class="empty"><p>Tu n’as pas encore d’annonce.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
   } else if(accountTab==="commandes"){
