@@ -1760,10 +1760,45 @@ html[data-design="2"][data-theme="light"] .mod-pill{background:#E3EDF4;color:#16
 :root[data-theme="dark"] .fiche-signals .bad b{color:#F6B8B8}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fiche-head.banned,:root:not([data-theme="light"]) .fiche-signals .bad{background:#3A1E22;border-color:#6B3036}:root:not([data-theme="light"]) .fiche-signals .bad b{color:#F6B8B8}}
 .rb-code{font-family:ui-monospace,Menlo,monospace;letter-spacing:.12em;font-size:1.1em}
+
+/* Maintenance */
+.maint{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:24px 16px;overflow:auto;background:radial-gradient(900px 500px at 80% 0%,#BFD5E6,transparent 70%),linear-gradient(180deg,#DCE8F1,#F3F7FA)}
+.maint[hidden]{display:none}
+body.maint-on{overflow:hidden}
+.maint-card{width:min(100%,640px);text-align:center;background:#fff;border-radius:24px;padding:32px 28px;box-shadow:0 30px 80px -30px rgba(22,41,58,.45);animation:rvUp .6s cubic-bezier(.2,.7,.2,1) both}
+.maint-logo{height:34px;width:auto;margin:0 auto 18px;display:block}
+.maint-img{margin:0 0 20px;border-radius:16px;overflow:hidden;aspect-ratio:2/1;background:#EEF4F8}
+.maint-img img{width:100%;height:100%;object-fit:cover;display:block}
+.maint h1{margin:0 0 10px;font-size:clamp(26px,4vw,36px);color:#16293A;letter-spacing:-.03em}
+.maint p{margin:0 0 10px;color:#33495C;font-size:17px;line-height:1.5}
+.maint-until{display:inline-block;padding:8px 14px;border-radius:99px;background:#E3EDF4;color:#16293A!important;font-weight:700;font-size:15px!important}
+.maint-actions{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:18px}
+.maint-team{font-size:13px;color:#566A7B}
+.maint .btn-primary{background:#294B68;color:#fff}
+:root[data-theme="dark"] .maint{background:radial-gradient(900px 500px at 80% 0%,#2A4A68,transparent 70%),#14212F}
+:root[data-theme="dark"] .maint-card{background:#192A3B}:root[data-theme="dark"] .maint h1{color:#F2F7FB}:root[data-theme="dark"] .maint p{color:#C9D8E4}:root[data-theme="dark"] .maint-until{background:#243C55;color:#F2F7FB!important}:root[data-theme="dark"] .maint-team{color:#A9BDCD}
+:root[data-theme="dark"] .maint .btn-primary{background:#A8C4D8;color:#16293A}:root[data-theme="dark"] .maint-logo{filter:brightness(0) invert(1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .maint{background:radial-gradient(900px 500px at 80% 0%,#2A4A68,transparent 70%),#14212F}:root:not([data-theme="light"]) .maint-card{background:#192A3B}:root:not([data-theme="light"]) .maint h1{color:#F2F7FB}:root:not([data-theme="light"]) .maint p{color:#C9D8E4}:root:not([data-theme="light"]) .maint-until{background:#243C55;color:#F2F7FB!important}:root:not([data-theme="light"]) .maint-team{color:#A9BDCD}:root:not([data-theme="light"]) .maint .btn-primary{background:#A8C4D8;color:#16293A}:root:not([data-theme="light"]) .maint-logo{filter:brightness(0) invert(1)}}
+.maint-form.on{border-color:#D9A3A3}
+.maint-pic{margin:6px 0 10px;border-radius:14px;overflow:hidden;aspect-ratio:2/1;max-width:420px;display:grid;place-items:center;background:var(--ice);border:1px dashed var(--line)}
+.maint-pic img{width:100%;height:100%;object-fit:cover}
+.label-like{display:block;font-weight:700;margin-bottom:4px}
+.maint-form .buy-actions>*{flex:0 0 auto;width:auto}
+.todo-band.warn{background:#8A2E2E;margin-bottom:10px}
 </style>
 </head>
 <body>
 <a href="#main" class="skip" id="skipLink">Aller au contenu</a>
+<div class="maint" id="maintScreen" role="dialog" aria-modal="true" aria-labelledby="maintTitle" hidden>
+  <div class="maint-card">
+    <img class="maint-logo" src="logos/revoo-logo.png" alt="Revoo" data-logo="bleu" width="480" height="149">
+    <div class="maint-img" id="maintImg" hidden></div>
+    <h1 id="maintTitle">On fait une petite pause</h1>
+    <p id="maintMsg">Revoo est en maintenance pour s’améliorer. Merci de ta patience !</p>
+    <p class="maint-until" id="maintUntil" hidden></p>
+    <div class="maint-actions"><button type="button" class="btn btn-primary" id="maintRetry">Réessayer</button><a class="maint-team" href="#/compte" id="maintTeam">Accès équipe</a><button type="button" class="btn btn-outline" id="maintClose" hidden>Fermer l’aperçu</button></div>
+  </div>
+</div>
 
 <div class="site-announce" id="siteAnnounce" role="status" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6L7 10H4Z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg><span></span></div>
 <aside class="demo-bar" id="demoBar" aria-label="Information"><b>0 € de frais</b> pendant le lancement · <a href="#/securite">Acheter en sécurité</a></aside>
@@ -2589,6 +2624,7 @@ const fmtDH=d=>d?new Date(d).toLocaleString("fr-FR",{day:"numeric",month:"short"
 async function loadTeamData(which){
   if(!sb||!state.isAdmin)return;
   const jobs=[];
+  if(!which||which==="bord")jobs.push(loadSite());
   if(!which||which==="bord")jobs.push(sb.rpc("admin_stats").then(r=>{if(!r.error&&r.data&&!r.data.erreur)team.stats=r.data}));
   if(!which||which==="equipe"||which==="bord")jobs.push(sb.rpc("team_list").then(r=>{if(!r.error)team.list=r.data||[]}));
   if(!which||which==="journal")jobs.push(sb.from("mod_log").select("id,actor_id,action,target_user,target_listing,details,created_at").order("created_at",{ascending:false}).limit(150).then(async r=>{if(r.error)return;team.log=r.data||[];
@@ -2607,8 +2643,9 @@ function teamDashboardHtml(){
   const s=team.stats;
   if(!s)return`<div class="empty"><p>Chargement du tableau de bord… Si rien ne s’affiche, lance le script <b>supabase-equipe.sql</b> dans Supabase.</p></div>`;
   const tile=(n,l,sub,tab)=>`<${tab?`button type="button" data-modtab="${tab}"`:"div"} class="kpi"><b>${Number(n).toLocaleString("fr-FR")}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</${tab?"button":"div"}>`;
-  const urgent=s.signalements+s.litiges;
-  return `${urgent?`<div class="todo-band"><b>${urgent} chose${urgent>1?"s":""} à régler</b><span>${s.signalements} signalement${s.signalements>1?"s":""} · ${s.litiges} litige${s.litiges>1?"s":""}</span><button type="button" class="btn btn-primary" data-modtab="${s.signalements?"atraiter":"litiges"}">Commencer</button></div>`:`<div class="todo-band ok"><b>Tout est en ordre</b><span>Aucun signalement ni litige en attente.</span></div>`}
+  const urgent=s.signalements+s.litiges,ss=site.settings||{};
+  const live=[ss.maintenance&&"Maintenance en cours",ss.pause_purchases&&"Achats en pause",ss.pause_listings&&"Annonces en pause",ss.pause_messages&&"Messagerie en pause"].filter(Boolean);
+  return `${live.length?`<div class="todo-band warn"><b>${live.join(" · ")}</b><span>Pense à rouvrir quand c’est réglé.</span>${state.role==="fondateur"?`<button type="button" class="btn btn-primary" data-modtab="reglages">Gérer</button>`:""}</div>`:""}${urgent?`<div class="todo-band"><b>${urgent} chose${urgent>1?"s":""} à régler</b><span>${s.signalements} signalement${s.signalements>1?"s":""} · ${s.litiges} litige${s.litiges>1?"s":""}</span><button type="button" class="btn btn-primary" data-modtab="${s.signalements?"atraiter":"litiges"}">Commencer</button></div>`:`<div class="todo-band ok"><b>Tout est en ordre</b><span>Aucun signalement ni litige en attente.</span></div>`}
   <div class="kpis">
     ${tile(s.membres,"Membres",`+${s.membres_7j} cette semaine`,"membres")}
     ${tile(s.annonces,"Annonces en ligne",`+${s.annonces_7j} cette semaine`,"enligne")}
@@ -2660,14 +2697,27 @@ function journalHtml(){
   if(!team.log.length)return`<div class="empty"><p>Aucune action pour le moment. Chaque décision de l’équipe s’inscrira ici.</p></div>`;
   return `<div class="panel journal">${team.log.map(l=>`<div class="j-row"><time>${fmtDH(l.created_at)}</time><div><b>${esc(l.action)}</b>${l.target_user?` · ${nm(l.target_user)}`:""}${l.details?`<span class="muted"> — ${esc(l.details)}</span>`:""}<small>par ${nm(l.actor_id)}</small></div></div>`).join("")}</div>`;
 }
+const toLocalInput=iso=>{const d=new Date(iso),z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`};
 function settingsTeamHtml(){
   const founder=state.role==="fondateur",st=site.settings||{};
   return `${founder?`<form class="panel" id="siteForm"><h2>Annonce sur tout le site</h2>
       <p class="small muted">Affichée en haut de toutes les pages, pour tous les visiteurs. Laisse vide pour ne rien afficher.</p>
       <div class="field"><label for="sAnn">Message</label><input class="input" id="sAnn" maxlength="300" value="${esc(st.announcement||"")}" placeholder="Ex. : Maintenance ce soir de 22 h à 23 h"></div>
       <div class="segmented" role="radiogroup" aria-label="Type d’annonce">${[["info","Information"],["alerte","Important"]].map(([v,l])=>`<label><input type="radio" name="sLvl" value="${v}" ${(st.announcement_level||"info")===v?"checked":""}><span>${l}</span></label>`).join("")}</div>
-      <div class="set-row" style="margin-top:14px"><div><b>Mettre en pause les nouvelles annonces</b><small>En cas d’urgence (spam massif…). Les membres voient un message d’attente.</small></div><label class="switch"><input type="checkbox" id="sPause" ${st.pause_listings?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Mettre en pause les nouvelles annonces</span></label></div>
-      <button class="btn btn-primary" type="submit">Enregistrer</button></form>`:""}
+      <button class="btn btn-primary" type="submit" style="margin-top:12px">Enregistrer l’annonce</button></form>
+    <form class="panel" id="pauseForm"><h2>Pauses</h2>
+      <p class="small muted">En cas de problème (bug, paiement, spam…), mets en pause une seule partie du site. Un bandeau prévient les visiteurs, et le serveur bloque l’action.</p>
+      ${[["pL","pause_listings","Nouvelles annonces","Plus personne ne peut publier."],["pP","pause_purchases","Achats et échanges","Plus personne ne peut acheter ni proposer un échange. Les commandes en cours continuent."],["pM","pause_messages","Messagerie","Plus personne ne peut envoyer de message."]].map(([id,k,t,d])=>`<div class="set-row"><div><b>${t}</b><small>${d}</small></div><label class="switch"><input type="checkbox" id="${id}" ${st[k]?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Mettre en pause : ${t}</span></label></div>`).join("")}
+      <button class="btn btn-primary" type="submit">Appliquer les pauses</button></form>
+    <form class="panel maint-form${st.maintenance?" on":""}" id="maintForm"><h2>Maintenance ${st.maintenance?`<span class="status danger">En cours</span>`:`<span class="status">Désactivée</span>`}</h2>
+      <p class="small muted">Tout le site affiche une page de maintenance avec ton image et ton message. Plus rien ne peut être publié, acheté ni écrit. Toi et ton équipe gardez l’accès normal.</p>
+      <div class="field"><label for="mTitle">Titre</label><input class="input" id="mTitle" maxlength="80" value="${esc(st.maintenance_title||"")}" placeholder="On fait une petite pause"></div>
+      <div class="field"><label for="mMsg">Message</label><textarea class="input" id="mMsg" maxlength="500" placeholder="Revoo est en maintenance pour s’améliorer. Merci de ta patience !">${esc(st.maintenance_message||"")}</textarea></div>
+      <div class="field"><label for="mUntil">Retour prévu <span class="hint">(facultatif)</span></label><input class="input" id="mUntil" type="datetime-local" value="${st.maintenance_until?toLocalInput(st.maintenance_until):""}"></div>
+      <div class="field"><span class="label-like">Image <span class="hint">(facultatif, format paysage)</span></span>
+        <div class="maint-pic" id="mPic">${team.maintImg??st.maintenance_image?`<img src="${esc(team.maintImg??st.maintenance_image)}" alt="Image de maintenance">`:`<span class="muted small">Aucune image</span>`}</div>
+        <div class="buy-actions"><label class="btn btn-outline" for="mFile">Choisir une image</label><input type="file" id="mFile" accept="image/*" class="sr-only">${(team.maintImg??st.maintenance_image)?`<button type="button" class="btn btn-outline" id="mNoImg">Retirer l’image</button>`:""}</div></div>
+      <div class="buy-actions"><button type="button" class="btn btn-outline" id="mPreview">Aperçu</button>${st.maintenance?`<button class="btn btn-primary" type="submit">Mettre à jour</button><button type="button" class="btn btn-danger" id="mStop">Terminer la maintenance</button>`:`<button class="btn btn-danger" type="submit">Activer la maintenance</button>`}</div></form>`:""}
     <div class="panel"><h2>Mots interdits dans les annonces</h2>
       <p class="small muted">Une annonce dont le titre, la description ou la marque contient un de ces mots est refusée automatiquement.</p>
       <form id="wordAdd" class="mod-search"><label for="wNew" class="sr-only">Nouveau mot interdit</label><input class="input" id="wNew" maxlength="40" placeholder="Ex. : réplique, copie, contrefaçon"><button class="btn btn-primary" type="submit">Ajouter</button></form>
@@ -2827,18 +2877,56 @@ function bindTeam(el){
     if(!confirm(`Ajouter @${n} à l’équipe ? Ce compte deviendra un compte de modération.`))return;if(await teamRpc("team_add",{p_name:n},`@${n} fait maintenant partie de l’équipe.`))await loadTeamData("equipe")});
   const wa=el.querySelector("#wordAdd");if(wa)wa.addEventListener("submit",async e=>{e.preventDefault();const w=$("wNew").value.trim();if(!w)return;if(await teamRpc("add_banned_word",{p_word:w},"Mot ajouté."))await loadTeamData("reglages")});
   const sf=el.querySelector("#siteForm");if(sf)sf.addEventListener("submit",async e=>{e.preventDefault();
-    const pause=$("sPause").checked;if(pause&&!site.settings?.pause_listings&&!confirm("Mettre en pause les nouvelles annonces pour tout le monde ?"))return;
-    if(await teamRpc("set_site_settings",{p_announcement:$("sAnn").value,p_level:(sf.querySelector("input[name=sLvl]:checked")||{}).value||"info",p_pause:pause},"Réglages enregistrés."))await loadSite()});
+    const pause=!!(site.settings||{}).pause_listings;
+    if(await teamRpc("set_site_settings",{p_announcement:$("sAnn").value,p_level:(sf.querySelector("input[name=sLvl]:checked")||{}).value||"info",p_pause:pause},"Annonce enregistrée."))await loadSite()});
+  const pf=el.querySelector("#pauseForm");if(pf)pf.addEventListener("submit",async e=>{e.preventDefault();
+    const v={p_listings:$("pL").checked,p_purchases:$("pP").checked,p_messages:$("pM").checked};
+    if((v.p_listings||v.p_purchases||v.p_messages)&&!confirm("Appliquer ces pauses pour tous les membres ?"))return;
+    if(await teamRpc("set_pauses",v,"Pauses appliquées."))await loadTeamData("reglages")});
+  const mf=el.querySelector("#maintForm");if(mf){
+    const cur=()=>({maintenance_title:$("mTitle").value.trim(),maintenance_message:$("mMsg").value.trim(),maintenance_until:$("mUntil").value?new Date($("mUntil").value).toISOString():null,maintenance_image:team.maintImg??(site.settings||{}).maintenance_image??null});
+    const send=async on=>{const c=cur();busy(mf,true,"Enregistrement…");const ok=await teamRpc("set_maintenance",{p_on:on,p_title:c.maintenance_title,p_message:c.maintenance_message,p_image:c.maintenance_image||null,p_until:c.maintenance_until},on?"Maintenance activée : les visiteurs voient la page de maintenance.":"Maintenance terminée : le site est de nouveau ouvert.");busy(mf,false);if(ok){team.maintImg=undefined;await loadTeamData("reglages")}};
+    mf.addEventListener("submit",async e=>{e.preventDefault();if(!(site.settings||{}).maintenance&&!confirm("Activer la maintenance ? Tout le site sera fermé aux visiteurs."))return;await send(true)});
+    $("mStop")?.addEventListener("click",async()=>{if(confirm("Terminer la maintenance et rouvrir le site ?"))await send(false)});
+    $("mPreview").addEventListener("click",()=>{const keep=site.settings;site.settings={...keep,...cur()};renderMaintenance(true);site.settings=keep});
+    $("mNoImg")?.addEventListener("click",()=>{team.maintImg="";renderModeration(el)});
+    $("mFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")){toast("Choisis une image.");return}
+      try{const blob=await cropImage(f,{title:"Cadrer l’image de maintenance",w:1200,h:600,q:.85});if(!blob)return;
+        const path=`${state.user.id}/maintenance-${Date.now()}.jpg`;const up=await sb.storage.from("avatars").upload(path,blob,{contentType:"image/jpeg",upsert:false});if(up.error)throw up.error;
+        team.maintImg=sb.storage.from("avatars").getPublicUrl(path).data.publicUrl;toast("Image prête : clique sur « Mettre à jour » ou « Activer » pour l’utiliser.");renderModeration(el)}catch(err){toast(frenchError(err))}});
+  }
 }
 
 /* Annonce du site (pour tous) */
 const site={settings:null};
 async function loadSite(){
   if(!sb)return;
-  try{const r=await sb.from("site_settings").select("announcement,announcement_level,pause_listings").eq("id",1).maybeSingle();if(r.error)return;site.settings=r.data||null}catch(e){return}
-  const bar=$("siteAnnounce"),a=site.settings&&site.settings.announcement;
-  if(bar){bar.hidden=!a;if(a){bar.querySelector("span").textContent=a;bar.classList.toggle("alert",site.settings.announcement_level==="alerte")}}
+  try{const r=await sb.from("site_settings").select("*").eq("id",1).maybeSingle();if(r.error)return;site.settings=r.data||null}catch(e){return}
+  paintSite();
 }
+function paintSite(){
+  const st=site.settings||{},bar=$("siteAnnounce");
+  const pauses=[st.pause_purchases&&"achats et échanges",st.pause_listings&&"nouvelles annonces",st.pause_messages&&"messagerie"].filter(Boolean);
+  const a=st.announcement||(pauses.length?`En pause quelques instants : ${pauses.join(", ")}. Merci de ta patience !`:"");
+  if(bar){bar.hidden=!a;if(a){bar.querySelector("span").textContent=a;bar.classList.toggle("alert",st.announcement_level==="alerte"||(!st.announcement&&pauses.length>0))}}
+  renderMaintenance();
+}
+function renderMaintenance(preview){
+  const st=site.settings||{},box=$("maintScreen");if(!box)return;
+  const route=location.hash.replace(/^#\/?/,"").split("/")[0];
+  const show=preview||(st.maintenance&&!(state.user&&state.isAdmin)&&route!=="compte");
+  box.hidden=!show;document.body.classList.toggle("maint-on",!!show);
+  if(!show)return;
+  $("maintTitle").textContent=st.maintenance_title||"On fait une petite pause";
+  $("maintMsg").textContent=st.maintenance_message||"Revoo est en maintenance pour s’améliorer. Merci de ta patience !";
+  const u=$("maintUntil");u.hidden=!st.maintenance_until;if(st.maintenance_until)u.textContent=`Retour prévu : ${new Date(st.maintenance_until).toLocaleString("fr-FR",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})}`;
+  const im=$("maintImg");im.hidden=!st.maintenance_image;im.innerHTML=st.maintenance_image?`<img src="${esc(st.maintenance_image)}" alt="">`:"";
+  $("maintClose").hidden=!preview;$("maintRetry").hidden=!!preview;$("maintTeam").hidden=!!preview;
+  if(preview)setTimeout(()=>$("maintClose").focus(),50);
+}
+document.getElementById("maintRetry")?.addEventListener("click",async()=>{await loadSite();if(!site.settings?.maintenance){toast("Revoo est de retour !");renderView()}else toast("Encore un peu de patience…")});
+document.getElementById("maintClose")?.addEventListener("click",()=>{renderMaintenance(false);$("mPreview")?.focus()});
+setInterval(()=>{if(document.visibilityState==="visible")loadSite()},60000);
 
 /* Messages de l'équipe pour un membre (avertissement, suspension) */
 async function loadNotices(){
@@ -4298,6 +4386,7 @@ function updateCounts(){
 }
 function renderView(){
   const [name="",arg]=location.hash.replace(/^#\/?/,"").split("/").map(decodeURIComponent);
+  if(typeof site!=="undefined")renderMaintenance();
   document.querySelectorAll(".view").forEach(v=>v.hidden=true);
   if(name!=="messages")chat.current=null;
   document.title="Revoo — Tes vêtements ont de l’avenir";
