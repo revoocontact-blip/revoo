@@ -1813,6 +1813,7 @@ body.maint-on{overflow:hidden}
 .ft-row label{flex:1 1 100%}.ft-row .input{flex:1 1 160px;width:auto}
 .ft-row.danger label b{color:#8A2E2E}
 @media (max-width:620px){.perm-grid{grid-template-columns:1fr}.perm-tags{margin-left:0}}
+.word-add{display:flex;flex-direction:column;gap:8px}.word-add label{font-weight:700;font-size:14px}.word-add textarea{min-height:90px}.word-add .btn{align-self:flex-start}
 </style>
 </head>
 <body>
@@ -2760,7 +2761,7 @@ function settingsTeamHtml(){
       <div class="buy-actions"><button type="button" class="btn btn-outline" id="mPreview">Aperçu</button>${st.maintenance?`<button class="btn btn-primary" type="submit">Mettre à jour</button><button type="button" class="btn btn-danger" id="mStop">Terminer la maintenance</button>`:`<button class="btn btn-danger" type="submit">Activer la maintenance</button>`}</div></form>`:""}
     ${can("mots")?`<div class="panel"><h2>Mots interdits dans les annonces</h2>
       <p class="small muted">Une annonce dont le titre, la description ou la marque contient un de ces mots est refusée automatiquement.</p>
-      <form id="wordAdd" class="mod-search"><label for="wNew" class="sr-only">Nouveau mot interdit</label><input class="input" id="wNew" maxlength="40" placeholder="Ex. : réplique, copie, contrefaçon"><button class="btn btn-primary" type="submit">Ajouter</button></form>
+      <form id="wordAdd" class="word-add"><label for="wNew">Ajoute un ou plusieurs mots, séparés par des virgules</label><textarea class="input" id="wNew" maxlength="4000" placeholder="Ex. : réplique, contrefaçon, western union"></textarea><button class="btn btn-primary" type="submit">Ajouter</button></form>
       <div class="words">${team.words.map(w=>`<span class="word">${esc(w.word)}<button type="button" data-team="unword" data-id="${esc(w.word)}" aria-label="Retirer ${esc(w.word)}">×</button></span>`).join("")||`<p class="muted small">Aucun mot pour l’instant.</p>`}</div>
     </div>`:""}
     ${SEC_HTML()}`;
@@ -2969,7 +2970,12 @@ function bindTeam(el){
   el.querySelectorAll("[data-refiche]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.refiche;setTimeout(()=>{if(team.detail)openFiche(id)},1500)}));
   const ta=el.querySelector("#teamAdd");if(ta)ta.addEventListener("submit",async e=>{e.preventDefault();const n=$("taName").value.trim().replace(/^@/,"");if(!n){toast("Indique l’identifiant du compte.");return}
     if(!confirm(`Ajouter @${n} à l’équipe ? Ce compte deviendra un compte de modération.`))return;if(await teamRpc("team_add",{p_name:n},`@${n} fait maintenant partie de l’équipe.`))await loadTeamData("equipe")});
-  const wa=el.querySelector("#wordAdd");if(wa)wa.addEventListener("submit",async e=>{e.preventDefault();const w=$("wNew").value.trim();if(!w)return;if(await teamRpc("add_banned_word",{p_word:w},"Mot ajouté."))await loadTeamData("reglages")});
+  const wa=el.querySelector("#wordAdd");if(wa)wa.addEventListener("submit",async e=>{e.preventDefault();
+    const list=[...new Set($("wNew").value.split(/[,;\n]+/).map(x=>x.trim().toLowerCase()).filter(Boolean))];if(!list.length)return;
+    busy(wa,true,`Ajout de ${list.length} mot${list.length>1?"s":""}…`);let ok=0;const bad=[];
+    for(const w of list){const r=await sb.rpc("add_banned_word",{p_word:w});if(r.error)bad.push(w);else ok++}
+    busy(wa,false);toast(`${ok} mot${ok>1?"s":""} ajouté${ok>1?"s":""}.`+(bad.length?` Refusé${bad.length>1?"s":""} (caractères non autorisés) : ${bad.slice(0,5).join(", ")}${bad.length>5?"…":""}`:""));
+    await loadTeamData("reglages")});
   const sf=el.querySelector("#siteForm");if(sf)sf.addEventListener("submit",async e=>{e.preventDefault();
     const pause=!!(site.settings||{}).pause_listings;
     if(await teamRpc("set_site_settings",{p_announcement:$("sAnn").value,p_level:(sf.querySelector("input[name=sLvl]:checked")||{}).value||"info",p_pause:pause},"Annonce enregistrée."))await loadSite()});
