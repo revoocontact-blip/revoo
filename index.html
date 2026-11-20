@@ -631,6 +631,24 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
   #hbBoutiques .sellers{grid-template-columns:1fr}
   .hb-num{width:40px;height:40px;font-size:19px}
 }
+.style-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+.st-4{background:#3E6D8E;color:#fff}
+.st-5{background:#F1E9DC;color:#3B2E1A}
+:root[data-theme="dark"] .st-5{background:#3B3326;color:#F1E9DC}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .st-5{background:#3B3326;color:#F1E9DC}}
+.sell-steps{list-style:none;padding:0;margin:24px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sell-steps li{border:1.5px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:4px}
+.ss-n{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#A8C4D8;color:#16293A;font-weight:800;margin-bottom:6px}
+.sell-steps b{color:var(--heading);font-size:17px}
+.sell-steps small{color:var(--muted)}
+.sell-cta{display:flex;gap:10px;flex-wrap:wrap}
+#hbImpact .impact-band{margin-top:22px}
+.impact-points{list-style:none;padding:0;margin:16px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.impact-points li{background:var(--ice);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:2px}
+.impact-points b{color:var(--heading)}
+.impact-points small{color:var(--muted)}
+#hbImpact .viewall{display:inline-block}
+@media (max-width:760px){.style-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.sell-steps,.impact-points{grid-template-columns:1fr}.sell-cta .btn{flex:1 1 100%}}
 /* Abonnements */
 .plan-badge{display:inline-block;vertical-align:middle;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;line-height:1.5}
 .plan-pro{background:#A8C4D8;color:#16293A}
@@ -1323,22 +1341,18 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
       <li><span class="how-n">3</span><div><b>Récupère</b><small>En main propre ou par colis.</small></div></li>
     </ol>
 
-    <a class="impact-band" id="impactBand" href="#/impact" hidden aria-live="polite">
-      <span class="impact-ico" aria-hidden="true">🌱</span>
-      <span class="impact-txt"><b id="impactCo2">0 kg</b> de CO₂ évités grâce à <span id="impactItems">0 vêtement revendu</span> sur Revoo</span>
-      <span class="impact-live"><span class="impact-dot" aria-hidden="true"></span>En direct · estimation</span>
-    </a>
-
     <nav class="home-nav" aria-label="Sur cette page">
       <button type="button" data-jump="hbDecouvrir"><b>1</b>À découvrir</button>
       <button type="button" data-jump="hbExplorer"><b>2</b>Explorer</button>
       <button type="button" data-jump="hbBoutiques"><b>3</b>Boutiques</button>
+      <button type="button" data-jump="hbVendre"><b>4</b>Vendre</button>
+      <button type="button" data-jump="hbImpact"><b>5</b>Notre impact</button>
     </nav>
 
     <section class="home-block" id="hbDecouvrir" aria-labelledby="hbDecouvrirTitle">
       <header class="hb-head"><span class="hb-num" aria-hidden="true">1</span><div><h2 id="hbDecouvrirTitle">À découvrir</h2><p>Les annonces du moment et les coups de cœur de la communauté.</p></div></header>
     <section class="section" aria-labelledby="latestTitle">
-      <div class="section-head"><div><h3 id="latestTitle">À la une</h3><p class="section-sub">Toutes les 15 minutes, d’autres annonces passent en tête. Gratuitement, pour tout le monde.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
+      <div class="section-head"><div><h3 id="latestTitle">À la une</h3><p class="section-sub">Toutes les 5 minutes, d’autres annonces passent en tête. Gratuitement, pour tout le monde.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
       <div class="products" id="latestProducts"></div>
     </section>
     <section class="section community" id="communitySection" aria-labelledby="communityTitle">
@@ -1357,7 +1371,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
       </div>
 
       <section class="section" aria-labelledby="trendTitle">
-        <div class="section-head"><div><h3 id="trendTitle">Par style</h3><p class="section-sub">Quatre univers, des pièces pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
+        <div class="section-head"><div><h3 id="trendTitle">Par style</h3><p class="section-sub">Six univers, des pièces pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
         <div class="style-tiles" id="styleTiles"></div>
       </section>
     <section class="section season-ed" aria-labelledby="seasonTitle">
@@ -1375,11 +1389,36 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
     </section>
 
     <section class="home-block" id="hbBoutiques" aria-labelledby="hbBoutiquesTitle">
-      <header class="hb-head"><span class="hb-num" aria-hidden="true">3</span><div><h2 id="hbBoutiquesTitle">Boutiques</h2><p>Les dressings des membres, et peut-être bientôt le tien.</p></div></header>
+      <header class="hb-head"><span class="hb-num" aria-hidden="true">3</span><div><h2 id="hbBoutiquesTitle">Boutiques</h2><p>Les dressings de nos abonnés, et peut-être bientôt le tien.</p></div></header>
       <section class="section" aria-labelledby="sellerTitle">
         <div class="section-head"><div><h3 id="sellerTitle">Boutiques à la une</h3><p class="section-sub" id="sellerSub">Les dressings Revoo Ultra, à tour de rôle.</p></div></div>
         <div class="sellers" id="sellers"></div>
       </section>
+
+    <section class="home-block" id="hbVendre" aria-labelledby="hbVendreTitle">
+      <header class="hb-head"><span class="hb-num" aria-hidden="true">4</span><div><h2 id="hbVendreTitle">Vendre</h2><p>Donne une seconde vie à ton dressing, en quelques minutes.</p></div></header>
+      <ol class="sell-steps">
+        <li><span class="ss-n">1</span><b>Photographie</b><small>Quelques photos à la lumière du jour suffisent.</small></li>
+        <li><span class="ss-n">2</span><b>Publie gratuitement</b><small>Titre, taille, état, prix : ton annonce est en ligne.</small></li>
+        <li><span class="ss-n">3</span><b>Vends en sécurité</b><small>En main propre avec code, par colis, ou en échange.</small></li>
+      </ol>
+      <div class="sell-cta"><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a><a class="btn btn-outline" href="#/abonnements">Vendre plus vite avec un abonnement</a></div>
+    </section>
+
+    <section class="home-block" id="hbImpact" aria-labelledby="hbImpactTitle">
+      <header class="hb-head"><span class="hb-num" aria-hidden="true">5</span><div><h2 id="hbImpactTitle">Notre impact</h2><p>Chaque vêtement revendu, c’est un vêtement neuf en moins à fabriquer.</p></div></header>
+      <a class="impact-band" id="impactBand" href="#/impact" hidden aria-live="polite">
+        <span class="impact-ico" aria-hidden="true">🌱</span>
+        <span class="impact-txt"><b id="impactCo2">0 kg</b> de CO₂ évités grâce à <span id="impactItems">0 vêtement revendu</span> sur Revoo</span>
+        <span class="impact-live"><span class="impact-dot" aria-hidden="true"></span>En direct · estimation</span>
+      </a>
+      <ul class="impact-points">
+        <li><b>Sur chaque annonce</b><small>L’estimation du CO₂ évité est affichée sous le prix.</small></li>
+        <li><b>En direct</b><small>Le compteur augmente à chaque vente, pour toute la communauté.</small></li>
+        <li><b>Sans exagérer</b><small>Des valeurs basses, d’après les ordres de grandeur de l’ADEME.</small></li>
+      </ul>
+      <a class="viewall" href="#/impact">Comment on calcule →</a>
+    </section>
     </section>
   </div>
 </div>
@@ -1561,7 +1600,7 @@ const CONFIG = {
 };
 const CATEGORIES = ["Femme","Homme","Enfant","Unisexe"];
 const CONDITIONS = ["Neuf avec étiquette","Très bon état","Bon état","Satisfaisant"];
-const STYLES = ["Vintage","Streetwear","Chic","Doux"];
+const STYLES = ["Vintage","Streetwear","Chic","Doux","Sport","Bohème"];
 const SIZES = {adulte:["XS","S","M","L","XL","XXL"], enfant:["2 ans","4 ans","6 ans","8 ans","10 ans","12 ans","14 ans"]};
 const SIZE_ORDER = [...SIZES.adulte, ...SIZES.enfant];
 const ALL_SEASONS = ["printemps","été","automne","hiver"];
@@ -1668,10 +1707,10 @@ function ratingOf(id){const l=sellerReviews(id);return l.length?{avg:l.reduce((t
 const starsTxt=n=>"★".repeat(Math.round(n))+"☆".repeat(5-Math.round(n));
 function ratingHtml(id,small){const r=ratingOf(id);if(!r)return small?"":`<span class="muted small">Pas encore d’avis</span>`;return `<span class="rating" aria-label="Note ${r.avg.toFixed(1).replace(".",",")} sur 5, ${r.n} avis"><span aria-hidden="true">${starsTxt(r.avg)}</span> ${r.avg.toFixed(1).replace(".",",")} · ${r.n} avis</span>`}
 /* Visibilité : les annonces mises en avant d'abord, puis une rotation qui fait
-   passer chaque annonce en tête à tour de rôle (8 nouvelles places toutes les 15 minutes). */
+   passer chaque annonce en tête à tour de rôle (8 nouvelles places toutes les 5 minutes). */
 const isBoosted=p=>!!p.boostedUntil&&p.boostedUntil>Date.now();
 function idHash(id){let h=2166136261;for(const ch of String(id)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
-function rotate(list){const ring=[...list].sort((a,b)=>idHash(a.id)-idHash(b.id));const n=ring.length;if(!n)return ring;const start=(Math.floor(Date.now()/9e5)*8)%n;return ring.slice(start).concat(ring.slice(0,start))}
+function rotate(list){const ring=[...list].sort((a,b)=>idHash(a.id)-idHash(b.id));const n=ring.length;if(!n)return ring;const start=(Math.floor(Date.now()/3e5)*8)%n;return ring.slice(start).concat(ring.slice(0,start))}
 const featured=list=>[...rotate(list.filter(isBoosted)),...rotate(list.filter(p=>!isBoosted(p)))];
 /* Impact : estimation du CO2 d'un vêtement neuf équivalent (valeurs basses, ordres de grandeur ADEME).
    Doit rester identique à impact_kg_for() dans supabase-impact-visibilite.sql */
@@ -2434,7 +2473,7 @@ function perkList(k){const p=PLANS[k];return [
   `Rendez-vous en main propre jusqu’à <b>${p.handoff} jours</b>`,
   `Badge <b>${p.short}</b> sur ton profil et tes annonces`,
   k!=="pro"?`<b>Support prioritaire</b>`:"",
-  k==="ultra"?`Ton dressing dans <b>« Boutiques à la une »</b> sur l’accueil`:""
+  `Ton dressing dans <b>« Boutiques à la une »</b> sur l’accueil${k==="ultra"?", <b>en priorité</b>":""}`
 ].filter(Boolean).map(x=>`<li>${ICON_CHECK}<span>${x}</span></li>`).join("")}
 function subscriptionPanel(){
   const m=subs.mine;
@@ -2467,13 +2506,13 @@ function subscriptionsPage(){
     </article>`}).join("")}</div>
     <section class="plans-compare" aria-labelledby="cmpTitle"><h2 id="cmpTitle">Comparer les formules</h2>
       <div class="cmp-wrap" tabindex="0" role="region" aria-labelledby="cmpTitle"><table class="cmp"><thead><tr><th scope="col"><span class="sr-only">Avantage</span></th><th scope="col">Gratuit</th>${Object.keys(PLANS).map(k=>`<th scope="col">${PLANS[k].short}</th>`).join("")}</tr></thead><tbody>
-      ${[["Prix par mois",()=>"0 €",p=>p.price],["Mises en avant offertes",()=>"0",p=>p.boosts],["Photos par annonce",()=>FREE_PERKS.photos,p=>p.photos],["Annonces épinglées",()=>no,p=>p.pins||no],["Couleur de boutique",()=>no,(p,k)=>k==="ultra"?yes:no],["Délai de main propre",()=>FREE_PERKS.handoff+" j",p=>p.handoff+" j"],["Badge",()=>no,()=>yes],["Support prioritaire",()=>no,(p,k)=>k==="pro"?no:yes],["Dressing « Boutiques à la une »",()=>no,(p,k)=>k==="ultra"?yes:no],["Rotation gratuite « À la une »",()=>yes,()=>yes]].map(([l,f0,f])=>`<tr><th scope="row">${l}</th><td>${f0()}</td>${Object.keys(PLANS).map(k=>`<td>${f(PLANS[k],k)}</td>`).join("")}</tr>`).join("")}
+      ${[["Prix par mois",()=>"0 €",p=>p.price],["Mises en avant offertes",()=>"0",p=>p.boosts],["Photos par annonce",()=>FREE_PERKS.photos,p=>p.photos],["Annonces épinglées",()=>no,p=>p.pins||no],["Couleur de boutique",()=>no,(p,k)=>k==="ultra"?yes:no],["Délai de main propre",()=>FREE_PERKS.handoff+" j",p=>p.handoff+" j"],["Badge",()=>no,()=>yes],["Support prioritaire",()=>no,(p,k)=>k==="pro"?no:yes],["Dressing « Boutiques à la une »",()=>no,(p,k)=>k==="ultra"?`${yes} en priorité`:yes],["Rotation gratuite « À la une »",()=>yes,()=>yes]].map(([l,f0,f])=>`<tr><th scope="row">${l}</th><td>${f0()}</td>${Object.keys(PLANS).map(k=>`<td>${f(PLANS[k],k)}</td>`).join("")}</tr>`).join("")}
       </tbody></table></div></section>
     <section class="plans-faq" aria-labelledby="faqTitle"><h2 id="faqTitle">Questions fréquentes</h2>
       <details><summary>Comment résilier ?</summary><p>Mon compte → Profil et paramètres → Mon abonnement → « Résilier », puis « Confirmer ». Tu peux aussi demander à Reboot. Tu gardes tes avantages jusqu’à la fin du mois en cours, puis plus rien n’est prélevé.</p></details>
       <details><summary>Je peux changer de formule ?</summary><p>Oui, à tout moment, depuis cette page. Si tu passes à une formule inférieure, les annonces épinglées et la couleur de boutique en trop sont retirées automatiquement.</p></details>
       <details><summary>Comment fonctionnent les mises en avant ?</summary><p>Dans « Mes annonces », clique sur « Mettre en avant » : l’annonce passe en tête du catalogue et des recherches pendant 48 h, avec la mention « Sponsorisé ». Elles se rechargent chaque mois.</p></details>
-      <details><summary>Les abonnés passent-ils devant tout le monde ?</summary><p>Non. La rotation gratuite « À la une » reste ouverte à tous : toutes les 15 minutes, d’autres annonces passent en tête. Les abonnés ont simplement plus de mises en avant, toujours signalées.</p></details>
+      <details><summary>Les abonnés passent-ils devant tout le monde ?</summary><p>Non. La rotation gratuite « À la une » reste ouverte à tous : toutes les 5 minutes, d’autres annonces passent en tête. Les abonnés ont simplement plus de mises en avant, toujours signalées.</p></details>
       <details><summary>Les prix incluent-ils la TVA ?</summary><p>Oui, tous les prix affichés sont TTC. En cas de changement de prix, tu es prévenu à l’avance et tu peux résilier.</p></details>
     </section>
   </div>`;
@@ -2724,22 +2763,19 @@ function renderHome(){
   if(seasonal.length>=2)grid($("seasonProducts"),seasonal,"");
   const real=[];state.remote.filter(p=>p.status==="active").sort((a,b)=>Date.parse(b.sellerSince||0)-Date.parse(a.sellerSince||0)).forEach(p=>{if(!real.find(r=>r.id===p.sellerId))real.push({id:p.sellerId,name:p.seller,emoji:sellerInfo(p).emoji})});
   const list=[...real,...(showDemo()?SELLERS.map(x=>({...x,emoji:sellerInfo(x.name).emoji})):[])].slice(0,6);
-  // Boutiques à la une : abonnés Ultra (avantage de la formule), à tour de rôle toutes les 15 min.
-  // Au lancement, s'il n'y en a pas encore : les autres abonnés, puis les nouvelles boutiques.
+  // Boutiques à la une : réservé aux abonnés (Ultra en priorité, puis Max, puis Pro), à tour de rôle toutes les 5 min.
   const sellerIds=[...new Set(av.filter(p=>p.sellerId).map(p=>p.sellerId))];
   const ring=arr=>rotate(arr.map(id=>({id}))).map(x=>x.id);
-  let tier="ultra",ids=ring(sellerIds.filter(id=>planOf(id)==="ultra"));
-  if(!ids.length){tier="abonnes";ids=ring(sellerIds.filter(id=>planOf(id)))}
-  if(!ids.length)tier="nouvelles";
-  $("sellerTitle").textContent=tier==="nouvelles"?"Nouvelles boutiques":"Boutiques à la une";
-  $("sellerSub").textContent=tier==="ultra"?"Les dressings Revoo Ultra, à tour de rôle.":tier==="abonnes"?"Les dressings de nos abonnés, à tour de rôle.":"Les derniers membres à avoir ouvert leur dressing.";
-  const shops=(tier==="nouvelles"?list:ids.map(id=>{const p=av.find(x=>x.sellerId===id);return {id,name:p.seller,emoji:sellerInfo(p).emoji}})).slice(0,4);
+  const ids=[...ring(sellerIds.filter(id=>planOf(id)==="ultra")),...ring(sellerIds.filter(id=>planOf(id)==="max")),...ring(sellerIds.filter(id=>planOf(id)==="pro"))];
+  $("sellerTitle").textContent="Boutiques à la une";
+  $("sellerSub").textContent="Les dressings des abonnés Revoo Pro, Max et Ultra. Les Ultra passent en priorité.";
+  const shops=ids.map(id=>{const p=av.find(x=>x.sellerId===id);return {id,name:p.seller,emoji:sellerInfo(p).emoji}}).slice(0,6);
   $("sellers").innerHTML=shops.map(sh=>{const items=av.filter(p=>sh.id?p.sellerId===sh.id:(p.seller===sh.name&&!p.sellerId)),n=items.length;
     const thumbs=items.slice(0,3).map(p=>`<span class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="" loading="lazy" decoding="async"></span>`).join("");
     const inner=`<span class="dress-head"><span class="avatar" aria-hidden="true">${sh.emoji}</span><span class="shop-info"><b>${esc(sh.name)}${sh.id?planBadge(sh.id):""}</b><small>${n} article${n>1?"s":""} en vente</small></span><span class="shop-go" aria-hidden="true">›</span></span><span class="dress-thumbs" aria-hidden="true">${thumbs}</span>`;
     return sh.id?`<a class="shop dress" href="#/vendeur/${sh.id}" aria-label="Dressing de ${esc(sh.name)}, ${n} article${n>1?"s":""}">${inner}</a>`:`<button type="button" class="shop dress" data-seller="${esc(sh.name)}" aria-label="Dressing de ${esc(sh.name)}">${inner}</button>`}).join("")
-    + (state.user&&planOf(state.user.id)==="ultra"?"":state.user?`<a class="shop shop-join" href="#/abonnements"><span class="avatar" aria-hidden="true">👑</span><span class="shop-info"><b>Ton dressing ici ?</b><small>Les boutiques Revoo Ultra passent à la une, à tour de rôle</small></span><span class="shop-go" aria-hidden="true">›</span></a>`:`<a class="shop shop-join" href="#/vendre"><span class="avatar" aria-hidden="true">+</span><span class="shop-info"><b>Ouvre ta boutique</b><small>Publier une annonce, c’est gratuit</small></span><span class="shop-go" aria-hidden="true">›</span></a>`);
-  const STYLE_DESC={Vintage:"Pièces d’époque et belles matières",Streetwear:"Sweats, baskets et coupes larges",Chic:"Tailleurs, chemises et élégance",Doux:"Mailles, cocooning et confort"};
+    + (state.user&&planOf(state.user.id)?"":`<a class="shop shop-join" href="#/abonnements"><span class="avatar" aria-hidden="true">👑</span><span class="shop-info"><b>${shops.length?"Ton dressing ici ?":"Sois la première boutique à la une"}</b><small>Réservé aux abonnés Pro, Max et Ultra, à tour de rôle</small></span><span class="shop-go" aria-hidden="true">›</span></a>`);
+  const STYLE_DESC={Vintage:"Pièces d’époque et belles matières",Streetwear:"Sweats, baskets et coupes larges",Chic:"Tailleurs, chemises et élégance",Doux:"Mailles, cocooning et confort",Sport:"Joggings, leggings et tenues actives","Bohème":"Robes fluides, imprimés et matières naturelles"};
   $("styleTiles").innerHTML=STYLES.map((st,i)=>{const n=av.filter(p=>p.style===st).length;return `<button type="button" class="style-tile st-${i}" data-style="${st}"><span class="st-name">${st}</span><span class="st-desc">${STYLE_DESC[st]||""}</span><span class="st-count">${n} pièce${n>1?"s":""} <span aria-hidden="true">→</span></span></button>`}).join("");
   const top=av.filter(p=>!shown.has(p.id)).sort(byLikes).slice(0,6);
   $("communitySection").hidden=top.length<3;
