@@ -1578,7 +1578,7 @@ html[data-design="2"] .hero-x::before{display:none}
 @keyframes drift{from{transform:translate3d(-3%,-2%,0)}to{transform:translate3d(4%,3%,0)}}
 html.anim .hx-nav button{animation:rvUp .6s cubic-bezier(.2,.7,.2,1) both}
 html.anim .hx-nav button:nth-child(1){animation-delay:.3s}html.anim .hx-nav button:nth-child(2){animation-delay:.38s}html.anim .hx-nav button:nth-child(3){animation-delay:.46s}html.anim .hx-nav button:nth-child(4){animation-delay:.54s}
-html.anim .hx-sell{animation:rvUp .7s .3s cubic-bezier(.2,.7,.2,1) both}
+html.anim .hx-daily{animation:rvUp .7s .3s cubic-bezier(.2,.7,.2,1) both}
 /* Acheter en confiance */
 .trust{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .trust li{display:flex;flex-direction:column;gap:6px;padding:20px;border-radius:18px;background:var(--ice);border:1px solid var(--line);transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s}
@@ -1614,6 +1614,58 @@ html[data-design="2"]:not([data-theme="dark"]) .hero-x::after{background:radial-
 html[data-design="2"][data-theme="dark"] .trust-ic{background:#A8C4D8;color:#16293A}
 @media (prefers-color-scheme:dark){
 html[data-design="2"]:not([data-theme="light"]) .trust-ic{background:#A8C4D8;color:#16293A}
+}
+
+/* Phrase du jour dans la bannière */
+.hx-daily{display:flex;flex-direction:column;gap:6px;margin:34px 0 0;padding:14px 18px;max-width:600px;border-left:3px solid #A8C4D8;background:rgba(255,255,255,.05);border-radius:0 12px 12px 0}
+.hx-daily-l{font-size:12.5px;font-weight:800;letter-spacing:.04em;color:#A8C4D8}
+.hx-daily #dailyQuote{font-size:17px;font-style:italic;line-height:1.45}
+html.anim .hx-daily{animation:rvUp .7s .3s cubic-bezier(.2,.7,.2,1) both}
+html[data-design="2"][data-theme="light"]{--bg:#EDF3F8}
+html[data-design="2"][data-theme="light"] body{background:#EDF3F8}
+html[data-design="2"][data-theme="light"] .hero-x{background:radial-gradient(900px 520px at 85% 0%,#9DBDD6 0%,transparent 70%),linear-gradient(180deg,#B9D0E2 0%,#D3E2EE 100%)}
+html[data-design="2"][data-theme="light"] .hero-x::after{background:radial-gradient(500px 300px at 30% 30%,rgba(255,255,255,.35),transparent 70%),radial-gradient(420px 260px at 75% 65%,rgba(127,178,218,.35),transparent 70%)}
+html[data-design="2"][data-theme="light"] .hx-accent{color:#24557E}
+html[data-design="2"][data-theme="light"] .hero-x .lead{color:#22394D}
+html[data-design="2"][data-theme="light"] .hx-nav{background:rgba(255,255,255,.45);border-top-color:rgba(41,75,104,.18)}
+html[data-design="2"][data-theme="light"] .hx-nav button+button,html[data-design="2"][data-theme="light"] .hx-nav button:nth-child(n+3){border-color:rgba(41,75,104,.14)}
+html[data-design="2"][data-theme="light"] .hx-nav-t small{color:#2E4458}
+html[data-design="2"][data-theme="light"] .hx-daily{border-left-color:#294B68;background:rgba(255,255,255,.55)}
+html[data-design="2"][data-theme="light"] .hx-daily-l{color:#294B68}
+html[data-design="2"][data-theme="light"] .hx-daily #dailyQuote{color:#16293A}
+html[data-design="2"][data-theme="light"] .hx-cats button{background:rgba(255,255,255,.8);border-color:#9DB7CC}
+html[data-design="2"][data-theme="light"] .top{border-bottom-color:#C9DAE7}
+html[data-design="2"][data-theme="light"] .card{background:#fff;box-shadow:0 1px 0 #DCE6EE,0 8px 20px -16px rgba(22,41,58,.35)}
+html[data-design="2"][data-theme="light"] .card:hover{background:#fff}
+html[data-design="2"][data-theme="light"] .quick-tile,html[data-design="2"][data-theme="light"] .trust li,html[data-design="2"][data-theme="light"] .cat-tile{background:#fff;border-color:#D5E2EC}
+html[data-design="2"][data-theme="light"] .quick-tile:hover{background:#fff}
+html[data-design="2"][data-theme="light"] .panel,html[data-design="2"][data-theme="light"] .shop,html[data-design="2"][data-theme="light"] .sell-steps>*{background:#fff}
+html[data-design="2"][data-theme="light"] .st-1{background:#C9DCEA}
+html[data-design="2"][data-theme="light"] .st-3{background:#fff}
+html[data-design="2"][data-theme="light"] .st-5{background:#E1ECF5}
+@media (prefers-color-scheme:light){
+html[data-design="2"]:not([data-theme="dark"]){--bg:#EDF3F8}
+html[data-design="2"]:not([data-theme="dark"]) body{background:#EDF3F8}
+html[data-design="2"]:not([data-theme="dark"]) .hero-x{background:radial-gradient(900px 520px at 85% 0%,#9DBDD6 0%,transparent 70%),linear-gradient(180deg,#B9D0E2 0%,#D3E2EE 100%)}
+html[data-design="2"]:not([data-theme="dark"]) .hero-x::after{background:radial-gradient(500px 300px at 30% 30%,rgba(255,255,255,.35),transparent 70%),radial-gradient(420px 260px at 75% 65%,rgba(127,178,218,.35),transparent 70%)}
+html[data-design="2"]:not([data-theme="dark"]) .hx-accent{color:#24557E}
+html[data-design="2"]:not([data-theme="dark"]) .hero-x .lead{color:#22394D}
+html[data-design="2"]:not([data-theme="dark"]) .hx-nav{background:rgba(255,255,255,.45);border-top-color:rgba(41,75,104,.18)}
+html[data-design="2"]:not([data-theme="dark"]) .hx-nav button+button,html[data-design="2"]:not([data-theme="dark"]) .hx-nav button:nth-child(n+3){border-color:rgba(41,75,104,.14)}
+html[data-design="2"]:not([data-theme="dark"]) .hx-nav-t small{color:#2E4458}
+html[data-design="2"]:not([data-theme="dark"]) .hx-daily{border-left-color:#294B68;background:rgba(255,255,255,.55)}
+html[data-design="2"]:not([data-theme="dark"]) .hx-daily-l{color:#294B68}
+html[data-design="2"]:not([data-theme="dark"]) .hx-daily #dailyQuote{color:#16293A}
+html[data-design="2"]:not([data-theme="dark"]) .hx-cats button{background:rgba(255,255,255,.8);border-color:#9DB7CC}
+html[data-design="2"]:not([data-theme="dark"]) .top{border-bottom-color:#C9DAE7}
+html[data-design="2"]:not([data-theme="dark"]) .card{background:#fff;box-shadow:0 1px 0 #DCE6EE,0 8px 20px -16px rgba(22,41,58,.35)}
+html[data-design="2"]:not([data-theme="dark"]) .card:hover{background:#fff}
+html[data-design="2"]:not([data-theme="dark"]) .quick-tile,html[data-design="2"]:not([data-theme="dark"]) .trust li,html[data-design="2"]:not([data-theme="dark"]) .cat-tile{background:#fff;border-color:#D5E2EC}
+html[data-design="2"]:not([data-theme="dark"]) .quick-tile:hover{background:#fff}
+html[data-design="2"]:not([data-theme="dark"]) .panel,html[data-design="2"]:not([data-theme="dark"]) .shop,html[data-design="2"]:not([data-theme="dark"]) .sell-steps>*{background:#fff}
+html[data-design="2"]:not([data-theme="dark"]) .st-1{background:#C9DCEA}
+html[data-design="2"]:not([data-theme="dark"]) .st-3{background:#fff}
+html[data-design="2"]:not([data-theme="dark"]) .st-5{background:#E1ECF5}
 }
 </style>
 </head>
@@ -1693,14 +1745,13 @@ html[data-design="2"]:not([data-theme="light"]) .trust-ic{background:#A8C4D8;col
           <input id="heroQ" type="search" placeholder="Un jean, une marque, une taille…" autocomplete="off">
           <button class="btn btn-primary" type="submit">Chercher</button>
         </form>
-        <div class="hx-cats" aria-label="Catégories"><button type="button" data-category="Femme">Femme</button><button type="button" data-category="Homme">Homme</button><button type="button" data-category="Enfant">Enfant</button><button type="button" data-category="Unisexe">Unisexe</button><a class="hx-all" href="#/catalogue" data-new="1">Tout voir <span aria-hidden="true">→</span></a></div>
-        <p class="hx-sell">Des vêtements qui dorment dans ton placard ? <a href="#/vendre">Mets-les en vente gratuitement <span aria-hidden="true">→</span></a></p>
+        <div class="hx-cats" aria-label="Catégories"><button type="button" data-category="Femme">Femme</button><button type="button" data-category="Homme">Homme</button><button type="button" data-category="Enfant">Enfant</button><button type="button" data-category="Unisexe">Unisexe</button></div>
+        <p class="hx-daily"><span class="hx-daily-l">Phrase du jour</span><span id="dailyQuote">Chaque vêtement mérite une nouvelle histoire.</span></p>
       </div>
       <aside class="hx-card" aria-labelledby="hxCardTitle">
         <div class="hx-card-head"><b id="hxCardTitle">Nouveautés</b><small class="hx-sub" id="heroSeason">Sélection automne</small></div>
         <div class="hx-list" id="heroTop"><p class="hx-empty">Les premières annonces apparaîtront ici</p></div>
         <button type="button" class="hx-more" data-selection="1">Voir toute la sélection <span aria-hidden="true">→</span></button>
-        <p class="hx-quote" id="dailyQuote">Chaque vêtement mérite une nouvelle histoire.</p>
       </aside>
     </div>
     <nav class="hx-nav" aria-label="Sur cette page"><div class="wrap hx-nav-in"><button type="button" data-jump="hbDecouvrir"><span class="hx-nav-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.4 4.1 1.2 6L12 16.5 6.6 19.4l1.2-6L3.4 9.3l6-.7L12 3Z"/></svg></span><span class="hx-nav-t"><b>À découvrir</b><small>Les annonces du moment</small></span></button><button type="button" data-jump="hbExplorer"><span class="hx-nav-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></svg></span><span class="hx-nav-t"><b>Explorer</b><small>Catégories, styles, saison</small></span></button><button type="button" data-jump="hbBoutiques"><span class="hx-nav-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9h16M9 20v-6h6v6"/></svg></span><span class="hx-nav-t"><b>Boutiques</b><small>Les dressings des abonnés</small></span></button><button type="button" data-jump="hbVendre"><span class="hx-nav-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span class="hx-nav-t"><b>Vendre</b><small>Publier en quelques minutes</small></span></button></div></nav>
