@@ -1822,6 +1822,7 @@ function renderModeration(el){
     <div style="margin-top:18px">${body}</div>
     <details class="panel" style="margin-top:24px"><summary><b>Sécurité du compte modérateur</b></summary>
       <form id="pwdForm" novalidate style="margin-top:12px">
+        <div class="field"><label for="pw0">Mot de passe actuel</label><input class="input" id="pw0" type="password" autocomplete="current-password"><span class="error" id="pw0Err"></span></div>
         <div class="field"><label for="pw1">Nouveau mot de passe</label><input class="input" id="pw1" type="password" autocomplete="new-password"><span class="error" id="pw1Err"></span></div>
         <div class="field"><label for="pw2">Confirmer le mot de passe</label><input class="input" id="pw2" type="password" autocomplete="new-password"><span class="error" id="pw2Err"></span></div>
         <div class="buy-actions"><button class="btn btn-outline" type="submit">Changer le mot de passe</button><button type="button" class="btn btn-outline" id="logout">Se déconnecter</button></div>
@@ -2704,7 +2705,7 @@ function renderAccount(tab){
       </div>
       <div class="field"><label for="sEmail">Adresse e-mail</label><input class="input" id="sEmail" type="email" autocomplete="email" required><span class="error" id="sEmailErr"></span></div>
       ${pwdField("sPwd","Mot de passe","new-password")}
-      <p class="muted small">En créant ton compte, tu acceptes les <a class="link" href="#/conditions" target="_blank">conditions d’utilisation</a> et la <a class="link" href="#/confidentialite" target="_blank">politique de confidentialité</a>.</p>
+      <p class="muted small">En créant ton compte, tu acceptes les <a class="link" href="#/conditions" target="_blank" rel="noopener">conditions d’utilisation</a> et la <a class="link" href="#/confidentialite" target="_blank" rel="noopener">politique de confidentialité</a>.</p>
       <button class="btn btn-primary" type="submit">Créer mon compte</button>
       <p class="error" id="signupErr" role="alert"></p><p class="note small" id="signupOk" hidden></p>
     </form>`}${appearanceHtml()}`;
@@ -2777,6 +2778,7 @@ function renderAccount(tab){
       <form class="panel" id="pwdForm" novalidate>
         <h2>Sécurité</h2>
         <p class="muted small">Change ton mot de passe. Il doit contenir au moins 8 caractères.</p>
+        <div class="field"><label for="pw0">Mot de passe actuel</label><input class="input" id="pw0" type="password" autocomplete="current-password"><span class="error" id="pw0Err"></span></div>
         <div class="field"><label for="pw1">Nouveau mot de passe</label><input class="input" id="pw1" type="password" autocomplete="new-password"><span class="error" id="pw1Err"></span></div>
         <div class="field"><label for="pw2">Confirmer le mot de passe</label><input class="input" id="pw2" type="password" autocomplete="new-password"><span class="error" id="pw2Err"></span></div>
         <button class="btn btn-outline" type="submit">Changer le mot de passe</button>
@@ -3327,9 +3329,13 @@ document.addEventListener("submit",async e=>{
     state.recovery=false;toast("Mot de passe modifié.");renderView();
   }
   if(f.id==="pwdForm"){e.preventDefault();
-    const a=$("pw1").value,b=$("pw2").value;
-    const ok=fieldError("pw1","pw1Err",a.length<8?"8 caractères minimum.":"") & fieldError("pw2","pw2Err",a!==b?"Les deux mots de passe ne sont pas identiques.":"");
+    const cur=$("pw0").value,a=$("pw1").value,b=$("pw2").value;
+    const ok=fieldError("pw0","pw0Err",cur?"":"Indique ton mot de passe actuel.") & fieldError("pw1","pw1Err",a.length<8?"8 caractères minimum.":a===cur?"Choisis un mot de passe différent de l’actuel.":"") & fieldError("pw2","pw2Err",a!==b?"Les deux mots de passe ne sont pas identiques.":"");
     if(!ok)return;
+    busy(f,true,"Vérification…");
+    // On vérifie le mot de passe actuel : une session restée ouverte ne suffit pas pour prendre le compte
+    state.reauth=true;const chk=await sb.auth.signInWithPassword({email:state.user.email,password:cur});setTimeout(()=>{state.reauth=false},3000);
+    if(chk.error){busy(f,false);fieldError("pw0","pw0Err","Mot de passe actuel incorrect.");return}
     busy(f,true,"Enregistrement…");const {error}=await sb.auth.updateUser({password:a});busy(f,false);
     if(error){fieldError("pw1","pw1Err",frenchError(error));return}
     f.reset();toast("Mot de passe modifié.");return}

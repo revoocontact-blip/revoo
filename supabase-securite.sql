@@ -51,7 +51,7 @@ begin
   end if;
   -- photos : uniquement celles déposées sur Revoo, dans le dossier du vendeur
   if tg_op = 'INSERT' or new.photos is distinct from old.photos then
-    if exists (select 1 from unnest(new.photos) p where p not like base || new.seller_id::text || '/%') then
+    if exists (select 1 from unnest(new.photos) p where p not like base || new.seller_id::text || '/%' or p like '%..%' or p ~ '[\s"''<>]') then
       raise exception 'Photos invalides : ajoute-les depuis le formulaire Revoo';
     end if;
   end if;
@@ -80,10 +80,12 @@ begin
   if new.name is distinct from old.name and new.name !~ '^[A-Za-z0-9._-]{3,20}$' then
     raise exception 'Identifiant invalide : 3 à 20 caractères (lettres, chiffres, point, tiret)';
   end if;
-  if new.avatar_url is distinct from old.avatar_url and new.avatar_url is not null and new.avatar_url not like base || '%' then
+  if new.avatar_url is distinct from old.avatar_url and new.avatar_url is not null
+     and (new.avatar_url not like base || '%' or new.avatar_url like '%..%' or new.avatar_url ~ '[\s"''<>()]') then
     raise exception 'Photo de profil invalide';
   end if;
-  if new.banner_url is distinct from old.banner_url and new.banner_url is not null and new.banner_url not like base || '%' then
+  if new.banner_url is distinct from old.banner_url and new.banner_url is not null
+     and (new.banner_url not like base || '%' or new.banner_url like '%..%' or new.banner_url ~ '[\s"''<>()]') then
     raise exception 'Bannière invalide';
   end if;
   return new;
@@ -110,6 +112,10 @@ begin
     if n >= 30 then raise exception 'Tu as contacté beaucoup de vendeurs aujourd’hui : réessaie demain'; end if;
 
   elsif tg_table_name = 'reports' then
+    -- un nouveau signalement arrive TOUJOURS « à traiter » chez la modération
+    new.status := 'nouveau';
+    new.handled_at := null;
+    new.created_at := now();
     if new.reporter_id is not null then
       select count(*) into n from public.reports where reporter_id = new.reporter_id and created_at > now() - interval '1 day';
       if n >= 20 then raise exception 'Tu as fait beaucoup de signalements aujourd’hui : réessaie demain'; end if;
@@ -159,12 +165,12 @@ drop policy if exists "photos : déposer dans son dossier" on storage.objects;
 create policy "photos : déposer dans son dossier" on storage.objects
   for insert to authenticated
   with check (bucket_id = 'annonces' and (storage.foldername(name))[1] = auth.uid()::text
-              and public.my_file_count('annonces') < 300);
+              and name !~ '\.\.' and public.my_file_count('annonces') < 300);
 drop policy if exists "avatar : déposer le sien" on storage.objects;
 create policy "avatar : déposer le sien" on storage.objects
   for insert to authenticated
   with check (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text
-              and public.my_file_count('avatars') < 30);
+              and name !~ '\.\.' and public.my_file_count('avatars') < 30);
 
 -- ---------- 5. Fonctions internes : plus appelables depuis le site ----------
 revoke execute on function public.purchases_done(uuid) from public, anon, authenticated;
