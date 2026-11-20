@@ -604,6 +604,33 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
   .style-tile{min-height:112px;padding:18px 16px}
   .st-name{font-size:19px}
 }
+
+/* Accueil en 3 grandes catégories */
+.home-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:28px 0 8px;padding:10px 0;background:var(--bg)}
+.home-nav button{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--heading);border-radius:99px;padding:8px 18px;font:inherit;font-weight:700;cursor:pointer}
+.home-nav button:hover,.home-nav button[aria-current="true"]{border-color:var(--heading);background:var(--heading);color:var(--bg)}
+.home-nav b{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ice);color:var(--heading);font-size:12px}
+.home-nav button:hover b,.home-nav button[aria-current="true"] b{background:var(--bg)}
+.home-block{margin:40px 0 0;padding-top:32px;border-top:2px solid var(--line);scroll-margin-top:140px}
+.hb-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.hb-num{display:grid;place-items:center;width:48px;height:48px;flex:none;border-radius:12px;background:var(--heading);color:var(--bg);font-size:22px;font-weight:800}
+.hb-head h2{margin:0;font-size:clamp(28px,3.4vw,40px);letter-spacing:-1px;color:var(--heading)}
+.hb-head p{margin:2px 0 0;color:var(--muted)}
+.home-block .section{margin:30px 0}
+.home-block .section-head h3{margin:0;font-size:22px;letter-spacing:-.4px;color:var(--heading)}
+.home-block .season-ed-text h3{margin:0;font-size:clamp(24px,2.8vw,34px);letter-spacing:-1px;line-height:1.05;color:#fff}
+.cat-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:24px 0 8px}
+.cat-tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:18px;font:inherit;color:var(--heading);cursor:pointer}
+.cat-tile span{font-size:19px;font-weight:800}
+.cat-tile small{color:var(--muted);font-size:13px}
+.cat-tile:hover{border-color:var(--heading)}
+#hbBoutiques .sellers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:760px){
+  .home-nav{gap:6px}.home-nav button{padding:7px 12px;font-size:14px}
+  .cat-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #hbBoutiques .sellers{grid-template-columns:1fr}
+  .hb-num{width:40px;height:40px;font-size:19px}
+}
 /* Abonnements */
 .plan-badge{display:inline-block;vertical-align:middle;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;line-height:1.5}
 .plan-pro{background:#A8C4D8;color:#16293A}
@@ -1220,8 +1247,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
     <form class="search" id="topSearch" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <label for="searchInput" class="sr-only">Rechercher des vêtements</label>
-      <input id="searchInput" type="search" placeholder="Que recherches-tu aujourd’hui ?" autocomplete="off" list="searchSuggest">
-      <datalist id="searchSuggest"></datalist>
+      <input id="searchInput" type="search" placeholder="Que recherches-tu aujourd’hui ?" autocomplete="off">
       <button class="btn btn-primary search-go" type="submit" aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="search-go-label">Rechercher</span></button>
     </form>
     <div class="actions">
@@ -1278,7 +1304,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
     <div class="wrap hero-inner">
       <div>
         <span class="eyebrow">La seconde main, autrement</span>
-        <h1 id="heroTitle">Tes vêtements ont de l’avenir.</h1>
+        <h1 id="heroTitle">Tes vêtements ont de l’avenir</h1>
         <p class="lead">Achète, vends, donne une seconde vie à tes pièces préférées.</p>
         <div class="hero-actions"><a class="btn btn-primary btn-lg" href="#/catalogue" data-new="1">Découvrir les vêtements</a><a class="btn btn-outline btn-lg" href="#/vendre">Vendre un vêtement</a></div>
         <p class="hero-quote"><span class="hero-quote-label">Le mot du jour</span> <span id="dailyQuote">Chaque vêtement mérite une nouvelle histoire.</span></p>
@@ -1303,39 +1329,57 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
       <span class="impact-live"><span class="impact-dot" aria-hidden="true"></span>En direct · estimation</span>
     </a>
 
+    <nav class="home-nav" aria-label="Sur cette page">
+      <button type="button" data-jump="hbDecouvrir"><b>1</b>À découvrir</button>
+      <button type="button" data-jump="hbExplorer"><b>2</b>Explorer</button>
+      <button type="button" data-jump="hbBoutiques"><b>3</b>Boutiques</button>
+    </nav>
+
+    <section class="home-block" id="hbDecouvrir" aria-labelledby="hbDecouvrirTitle">
+      <header class="hb-head"><span class="hb-num" aria-hidden="true">1</span><div><h2 id="hbDecouvrirTitle">À découvrir</h2><p>Les annonces du moment et les coups de cœur de la communauté.</p></div></header>
     <section class="section" aria-labelledby="latestTitle">
-      <div class="section-head"><div><h2 id="latestTitle">À la une</h2><p class="section-sub">Toutes les 15 minutes, d’autres annonces passent en tête. Gratuitement, pour tout le monde.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
+      <div class="section-head"><div><h3 id="latestTitle">À la une</h3><p class="section-sub">Toutes les 15 minutes, d’autres annonces passent en tête. Gratuitement, pour tout le monde.</p></div><button type="button" class="viewall" data-selection="1">Voir tout →</button></div>
       <div class="products" id="latestProducts"></div>
     </section>
+    <section class="section community" id="communitySection" aria-labelledby="communityTitle">
+      <div class="section-head"><div><h3 id="communityTitle">Coups de cœur de la communauté</h3><p class="section-sub">Les pièces les plus ajoutées en favoris.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
+      <div class="mini-items" id="communityItems"></div>
+    </section>
+    </section>
 
+    <section class="home-block" id="hbExplorer" aria-labelledby="hbExplorerTitle">
+      <header class="hb-head"><span class="hb-num" aria-hidden="true">2</span><div><h2 id="hbExplorerTitle">Explorer</h2><p>Par catégorie, par style ou selon la saison.</p></div></header>
+      <div class="cat-tiles">
+        <button type="button" class="cat-tile" data-category="Femme"><span>Femme</span><small>Robes, jeans, pulls…</small></button>
+        <button type="button" class="cat-tile" data-category="Homme"><span>Homme</span><small>Vestes, sweats, chemises…</small></button>
+        <button type="button" class="cat-tile" data-category="Enfant"><span>Enfant</span><small>Du bébé à l’ado</small></button>
+        <button type="button" class="cat-tile" data-category="Unisexe"><span>Unisexe</span><small>Pour tout le monde</small></button>
+      </div>
+
+      <section class="section" aria-labelledby="trendTitle">
+        <div class="section-head"><div><h3 id="trendTitle">Par style</h3><p class="section-sub">Quatre univers, des pièces pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
+        <div class="style-tiles" id="styleTiles"></div>
+      </section>
     <section class="section season-ed" aria-labelledby="seasonTitle">
       <div class="season-ed-banner">
         <div class="image-frame season-ed-photo"><img data-safe-image src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80" alt="Pulls et vêtements de saison" loading="lazy"></div>
         <div class="season-ed-text">
           <span class="kicker">Sélection de saison · <span id="seasonName">Automne</span></span>
-          <h2 id="seasonTitle">La saison du moment</h2>
+          <h3 id="seasonTitle">La saison du moment</h3>
           <p id="seasonText">Des vêtements doux, chauds et intemporels.</p>
           <button type="button" class="btn btn-primary" id="discoverSeason">Voir la sélection</button>
         </div>
       </div>
       <div class="products products-row" id="seasonProducts"></div>
     </section>
+    </section>
 
-    <div class="bottom-grid">
-      <section class="section" aria-labelledby="trendTitle">
-        <div class="section-head"><div><h2 id="trendTitle">Explorer par style</h2><p class="section-sub">Quatre univers, des pièces pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
-        <div class="style-tiles" id="styleTiles"></div>
-      </section>
-
+    <section class="home-block" id="hbBoutiques" aria-labelledby="hbBoutiquesTitle">
+      <header class="hb-head"><span class="hb-num" aria-hidden="true">3</span><div><h2 id="hbBoutiquesTitle">Boutiques</h2><p>Les dressings des membres, et peut-être bientôt le tien.</p></div></header>
       <section class="section" aria-labelledby="sellerTitle">
-        <div class="section-head"><div><h2 id="sellerTitle">Boutiques à la une</h2><p class="section-sub" id="sellerSub">Les dressings Revoo Ultra, à tour de rôle.</p></div></div>
+        <div class="section-head"><div><h3 id="sellerTitle">Boutiques à la une</h3><p class="section-sub" id="sellerSub">Les dressings Revoo Ultra, à tour de rôle.</p></div></div>
         <div class="sellers" id="sellers"></div>
       </section>
-    </div>
-
-    <section class="section community" id="communitySection" aria-labelledby="communityTitle">
-      <div class="section-head"><div><h2 id="communityTitle">Coups de cœur de la communauté</h2><p class="section-sub">Les pièces les plus ajoutées en favoris.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
-      <div class="mini-items" id="communityItems"></div>
     </section>
   </div>
 </div>
@@ -1447,14 +1491,14 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
     <div class="foot-grid">
       <div class="foot-brand">
         <img src="logos/revoo-logo.png" data-logo="bleu" alt="Revoo" width="480" height="149" loading="lazy">
-        <p>Tes vêtements ont de l’avenir.</p>
+        <p>Tes vêtements ont de l’avenir</p>
       </div>
       <nav aria-label="Revoo"><h2>Revoo</h2><ul><li><a href="#/a-propos">À propos de Revoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
       <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/securite">Conseils de sécurité</a></li><li><a href="#/abonnements">Abonnements</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
       <nav aria-label="Aide"><h2>Aide</h2><ul><li><a href="#/aide">Aide et contact</a></li><li><a href="#/compte">Mon compte</a></li><li><a href="#/favoris">Mes favoris</a></li><li><a href="#/messages">Messages</a></li></ul></nav>
       <nav aria-label="Informations légales"><h2>Légal</h2><ul><li><a href="#/conditions">Conditions</a></li><li><a href="#/confidentialite">Confidentialité</a></li><li><a href="#/mentions-legales">Informations légales</a></li></ul></nav>
     </div>
-    <div class="foot-bottom"><span>© 2026 Revoo · Tes vêtements ont de l’avenir.</span><span>Fait en France</span></div>
+    <div class="foot-bottom"><span>© 2026 Revoo · Tes vêtements ont de l’avenir</span><span>Fait en France</span></div>
   </div>
 </footer>
 
@@ -2665,7 +2709,7 @@ function fillSuggestions(){
   const av=available(),set=new Set();
   av.forEach(p=>{set.add(p.name);if(p.brand&&p.brand!=="Sans marque")set.add(p.brand)});
   CATEGORIES.forEach(c=>set.add(c));STYLES.forEach(x=>set.add(x));
-  $("searchSuggest").innerHTML=[...set].sort((a,b)=>a.localeCompare(b,"fr")).slice(0,200).map(v=>`<option value="${esc(v)}"></option>`).join("");
+  if($("searchSuggest"))$("searchSuggest").innerHTML=[...set].sort((a,b)=>a.localeCompare(b,"fr")).slice(0,200).map(v=>`<option value="${esc(v)}"></option>`).join("");
 }
 function renderHome(){
   const season=currentSeason(), ui=SEASON_UI[season], av=available();
@@ -3358,7 +3402,7 @@ function safetyBox(p){return `<div class="safety" aria-label="Paiement et sécur
   <a class="link small" href="#/securite">Conseils de sécurité</a></div>`}
 const PAGES={
   "a-propos":()=>`<p class="crumbs"><a href="#/">Accueil</a> › À propos</p><h1>À propos de Revoo</h1>
-    <p><b>Tes vêtements ont de l’avenir.</b></p>
+    <p><b>Tes vêtements ont de l’avenir</b></p>
     <p>Revoo est une marketplace française dédiée à la vente et à l’achat de vêtements d’occasion entre particuliers. Achète, vends, donne une seconde vie à tes pièces préférées.</p>
     <p>Notre objectif : rendre l’achat de seconde main plus juste et plus abordable, avec des frais simples et identiques quel que soit le prix de l’article.</p>
     <p>Revoo est en cours de lancement, en France, en français, avec des prix en euros.</p>`,
@@ -3479,6 +3523,7 @@ document.addEventListener("click",async e=>{
   const t=e.target;
   const cat=t.closest("[data-category]");if(cat){e.preventDefault();$("searchInput").value="";openCatalogue({category:cat.dataset.category});return}
   const nw=t.closest("[data-new]");if(nw){e.preventDefault();openCatalogue({sort:"recent"});return}
+  const jp=t.closest("[data-jump]");if(jp){$(jp.dataset.jump)?.scrollIntoView({behavior:"smooth",block:"start"});return}
   if(t.closest("[data-selection]")){e.preventDefault();openCatalogue({sort:"selection"});return}
   const so=t.closest("[data-sort]");if(so){openCatalogue({sort:so.dataset.sort});return}
   const st=t.closest("[data-style]");if(st){openCatalogue({style:st.dataset.style});return}
@@ -3755,7 +3800,7 @@ const KB=[
   [/\b(ia|intelligence|chatgpt|robot|humain|qui es)/, ()=>`<p>Je suis Reboot, l’assistant de Revoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle et je ne lis pas tes messages privés.</p>`],
   // Revoo
   [/comment (ca|ça) marche|fonctionne|c.?est quoi revoo|qu.?est.?ce que revoo|presentation/, ()=>`<p><b>Revoo</b>, c’est une marketplace française de vêtements d’occasion entre particuliers. En 3 étapes :</p><p>1. <b>Trouve</b> une pièce (recherche, catégories, filtres).<br>2. <b>Échange</b> avec le vendeur dans la messagerie.<br>3. <b>Récupère</b>-la en main propre ou par colis.</p>${ask("Acheter un article","Vendre un article","Combien ça coûte ?")}`],
-  [/qui (est|sont) derriere|createur|fondateur|a propos/, ()=>`<p>Revoo est un projet français, en cours de lancement. Son slogan : <b>« Tes vêtements ont de l’avenir. »</b></p>${go("#/a-propos","À propos de Revoo")}`],
+  [/qui (est|sont) derriere|createur|fondateur|a propos/, ()=>`<p>Revoo est un projet français, en cours de lancement. Son slogan : <b>« Tes vêtements ont de l’avenir »</b></p>${go("#/a-propos","À propos de Revoo")}`],
   // Frais / paiement
   [/(cout|prix|tarif|combien).*(livr|envoi|colis|port)|frais de port|frais d.envoi/, ()=>`<p>Le prix de l’envoi dépend du transporteur et du poids du colis : compare directement sur les sites de Colissimo, Mondial Relay, Relais Colis… Il se règle entre l’acheteur et le vendeur. La remise en main propre, elle, est gratuite.</p>${ask("Bien envoyer un colis","Rendez-vous en main propre")}`],
   [/frais|commission|combien.*(coute|paye)|cout|gratuit|tarif revoo|combien ca coute/, ()=>!CONFIG.paiementIntegre?`<p><b>0 € de frais pendant le lancement !</b> Tu paies seulement le prix de l’article, directement au vendeur, et l’envoi si vous choisissez le colis.</p><p>Plus tard, avec le paiement intégré Revoo Pay, il y aura ${eur(CONFIG.fraisFixes)} de frais par article, en échange d’un paiement protégé.</p>${ask("Comment payer ?","Revoo Pay, c’est quoi ?")}`:`<p>L’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais par article</b>, quel que soit le prix. La livraison est en plus.</p><p>${feeExample()}</p>`],
@@ -3781,7 +3826,7 @@ const KB=[
   [/guide des tailles|correspondance|quelle taille|ma taille|taille (enfant|bebe)|xs|xxl/, ()=>`<p>Les tailles sur Revoo :</p><p>• <b>Adultes</b> : XS, S, M, L, XL, XXL.<br>• <b>Enfants</b> : de 2 à 14 ans.</p><p>Les tailles varient selon les marques : demande les <b>mesures</b> au vendeur (longueur, largeur à plat) et compare avec un vêtement à toi qui te va bien.</p>`],
   [/marque/, ()=>`<p>Tu peux filtrer par marque dans le catalogue : ouvre « Explorer », puis le filtre <b>Marque</b>. Tu peux aussi taper directement la marque dans la recherche.</p>${go("#/catalogue","Ouvrir le catalogue")}`],
   [/entretien|laver|lavage|tache|repasser|bouloch/, ()=>`<p>Pour donner une longue vie à tes vêtements :</p><p>• Lave à 30 °C, à l’envers, avec des couleurs proches.<br>• Sèche à l’air libre plutôt qu’au sèche-linge.<br>• Un rasoir anti-bouloches redonne un coup de neuf aux pulls.<br>• Lave toujours un vêtement acheté d’occasion avant de le porter.</p>`],
-  [/ecolo|planete|environnement|pourquoi.*(occasion|seconde main)|interet (de|d).*(occasion|seconde main)/, ()=>`<p>Acheter d’occasion, c’est prolonger la vie d’un vêtement au lieu d’en produire un nouveau : moins de ressources et moins de déchets. Et ça fait des économies ! <b>Tes vêtements ont de l’avenir.</b></p>`],
+  [/ecolo|planete|environnement|pourquoi.*(occasion|seconde main)|interet (de|d).*(occasion|seconde main)/, ()=>`<p>Acheter d’occasion, c’est prolonger la vie d’un vêtement au lieu d’en produire un nouveau : moins de ressources et moins de déchets. Et ça fait des économies ! <b>Tes vêtements ont de l’avenir</b></p>`],
   [/nouveaute|nouveau|recent/, ()=>`<p>Les derniers articles ajoutés sont sur la page d’accueil, dans « Les dernières trouvailles », ou dans le catalogue trié par « Plus récents ».</p><button type="button" class="pill" data-new="1">Voir les nouveautés</button>`],
   [/tendance|style|vintage|streetwear|chic/, ()=>`<p>Choisis un style :</p>${STYLES.map(s=>`<button type="button" class="pill" data-style="${s}">${s}</button>`).join("")}`],
   [/saison|hiver|\bete\b|printemps|automne/, ()=>`<p>La sélection de saison regroupe les pièces idéales pour la période (${currentSeason()}).</p><button type="button" class="pill" id="rbSeason" data-reboot-season>Voir la sélection</button>`],
@@ -3878,7 +3923,7 @@ const RB_DAILY=[
   [/(ca|site) (marche|fonctionne) (pas|plus)|ca bug|beug|bloque|erreur|plante|ne charge pas|page blanche/, ()=>`<p>Désolé ! Essaie dans l’ordre :</p><p>1. Recharge la page (sur ordinateur : Ctrl + F5).<br>2. Vérifie ta connexion internet.<br>3. Essaie dans une fenêtre de navigation privée.</p><p>Si ça bloque encore, écris à <b>${LEGAL.email}</b> en expliquant ce qui se passe.</p>`],
   [/^(?!.*\bpas\b)(ok|d accord|cool|parfait|super|nickel|top|genial|ca marche|entendu|compris)\b.{0,12}$/, ()=>`<p>Super ! Autre chose ?</p>`],
   [/perdu|comprends (pas|rien)|sais pas quoi|par ou commencer|je debute|premiere fois/, ()=>`<p>Pas de panique, c’est simple ! Revoo permet d’<b>acheter</b> et de <b>vendre</b> des vêtements d’occasion entre particuliers.</p>${ask("Comment ça marche ?","Acheter un article","Vendre un article")}`],
-  [/au revoir|bye|a plus|a bientot|bonne (journee|soiree|nuit)|ciao|salut a plus/, ()=>`<p>À bientôt sur Revoo ! Tes vêtements ont de l’avenir.</p>`],
+  [/au revoir|bye|a plus|a bientot|bonne (journee|soiree|nuit)|ciao|salut a plus/, ()=>`<p>À bientôt sur Revoo ! Tes vêtements ont de l’avenir</p>`],
   [/humain|conseiller|vraie personne|quelqu un|parler a (une|un|quelqu)|service client/, ()=>`<p>Je suis un assistant automatique. Pour parler à une personne de l’équipe Revoo, écris à <b>${LEGAL.email}</b> : on te répond au plus vite.</p>`],
   [/\b(con|connard|conne|nul|nulle|merde|debile|idiot)\b/, ()=>`<p>Je suis désolé si je ne t’ai pas aidé comme il faut. Reformule ta question simplement, ou écris à <b>${LEGAL.email}</b> pour parler à quelqu’un.</p>`],
   [/heure|horaire|ouvert|ferme|dimanche|week end/, ()=>`<p>Revoo est ouvert 24 h/24 et 7 j/7 : tu peux acheter et vendre quand tu veux. L’équipe répond aux e-mails au plus vite.</p>`],
