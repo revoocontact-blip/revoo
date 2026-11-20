@@ -1724,6 +1724,41 @@ button.kpi{cursor:pointer;transition:transform .2s,box-shadow .2s}button.kpi:hov
 html[data-design="2"][data-theme="light"] .mod-pill{background:#E3EDF4;color:#16293A;border-color:#C9DAE7}
 @media (prefers-color-scheme:light){html[data-design="2"]:not([data-theme="dark"]) .mod-pill{background:#E3EDF4;color:#16293A;border-color:#C9DAE7}}
 @media (max-width:600px){.mod-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.mod-tabs button{white-space:nowrap}}
+
+/* Fiche membre */
+.fiche{display:flex;flex-direction:column;gap:14px}
+.back-btn{align-self:flex-start}
+.fiche-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}
+.fiche-head.banned{border-color:#D9A3A3;background:#FBEEEE}
+.fiche-av{width:64px;height:64px;font-size:26px;flex:none;overflow:hidden}.fiche-av img{width:100%;height:100%;object-fit:cover}
+.fiche-id{flex:1;min-width:200px}.fiche-id h2{margin:0 0 6px;font-size:22px}.fiche-id p{margin:4px 0 0}
+.fiche-signals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.fiche-signals>div{display:flex;flex-direction:column;padding:12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.fiche-signals b{font-size:22px;color:var(--heading);font-variant-numeric:tabular-nums}.fiche-signals span{font-size:12.5px;color:var(--muted)}
+.fiche-signals .bad{border-color:#D9A3A3;background:#FBEEEE}.fiche-signals .bad b{color:#8A2E2E}
+.fiche-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.fiche-grid .panel{margin:0}
+.fiche-grid h3{margin:0 0 10px;font-size:17px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin:0}
+.facts dt{font-size:12.5px;color:var(--muted)}.facts dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.note-form{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}.note-form textarea{min-height:70px}
+.note-item{padding:10px 12px;border-radius:12px;background:var(--ice);margin-top:8px}.note-item p{margin:0}.note-item small{color:var(--muted)}
+.fiche-sec{border-radius:16px;background:var(--surface);border:1px solid var(--line);padding:0 18px}
+.fiche-sec summary{display:flex;align-items:center;gap:10px;padding:16px 0;cursor:pointer;color:var(--heading)}
+.fiche-sec summary em{font-style:normal;font-size:12px;padding:1px 8px;border-radius:99px;background:var(--pale)}
+.fiche-body{padding-bottom:14px}
+.deal{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line)}
+.deal:first-child{border-top:0}.deal p{margin:4px 0 0}.deal>div:first-child{flex:1;min-width:0}
+.deal.hot{background:linear-gradient(90deg,rgba(178,59,59,.07),transparent);border-radius:10px;padding-left:10px}
+.linkish{border:0;background:none;padding:0;font:inherit;color:var(--heading);font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.conv-view{border:2px solid #294B68}.conv-view-h{display:flex;justify-content:space-between;align-items:center;gap:10px}.conv-view-h h2{margin:0;font-size:18px}
+.conv-msgs{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto;padding:4px}
+.cm{padding:10px 12px;border-radius:12px;background:var(--ice)}.cm time{margin-left:8px;font-size:12px;color:var(--muted)}.cm p{margin:4px 0 0;white-space:pre-line;overflow-wrap:anywhere}
+.deal-filter{margin:10px 0 14px}
+@media (max-width:900px){.fiche-signals{grid-template-columns:repeat(3,minmax(0,1fr))}.fiche-grid{grid-template-columns:1fr}}
+@media (max-width:520px){.fiche-signals{grid-template-columns:repeat(2,minmax(0,1fr))}.facts{grid-template-columns:1fr}.deal{flex-direction:column}.deal .row-actions{width:100%}}
+:root[data-theme="dark"] .fiche-head.banned,:root[data-theme="dark"] .fiche-signals .bad{background:#3A1E22;border-color:#6B3036}
+:root[data-theme="dark"] .fiche-signals .bad b{color:#F6B8B8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fiche-head.banned,:root:not([data-theme="light"]) .fiche-signals .bad{background:#3A1E22;border-color:#6B3036}:root:not([data-theme="light"]) .fiche-signals .bad b{color:#F6B8B8}}
 </style>
 </head>
 <body>
@@ -2507,7 +2542,7 @@ function renderModeration(el){
   const todo=mod.reports.filter(r=>r.status==="nouveau"), done=mod.reports.filter(r=>r.status!=="nouveau");
   const removed=state.remote.filter(p=>p.status==="removed"), disputes=[...(typeof orders!=="undefined"?orders.all:[]).filter(o=>o.status==="problem"),...(typeof trades!=="undefined"?trades.list:[]).filter(t=>t.status==="problem")];
   const online=state.remote.filter(p=>p.status!=="removed");
-  const tabs=[["bord","Tableau de bord",""],["atraiter","À traiter",todo.length],["membres","Membres",""],["enligne","Annonces en ligne",online.length],["retirees","Annonces retirées",removed.length],...(payOn()?[["litiges","Litiges",disputes.length]]:[]),["historique","Historique",done.length],["equipe","Équipe",""],["journal","Journal",""],["reglages",founder?"Réglages":"Mots interdits",""]];
+  const tabs=[["bord","Tableau de bord",""],["atraiter","À traiter",todo.length],["membres","Membres",""],["affaires","Commandes et échanges",""],["enligne","Annonces en ligne",online.length],["retirees","Annonces retirées",removed.length],...(payOn()?[["litiges","Litiges",disputes.length]]:[]),["historique","Historique",done.length],["equipe","Équipe",""],["journal","Journal",""],["reglages",founder?"Réglages":"Mots interdits",""]];
   if(!tabs.some(t=>t[0]===modTab))modTab="bord";
   let body="";
   if(!mod.loaded)body=`<p class="muted">Chargement…</p>`;
@@ -2516,7 +2551,8 @@ function renderModeration(el){
   else if(modTab==="retirees")body=removed.length?`<div class="panel">${removed.map(p=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><h3>${esc(p.name)}</h3><p>${eur(p.price)} · vendeur : @${esc(p.seller)}</p><p><span class="status">Retirée par la modération</span></p></div><div class="row-actions"><button type="button" class="btn btn-outline" data-mod="restore" data-listing="${p.id}">Remettre en ligne</button></div></div>`).join("")}</div>`:`<div class="empty"><p>Aucune annonce retirée.</p></div>`;
   else if(modTab==="litiges")body=disputesHtml();
   else if(modTab==="bord")body=teamDashboardHtml();
-  else if(modTab==="membres")body=membersHtml();
+  else if(modTab==="membres")body=team.detail?ficheHtml():membersHtml();
+  else if(modTab==="affaires")body=dealsHtml();
   else if(modTab==="equipe")body=teamHtml();
   else if(modTab==="journal")body=journalHtml();
   else if(modTab==="reglages")body=settingsTeamHtml();
@@ -2537,7 +2573,7 @@ function renderModeration(el){
         <div class="buy-actions"><button class="btn btn-outline" type="submit">Changer le mot de passe</button><button type="button" class="btn btn-outline" id="logout">Se déconnecter</button></div>
       </form>
     </details>`;
-  el.querySelectorAll("[data-modtab]").forEach(b=>b.addEventListener("click",()=>{modTab=b.dataset.modtab;if(["bord","membres","equipe","journal","reglages"].includes(modTab))loadTeamData(modTab);renderModeration(el)}));
+  el.querySelectorAll("[data-modtab]").forEach(b=>b.addEventListener("click",()=>{modTab=b.dataset.modtab;if(modTab==="membres")team.detail=null;if(["bord","membres","equipe","journal","reglages","affaires"].includes(modTab))loadTeamData(modTab);renderModeration(el)}));
   bindTeam(el);
   const mq=$("modQ");if(mq)mq.addEventListener("input",()=>{modQuery=mq.value;clearTimeout(mq._t);mq._t=setTimeout(()=>{renderModeration(el);const n=$("modQ");n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)});
   watchImages(el);
@@ -2559,6 +2595,7 @@ async function loadTeamData(which){
     if(ids.length){const q=await sb.from("profiles").select("id,name").in("id",ids);(q.data||[]).forEach(x=>team.names[x.id]=x.name)}}));
   if(!which||which==="reglages"){jobs.push(sb.from("banned_words").select("word,created_at").order("word",{ascending:true}).then(r=>{if(!r.error)team.words=r.data||[]}));jobs.push(loadSite())}
   if(which==="membres"&&!team.membersLoaded)jobs.push(searchMembers(team.memberQ));
+  if(which==="affaires")jobs.push(loadDealNames());
   await Promise.all(jobs);
   if(state.isAdmin&&location.hash.startsWith("#/compte"))renderView();
 }
@@ -2585,6 +2622,8 @@ function teamDashboardHtml(){
     <details><summary>Une annonce est signalée</summary><p>Onglet « À traiter » : ouvre l’annonce. Si elle enfreint les règles, « Retirer l’annonce ». Sinon, « Rien à signaler ». Si le vendeur recommence, avertis-le depuis « Membres ».</p></details>
     <details><summary>Un acheteur et un vendeur ne sont pas d’accord</summary><p>Onglet « Litiges » : lis les deux versions dans la commande, puis rembourse l’acheteur ou valide la vente. Ta décision est inscrite au journal.</p></details>
     <details><summary>Un membre arnaque ou insulte</summary><p>Onglet « Membres » : cherche son identifiant. Premier écart : « Avertir ». Récidive : « Suspendre » 7 ou 30 jours. Fraude grave : suspension définitive. Ses annonces sont retirées automatiquement et il reçoit un e-mail.</p></details>
+    <details><summary>Je dois comprendre ce qui s’est passé entre deux membres</summary><p>Onglet « Commandes et échanges » (ou « Litiges ») : bouton « Conversation » pour lire leurs messages, et « Fiche acheteur / vendeur » pour voir tout leur historique. Note ce que tu as appris dans les notes internes de la fiche.</p></details>
+    <details><summary>Je veux tout savoir sur un membre</summary><p>Onglet « Membres » → « Fiche complète » : e-mail, dernière connexion, annonces, commandes, échanges, avis, signalements, conversations, décisions passées et signaux d’alerte en rouge.</p></details>
     <details><summary>Le même produit interdit revient souvent</summary><p>Onglet « ${state.role==="fondateur"?"Réglages":"Mots interdits"} » : ajoute le mot (ex. une marque contrefaite). Les nouvelles annonces qui le contiennent sont refusées automatiquement.</p></details>
     ${state.role==="fondateur"?`<details><summary>Je veux prévenir tout le monde (maintenance, nouveauté…)</summary><p>Onglet « Réglages » : écris l’annonce. Elle s’affiche en haut du site pour tous les visiteurs. En cas d’urgence, mets en pause les nouvelles annonces.</p></details>
     <details><summary>J’ai besoin d’aide pour modérer</summary><p>Demande à la personne de créer un compte dédié (par ex. <i>prenom.revoo</i>), puis onglet « Équipe » : ajoute son identifiant. Tu peux le retirer à tout moment.</p></details>`:""}
@@ -2599,18 +2638,9 @@ function membersHtml(){
         <div><h3><a href="#/vendeur/${esc(m.id)}">@${esc(m.name)}</a> ${team_?`<span class="role-pill">${team_==="fondateur"?"Fondateur":"Admin"}</span>`:""}${m.banned?` <span class="status danger">Suspendu${m.banned_until?" jusqu’au "+fmtD(m.banned_until):" définitivement"}</span>`:""}</h3>
           <p class="small muted">Membre depuis ${fmtD(m.created_at)} · ${m.listings_active} en ligne · ${m.sales} vente${m.sales>1?"s":""} · ${m.reports} signalement${m.reports>1?"s":""} · ${m.warnings} avertissement${m.warnings>1?"s":""}</p>
           ${m.banned?`<p class="small">Motif : ${esc(m.ban_reason||"")}</p>`:""}</div>
-        ${team_?"":`<div class="row-actions">${m.banned?`<button type="button" class="btn btn-outline" data-team="unban" data-id="${m.id}">Lever la suspension</button>`:`<button type="button" class="btn btn-outline" data-team="open" data-id="${m.id}" aria-expanded="${open}">Agir</button>`}</div>`}
+        ${team_?"":`<div class="row-actions"><button type="button" class="btn btn-primary" data-team="fiche" data-id="${m.id}">Fiche complète</button>${m.banned?`<button type="button" class="btn btn-outline" data-team="unban" data-id="${m.id}">Lever la suspension</button>`:`<button type="button" class="btn btn-outline" data-team="open" data-id="${m.id}" aria-expanded="${open}">Agir</button>`}</div>`}
       </div>
-      ${open&&!m.banned?`<div class="member-act">
-        <form data-team-form="warn" data-id="${m.id}"><label for="w-${m.id}"><b>Avertir</b> <span class="hint">(il le verra sur le site et par e-mail)</span></label>
-          <div class="tpl">${["Merci de décrire honnêtement l’état de tes articles.","Les échanges doivent rester polis et respectueux.","Les paiements doivent passer par Revoo, jamais en dehors.","Cette annonce ne respecte pas les règles de Revoo."].map(t=>`<button type="button" class="chip-btn" data-tpl="${esc(t)}">${esc(t)}</button>`).join("")}</div>
-          <textarea class="input" id="w-${m.id}" maxlength="1000" placeholder="Ton message au membre"></textarea>
-          <button class="btn btn-primary" type="submit">Envoyer l’avertissement</button></form>
-        <form data-team-form="ban" data-id="${m.id}"><label for="b-${m.id}"><b>Suspendre</b> <span class="hint">(ses annonces sont retirées)</span></label>
-          <div class="segmented" role="radiogroup" aria-label="Durée">${[["1","1 jour"],["7","7 jours"],["30","30 jours"],["0","Définitif"]].map(([v,l],i)=>`<label><input type="radio" name="bd-${m.id}" value="${v}" ${i===1?"checked":""}><span>${l}</span></label>`).join("")}</div>
-          <input class="input" id="b-${m.id}" maxlength="500" placeholder="Motif (visible par le membre)">
-          <button class="btn btn-danger" type="submit">Suspendre le compte</button></form>
-      </div>`:""}
+      ${open&&!m.banned?actFormsHtml(m.id):""}
     </div>`}).join("");
   return `<form class="mod-search" id="memberSearch" role="search"><label for="memQ" class="sr-only">Chercher un membre par identifiant</label><input class="input" id="memQ" type="search" placeholder="Chercher un membre par identifiant (ex. camille)" value="${esc(team.memberQ)}"><button class="btn btn-primary" type="submit">Chercher</button></form>
     ${!team.membersLoaded?`<p class="muted">Chargement…</p>`:rows?`<div class="panel">${rows}</div>`:`<div class="empty"><p>Aucun membre trouvé.</p></div>`}`;
@@ -2643,6 +2673,124 @@ function settingsTeamHtml(){
       <div class="words">${team.words.map(w=>`<span class="word">${esc(w.word)}<button type="button" data-team="unword" data-id="${esc(w.word)}" aria-label="Retirer ${esc(w.word)}">×</button></span>`).join("")||`<p class="muted small">Aucun mot pour l’instant.</p>`}</div>
     </div>`;
 }
+/* ---------- Fiche membre complète ---------- */
+const ORDER_ST={paid:"Payée",shipped:"Envoyée",received:"Terminée",problem:"Litige",cancelled:"Annulée"};
+const LIST_ST={active:"En ligne",sold:"Vendue",removed:"Retirée"};
+const NOTICE_K={avertissement:"Avertissement",suspension:"Suspension",levee:"Suspension levée",info:"Information"};
+function dealLinks(a,b){return `<button type="button" class="btn btn-outline" data-team="fiche" data-id="${a}">Fiche acheteur</button><button type="button" class="btn btn-outline" data-team="fiche" data-id="${b}">Fiche vendeur</button><button type="button" class="btn btn-outline" data-team="convbetween" data-a="${a}" data-b="${b}">Lire leur conversation</button>`}
+async function openFiche(id){
+  const r=await sb.rpc("member_detail",{p_user:id});
+  if(r.error){toast(frenchError(r.error));return}
+  team.detail=r.data;team.conv=null;modTab="membres";renderView();
+  setTimeout(()=>{const h=document.querySelector(".fiche");if(h)h.scrollIntoView({behavior:"smooth",block:"start"})},50);
+}
+async function openConv(id,label){
+  const r=await sb.rpc("read_conversation",{p_conv:id});
+  if(r.error){toast(frenchError(r.error));return}
+  team.conv={id,label,msgs:r.data||[]};renderView();
+  setTimeout(()=>{const c=$("convView");if(c)c.scrollIntoView({behavior:"smooth",block:"center"})},50);
+}
+function convViewHtml(){
+  const c=team.conv;if(!c)return"";
+  return `<div class="panel conv-view" id="convView"><div class="conv-view-h"><h2>Conversation ${esc(c.label||"")}</h2><button type="button" class="btn btn-outline" data-team="convclose">Fermer</button></div>
+    <p class="small muted">Lecture inscrite au journal. À utiliser seulement pour régler un litige ou vérifier un signalement.</p>
+    <div class="conv-msgs">${c.msgs.length?c.msgs.map(m=>`<div class="cm"><b>@${esc(m.sender)}</b><time>${fmtDH(m.created_at)}</time><p>${esc(m.body)}</p></div>`).join(""):`<p class="muted">Aucun message.</p>`}</div></div>`;
+}
+function ficheHtml(){
+  const d=team.detail,p=d.profil||{},c=d.compte||{},pv=d.prive||{},sub=d.abonnement,ban=d.suspension;
+  const cmd=d.commandes||[],ech=d.echanges||[],ann=d.annonces||[],rep_=d.signalements_recus||[],av=d.avis_recus||[],conv=d.conversations||[];
+  const litiges=cmd.filter(o=>o.status==="problem").length+ech.filter(t=>t.status==="problem").length;
+  const annul=cmd.filter(o=>o.status==="cancelled"&&o.role==="vente").length;
+  const warns=(d.messages_equipe||[]).filter(n=>n.kind==="avertissement").length;
+  const sig=[
+    [rep_.length,"signalement"+(rep_.length>1?"s":"")+" reçu"+(rep_.length>1?"s":""),rep_.length>=3],
+    [litiges,"litige"+(litiges>1?"s":""),litiges>=2],
+    [annul,"vente"+(annul>1?"s":"")+" annulée"+(annul>1?"s":""),annul>=3],
+    [warns,"avertissement"+(warns>1?"s":""),warns>=2],
+    [d.messages_24h,"message"+(d.messages_24h>1?"s":"")+" en 24 h",d.messages_24h>=25],
+    [d.note_moyenne?d.note_moyenne+"/5":"—","note moyenne ("+av.length+" avis)",d.note_moyenne&&d.note_moyenne<3]];
+  const risky=sig.filter(x=>x[2]).length;
+  const sec=(id,title,n,inner,open)=>`<details class="fiche-sec" ${open?"open":""}><summary><b>${title}</b>${n!==undefined?`<em>${n}</em>`:""}</summary><div class="fiche-body">${inner}</div></details>`;
+  const fact=(k,v)=>`<div><dt>${k}</dt><dd>${v||"—"}</dd></div>`;
+  return `<div class="fiche">
+    <button type="button" class="btn btn-outline back-btn" data-team="ficheback">← Retour aux membres</button>
+    ${team.conv?convViewHtml():""}
+    <div class="fiche-head${ban?" banned":""}">
+      <span class="avatar fiche-av" aria-hidden="true">${p.avatar_url?`<img src="${esc(p.avatar_url)}" alt="">`:esc((p.name||"?")[0].toUpperCase())}</span>
+      <div class="fiche-id"><h2>@${esc(p.name)}</h2>
+        <p class="small">${ban?`<span class="status danger">Suspendu${ban.jusqu_au?" jusqu’au "+fmtDH(ban.jusqu_au):" définitivement"}</span> `:""}${sub?`<span class="status">Abonné ${esc((PLANS[sub.plan]||{}).name||sub.plan)}</span> `:""}${p.vacation?`<span class="status">En vacances</span> `:""}${risky?`<span class="status danger">${risky} signal${risky>1?"s":""} d’alerte</span>`:`<span class="status">Aucun signal d’alerte</span>`}</p>
+        ${ban?`<p class="small">Motif : ${esc(ban.motif)}</p>`:""}</div>
+      <div class="row-actions"><a class="btn btn-outline" href="#/vendeur/${esc(p.id)}">Profil public</a>${ban?`<button type="button" class="btn btn-outline" data-team="unban" data-id="${p.id}">Lever la suspension</button>`:`<button type="button" class="btn btn-primary" data-team="ficheact" data-id="${p.id}">Avertir ou suspendre</button>`}</div>
+    </div>
+    ${team.open===p.id&&!ban?actFormsHtml(p.id):""}
+    <div class="fiche-signals">${sig.map(([n,l,bad])=>`<div class="${bad?"bad":""}"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
+    <div class="fiche-grid">
+      <div class="panel"><h3>Compte</h3><dl class="facts">
+        ${fact("E-mail",c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>${c.email_confirme?"":" <span class=\"status\">non confirmé</span>"}`:"")}
+        ${fact("Inscrit le",fmtDH(c.inscrit_le||p.created_at))}
+        ${fact("Dernière connexion",fmtDH(c.derniere_connexion))}
+        ${fact("Prénom et nom",[pv.prenom,pv.nom].filter(Boolean).map(esc).join(" "))}
+        ${fact("Ville",esc(pv.ville||""))}
+        ${fact("Changements d’identifiant",String(p.username_changes||0))}
+        ${fact("Abonnement",sub?`${esc((PLANS[sub.plan]||{}).name||sub.plan)} jusqu’au ${fmtD(sub.fin)}${sub.resilie?" (résilié)":""}${sub.demo?" · démo":""}`:"Aucun")}
+        ${fact("Signalements envoyés",String(d.signalements_faits||0))}
+      </dl>${p.bio?`<p class="small muted">Bio : « ${esc(p.bio)} »</p>`:""}</div>
+      <div class="panel"><h3>Notes internes <span class="hint">(visibles seulement par l’équipe)</span></h3>
+        <form data-team-form="note" data-id="${p.id}" class="note-form"><label for="note-${p.id}" class="sr-only">Nouvelle note</label><textarea class="input" id="note-${p.id}" maxlength="1000" placeholder="Ex. : a promis de renvoyer le colis avant vendredi"></textarea><button class="btn btn-primary" type="submit">Ajouter la note</button></form>
+        ${(d.notes||[]).map(n=>`<div class="note-item"><p>${esc(n.body)}</p><small>@${esc(n.auteur||"?")} · ${fmtDH(n.created_at)}</small></div>`).join("")||`<p class="muted small">Aucune note.</p>`}
+      </div>
+    </div>
+    ${sec("cmd","Commandes",cmd.length,cmd.length?cmd.map(o=>`<div class="deal${o.status==="problem"?" hot":""}"><div><b>${esc(o.title)}</b> · ${eur(Number(o.price))} · <span class="status">${o.role==="achat"?"Achat":"Vente"}</span> <span class="status${o.status==="problem"?" danger":""}">${ORDER_ST[o.status]||o.status}</span>${o.demo?' <span class="status">démo</span>':""}
+      <p class="small muted">${fmtDH(o.created_at)} · ${o.delivery==="main_propre"?"Main propre":"Colis"}${o.tracking?" · suivi "+esc(o.tracking):""} · ${o.role==="achat"?"vendeur":"acheteur"} : <button type="button" class="linkish" data-team="fiche" data-id="${o.autre_id}">@${esc(o.autre||"supprimé")}</button></p>
+      ${o.problem?`<p class="small">Problème signalé : « ${esc(o.problem)} »</p>`:""}</div>
+      <div class="row-actions">${["paid","shipped","problem"].includes(o.status)?`<button type="button" class="btn btn-danger" data-order="admin-cancel" data-id="${o.id}" data-refiche="${p.id}">Annuler et rembourser</button>`:""}${o.status==="problem"?`<button type="button" class="btn btn-outline" data-order="admin-close" data-id="${o.id}" data-refiche="${p.id}">Clore pour le vendeur</button>`:""}${o.autre_id?`<button type="button" class="btn btn-outline" data-team="convbetween" data-a="${p.id}" data-b="${o.autre_id}">Conversation</button>`:""}</div></div>`).join(""):`<p class="muted">Aucune commande.</p>`,cmd.some(o=>o.status==="problem"))}
+    ${sec("ech","Échanges",ech.length,ech.length?ech.map(t=>`<div class="deal${t.status==="problem"?" hot":""}"><div><b>${esc(t.donne)} ⇄ ${esc(t.recoit)}</b>${Number(t.topup)>0?" · complément "+eur(Number(t.topup)):""} <span class="status${t.status==="problem"?" danger":""}">${(typeof TRADE_STATUS!=="undefined"&&TRADE_STATUS[t.status])||t.status}</span>
+      <p class="small muted">${fmtDH(t.created_at)} · avec <button type="button" class="linkish" data-team="fiche" data-id="${t.autre_id}">@${esc(t.autre||"supprimé")}</button></p>${t.problem?`<p class="small">Problème : « ${esc(t.problem)} »</p>`:""}</div>
+      <div class="row-actions">${["accepted","problem"].includes(t.status)?`<button type="button" class="btn btn-outline" data-trade="admin-complete" data-id="${t.id}" data-refiche="${p.id}">Valider</button><button type="button" class="btn btn-danger" data-trade="admin-cancel" data-id="${t.id}" data-refiche="${p.id}">Annuler et rembourser</button>`:""}${t.autre_id?`<button type="button" class="btn btn-outline" data-team="convbetween" data-a="${p.id}" data-b="${t.autre_id}">Conversation</button>`:""}</div></div>`).join(""):`<p class="muted">Aucun échange.</p>`,ech.some(t=>t.status==="problem"))}
+    ${sec("ann","Annonces",ann.length,ann.length?`<div class="fiche-list">${ann.map(l=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(l.id)}">${l.photo?`<img data-safe-image src="${esc(l.photo)}" alt="">`:""}</a><div><h3>${esc(l.title)}</h3><p>${eur(Number(l.price))} · <span class="status${l.status==="removed"?" danger":""}">${LIST_ST[l.status]||l.status}</span> · ${fmtD(l.created_at)}</p></div><div class="row-actions">${l.status==="active"?`<button type="button" class="btn btn-danger" data-mod="remove" data-listing="${l.id}">Retirer</button>`:l.status==="removed"&&!ban?`<button type="button" class="btn btn-outline" data-mod="restore" data-listing="${l.id}">Remettre en ligne</button>`:""}</div></div>`).join("")}</div>`:`<p class="muted">Aucune annonce.</p>`)}
+    ${sec("sig","Signalements reçus",rep_.length,rep_.length?rep_.map(r=>`<div class="deal"><div><b>${esc(r.reason)}</b> · ${esc(r.listing||"")} <span class="status">${r.status==="nouveau"?"Nouveau":r.status==="traité"?"Traité":"Rejeté"}</span><p class="small muted">${fmtDH(r.created_at)}${r.details?" · « "+esc(r.details)+" »":""}</p></div></div>`).join(""):`<p class="muted">Aucun signalement.</p>`,rep_.some(r=>r.status==="nouveau"))}
+    ${sec("avis","Avis reçus",av.length,av.length?av.map(v=>`<div class="deal"><div><b>${"★".repeat(v.rating)}${"☆".repeat(5-v.rating)}</b> par @${esc(v.auteur||"supprimé")}<p class="small muted">${fmtD(v.created_at)}${v.comment?" · « "+esc(v.comment)+" »":""}</p></div><div class="row-actions"><button type="button" class="btn btn-outline" data-team="delreview" data-id="${v.id}" data-refiche="${p.id}">Supprimer l’avis</button></div></div>`).join(""):`<p class="muted">Aucun avis.</p>`)}
+    ${sec("conv","Conversations",conv.length,conv.length?conv.map(x=>`<div class="deal"><div><b>Avec @${esc(x.autre||"supprimé")}</b>${x.listing?" · à propos de « "+esc(x.listing)+" »":""}<p class="small muted">${x.messages} message${x.messages>1?"s":""} · dernier le ${fmtDH(x.last)}</p></div><div class="row-actions"><button type="button" class="btn btn-outline" data-team="conv" data-id="${x.id}" data-label="avec @${esc(x.autre||"?")}">Lire</button></div></div>`).join(""):`<p class="muted">Aucune conversation.</p>`)}
+    ${sec("me","Messages de l’équipe",(d.messages_equipe||[]).length,(d.messages_equipe||[]).map(n=>`<div class="deal"><div><span class="status">${NOTICE_K[n.kind]||n.kind}</span> ${esc(n.message)}<p class="small muted">${fmtDH(n.created_at)} · ${n.lu?"lu":"pas encore lu"}</p></div></div>`).join("")||`<p class="muted">Aucun message envoyé.</p>`)}
+    ${sec("hist","Historique des décisions",(d.historique||[]).length,(d.historique||[]).map(h=>`<div class="deal"><div><b>${esc(h.action)}</b>${h.details?` <span class="muted">— ${esc(h.details)}</span>`:""}<p class="small muted">${fmtDH(h.created_at)} · par @${esc(h.par||"?")}</p></div></div>`).join("")||`<p class="muted">Aucune décision pour l’instant.</p>`)}
+  </div>`;
+}
+function actFormsHtml(id){
+  return `<div class="member-act">
+    <form data-team-form="warn" data-id="${id}"><label for="w-${id}"><b>Avertir</b> <span class="hint">(il le verra sur le site et par e-mail)</span></label>
+      <div class="tpl">${["Merci de décrire honnêtement l’état de tes articles.","Les échanges doivent rester polis et respectueux.","Les paiements doivent passer par Revoo, jamais en dehors.","Cette annonce ne respecte pas les règles de Revoo."].map(t=>`<button type="button" class="chip-btn" data-tpl="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <textarea class="input" id="w-${id}" maxlength="1000" placeholder="Ton message au membre"></textarea>
+      <button class="btn btn-primary" type="submit">Envoyer l’avertissement</button></form>
+    <form data-team-form="ban" data-id="${id}"><label for="b-${id}"><b>Suspendre</b> <span class="hint">(ses annonces sont retirées)</span></label>
+      <div class="segmented" role="radiogroup" aria-label="Durée">${[["1","1 jour"],["7","7 jours"],["30","30 jours"],["0","Définitif"]].map(([v,l],i)=>`<label><input type="radio" name="bd-${id}" value="${v}" ${i===1?"checked":""}><span>${l}</span></label>`).join("")}</div>
+      <input class="input" id="b-${id}" maxlength="500" placeholder="Motif (visible par le membre)">
+      <button class="btn btn-danger" type="submit">Suspendre le compte</button></form>
+  </div>`;
+}
+/* ---------- Commandes et échanges : recherche ---------- */
+async function loadDealNames(){
+  const ids=[...new Set([...orders.all.flatMap(o=>[o.buyer_id,o.seller_id]),...trades.list.flatMap(t=>[t.proposer_id,t.receiver_id])].filter(x=>x&&!team.names[x]))];
+  for(let i=0;i<ids.length;i+=100){const q=await sb.from("profiles").select("id,name").in("id",ids.slice(i,i+100));(q.data||[]).forEach(x=>team.names[x.id]=x.name)}
+}
+function dealsHtml(){
+  const q=rbNorm2(team.dealQ||""),f=team.dealF||"todo";
+  const on=o=>({todo:["paid","shipped","problem"].includes(o.status),problem:o.status==="problem",all:true})[f];
+  const tn=t=>({todo:["proposed","accepted","problem"].includes(t.status),problem:t.status==="problem",all:true})[f];
+  const match=(txt)=>!q||rbNorm2(txt).includes(q);
+  const os=orders.all.filter(o=>on(o)&&match(`${o.id} ${o.title} ${team.names[o.buyer_id]||""} ${team.names[o.seller_id]||""}`));
+  const ts=trades.list.filter(t=>tn(t)&&match(`${t.id} ${t.offered_title} ${t.wanted_title} ${team.names[t.proposer_id]||""} ${team.names[t.receiver_id]||""}`));
+  const who=id=>id?`<button type="button" class="linkish" data-team="fiche" data-id="${id}">@${esc(team.names[id]||"…")}</button>`:"membre supprimé";
+  return `<form class="mod-search" id="dealSearch" role="search"><label for="dealQ" class="sr-only">Chercher une commande ou un échange</label><input class="input" id="dealQ" type="search" placeholder="Titre de l’article, identifiant d’un membre ou n° de commande" value="${esc(team.dealQ||"")}"><button class="btn btn-primary" type="submit">Chercher</button></form>
+    <div class="segmented deal-filter" role="radiogroup" aria-label="Filtre">${[["todo","En cours"],["problem","Litiges"],["all","Tout"]].map(([v,l])=>`<label><input type="radio" name="dealF" value="${v}" ${f===v?"checked":""}><span>${l}</span></label>`).join("")}</div>
+    <div class="panel"><h2>Commandes (${os.length})</h2>${os.length?os.slice(0,80).map(o=>`<div class="deal${o.status==="problem"?" hot":""}"><div><b>${esc(o.title)}</b> · ${eur(Number(o.price))} <span class="status${o.status==="problem"?" danger":""}">${ORDER_ST[o.status]||o.status}</span>${o.demo?' <span class="status">démo</span>':""}
+      <p class="small muted">N° ${esc(String(o.id).slice(0,8))} · ${fmtDH(o.created_at)} · ${o.delivery==="main_propre"?"main propre":"colis"} · acheteur ${who(o.buyer_id)} · vendeur ${who(o.seller_id)}</p>${o.problem?`<p class="small">Problème : « ${esc(o.problem)} »</p>`:""}</div>
+      <div class="row-actions">${["paid","shipped","problem"].includes(o.status)?`<button type="button" class="btn btn-danger" data-order="admin-cancel" data-id="${o.id}">Annuler et rembourser</button>`:""}${o.status==="problem"?`<button type="button" class="btn btn-outline" data-order="admin-close" data-id="${o.id}">Clore pour le vendeur</button>`:""}<button type="button" class="btn btn-outline" data-team="convbetween" data-a="${o.buyer_id}" data-b="${o.seller_id}">Conversation</button></div></div>`).join(""):`<p class="muted">Aucune commande.</p>`}</div>
+    <div class="panel"><h2>Échanges (${ts.length})</h2>${ts.length?ts.slice(0,80).map(t=>`<div class="deal${t.status==="problem"?" hot":""}"><div><b>${esc(t.offered_title)} ⇄ ${esc(t.wanted_title)}</b>${Number(t.topup)>0?" · complément "+eur(Number(t.topup)):""} <span class="status${t.status==="problem"?" danger":""}">${TRADE_STATUS[t.status]||t.status}</span>
+      <p class="small muted">${fmtDH(t.created_at)} · ${who(t.proposer_id)} ⇄ ${who(t.receiver_id)}</p>${t.problem?`<p class="small">Problème : « ${esc(t.problem)} »</p>`:""}</div>
+      <div class="row-actions">${["accepted","problem"].includes(t.status)?`<button type="button" class="btn btn-outline" data-trade="admin-complete" data-id="${t.id}">Valider</button><button type="button" class="btn btn-danger" data-trade="admin-cancel" data-id="${t.id}">Annuler et rembourser</button>`:""}<button type="button" class="btn btn-outline" data-team="convbetween" data-a="${t.proposer_id}" data-b="${t.receiver_id}">Conversation</button></div></div>`).join(""):`<p class="muted">Aucun échange.</p>`}</div>
+    ${team.conv?convViewHtml():""}`;
+}
+
 async function teamRpc(fn,args,ok){const r=await sb.rpc(fn,args);if(r.error){toast(frenchError(r.error));return false}if(ok)toast(ok);return true}
 function bindTeam(el){
   const ms=el.querySelector("#memberSearch");if(ms)ms.addEventListener("submit",async e=>{e.preventDefault();team.memberQ=$("memQ").value.trim();team.membersLoaded=false;renderModeration(el);await searchMembers(team.memberQ);renderModeration(el)});
@@ -2651,18 +2799,29 @@ function bindTeam(el){
   el.querySelectorAll("[data-team]").forEach(b=>b.addEventListener("click",async()=>{
     const k=b.dataset.team,id=b.dataset.id;
     if(k==="open"){team.open=team.open===id?"":id;renderModeration(el);return}
-    if(k==="unban"){if(!confirm("Lever la suspension de ce membre ?"))return;if(await teamRpc("unban_member",{p_user:id},"Suspension levée. Le membre a été prévenu.")){await searchMembers(team.memberQ);loadTeamData("bord");renderModeration(el)}}
+    if(k==="fiche"){team.open="";await openFiche(id);return}
+    if(k==="ficheback"){team.detail=null;team.conv=null;renderModeration(el);return}
+    if(k==="ficheact"){team.open=team.open===id?"":id;renderModeration(el);return}
+    if(k==="conv"){await openConv(id,b.dataset.label);return}
+    if(k==="convclose"){team.conv=null;renderModeration(el);return}
+    if(k==="convbetween"){const r=await sb.rpc("conversation_between",{p_a:b.dataset.a,p_b:b.dataset.b});if(r.error){toast(frenchError(r.error));return}if(!r.data){toast("Ces deux membres ne se sont jamais écrit sur Revoo.");return}await openConv(r.data,"entre @"+(team.names[b.dataset.a]||"…")+" et @"+(team.names[b.dataset.b]||"…"));return}
+    if(k==="delreview"){if(!confirm("Supprimer cet avis ? (faux avis, insulte, données personnelles…)"))return;const r=await sb.from("reviews").delete().eq("id",id);if(r.error){toast(frenchError(r.error));return}toast("Avis supprimé.");await openFiche(b.dataset.refiche);return}
+    if(k==="unban"){if(!confirm("Lever la suspension de ce membre ?"))return;if(await teamRpc("unban_member",{p_user:id},"Suspension levée. Le membre a été prévenu.")){await searchMembers(team.memberQ);loadTeamData("bord");if(team.detail)await openFiche(id);else renderModeration(el)}}
     if(k==="remove"){if(!confirm(`Retirer @${b.dataset.name} de l’équipe ? Son compte redeviendra un compte normal.`))return;if(await teamRpc("team_remove",{p_user:id},"Retiré de l’équipe."))await loadTeamData("equipe")}
     if(k==="unword"){if(await teamRpc("remove_banned_word",{p_word:id},"Mot retiré."))await loadTeamData("reglages")}
   }));
   el.querySelectorAll("[data-team-form]").forEach(f=>f.addEventListener("submit",async e=>{
     e.preventDefault();const id=f.dataset.id;
+    if(f.dataset.teamForm==="note"){const t=f.querySelector("textarea").value.trim();if(t.length<2){toast("Écris la note.");return}busy(f,true,"Ajout…");const ok=await teamRpc("add_member_note",{p_user:id,p_body:t},"Note ajoutée.");busy(f,false);if(ok)await openFiche(id);return}
     if(f.dataset.teamForm==="warn"){const msg=f.querySelector("textarea").value.trim();if(msg.length<5){toast("Écris le message de l’avertissement.");return}
-      busy(f,true,"Envoi…");const ok=await teamRpc("warn_member",{p_user:id,p_message:msg},"Avertissement envoyé.");busy(f,false);if(ok){team.open="";await searchMembers(team.memberQ);renderModeration(el)}}
+      busy(f,true,"Envoi…");const ok=await teamRpc("warn_member",{p_user:id,p_message:msg},"Avertissement envoyé.");busy(f,false);if(ok){team.open="";if(team.detail)await openFiche(id);else{await searchMembers(team.memberQ);renderModeration(el)}}}
     else{const d=+(f.querySelector("input[type=radio]:checked")||{}).value,why=f.querySelector("input.input").value.trim();if(why.length<3){toast("Indique le motif de la suspension.");return}
       if(!confirm(d?`Suspendre ce compte ${d} jour(s) ? Ses annonces seront retirées.`:"Suspendre ce compte définitivement ? Ses annonces seront retirées."))return;
-      busy(f,true,"Suspension…");const ok=await teamRpc("ban_member",{p_user:id,p_days:d||null,p_reason:why},"Compte suspendu. Le membre a été prévenu par e-mail.");busy(f,false);if(ok){team.open="";await Promise.all([searchMembers(team.memberQ),loadListings()]);loadTeamData("bord");renderModeration(el)}}
+      busy(f,true,"Suspension…");const ok=await teamRpc("ban_member",{p_user:id,p_days:d||null,p_reason:why},"Compte suspendu. Le membre a été prévenu par e-mail.");busy(f,false);if(ok){team.open="";await Promise.all([searchMembers(team.memberQ),loadListings()]);loadTeamData("bord");if(team.detail)await openFiche(id);else renderModeration(el)}}
   }));
+  const ds=el.querySelector("#dealSearch");if(ds)ds.addEventListener("submit",e=>{e.preventDefault();team.dealQ=$("dealQ").value.trim();renderModeration(el)});
+  el.querySelectorAll("input[name=dealF]").forEach(r=>r.addEventListener("change",()=>{team.dealF=r.value;renderModeration(el)}));
+  el.querySelectorAll("[data-refiche]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.refiche;setTimeout(()=>{if(team.detail)openFiche(id)},1500)}));
   const ta=el.querySelector("#teamAdd");if(ta)ta.addEventListener("submit",async e=>{e.preventDefault();const n=$("taName").value.trim().replace(/^@/,"");if(!n){toast("Indique l’identifiant du compte.");return}
     if(!confirm(`Ajouter @${n} à l’équipe ? Ce compte deviendra un compte de modération.`))return;if(await teamRpc("team_add",{p_name:n},`@${n} fait maintenant partie de l’équipe.`))await loadTeamData("equipe")});
   const wa=el.querySelector("#wordAdd");if(wa)wa.addEventListener("submit",async e=>{e.preventDefault();const w=$("wNew").value.trim();if(!w)return;if(await teamRpc("add_banned_word",{p_word:w},"Mot ajouté."))await loadTeamData("reglages")});
@@ -2715,6 +2874,7 @@ async function moderate(action,reportId,listingId){
     toast("Signalement classé sans suite.");
   }
   await Promise.all([loadReports(),loadListings()]);renderView();
+  if(team.detail)openFiche(team.detail.profil.id);
 }
 
 /* =========================================================
@@ -2874,11 +3034,11 @@ function disputesHtml(){
   const list=orders.all.filter(o=>o.status==="problem");
   if(!payOn())return"";
   const tl=trades.list.filter(t=>t.status==="problem");
-  const tradeDisputes=`<div class="panel"><h2>Échanges en litige (${tl.length})</h2>${tl.length?tl.map(t=>tradeCard(t,"admin")).join(""):`<p class="muted">Aucun échange en litige.</p>`}</div>`;
+  const tradeDisputes=`<div class="panel"><h2>Échanges en litige (${tl.length})</h2>${tl.length?tl.map(t=>tradeCard(t,"admin")+`<div class="row-actions" style="justify-content:flex-start;margin:-6px 0 14px">${dealLinks(t.proposer_id,t.receiver_id)}</div>`).join(""):`<p class="muted">Aucun échange en litige.</p>`}</div>`;
   return orderDisputes(list)+tradeDisputes;
 }
 function orderDisputes(list){
-  return `<div class="panel"><h2>Litiges Revoo Pay (${list.length})</h2>${list.length?list.map(o=>`${orderCard(o,"admin")}<div class="row-actions" style="justify-content:flex-start;margin:-6px 0 14px"><button type="button" class="btn btn-danger" data-order="admin-cancel" data-id="${o.id}">Annuler et rembourser l’acheteur</button><button type="button" class="btn btn-outline" data-order="admin-close" data-id="${o.id}">Clore en faveur du vendeur</button></div>`).join(""):`<p class="muted">Aucun litige en cours.</p>`}</div>`;
+  return `<div class="panel"><h2>Litiges Revoo Pay (${list.length})</h2>${list.length?list.map(o=>`${orderCard(o,"admin")}<div class="row-actions" style="justify-content:flex-start;margin:-6px 0 14px"><button type="button" class="btn btn-danger" data-order="admin-cancel" data-id="${o.id}">Annuler et rembourser l’acheteur</button><button type="button" class="btn btn-outline" data-order="admin-close" data-id="${o.id}">Clore en faveur du vendeur</button>${dealLinks(o.buyer_id,o.seller_id)}</div>`).join(""):`<p class="muted">Aucun litige en cours.</p>`}</div>`;
 }
 
 

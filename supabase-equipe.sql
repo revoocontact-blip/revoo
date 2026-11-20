@@ -12,7 +12,10 @@
 --   • Admins (et fondateur) : chercher un membre, l'avertir, le suspendre
 --     (1, 7, 30 jours ou définitivement), lever une suspension, gérer une
 --     liste de mots interdits, voir le tableau de bord et le journal.
---   • Chaque action de l'équipe est inscrite dans un journal.
+--   • Fiche membre complète : compte, coordonnées, annonces, commandes, échanges,
+--     avis, signalements, conversations (lecture journalisée), notes internes.
+--   • Chaque action de l'équipe est inscrite dans un journal (y compris les
+--     décisions sur les commandes, échanges et avis).
 --   • Le membre averti ou suspendu le voit sur le site et reçoit un e-mail.
 -- =====================================================================
 
@@ -434,6 +437,158 @@ do $$ declare f text; begin
   foreach f in array array['ban_member(uuid,int,text)','unban_member(uuid)','warn_member(uuid,text)','find_members(text)',
     'add_banned_word(text)','remove_banned_word(text)','set_site_settings(text,text,boolean)','team_list()','team_add(text)',
     'team_remove(uuid)','admin_stats()','mark_notices_read()','is_founder()','is_banned(uuid)'] loop
+    execute 'revoke all on function public.' || f || ' from public, anon';
+    execute 'grant execute on function public.' || f || ' to authenticated';
+  end loop;
+end $$;
+
+
+-- ---------- 10 bis. FICHE MEMBRE COMPLÈTE, CONVERSATIONS, NOTES INTERNES ----------
+-- Notes internes : visibles uniquement par l'équipe (jamais par le membre)
+create table if not exists public.member_notes (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references public.profiles(id) on delete cascade,
+  author_id  uuid references auth.users(id) on delete set null,
+  body       text not null check (char_length(body) between 2 and 1000),
+  created_at timestamptz not null default now()
+);
+create index if not exists member_notes_user_idx on public.member_notes (user_id, created_at desc);
+alter table public.member_notes enable row level security;
+drop policy if exists "notes : équipe" on public.member_notes;
+create policy "notes : équipe" on public.member_notes for select to authenticated using (public.is_admin());
+
+create or replace function public.add_member_note(p_user uuid, p_body text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'Réservé à l’équipe Revoo'; end if;
+  if p_body is null or char_length(trim(p_body)) < 2 then raise exception 'Écris la note'; end if;
+  insert into public.member_notes (user_id, author_id, body) values (p_user, auth.uid(), left(trim(p_body), 1000));
+  perform public.log_action('Note interne ajoutée', p_user, null, left(trim(p_body), 200));
+end $$;
+
+-- Tout ce qu'il faut savoir sur un membre, en un seul appel
+create or replace function public.member_detail(p_user uuid)
+returns jsonb language plpgsql security definer set search_path = public, auth as $$
+declare r jsonb; nm text;
+begin
+  if not public.is_admin() then raise exception 'Réservé à l’équipe Revoo'; end if;
+  select name into nm from public.profiles where id = p_user;
+  if nm is null then raise exception 'Membre introuvable'; end if;
+  -- consultation journalisée (au plus une fois par heure et par membre)
+  if not exists (select 1 from public.mod_log where actor_id = auth.uid() and target_user = p_user
+                 and action = 'Fiche membre consultée' and created_at > now() - interval '1 hour') then
+    perform public.log_action('Fiche membre consultée', p_user, null, null);
+  end if;
+  select jsonb_build_object(
+    'profil', (select jsonb_build_object('id', p.id, 'name', p.name, 'bio', p.bio, 'created_at', p.created_at, 'avatar_url', p.avatar_url,
+                 'vacation', p.vacation, 'username_changes', p.username_changes)
+               from public.profiles p where p.id = p_user),
+    'compte', (select jsonb_build_object('email', u.email, 'email_confirme', u.email_confirmed_at is not null,
+                 'derniere_connexion', u.last_sign_in_at, 'inscrit_le', u.created_at)
+               from auth.users u where u.id = p_user),
+    'prive', (select jsonb_build_object('prenom', x.first_name, 'nom', x.last_name, 'ville', x.city)
+              from public.profiles_private x where x.id = p_user),
+    'abonnement', (select jsonb_build_object('plan', s.plan, 'fin', s.current_period_end, 'resilie', s.cancel_at_period_end, 'demo', s.demo)
+                   from public.subscriptions s where s.user_id = p_user and s.current_period_end > now()),
+    'suspension', (select jsonb_build_object('motif', b.reason, 'jusqu_au', b.until, 'depuis', b.created_at)
+                   from public.bans b where b.user_id = p_user and (b.until is null or b.until > now())),
+    'annonces', coalesce((select jsonb_agg(jsonb_build_object('id', l.id, 'title', l.title, 'price', l.price, 'status', l.status,
+                   'created_at', l.created_at, 'photo', l.photos[1]) order by l.created_at desc)
+                 from (select * from public.listings where seller_id = p_user order by created_at desc limit 60) l), '[]'),
+    'commandes', coalesce((select jsonb_agg(jsonb_build_object('id', o.id, 'title', o.title, 'price', o.price, 'status', o.status,
+                   'delivery', o.delivery, 'created_at', o.created_at, 'problem', o.problem, 'tracking', o.tracking, 'demo', o.demo,
+                   'role', case when o.buyer_id = p_user then 'achat' else 'vente' end,
+                   'autre_id', case when o.buyer_id = p_user then o.seller_id else o.buyer_id end,
+                   'autre', (select name from public.profiles where id = case when o.buyer_id = p_user then o.seller_id else o.buyer_id end))
+                   order by o.created_at desc)
+                 from (select * from public.orders where p_user in (buyer_id, seller_id) order by created_at desc limit 60) o), '[]'),
+    'echanges', coalesce((select jsonb_agg(jsonb_build_object('id', t.id, 'status', t.status, 'created_at', t.created_at, 'topup', t.topup,
+                   'donne', case when t.proposer_id = p_user then t.offered_title else t.wanted_title end,
+                   'recoit', case when t.proposer_id = p_user then t.wanted_title else t.offered_title end,
+                   'problem', t.problem,
+                   'autre_id', case when t.proposer_id = p_user then t.receiver_id else t.proposer_id end,
+                   'autre', (select name from public.profiles where id = case when t.proposer_id = p_user then t.receiver_id else t.proposer_id end))
+                   order by t.created_at desc)
+                 from (select * from public.trades where p_user in (proposer_id, receiver_id) order by created_at desc limit 40) t), '[]'),
+    'signalements_recus', coalesce((select jsonb_agg(jsonb_build_object('reason', r.reason, 'details', r.details, 'status', r.status,
+                   'created_at', r.created_at, 'listing', l.title) order by r.created_at desc)
+                 from public.reports r join public.listings l on l.id = r.listing_id where l.seller_id = p_user), '[]'),
+    'signalements_faits', (select count(*) from public.reports where reporter_id = p_user),
+    'avis_recus', coalesce((select jsonb_agg(jsonb_build_object('id', v.id, 'rating', v.rating, 'comment', v.comment, 'created_at', v.created_at,
+                   'auteur', (select name from public.profiles where id = v.buyer_id)) order by v.created_at desc)
+                 from public.reviews v where v.seller_id = p_user), '[]'),
+    'note_moyenne', (select round(avg(rating)::numeric, 1) from public.reviews where seller_id = p_user),
+    'conversations', coalesce((select jsonb_agg(jsonb_build_object('id', c.id, 'created_at', c.created_at, 'last', c.last_message_at,
+                   'listing', (select title from public.listings where id = c.listing_id),
+                   'autre_id', case when c.buyer_id = p_user then c.seller_id else c.buyer_id end,
+                   'autre', (select name from public.profiles where id = case when c.buyer_id = p_user then c.seller_id else c.buyer_id end),
+                   'messages', (select count(*) from public.messages m where m.conversation_id = c.id)) order by c.last_message_at desc)
+                 from (select * from public.conversations where p_user in (buyer_id, seller_id) order by last_message_at desc limit 40) c), '[]'),
+    'messages_24h', (select count(*) from public.messages where sender_id = p_user and created_at > now() - interval '24 hours'),
+    'messages_equipe', coalesce((select jsonb_agg(jsonb_build_object('kind', n.kind, 'message', n.message, 'created_at', n.created_at, 'lu', n.read_at is not null)
+                   order by n.created_at desc) from public.member_notices n where n.user_id = p_user), '[]'),
+    'notes', coalesce((select jsonb_agg(jsonb_build_object('body', x.body, 'created_at', x.created_at,
+                   'auteur', (select name from public.profiles where id = x.author_id)) order by x.created_at desc)
+                 from public.member_notes x where x.user_id = p_user), '[]'),
+    'historique', coalesce((select jsonb_agg(jsonb_build_object('action', m.action, 'details', m.details, 'created_at', m.created_at,
+                   'par', (select name from public.profiles where id = m.actor_id)) order by m.created_at desc)
+                 from (select * from public.mod_log where target_user = p_user and action <> 'Fiche membre consultée' order by created_at desc limit 50) m), '[]')
+  ) into r;
+  return r;
+end $$;
+
+-- Lire une conversation (litige, arnaque signalée…). Chaque lecture est inscrite au journal.
+create or replace function public.read_conversation(p_conv uuid)
+returns table (sender text, sender_id uuid, body text, created_at timestamptz)
+language plpgsql security definer set search_path = public as $$
+declare c record;
+begin
+  if not public.is_admin() then raise exception 'Réservé à l’équipe Revoo'; end if;
+  select * into c from public.conversations where id = p_conv;
+  if c is null then raise exception 'Conversation introuvable'; end if;
+  perform public.log_action('Conversation consultée', c.seller_id, c.listing_id,
+    'entre @' || coalesce((select name from public.profiles where id = c.buyer_id), '?') || ' et @' || coalesce((select name from public.profiles where id = c.seller_id), '?'));
+  return query select coalesce(p.name, 'membre supprimé'), m.sender_id, m.body, m.created_at
+    from public.messages m left join public.profiles p on p.id = m.sender_id
+    where m.conversation_id = p_conv order by m.created_at limit 500;
+end $$;
+
+-- Conversation liée à une commande ou à un échange (pour trancher un litige)
+create or replace function public.conversation_between(p_a uuid, p_b uuid)
+returns uuid language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'Réservé à l’équipe Revoo'; end if;
+  return (select id from public.conversations
+          where (buyer_id = p_a and seller_id = p_b) or (buyer_id = p_b and seller_id = p_a)
+          order by last_message_at desc limit 1);
+end $$;
+
+-- Décisions sur les commandes, échanges et avis : journalisées automatiquement
+create or replace function public.log_deal_moderation()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then return coalesce(new, old); end if;
+  if tg_table_name = 'orders' and new.status is distinct from old.status then
+    perform public.log_action(case new.status when 'cancelled' then 'Commande annulée et remboursée' when 'received' then 'Litige clos en faveur du vendeur'
+      else 'Commande : statut ' || new.status end, new.buyer_id, new.listing_id, new.title || ' · ' || new.price || ' €');
+  elsif tg_table_name = 'trades' and new.status is distinct from old.status then
+    perform public.log_action(case new.status when 'cancelled' then 'Échange annulé et remboursé' when 'completed' then 'Échange validé par l’équipe'
+      else 'Échange : statut ' || new.status end, new.proposer_id, null, new.offered_title || ' ⇄ ' || new.wanted_title);
+  elsif tg_table_name = 'reviews' and tg_op = 'DELETE' then
+    perform public.log_action('Avis supprimé', old.seller_id, null, old.rating || '/5 · ' || coalesce(left(old.comment, 150), ''));
+  end if;
+  return coalesce(new, old);
+end $$;
+drop trigger if exists orders_log_moderation on public.orders;
+create trigger orders_log_moderation after update on public.orders for each row execute function public.log_deal_moderation();
+drop trigger if exists trades_log_moderation on public.trades;
+create trigger trades_log_moderation after update on public.trades for each row execute function public.log_deal_moderation();
+drop trigger if exists reviews_log_moderation on public.reviews;
+create trigger reviews_log_moderation after delete on public.reviews for each row execute function public.log_deal_moderation();
+
+revoke all on function public.log_deal_moderation() from public, anon, authenticated;
+do $$ declare f text; begin
+  foreach f in array array['add_member_note(uuid,text)','member_detail(uuid)','read_conversation(uuid)','conversation_between(uuid,uuid)'] loop
     execute 'revoke all on function public.' || f || ' from public, anon';
     execute 'grant execute on function public.' || f || ' to authenticated';
   end loop;
