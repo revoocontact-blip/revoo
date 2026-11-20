@@ -1667,17 +1667,75 @@ html[data-design="2"]:not([data-theme="dark"]) .st-1{background:#C9DCEA}
 html[data-design="2"]:not([data-theme="dark"]) .st-3{background:#fff}
 html[data-design="2"]:not([data-theme="dark"]) .st-5{background:#E1ECF5}
 }
+
+/* ===== Équipe ===== */
+.role-pill{display:inline-block;vertical-align:middle;margin-left:6px;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:800;letter-spacing:.02em;background:var(--pale);color:var(--heading)}
+.mod-mode .mod-head .role-pill{background:#A8C4D8;color:#16293A}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 18px}
+.kpi{display:flex;flex-direction:column;gap:2px;text-align:left;padding:16px;border-radius:16px;background:var(--ice);border:1px solid var(--line);font:inherit;color:var(--ink)}
+button.kpi{cursor:pointer;transition:transform .2s,box-shadow .2s}button.kpi:hover{transform:translateY(-2px);box-shadow:0 12px 24px -18px rgba(22,41,58,.5)}
+.kpi b{font-size:28px;color:var(--heading);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi span{font-weight:700;font-size:14px}.kpi small{color:var(--muted);font-size:12.5px}
+.todo-band{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:16px 18px;border-radius:16px;background:#294B68;color:#fff}
+.todo-band b{font-size:17px}.todo-band span{opacity:.85;flex:1}.todo-band .btn{background:#A8C4D8;color:#16293A}
+.todo-band.ok{background:var(--ice);color:var(--ink);border:1px solid var(--line)}.todo-band.ok b{color:var(--heading)}
+.guide details{border-top:1px solid var(--line);padding:12px 0}.guide summary{cursor:pointer;font-weight:700;color:var(--heading)}.guide p{margin:8px 0 0;color:var(--muted)}
+.member{padding:14px 0;border-top:1px solid var(--line)}.member:first-child{border-top:0}
+.member-main{display:flex;align-items:center;gap:12px}.member-main>div:nth-child(2){flex:1;min-width:0}
+.member h3{margin:0 0 2px;font-size:16px}.member p{margin:0}
+.member .avatar{width:40px;height:40px;flex:none}
+.member.is-banned{opacity:.92}
+.status.danger{background:#F7E1E1;color:#7A1F1F}
+.member-act{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;padding:14px;border-radius:14px;background:var(--ice)}
+.member-act form{display:flex;flex-direction:column;gap:8px}
+.member-act textarea{min-height:84px}
+.tpl{display:flex;flex-wrap:wrap;gap:6px}
+.chip-btn{font:inherit;font-size:12.5px;padding:5px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip-btn:hover{background:var(--pale)}
+.journal .j-row{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.journal .j-row:first-child{border-top:0}
+.journal time{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}.journal small{display:block;color:var(--muted);font-size:12.5px}
+.words{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.word{display:inline-flex;align-items:center;gap:4px;padding:5px 6px 5px 12px;border-radius:99px;background:var(--pale);font-weight:700;font-size:14px}
+.word button{border:0;background:none;font-size:18px;line-height:1;cursor:pointer;color:var(--muted);padding:0 4px}
+.word button:hover{color:#7A1F1F}
+.mod-search{display:flex;gap:8px}.mod-search .input{flex:1}
+.notice-box{margin:0 0 16px;padding:16px 18px;border-radius:16px;background:var(--ice);border:1px solid var(--line);border-left:4px solid #294B68}
+.notice-box p{margin:8px 0 0}.notice-box .btn{margin-top:10px}
+.notice-box.danger{border-left-color:#B23B3B;background:#FBEEEE;color:#3B1414}
+.site-announce{display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 16px;background:#294B68;color:#fff;font-weight:700;font-size:14px;text-align:center}
+.site-announce .icon{width:18px;height:18px;flex:none}
+.site-announce.alert{background:#8A2E2E}
+.site-announce[hidden]{display:none}
+@media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.member-act{grid-template-columns:1fr}}
+@media (max-width:520px){.journal .j-row{grid-template-columns:1fr;gap:2px}.member-main{flex-wrap:wrap}.member-main .row-actions{width:100%}}
+:root[data-theme="dark"] .notice-box.danger{background:#3A1E22;color:#F6DADA}
+:root[data-theme="dark"] .status.danger{background:#4A2328;color:#F6DADA}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .notice-box.danger{background:#3A1E22;color:#F6DADA}:root:not([data-theme="light"]) .status.danger{background:#4A2328;color:#F6DADA}}
+
+.mod-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;padding:6px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.mod-tabs button{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:0;border-radius:11px;background:none;font:inherit;font-weight:700;font-size:14px;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+.mod-tabs button:hover{background:var(--ice);color:var(--heading)}
+.mod-tabs button[aria-pressed="true"]{background:#294B68;color:#fff}
+.mod-tabs em{font-style:normal;font-size:12px;min-width:22px;padding:1px 7px;border-radius:99px;background:var(--pale);color:var(--heading);text-align:center;font-variant-numeric:tabular-nums}
+.mod-tabs em.hot{background:#B23B3B;color:#fff}
+.mod-tabs button[aria-pressed="true"] em{background:rgba(255,255,255,.2);color:#fff}
+:root[data-theme="dark"] .mod-tabs button[aria-pressed="true"]{background:#A8C4D8;color:#16293A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mod-tabs button[aria-pressed="true"]{background:#A8C4D8;color:#16293A}}
+html[data-design="2"][data-theme="light"] .mod-pill{background:#E3EDF4;color:#16293A;border-color:#C9DAE7}
+@media (prefers-color-scheme:light){html[data-design="2"]:not([data-theme="dark"]) .mod-pill{background:#E3EDF4;color:#16293A;border-color:#C9DAE7}}
+@media (max-width:600px){.mod-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.mod-tabs button{white-space:nowrap}}
 </style>
 </head>
 <body>
 <a href="#main" class="skip" id="skipLink">Aller au contenu</a>
 
+<div class="site-announce" id="siteAnnounce" role="status" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6L7 10H4Z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg><span></span></div>
 <aside class="demo-bar" id="demoBar" aria-label="Information"><b>0 € de frais</b> pendant le lancement · <a href="#/securite">Acheter en sécurité</a></aside>
 
 <header class="top">
   <div class="wrap head">
     <a href="#/" class="logo" aria-label="Revoo, retour à l’accueil"><img src="logos/revoo-logo.png" data-logo="bleu" alt="Revoo" width="480" height="149"></a>
-    <span class="mod-pill mod-only" aria-hidden="true">Console de modération</span>
+    <span class="mod-pill mod-only" id="modPill" aria-hidden="true">Console de modération</span>
     <form class="search" id="topSearch" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <label for="searchInput" class="sr-only">Rechercher des vêtements</label>
@@ -2361,12 +2419,13 @@ function renderThreadLog(){
 const REPORT_REASONS=["Article interdit ou dangereux","Contrefaçon","Arnaque ou fraude","Annonce trompeuse","Contenu choquant ou inapproprié","Ce n’est pas un vêtement","Autre"];
 const mod={reports:[],loaded:false};
 async function loadAdmin(){
-  state.isAdmin=false;
+  state.isAdmin=false;state.role="";team.notices=[];team.ban=null;
   if(!sb||!state.user)return;
   try{
-    const {data,error}=await sb.from("admins").select("user_id").eq("user_id",state.user.id).maybeSingle();
-    state.isAdmin=!error&&!!data;
-    if(state.isAdmin)await loadReports();
+    let r=await sb.from("admins").select("user_id,role").eq("user_id",state.user.id).maybeSingle();
+    if(r.error)r=await sb.from("admins").select("user_id").eq("user_id",state.user.id).maybeSingle();
+    state.isAdmin=!r.error&&!!r.data;state.role=state.isAdmin?(r.data.role||"admin"):"";
+    if(state.isAdmin){await loadReports();loadTeamData()}else loadNotices();
   }catch(e){console.warn(e);state.isAdmin=false}
 }
 async function loadReports(){
@@ -2422,12 +2481,12 @@ function moderationHtml(){
         ${l&&l.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-report="${r.id}" data-listing="${r.listing_id}">Remettre en ligne</button>`:""}
         ${r.status==="nouveau"?`<button type="button" class="btn btn-outline" data-mod="reject" data-report="${r.id}" data-listing="${r.listing_id}">Rien à signaler</button>`:""}
       </div></div>`};
-  return `<p class="muted small">Seul toi peux voir cet onglet. « Retirer l’annonce » la masque pour tout le monde ; le vendeur la voit marquée « Retirée par la modération ».</p>
+  return `<p class="muted small">Seule l’équipe Revoo peut voir cet onglet. « Retirer l’annonce » la masque pour tout le monde ; le vendeur la voit marquée « Retirée par la modération ».</p>
     <div class="panel"><h2>À traiter (${nouveaux.length})</h2>${nouveaux.length?nouveaux.map(row).join(""):`<p class="muted">Aucun nouveau signalement.</p>`}</div>
     ${mod.reports.length>nouveaux.length?`<div class="panel"><h2>Historique</h2>${mod.reports.filter(r=>r.status!=="nouveau").map(row).join("")}</div>`:""}`;
 }
 const rbNorm2=t=>(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
-let modTab="atraiter",modQuery="";
+let modTab="bord",modQuery="";
 const MOD_SHIELD=`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>`;
 function modRow(r){const l=r.listings;const img=(l?.photos||[])[0]||"";
   return `<div class="listing-row">
@@ -2443,28 +2502,34 @@ function modRow(r){const l=r.listings;const img=(l?.photos||[])[0]||"";
       ${r.status==="nouveau"?`<button type="button" class="btn btn-outline" data-mod="reject" data-report="${r.id}" data-listing="${r.listing_id}">Rien à signaler</button>`:""}
     </div></div>`}
 function renderModeration(el){
-  $("accountTitle").textContent="Espace modération";
+  const founder=state.role==="fondateur";
+  $("accountTitle").textContent=founder?"Espace fondateur":"Espace modération";
   const todo=mod.reports.filter(r=>r.status==="nouveau"), done=mod.reports.filter(r=>r.status!=="nouveau");
   const removed=state.remote.filter(p=>p.status==="removed"), disputes=[...(typeof orders!=="undefined"?orders.all:[]).filter(o=>o.status==="problem"),...(typeof trades!=="undefined"?trades.list:[]).filter(t=>t.status==="problem")];
   const online=state.remote.filter(p=>p.status!=="removed");
-  const tabs=[["atraiter","À traiter",todo.length],["enligne","Annonces en ligne",online.length],["retirees","Annonces retirées",removed.length],...(payOn()?[["litiges","Litiges",disputes.length]]:[]),["historique","Historique",done.length]];
-  if(!tabs.some(t=>t[0]===modTab))modTab="atraiter";
+  const tabs=[["bord","Tableau de bord",""],["atraiter","À traiter",todo.length],["membres","Membres",""],["enligne","Annonces en ligne",online.length],["retirees","Annonces retirées",removed.length],...(payOn()?[["litiges","Litiges",disputes.length]]:[]),["historique","Historique",done.length],["equipe","Équipe",""],["journal","Journal",""],["reglages",founder?"Réglages":"Mots interdits",""]];
+  if(!tabs.some(t=>t[0]===modTab))modTab="bord";
   let body="";
   if(!mod.loaded)body=`<p class="muted">Chargement…</p>`;
   else if(modTab==="atraiter")body=todo.length?`<div class="panel">${todo.map(modRow).join("")}</div>`:`<div class="empty"><p>Aucun signalement à traiter. Tout est en ordre.</p></div>`;
   else if(modTab==="historique")body=done.length?`<div class="panel">${done.map(modRow).join("")}</div>`:`<div class="empty"><p>Aucun signalement traité pour le moment.</p></div>`;
   else if(modTab==="retirees")body=removed.length?`<div class="panel">${removed.map(p=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><h3>${esc(p.name)}</h3><p>${eur(p.price)} · vendeur : @${esc(p.seller)}</p><p><span class="status">Retirée par la modération</span></p></div><div class="row-actions"><button type="button" class="btn btn-outline" data-mod="restore" data-listing="${p.id}">Remettre en ligne</button></div></div>`).join("")}</div>`:`<div class="empty"><p>Aucune annonce retirée.</p></div>`;
   else if(modTab==="litiges")body=disputesHtml();
+  else if(modTab==="bord")body=teamDashboardHtml();
+  else if(modTab==="membres")body=membersHtml();
+  else if(modTab==="equipe")body=teamHtml();
+  else if(modTab==="journal")body=journalHtml();
+  else if(modTab==="reglages")body=settingsTeamHtml();
   else if(modTab==="enligne"){const q=rbNorm2(modQuery),list=online.filter(p=>!q||rbNorm2(`${p.name} ${p.brand||""} ${p.seller||""}`).includes(q));
     body=`<div class="mod-search"><label for="modQ" class="sr-only">Rechercher une annonce, une marque ou un vendeur</label><input class="input" id="modQ" type="search" placeholder="Rechercher une annonce, une marque ou un vendeur" value="${esc(modQuery)}"></div>`+
     (list.length?`<div class="panel">${list.slice(0,100).map(p=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><h3>${esc(p.name)}</h3><p>${eur(p.price)} · vendeur : <a href="#/vendeur/${esc(p.sellerId)}">@${esc(p.seller)}</a></p></div><div class="row-actions"><a class="btn btn-outline" href="#/article/${encodeURIComponent(p.id)}">Voir</a><button type="button" class="btn btn-danger" data-mod="remove" data-listing="${p.id}">Retirer</button></div></div>`).join("")}</div>`:`<div class="empty"><p>Aucune annonce trouvée.</p></div>`)}
   el.innerHTML=`<div class="mod-head">
-      <span class="mod-badge">${MOD_SHIELD}</span>
-      <div><h2>Console de modération</h2><p class="small">Ce compte sert uniquement à la modération de Revoo. Il n’a ni profil public, ni annonces, ni achats, ni messages.</p></div>
+      <span class="mod-badge">${founder?CROWN_SVG:MOD_SHIELD}</span>
+      <div><h2>${founder?"Console du fondateur":"Console de modération"} <span class="role-pill">${founder?"Fondateur":"Admin"}</span></h2><p class="small">${founder?"Tu gères l’équipe, les réglages du site et toute la modération.":"Ce compte sert uniquement à la modération de Revoo. Il n’a ni profil public, ni annonces, ni achats, ni messages."}</p></div>
     </div>
-    <div class="mod-stats">${tabs.map(([k,l,n])=>`<button type="button" data-modtab="${k}" aria-pressed="${modTab===k}"><b>${n}</b><span>${l}</span></button>`).join("")}</div>
+    <div class="mod-tabs" role="toolbar" aria-label="Rubriques">${tabs.map(([k,l,n])=>`<button type="button" data-modtab="${k}" aria-pressed="${modTab===k}"><span>${l}</span>${n!==""?`<em class="${n&&["atraiter","litiges"].includes(k)?"hot":""}">${n}</em>`:""}</button>`).join("")}</div>
     <div style="margin-top:18px">${body}</div>
-    <details class="panel" style="margin-top:24px"><summary><b>Sécurité du compte modérateur</b></summary>
+    <details class="panel" style="margin-top:24px"><summary><b>Sécurité de mon compte</b></summary>
       <form id="pwdForm" novalidate style="margin-top:12px">
         <div class="field"><label for="pw0">Mot de passe actuel</label><input class="input" id="pw0" type="password" autocomplete="current-password"><span class="error" id="pw0Err"></span></div>
         <div class="field"><label for="pw1">Nouveau mot de passe</label><input class="input" id="pw1" type="password" autocomplete="new-password"><span class="error" id="pw1Err"></span></div>
@@ -2472,10 +2537,169 @@ function renderModeration(el){
         <div class="buy-actions"><button class="btn btn-outline" type="submit">Changer le mot de passe</button><button type="button" class="btn btn-outline" id="logout">Se déconnecter</button></div>
       </form>
     </details>`;
-  el.querySelectorAll("[data-modtab]").forEach(b=>b.addEventListener("click",()=>{modTab=b.dataset.modtab;renderModeration(el)}));
+  el.querySelectorAll("[data-modtab]").forEach(b=>b.addEventListener("click",()=>{modTab=b.dataset.modtab;if(["bord","membres","equipe","journal","reglages"].includes(modTab))loadTeamData(modTab);renderModeration(el)}));
+  bindTeam(el);
   const mq=$("modQ");if(mq)mq.addEventListener("input",()=>{modQuery=mq.value;clearTimeout(mq._t);mq._t=setTimeout(()=>{renderModeration(el);const n=$("modQ");n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)});
   watchImages(el);
 }
+/* =========================================================
+   ÉQUIPE : fondateur, admins, membres, journal, réglages
+   ========================================================= */
+const team={stats:null,members:[],memberQ:"",membersLoaded:false,list:[],log:[],words:[],settings:null,notices:[],ban:null,open:""};
+const CROWN_SVG=`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8Z"/></svg>`;
+const fmtD=d=>d?new Date(d).toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"}):"";
+const fmtDH=d=>d?new Date(d).toLocaleString("fr-FR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
+async function loadTeamData(which){
+  if(!sb||!state.isAdmin)return;
+  const jobs=[];
+  if(!which||which==="bord")jobs.push(sb.rpc("admin_stats").then(r=>{if(!r.error&&r.data&&!r.data.erreur)team.stats=r.data}));
+  if(!which||which==="equipe"||which==="bord")jobs.push(sb.rpc("team_list").then(r=>{if(!r.error)team.list=r.data||[]}));
+  if(!which||which==="journal")jobs.push(sb.from("mod_log").select("id,actor_id,action,target_user,target_listing,details,created_at").order("created_at",{ascending:false}).limit(150).then(async r=>{if(r.error)return;team.log=r.data||[];
+    const ids=[...new Set(team.log.flatMap(x=>[x.actor_id,x.target_user]).filter(Boolean))];
+    if(ids.length){const q=await sb.from("profiles").select("id,name").in("id",ids);(q.data||[]).forEach(x=>team.names[x.id]=x.name)}}));
+  if(!which||which==="reglages"){jobs.push(sb.from("banned_words").select("word,created_at").order("word",{ascending:true}).then(r=>{if(!r.error)team.words=r.data||[]}));jobs.push(loadSite())}
+  if(which==="membres"&&!team.membersLoaded)jobs.push(searchMembers(team.memberQ));
+  await Promise.all(jobs);
+  if(state.isAdmin&&location.hash.startsWith("#/compte"))renderView();
+}
+team.names={};
+async function searchMembers(q){const r=await sb.rpc("find_members",{p_q:q||""});if(!r.error){team.members=r.data||[];team.membersLoaded=true}else toast(frenchError(r.error))}
+const nm=id=>id?(team.names[id]?"@"+esc(team.names[id]):"un membre supprimé"):"—";
+function teamDashboardHtml(){
+  const s=team.stats;
+  if(!s)return`<div class="empty"><p>Chargement du tableau de bord… Si rien ne s’affiche, lance le script <b>supabase-equipe.sql</b> dans Supabase.</p></div>`;
+  const tile=(n,l,sub,tab)=>`<${tab?`button type="button" data-modtab="${tab}"`:"div"} class="kpi"><b>${Number(n).toLocaleString("fr-FR")}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</${tab?"button":"div"}>`;
+  const urgent=s.signalements+s.litiges;
+  return `${urgent?`<div class="todo-band"><b>${urgent} chose${urgent>1?"s":""} à régler</b><span>${s.signalements} signalement${s.signalements>1?"s":""} · ${s.litiges} litige${s.litiges>1?"s":""}</span><button type="button" class="btn btn-primary" data-modtab="${s.signalements?"atraiter":"litiges"}">Commencer</button></div>`:`<div class="todo-band ok"><b>Tout est en ordre</b><span>Aucun signalement ni litige en attente.</span></div>`}
+  <div class="kpis">
+    ${tile(s.membres,"Membres",`+${s.membres_7j} cette semaine`,"membres")}
+    ${tile(s.annonces,"Annonces en ligne",`+${s.annonces_7j} cette semaine`,"enligne")}
+    ${tile(s.vendus,"Articles vendus","")}
+    ${tile(s.commandes_en_cours,"Commandes en cours","")}
+    ${tile(s.echanges,"Échanges","acceptés ou terminés")}
+    ${tile(s.abonnes,"Abonnés","Pro, Max et Ultra")}
+    ${tile(s.retirees,"Annonces retirées","","retirees")}
+    ${tile(s.suspendus,"Comptes suspendus","","membres")}
+  </div>
+  <div class="panel guide"><h2>Que faire quand… ?</h2>
+    <details><summary>Une annonce est signalée</summary><p>Onglet « À traiter » : ouvre l’annonce. Si elle enfreint les règles, « Retirer l’annonce ». Sinon, « Rien à signaler ». Si le vendeur recommence, avertis-le depuis « Membres ».</p></details>
+    <details><summary>Un acheteur et un vendeur ne sont pas d’accord</summary><p>Onglet « Litiges » : lis les deux versions dans la commande, puis rembourse l’acheteur ou valide la vente. Ta décision est inscrite au journal.</p></details>
+    <details><summary>Un membre arnaque ou insulte</summary><p>Onglet « Membres » : cherche son identifiant. Premier écart : « Avertir ». Récidive : « Suspendre » 7 ou 30 jours. Fraude grave : suspension définitive. Ses annonces sont retirées automatiquement et il reçoit un e-mail.</p></details>
+    <details><summary>Le même produit interdit revient souvent</summary><p>Onglet « ${state.role==="fondateur"?"Réglages":"Mots interdits"} » : ajoute le mot (ex. une marque contrefaite). Les nouvelles annonces qui le contiennent sont refusées automatiquement.</p></details>
+    ${state.role==="fondateur"?`<details><summary>Je veux prévenir tout le monde (maintenance, nouveauté…)</summary><p>Onglet « Réglages » : écris l’annonce. Elle s’affiche en haut du site pour tous les visiteurs. En cas d’urgence, mets en pause les nouvelles annonces.</p></details>
+    <details><summary>J’ai besoin d’aide pour modérer</summary><p>Demande à la personne de créer un compte dédié (par ex. <i>prenom.revoo</i>), puis onglet « Équipe » : ajoute son identifiant. Tu peux le retirer à tout moment.</p></details>`:""}
+  </div>`;
+}
+function membersHtml(){
+  const rows=team.members.map(m=>{
+    const open=team.open===m.id, team_=m.team_role;
+    return `<div class="member${m.banned?" is-banned":""}">
+      <div class="member-main">
+        <span class="avatar" aria-hidden="true">${esc((m.name||"?")[0].toUpperCase())}</span>
+        <div><h3><a href="#/vendeur/${esc(m.id)}">@${esc(m.name)}</a> ${team_?`<span class="role-pill">${team_==="fondateur"?"Fondateur":"Admin"}</span>`:""}${m.banned?` <span class="status danger">Suspendu${m.banned_until?" jusqu’au "+fmtD(m.banned_until):" définitivement"}</span>`:""}</h3>
+          <p class="small muted">Membre depuis ${fmtD(m.created_at)} · ${m.listings_active} en ligne · ${m.sales} vente${m.sales>1?"s":""} · ${m.reports} signalement${m.reports>1?"s":""} · ${m.warnings} avertissement${m.warnings>1?"s":""}</p>
+          ${m.banned?`<p class="small">Motif : ${esc(m.ban_reason||"")}</p>`:""}</div>
+        ${team_?"":`<div class="row-actions">${m.banned?`<button type="button" class="btn btn-outline" data-team="unban" data-id="${m.id}">Lever la suspension</button>`:`<button type="button" class="btn btn-outline" data-team="open" data-id="${m.id}" aria-expanded="${open}">Agir</button>`}</div>`}
+      </div>
+      ${open&&!m.banned?`<div class="member-act">
+        <form data-team-form="warn" data-id="${m.id}"><label for="w-${m.id}"><b>Avertir</b> <span class="hint">(il le verra sur le site et par e-mail)</span></label>
+          <div class="tpl">${["Merci de décrire honnêtement l’état de tes articles.","Les échanges doivent rester polis et respectueux.","Les paiements doivent passer par Revoo, jamais en dehors.","Cette annonce ne respecte pas les règles de Revoo."].map(t=>`<button type="button" class="chip-btn" data-tpl="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+          <textarea class="input" id="w-${m.id}" maxlength="1000" placeholder="Ton message au membre"></textarea>
+          <button class="btn btn-primary" type="submit">Envoyer l’avertissement</button></form>
+        <form data-team-form="ban" data-id="${m.id}"><label for="b-${m.id}"><b>Suspendre</b> <span class="hint">(ses annonces sont retirées)</span></label>
+          <div class="segmented" role="radiogroup" aria-label="Durée">${[["1","1 jour"],["7","7 jours"],["30","30 jours"],["0","Définitif"]].map(([v,l],i)=>`<label><input type="radio" name="bd-${m.id}" value="${v}" ${i===1?"checked":""}><span>${l}</span></label>`).join("")}</div>
+          <input class="input" id="b-${m.id}" maxlength="500" placeholder="Motif (visible par le membre)">
+          <button class="btn btn-danger" type="submit">Suspendre le compte</button></form>
+      </div>`:""}
+    </div>`}).join("");
+  return `<form class="mod-search" id="memberSearch" role="search"><label for="memQ" class="sr-only">Chercher un membre par identifiant</label><input class="input" id="memQ" type="search" placeholder="Chercher un membre par identifiant (ex. camille)" value="${esc(team.memberQ)}"><button class="btn btn-primary" type="submit">Chercher</button></form>
+    ${!team.membersLoaded?`<p class="muted">Chargement…</p>`:rows?`<div class="panel">${rows}</div>`:`<div class="empty"><p>Aucun membre trouvé.</p></div>`}`;
+}
+function teamHtml(){
+  const founder=state.role==="fondateur";
+  return `<div class="panel">${team.list.map(a=>`<div class="member"><div class="member-main"><span class="avatar" aria-hidden="true">${esc((a.name||"?")[0].toUpperCase())}</span>
+      <div><h3>@${esc(a.name)} <span class="role-pill">${a.role==="fondateur"?"Fondateur":"Admin"}</span></h3><p class="small muted">Dans l’équipe depuis le ${fmtD(a.added_at)} · ${a.actions_30j} action${a.actions_30j>1?"s":""} ces 30 derniers jours${a.last_action?" · dernière le "+fmtDH(a.last_action):""}</p></div>
+      ${founder&&a.role!=="fondateur"?`<div class="row-actions"><button type="button" class="btn btn-outline" data-team="remove" data-id="${a.user_id}" data-name="${esc(a.name)}">Retirer de l’équipe</button></div>`:""}</div></div>`).join("")||`<p class="muted">Chargement…</p>`}</div>
+    ${founder?`<form class="panel" id="teamAdd"><h2>Ajouter un admin</h2>
+      <p class="small muted">La personne crée d’abord un compte <b>réservé à la modération</b> sur Revoo (ex. <i>prenom.revoo</i>). Ce compte n’aura plus accès aux achats, ventes ni messages. Elle pourra traiter les signalements, les litiges, avertir et suspendre des membres. Elle ne pourra ni gérer l’équipe, ni changer les réglages.</p>
+      <div class="field"><label for="taName">Identifiant du compte</label><input class="input" id="taName" maxlength="21" placeholder="@identifiant" autocomplete="off"></div>
+      <button class="btn btn-primary" type="submit">Ajouter à l’équipe</button></form>`:`<p class="small muted">Seul le fondateur peut ajouter ou retirer un admin.</p>`}`;
+}
+function journalHtml(){
+  if(!team.log.length)return`<div class="empty"><p>Aucune action pour le moment. Chaque décision de l’équipe s’inscrira ici.</p></div>`;
+  return `<div class="panel journal">${team.log.map(l=>`<div class="j-row"><time>${fmtDH(l.created_at)}</time><div><b>${esc(l.action)}</b>${l.target_user?` · ${nm(l.target_user)}`:""}${l.details?`<span class="muted"> — ${esc(l.details)}</span>`:""}<small>par ${nm(l.actor_id)}</small></div></div>`).join("")}</div>`;
+}
+function settingsTeamHtml(){
+  const founder=state.role==="fondateur",st=site.settings||{};
+  return `${founder?`<form class="panel" id="siteForm"><h2>Annonce sur tout le site</h2>
+      <p class="small muted">Affichée en haut de toutes les pages, pour tous les visiteurs. Laisse vide pour ne rien afficher.</p>
+      <div class="field"><label for="sAnn">Message</label><input class="input" id="sAnn" maxlength="300" value="${esc(st.announcement||"")}" placeholder="Ex. : Maintenance ce soir de 22 h à 23 h"></div>
+      <div class="segmented" role="radiogroup" aria-label="Type d’annonce">${[["info","Information"],["alerte","Important"]].map(([v,l])=>`<label><input type="radio" name="sLvl" value="${v}" ${(st.announcement_level||"info")===v?"checked":""}><span>${l}</span></label>`).join("")}</div>
+      <div class="set-row" style="margin-top:14px"><div><b>Mettre en pause les nouvelles annonces</b><small>En cas d’urgence (spam massif…). Les membres voient un message d’attente.</small></div><label class="switch"><input type="checkbox" id="sPause" ${st.pause_listings?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Mettre en pause les nouvelles annonces</span></label></div>
+      <button class="btn btn-primary" type="submit">Enregistrer</button></form>`:""}
+    <div class="panel"><h2>Mots interdits dans les annonces</h2>
+      <p class="small muted">Une annonce dont le titre, la description ou la marque contient un de ces mots est refusée automatiquement.</p>
+      <form id="wordAdd" class="mod-search"><label for="wNew" class="sr-only">Nouveau mot interdit</label><input class="input" id="wNew" maxlength="40" placeholder="Ex. : réplique, copie, contrefaçon"><button class="btn btn-primary" type="submit">Ajouter</button></form>
+      <div class="words">${team.words.map(w=>`<span class="word">${esc(w.word)}<button type="button" data-team="unword" data-id="${esc(w.word)}" aria-label="Retirer ${esc(w.word)}">×</button></span>`).join("")||`<p class="muted small">Aucun mot pour l’instant.</p>`}</div>
+    </div>`;
+}
+async function teamRpc(fn,args,ok){const r=await sb.rpc(fn,args);if(r.error){toast(frenchError(r.error));return false}if(ok)toast(ok);return true}
+function bindTeam(el){
+  const ms=el.querySelector("#memberSearch");if(ms)ms.addEventListener("submit",async e=>{e.preventDefault();team.memberQ=$("memQ").value.trim();team.membersLoaded=false;renderModeration(el);await searchMembers(team.memberQ);renderModeration(el)});
+  if(modTab==="membres"&&!team.membersLoaded&&!team._loading){team._loading=true;searchMembers(team.memberQ).then(()=>{team._loading=false;renderModeration(el)})}
+  el.querySelectorAll("[data-tpl]").forEach(b=>b.addEventListener("click",()=>{const ta=b.closest("form").querySelector("textarea");ta.value=b.dataset.tpl;ta.focus()}));
+  el.querySelectorAll("[data-team]").forEach(b=>b.addEventListener("click",async()=>{
+    const k=b.dataset.team,id=b.dataset.id;
+    if(k==="open"){team.open=team.open===id?"":id;renderModeration(el);return}
+    if(k==="unban"){if(!confirm("Lever la suspension de ce membre ?"))return;if(await teamRpc("unban_member",{p_user:id},"Suspension levée. Le membre a été prévenu.")){await searchMembers(team.memberQ);loadTeamData("bord");renderModeration(el)}}
+    if(k==="remove"){if(!confirm(`Retirer @${b.dataset.name} de l’équipe ? Son compte redeviendra un compte normal.`))return;if(await teamRpc("team_remove",{p_user:id},"Retiré de l’équipe."))await loadTeamData("equipe")}
+    if(k==="unword"){if(await teamRpc("remove_banned_word",{p_word:id},"Mot retiré."))await loadTeamData("reglages")}
+  }));
+  el.querySelectorAll("[data-team-form]").forEach(f=>f.addEventListener("submit",async e=>{
+    e.preventDefault();const id=f.dataset.id;
+    if(f.dataset.teamForm==="warn"){const msg=f.querySelector("textarea").value.trim();if(msg.length<5){toast("Écris le message de l’avertissement.");return}
+      busy(f,true,"Envoi…");const ok=await teamRpc("warn_member",{p_user:id,p_message:msg},"Avertissement envoyé.");busy(f,false);if(ok){team.open="";await searchMembers(team.memberQ);renderModeration(el)}}
+    else{const d=+(f.querySelector("input[type=radio]:checked")||{}).value,why=f.querySelector("input.input").value.trim();if(why.length<3){toast("Indique le motif de la suspension.");return}
+      if(!confirm(d?`Suspendre ce compte ${d} jour(s) ? Ses annonces seront retirées.`:"Suspendre ce compte définitivement ? Ses annonces seront retirées."))return;
+      busy(f,true,"Suspension…");const ok=await teamRpc("ban_member",{p_user:id,p_days:d||null,p_reason:why},"Compte suspendu. Le membre a été prévenu par e-mail.");busy(f,false);if(ok){team.open="";await Promise.all([searchMembers(team.memberQ),loadListings()]);loadTeamData("bord");renderModeration(el)}}
+  }));
+  const ta=el.querySelector("#teamAdd");if(ta)ta.addEventListener("submit",async e=>{e.preventDefault();const n=$("taName").value.trim().replace(/^@/,"");if(!n){toast("Indique l’identifiant du compte.");return}
+    if(!confirm(`Ajouter @${n} à l’équipe ? Ce compte deviendra un compte de modération.`))return;if(await teamRpc("team_add",{p_name:n},`@${n} fait maintenant partie de l’équipe.`))await loadTeamData("equipe")});
+  const wa=el.querySelector("#wordAdd");if(wa)wa.addEventListener("submit",async e=>{e.preventDefault();const w=$("wNew").value.trim();if(!w)return;if(await teamRpc("add_banned_word",{p_word:w},"Mot ajouté."))await loadTeamData("reglages")});
+  const sf=el.querySelector("#siteForm");if(sf)sf.addEventListener("submit",async e=>{e.preventDefault();
+    const pause=$("sPause").checked;if(pause&&!site.settings?.pause_listings&&!confirm("Mettre en pause les nouvelles annonces pour tout le monde ?"))return;
+    if(await teamRpc("set_site_settings",{p_announcement:$("sAnn").value,p_level:(sf.querySelector("input[name=sLvl]:checked")||{}).value||"info",p_pause:pause},"Réglages enregistrés."))await loadSite()});
+}
+
+/* Annonce du site (pour tous) */
+const site={settings:null};
+async function loadSite(){
+  if(!sb)return;
+  try{const r=await sb.from("site_settings").select("announcement,announcement_level,pause_listings").eq("id",1).maybeSingle();if(r.error)return;site.settings=r.data||null}catch(e){return}
+  const bar=$("siteAnnounce"),a=site.settings&&site.settings.announcement;
+  if(bar){bar.hidden=!a;if(a){bar.querySelector("span").textContent=a;bar.classList.toggle("alert",site.settings.announcement_level==="alerte")}}
+}
+
+/* Messages de l'équipe pour un membre (avertissement, suspension) */
+async function loadNotices(){
+  if(!sb||!state.user||state.isAdmin)return;
+  try{
+    const [n,b]=await Promise.all([sb.from("member_notices").select("id,kind,message,created_at,read_at").order("created_at",{ascending:false}).limit(20),sb.from("bans").select("reason,until").maybeSingle()]);
+    team.notices=n.error?[]:(n.data||[]);
+    team.ban=!b.error&&b.data&&(!b.data.until||new Date(b.data.until)>new Date())?b.data:null;
+    const unread=team.notices.filter(x=>!x.read_at).length;
+    if(unread)toast(unread>1?`Tu as ${unread} messages de l’équipe Revoo : ouvre « Mon compte ».`:"Tu as un message de l’équipe Revoo : ouvre « Mon compte ».");
+    if(location.hash.startsWith("#/compte"))renderView();
+  }catch(e){}
+}
+function noticesHtml(){
+  const unread=team.notices.filter(x=>!x.read_at);
+  let h="";
+  if(team.ban)h+=`<div class="notice-box danger" role="alert"><b>Ton compte est suspendu${team.ban.until?" jusqu’au "+fmtDH(team.ban.until):""}.</b><p>Motif : ${esc(team.ban.reason)}</p><p class="small">Pendant la suspension, tu ne peux ni publier, ni écrire, ni acheter. Tes achats et ventes déjà payés restent protégés. Une question ? Écris-nous depuis la page <a href="#/aide">Aide</a>.</p></div>`;
+  if(unread.length)h+=`<div class="notice-box" role="status"><b>${unread.length>1?"Messages":"Message"} de l’équipe Revoo</b>${unread.map(n=>`<p><span class="status">${{avertissement:"Avertissement",suspension:"Suspension",levee:"Suspension levée",info:"Information"}[n.kind]||"Information"}</span> ${esc(n.message)} <small class="muted">· ${fmtD(n.created_at)}</small></p>`).join("")}<button type="button" class="btn btn-outline" id="noticesRead">J’ai compris</button></div>`;
+  return h;
+}
+
 async function moderate(action,reportId,listingId){
   const now=new Date().toISOString();
   if(action==="remove"){
@@ -3568,7 +3792,8 @@ function renderAccount(tab){
         <a href="#/favoris" class="acc-stat"><b>${state.favorites.filter(id=>findProduct(id)).length}</b><span>Favoris</span></a>
       </div>
     </div>
-    <div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${accountTab===k}" data-acc="${k}">${l}</button>`).join("")}</div>${body}`;
+    ${noticesHtml()}<div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${accountTab===k}" data-acc="${k}">${l}</button>`).join("")}</div>${body}`;
+  const nr=$("noticesRead");if(nr)nr.addEventListener("click",async()=>{await sb.rpc("mark_notices_read");team.notices.forEach(n=>n.read_at=n.read_at||new Date().toISOString());renderView()});
   watchImages(el);
 }
 function needsHtml(){return `<div class="panel"><h2>Ce qui arrive ensuite</h2><p class="muted small">Ces fonctions demandent encore un service supplémentaire.</p>
@@ -3919,6 +4144,7 @@ function renderView(){
   document.body.dataset.view=name||"accueil";
   const isMod=!!(state.user&&state.isAdmin);
   document.body.classList.toggle("mod-mode",isMod);
+  const mp=$("modPill");if(mp)mp.textContent=state.role==="fondateur"?"Espace fondateur":"Console de modération";
   if(isMod&&!["compte","article","vendeur"].includes(name)){if(["vendre","panier","paiement","favoris","messages"].includes(name))toast("Ce compte est réservé à la modération.");location.replace("#/compte/moderation");return}
   if(isMod&&name==="compte"&&arg!=="moderation"&&!(arg||"").startsWith("mod-")){location.replace("#/compte/moderation");return}
   if(name==="catalogue"){view="catalogue";renderCatalogue()}
@@ -4509,7 +4735,7 @@ watchImages();renderView();
     if(event==="INITIAL_SESSION")return;            // géré juste en dessous
     setTimeout(()=>onSession(session,event),0);     // ne pas appeler Supabase directement dans ce rappel
   });
-  const [{data:{session}}]=await Promise.all([sb.auth.getSession(),loadListings()]);
+  const [{data:{session}}]=await Promise.all([sb.auth.getSession(),loadListings(),loadSite()]);
   if(qs.has("code")||qs.has("error_description"))history.replaceState(null,"",location.pathname+location.hash);
   await onSession(session,"INITIAL_SESSION");
   if(state.loadError)toast("Impossible de charger les annonces : "+state.loadError);
