@@ -585,6 +585,17 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .shop-info small{color:var(--muted);font-size:12.5px}
 .shop-go{font-size:22px;color:var(--muted);line-height:1}
 .shop-join{border-style:dashed}
+.shop.dress{gap:14px;padding:10px 14px}
+.dress-head{display:flex;align-items:center;gap:14px;flex:1;min-width:0;order:1}
+.dress-head .shop-go{display:none}
+.dress-thumbs{display:flex;gap:6px;order:2;flex:none}
+.dress-thumbs .image-frame{width:58px;height:58px}
+@media (max-width:480px){.dress-thumbs .image-frame{width:46px;height:46px}.dress-thumbs .image-frame:nth-child(3){display:none}}
+.dress-thumbs:empty{display:none}
+.dress-thumbs .image-frame{aspect-ratio:1;border-radius:8px}
+.dress-thumbs .image-frame.image-failed::after{display:none}
+.shop-join .avatar{font-size:19px}
+
 .shop-join .avatar{background:var(--brand);color:var(--on-brand);font-size:22px}
 @media (max-width:760px){
   .season-ed-banner{grid-template-columns:1fr}
@@ -1243,7 +1254,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
           <a href="#/messages" class="user-only">Messages <span class="badge has" id="menuMsg" hidden></span></a>
           <a href="#/favoris" class="user-only">Favoris</a>
           <a href="#/vendre" class="user-only">Vendre un vêtement</a>
-          <a href="#/abonnements" class="user-only menu-plans"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 8 4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8Z"/></svg>Abonnements <small>Pro · Max · Ultra</small></a>
+          <a href="#/abonnements" class="user-only menu-plans"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 8 4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8Z"/></svg>Abonnements</a>
           <button type="button" id="acctLogout">Se déconnecter</button>
         </div>
       </div>
@@ -1317,7 +1328,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
       </section>
 
       <section class="section" aria-labelledby="sellerTitle">
-        <div class="section-head"><div><h2 id="sellerTitle">Nouvelles boutiques</h2><p class="section-sub">Les derniers membres à avoir ouvert leur dressing.</p></div></div>
+        <div class="section-head"><div><h2 id="sellerTitle">Boutiques à la une</h2><p class="section-sub" id="sellerSub">Les dressings Revoo Ultra, à tour de rôle.</p></div></div>
         <div class="sellers" id="sellers"></div>
       </section>
     </div>
@@ -2370,7 +2381,7 @@ async function submitTradeProblem(id,f){
 /* Abonnements : panneau « Mon abonnement », page des formules, actions */
 const ICON_CHECK=`<svg class="icon pk-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>`;
 const ICON_SOON=`<svg class="icon pk-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>`;
-const PLAN_SOON={pro:["Statistiques simples","3 alertes de recherche"],max:["Statistiques détaillées","10 alertes de recherche","Accès anticipé de 30 min aux nouveautés","Remise en avant en 1 clic"],ultra:["Statistiques et conseils de prix","Alertes illimitées","Accès anticipé d’1 h aux nouveautés","Publication programmée","Place dans « Vendeurs du moment »"]};
+const PLAN_SOON={pro:["Statistiques simples","3 alertes de recherche"],max:["Statistiques détaillées","10 alertes de recherche","Accès anticipé de 30 min aux nouveautés","Remise en avant en 1 clic"],ultra:["Statistiques et conseils de prix","Alertes illimitées","Accès anticipé d’1 h aux nouveautés","Publication programmée"]};
 function perkList(k){const p=PLANS[k];return [
   `<b>${p.boosts} mises en avant</b> par mois, 48 h chacune`,
   `Jusqu’à <b>${p.photos} photos</b> par annonce`,
@@ -2378,7 +2389,8 @@ function perkList(k){const p=PLANS[k];return [
   k==="ultra"?`<b>Couleur de boutique</b> personnalisée`:"",
   `Rendez-vous en main propre jusqu’à <b>${p.handoff} jours</b>`,
   `Badge <b>${p.short}</b> sur ton profil et tes annonces`,
-  k!=="pro"?`<b>Support prioritaire</b>`:""
+  k!=="pro"?`<b>Support prioritaire</b>`:"",
+  k==="ultra"?`Ton dressing dans <b>« Boutiques à la une »</b> sur l’accueil`:""
 ].filter(Boolean).map(x=>`<li>${ICON_CHECK}<span>${x}</span></li>`).join("")}
 function subscriptionPanel(){
   const m=subs.mine;
@@ -2411,7 +2423,7 @@ function subscriptionsPage(){
     </article>`}).join("")}</div>
     <section class="plans-compare" aria-labelledby="cmpTitle"><h2 id="cmpTitle">Comparer les formules</h2>
       <div class="cmp-wrap" tabindex="0" role="region" aria-labelledby="cmpTitle"><table class="cmp"><thead><tr><th scope="col"><span class="sr-only">Avantage</span></th><th scope="col">Gratuit</th>${Object.keys(PLANS).map(k=>`<th scope="col">${PLANS[k].short}</th>`).join("")}</tr></thead><tbody>
-      ${[["Prix par mois",()=>"0 €",p=>p.price],["Mises en avant offertes",()=>"0",p=>p.boosts],["Photos par annonce",()=>FREE_PERKS.photos,p=>p.photos],["Annonces épinglées",()=>no,p=>p.pins||no],["Couleur de boutique",()=>no,(p,k)=>k==="ultra"?yes:no],["Délai de main propre",()=>FREE_PERKS.handoff+" j",p=>p.handoff+" j"],["Badge",()=>no,()=>yes],["Support prioritaire",()=>no,(p,k)=>k==="pro"?no:yes],["Rotation gratuite « À la une »",()=>yes,()=>yes]].map(([l,f0,f])=>`<tr><th scope="row">${l}</th><td>${f0()}</td>${Object.keys(PLANS).map(k=>`<td>${f(PLANS[k],k)}</td>`).join("")}</tr>`).join("")}
+      ${[["Prix par mois",()=>"0 €",p=>p.price],["Mises en avant offertes",()=>"0",p=>p.boosts],["Photos par annonce",()=>FREE_PERKS.photos,p=>p.photos],["Annonces épinglées",()=>no,p=>p.pins||no],["Couleur de boutique",()=>no,(p,k)=>k==="ultra"?yes:no],["Délai de main propre",()=>FREE_PERKS.handoff+" j",p=>p.handoff+" j"],["Badge",()=>no,()=>yes],["Support prioritaire",()=>no,(p,k)=>k==="pro"?no:yes],["Dressing « Boutiques à la une »",()=>no,(p,k)=>k==="ultra"?yes:no],["Rotation gratuite « À la une »",()=>yes,()=>yes]].map(([l,f0,f])=>`<tr><th scope="row">${l}</th><td>${f0()}</td>${Object.keys(PLANS).map(k=>`<td>${f(PLANS[k],k)}</td>`).join("")}</tr>`).join("")}
       </tbody></table></div></section>
     <section class="plans-faq" aria-labelledby="faqTitle"><h2 id="faqTitle">Questions fréquentes</h2>
       <details><summary>Comment résilier ?</summary><p>Mon compte → Profil et paramètres → Mon abonnement → « Résilier », puis « Confirmer ». Tu peux aussi demander à Reboot. Tu gardes tes avantages jusqu’à la fin du mois en cours, puis plus rien n’est prélevé.</p></details>
@@ -2668,9 +2680,21 @@ function renderHome(){
   if(seasonal.length>=2)grid($("seasonProducts"),seasonal,"");
   const real=[];state.remote.filter(p=>p.status==="active").sort((a,b)=>Date.parse(b.sellerSince||0)-Date.parse(a.sellerSince||0)).forEach(p=>{if(!real.find(r=>r.id===p.sellerId))real.push({id:p.sellerId,name:p.seller,emoji:sellerInfo(p).emoji})});
   const list=[...real,...(showDemo()?SELLERS.map(x=>({...x,emoji:sellerInfo(x.name).emoji})):[])].slice(0,6);
-  $("sellers").innerHTML=list.slice(0,5).map(s=>{const n=av.filter(p=>s.id?p.sellerId===s.id:(p.seller===s.name&&!p.sellerId)).length;const inner=`<span class="avatar" aria-hidden="true">${s.emoji}</span><span class="shop-info"><b>${esc(s.name)}${s.id?planBadge(s.id):""}</b><small>${n} article${n>1?"s":""} en vente</small></span><span class="shop-go" aria-hidden="true">›</span>`;
-    return s.id?`<a class="shop" href="#/vendeur/${s.id}" aria-label="Boutique de ${esc(s.name)}">${inner}</a>`:`<button type="button" class="shop" data-seller="${esc(s.name)}" aria-label="Voir les articles de ${esc(s.name)}">${inner}</button>`}).join("")
-    + `<a class="shop shop-join" href="#/vendre"><span class="avatar" aria-hidden="true">+</span><span class="shop-info"><b>Ouvre ta boutique</b><small>Publier une annonce, c’est gratuit</small></span><span class="shop-go" aria-hidden="true">›</span></a>`;
+  // Boutiques à la une : abonnés Ultra (avantage de la formule), à tour de rôle toutes les 15 min.
+  // Au lancement, s'il n'y en a pas encore : les autres abonnés, puis les nouvelles boutiques.
+  const sellerIds=[...new Set(av.filter(p=>p.sellerId).map(p=>p.sellerId))];
+  const ring=arr=>rotate(arr.map(id=>({id}))).map(x=>x.id);
+  let tier="ultra",ids=ring(sellerIds.filter(id=>planOf(id)==="ultra"));
+  if(!ids.length){tier="abonnes";ids=ring(sellerIds.filter(id=>planOf(id)))}
+  if(!ids.length)tier="nouvelles";
+  $("sellerTitle").textContent=tier==="nouvelles"?"Nouvelles boutiques":"Boutiques à la une";
+  $("sellerSub").textContent=tier==="ultra"?"Les dressings Revoo Ultra, à tour de rôle.":tier==="abonnes"?"Les dressings de nos abonnés, à tour de rôle.":"Les derniers membres à avoir ouvert leur dressing.";
+  const shops=(tier==="nouvelles"?list:ids.map(id=>{const p=av.find(x=>x.sellerId===id);return {id,name:p.seller,emoji:sellerInfo(p).emoji}})).slice(0,4);
+  $("sellers").innerHTML=shops.map(sh=>{const items=av.filter(p=>sh.id?p.sellerId===sh.id:(p.seller===sh.name&&!p.sellerId)),n=items.length;
+    const thumbs=items.slice(0,3).map(p=>`<span class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="" loading="lazy" decoding="async"></span>`).join("");
+    const inner=`<span class="dress-head"><span class="avatar" aria-hidden="true">${sh.emoji}</span><span class="shop-info"><b>${esc(sh.name)}${sh.id?planBadge(sh.id):""}</b><small>${n} article${n>1?"s":""} en vente</small></span><span class="shop-go" aria-hidden="true">›</span></span><span class="dress-thumbs" aria-hidden="true">${thumbs}</span>`;
+    return sh.id?`<a class="shop dress" href="#/vendeur/${sh.id}" aria-label="Dressing de ${esc(sh.name)}, ${n} article${n>1?"s":""}">${inner}</a>`:`<button type="button" class="shop dress" data-seller="${esc(sh.name)}" aria-label="Dressing de ${esc(sh.name)}">${inner}</button>`}).join("")
+    + (state.user&&planOf(state.user.id)==="ultra"?"":state.user?`<a class="shop shop-join" href="#/abonnements"><span class="avatar" aria-hidden="true">👑</span><span class="shop-info"><b>Ton dressing ici ?</b><small>Les boutiques Revoo Ultra passent à la une, à tour de rôle</small></span><span class="shop-go" aria-hidden="true">›</span></a>`:`<a class="shop shop-join" href="#/vendre"><span class="avatar" aria-hidden="true">+</span><span class="shop-info"><b>Ouvre ta boutique</b><small>Publier une annonce, c’est gratuit</small></span><span class="shop-go" aria-hidden="true">›</span></a>`);
   const STYLE_DESC={Vintage:"Pièces d’époque et belles matières",Streetwear:"Sweats, baskets et coupes larges",Chic:"Tailleurs, chemises et élégance",Doux:"Mailles, cocooning et confort"};
   $("styleTiles").innerHTML=STYLES.map((st,i)=>{const n=av.filter(p=>p.style===st).length;return `<button type="button" class="style-tile st-${i}" data-style="${st}"><span class="st-name">${st}</span><span class="st-desc">${STYLE_DESC[st]||""}</span><span class="st-count">${n} pièce${n>1?"s":""} <span aria-hidden="true">→</span></span></button>`}).join("");
   const top=av.filter(p=>!shown.has(p.id)).sort(byLikes).slice(0,6);
