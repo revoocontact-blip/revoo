@@ -534,7 +534,7 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .mod-only{display:none!important}
 .mod-mode .mod-only{display:block!important}
 .mod-mode .user-only{display:none!important}
-.mod-mode .subnav .sell,.mod-mode .heart,.mod-mode .reboot,.mod-mode .tabbar [data-tab="vendre"],.mod-mode .tabbar [data-tab="messages"],.mod-mode .hero-actions .btn-outline,.mod-mode #reportBtn,.mod-mode #shareBtn,.mod-mode .seller-join,.mod-mode .safety,.mod-mode .fee-box,.mod-mode .buy-sticky{display:none!important}
+.mod-mode .subnav .sell,.mod-mode .heart,.mod-mode .reboot,.mod-mode .tabbar [data-tab="vendre"],.mod-mode .tabbar [data-tab="messages"],.mod-mode .hero-actions .btn-outline,.mod-mode #reportBtn,.mod-mode #shareBtn,.mod-mode .shop-join,.mod-mode .safety,.mod-mode .fee-box,.mod-mode .buy-sticky{display:none!important}
 .mod-mode .tabbar{grid-template-columns:repeat(3,1fr)}
 .acct-menu-mod{padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px}
 .acct-menu-mod small{display:block;color:var(--muted);font-size:12px}
@@ -553,6 +553,46 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .mod-mode .mod-head h2{color:#fff}
 .mod-mode .mod-head .mod-badge{background:#A8C4D8;color:#16293A}
 .mod-search{margin-bottom:12px}
+
+/* Accueil : bas de page plus éditorial */
+.season-ed{margin:56px 0}
+.season-ed-banner{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);border-radius:14px;overflow:hidden;background:var(--bar);color:var(--on-bar);margin-bottom:22px}
+.season-ed-photo{min-height:260px;height:100%;border-radius:0}
+.season-ed-text{padding:36px 40px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.season-ed-text .kicker{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#A8C4D8}
+.season-ed-text h2{margin:0;font-size:clamp(26px,3vw,38px);letter-spacing:-1px;line-height:1.05;color:#fff}
+.season-ed-text p{margin:0 0 8px;color:var(--on-bar);opacity:.85;max-width:420px}
+.season-ed-text .btn{align-self:flex-start;background:#A8C4D8;color:#16293A}
+.season-ed-text .btn:hover{background:#fff}
+.season-ed .products-row[hidden]{display:none}
+.style-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.style-tile{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border:0;border-radius:12px;padding:22px 20px;min-height:132px;cursor:pointer;font:inherit;transition:transform .15s ease,box-shadow .15s ease}
+.style-tile:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(22,41,58,.18)}
+.style-tile:focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+.st-name{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.st-desc{font-size:13px;opacity:.85}
+.st-count{margin-top:auto;font-size:13px;font-weight:700;padding-top:10px}
+.st-0{background:#16293A;color:#fff}
+.st-1{background:#294B68;color:#fff}
+.st-2{background:#A8C4D8;color:#16293A}
+.st-3{background:#E3EDF4;color:#16293A}
+.sellers{display:flex;flex-direction:column;gap:8px}
+.shop{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.shop:hover{border-color:var(--heading)}
+.shop .avatar{width:44px;height:44px;margin:0;font-size:17px;flex:none}
+.shop-info{flex:1;min-width:0;display:flex;flex-direction:column}
+.shop-info b{font-size:15px;color:var(--heading);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shop-info small{color:var(--muted);font-size:12.5px}
+.shop-go{font-size:22px;color:var(--muted);line-height:1}
+.shop-join{border-style:dashed}
+.shop-join .avatar{background:var(--brand);color:var(--on-brand);font-size:22px}
+@media (max-width:760px){
+  .season-ed-banner{grid-template-columns:1fr}
+  .season-ed-photo{min-height:180px;height:180px}
+  .season-ed-text{padding:24px 22px}
+  .style-tile{min-height:112px;padding:18px 16px}
+  .st-name{font-size:19px}
+}
 /* Abonnements */
 .plan-badge{display:inline-block;vertical-align:middle;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;line-height:1.5}
 .plan-pro{background:#A8C4D8;color:#16293A}
@@ -560,6 +600,50 @@ footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-off
 .plan-ultra{background:linear-gradient(135deg,#E9C46A,#C9963B);color:#2B1D05}
 .card-seller .plan-badge{font-size:9.5px;padding:1px 6px}
 .lead-sub{font-size:17px;max-width:640px}
+.plans-page{max-width:1120px}
+.prose:has(.plans-page){max-width:1120px;margin-inline:auto}
+.plans-hero{text-align:center;max-width:680px;margin:8px auto 30px}
+.plans-hero .kicker{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.plans-hero h1{margin:8px 0 10px;font-size:clamp(30px,4vw,44px);letter-spacing:-1px}
+.plans-hero p{margin:0;color:var(--muted);font-size:16.5px}
+.plans-demo{display:inline-block;margin-top:14px!important;background:var(--ice);border-radius:8px;padding:6px 12px;font-size:13px!important}
+.plan{gap:0;padding:0;overflow:visible}
+.plan-top{padding:24px 24px 20px;border-bottom:1px solid var(--line)}
+.plan-top h2{display:flex;align-items:center;gap:8px;font-size:19px}
+.plan-pitch{margin:6px 0 16px;color:var(--muted);font-size:14px;min-height:20px}
+.plan-price{margin:0 0 16px}
+.plan-price b{font-size:38px;letter-spacing:-1px}
+.plan-price span{display:block;margin:0;font-size:13px}
+.plan-sub{margin:18px 24px 8px;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.plan-perks{margin:0 24px;gap:10px;flex:none}
+.plan-perks li{display:flex;gap:10px;align-items:flex-start;line-height:1.4}
+.pk-ic{width:18px;height:18px;flex:none;margin-top:1px;color:#2E8B57;stroke-width:2.4}
+.plan-soon{margin-bottom:24px;color:var(--muted)}
+.plan-soon .pk-ic{color:var(--muted);stroke-width:1.8}
+.plans-compare,.plans-faq{margin:46px 0 0}
+.plans-compare h2,.plans-faq h2{font-size:24px;letter-spacing:-.5px;margin:0 0 16px}
+.cmp-wrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:12px}
+.cmp{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+.cmp th,.cmp td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:center}
+.cmp tbody tr:last-child th,.cmp tbody tr:last-child td{border-bottom:0}
+.cmp th[scope=row]{text-align:left;font-weight:600;color:var(--ink)}
+.cmp thead th{font-size:13px;font-weight:800;color:var(--heading);background:var(--ice)}
+.cmp-yes{color:#2E8B57;font-weight:800}.cmp-no{color:var(--muted)}
+.plans-faq details{border-bottom:1px solid var(--line);padding:4px 0}
+.plans-faq summary{cursor:pointer;font-weight:700;color:var(--heading);padding:12px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.plans-faq summary::-webkit-details-marker{display:none}
+.plans-faq summary::after{content:"+";font-size:20px;line-height:1;color:var(--muted)}
+.plans-faq details[open] summary::after{content:"−"}
+.plans-faq details{border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;padding:2px 0}
+.plans-faq details p{margin:0 0 14px;color:var(--muted)}
+.pill-danger{border-color:var(--danger-line)!important;color:var(--danger)!important}
+.rb-list{list-style:none;padding:0;margin:6px 0;display:grid;gap:6px;font-size:14px}.rb-list li{display:flex;gap:8px}
+.menu-plans{display:flex!important;align-items:center;gap:8px}
+.menu-plans .icon{width:18px;height:18px;color:#C9963B}
+.menu-plans small{margin-left:auto;color:var(--muted);font-size:11.5px;font-weight:600}
+:root[data-theme="dark"] .st-3{background:#1C3F5E;color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .st-3{background:#1C3F5E;color:#fff}}
+
 .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:22px 0}
 .plan{position:relative;border:1.5px solid var(--line);border-radius:14px;padding:22px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
 .plan h2{margin:0;font-size:20px;color:var(--heading)}
@@ -1159,7 +1243,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
           <a href="#/messages" class="user-only">Messages <span class="badge has" id="menuMsg" hidden></span></a>
           <a href="#/favoris" class="user-only">Favoris</a>
           <a href="#/vendre" class="user-only">Vendre un vêtement</a>
-          <a href="#/abonnements" class="user-only">💎 Revoo Pro · Max · Ultra</a>
+          <a href="#/abonnements" class="user-only menu-plans"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 8 4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8Z"/></svg>Abonnements <small>Pro · Max · Ultra</small></a>
           <button type="button" id="acctLogout">Se déconnecter</button>
         </div>
       </div>
@@ -1213,25 +1297,27 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
       <div class="products" id="latestProducts"></div>
     </section>
 
-    <section class="section season-band" aria-labelledby="seasonTitle">
-      <div class="season-intro">
-        <div class="image-frame season-photo"><img data-safe-image src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80" alt="Pulls et vêtements de saison" loading="lazy"></div>
-        <div><span class="eyebrow" id="seasonName">Automne</span><h2 id="seasonTitle">La saison du moment</h2><p id="seasonText">Des vêtements doux, chauds et intemporels.</p><button type="button" class="btn btn-outline" id="discoverSeason">Voir la sélection</button><button type="button" class="viewall sr-only" id="seasonBtn">Voir tout</button></div>
+    <section class="section season-ed" aria-labelledby="seasonTitle">
+      <div class="season-ed-banner">
+        <div class="image-frame season-ed-photo"><img data-safe-image src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80" alt="Pulls et vêtements de saison" loading="lazy"></div>
+        <div class="season-ed-text">
+          <span class="kicker">Sélection de saison · <span id="seasonName">Automne</span></span>
+          <h2 id="seasonTitle">La saison du moment</h2>
+          <p id="seasonText">Des vêtements doux, chauds et intemporels.</p>
+          <button type="button" class="btn btn-primary" id="discoverSeason">Voir la sélection</button>
+        </div>
       </div>
       <div class="products products-row" id="seasonProducts"></div>
     </section>
 
     <div class="bottom-grid">
       <section class="section" aria-labelledby="trendTitle">
-        <div class="section-head"><div><h2 id="trendTitle">Tendances du moment</h2><p class="section-sub">Des styles pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
-        <div class="trend-img image-frame">
-          <img data-safe-image src="https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=1000&q=80" alt="Sélection de styles" loading="lazy">
-          <div class="trend-tags"><button type="button" data-style="Vintage">Vintage</button><button type="button" data-style="Streetwear">Streetwear</button><button type="button" data-style="Chic">Chic</button><button type="button" data-style="Doux">Doux</button></div>
-        </div>
+        <div class="section-head"><div><h2 id="trendTitle">Explorer par style</h2><p class="section-sub">Quatre univers, des pièces pour tous les goûts.</p></div><button type="button" class="viewall" data-sort="populaires">Voir tout →</button></div>
+        <div class="style-tiles" id="styleTiles"></div>
       </section>
 
       <section class="section" aria-labelledby="sellerTitle">
-        <div class="section-head"><div><h2 id="sellerTitle">Nouveaux vendeurs</h2><p class="section-sub">À découvrir, même s’ils débutent.</p></div></div>
+        <div class="section-head"><div><h2 id="sellerTitle">Nouvelles boutiques</h2><p class="section-sub">Les derniers membres à avoir ouvert leur dressing.</p></div></div>
         <div class="sellers" id="sellers"></div>
       </section>
     </div>
@@ -1353,7 +1439,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
         <p>Tes vêtements ont de l’avenir.</p>
       </div>
       <nav aria-label="Revoo"><h2>Revoo</h2><ul><li><a href="#/a-propos">À propos de Revoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
-      <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/securite">Conseils de sécurité</a></li><li><a href="#/abonnements">Revoo Pro · Max · Ultra</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
+      <nav aria-label="Acheter et vendre"><h2>Acheter &amp; vendre</h2><ul><li><a href="#/acheter">Acheter</a></li><li><a href="#/vendre-info">Vendre</a></li><li><a href="#/securite">Conseils de sécurité</a></li><li><a href="#/abonnements">Abonnements</a></li><li><a href="#/catalogue" data-new="1">Tous les vêtements</a></li></ul></nav>
       <nav aria-label="Aide"><h2>Aide</h2><ul><li><a href="#/aide">Aide et contact</a></li><li><a href="#/compte">Mon compte</a></li><li><a href="#/favoris">Mes favoris</a></li><li><a href="#/messages">Messages</a></li></ul></nav>
       <nav aria-label="Informations légales"><h2>Légal</h2><ul><li><a href="#/conditions">Conditions</a></li><li><a href="#/confidentialite">Confidentialité</a></li><li><a href="#/mentions-legales">Informations légales</a></li></ul></nav>
     </div>
@@ -2282,16 +2368,18 @@ async function submitTradeProblem(id,f){
 
 
 /* Abonnements : panneau « Mon abonnement », page des formules, actions */
+const ICON_CHECK=`<svg class="icon pk-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>`;
+const ICON_SOON=`<svg class="icon pk-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>`;
+const PLAN_SOON={pro:["Statistiques simples","3 alertes de recherche"],max:["Statistiques détaillées","10 alertes de recherche","Accès anticipé de 30 min aux nouveautés","Remise en avant en 1 clic"],ultra:["Statistiques et conseils de prix","Alertes illimitées","Accès anticipé d’1 h aux nouveautés","Publication programmée","Place dans « Vendeurs du moment »"]};
 function perkList(k){const p=PLANS[k];return [
-  `⭐ <b>${p.boosts} mises en avant</b> offertes par mois (48 h chacune)`,
-  `📸 Jusqu’à <b>${p.photos} photos</b> par annonce`,
-  p.pins?`📌 <b>${p.pins} annonce${p.pins>1?"s":""} épinglée${p.pins>1?"s":""}</b> en haut de ta boutique`:"",
-  k==="ultra"?`🎨 <b>Couleur de boutique</b> au choix`:"",
-  `🤝 Rendez-vous en main propre prolongeable jusqu’à <b>${p.handoff} jours</b>`,
-  `🏅 Badge <b>${p.short}</b> sur ton profil et tes annonces`,
-  k!=="pro"?`💬 <b>Support prioritaire</b>`:"",
-  `<span class="muted">Bientôt : ${k==="pro"?"statistiques simples et 3 alertes":k==="max"?"statistiques détaillées, 10 alertes, accès anticipé 30 min, remise en avant en 1 clic":"statistiques et conseils de prix, alertes illimitées, accès anticipé 1 h, publication programmée, « Vendeurs du moment »"}</span>`
-].filter(Boolean).map(x=>`<li>${x}</li>`).join("")}
+  `<b>${p.boosts} mises en avant</b> par mois, 48 h chacune`,
+  `Jusqu’à <b>${p.photos} photos</b> par annonce`,
+  p.pins?`<b>${p.pins} annonce${p.pins>1?"s":""} épinglée${p.pins>1?"s":""}</b> en tête de ta boutique`:"",
+  k==="ultra"?`<b>Couleur de boutique</b> personnalisée`:"",
+  `Rendez-vous en main propre jusqu’à <b>${p.handoff} jours</b>`,
+  `Badge <b>${p.short}</b> sur ton profil et tes annonces`,
+  k!=="pro"?`<b>Support prioritaire</b>`:""
+].filter(Boolean).map(x=>`<li>${ICON_CHECK}<span>${x}</span></li>`).join("")}
 function subscriptionPanel(){
   const m=subs.mine;
   if(!m)return `<div class="panel sub-panel"><h2>Mon abonnement</h2><p class="small">Vends plus vite avec des mises en avant offertes chaque mois, plus de photos et un badge de confiance.</p><a class="btn btn-primary" href="#/abonnements">Découvrir Pro, Max et Ultra</a></div>`;
@@ -2305,19 +2393,34 @@ function subscriptionPanel(){
     <div id="subCancelBox"></div></div>`;
 }
 function subscriptionsPage(){
-  const cur=subs.mine&&subs.mine.plan;
-  return `<p class="crumbs"><a href="#/">Accueil</a> › Abonnements</p><h1>Revoo Pro, Max et Ultra</h1>
-    <p class="lead-sub">Vends plus vite, montre-toi davantage, garde la main sur ta boutique. <b>Sans engagement</b> : tu résilies en 3 clics, quand tu veux.</p>
-    ${CONFIG.revooPayDemo||PAY_DEMO?`<p class="note small"><b>Démo :</b> les abonnements sont activés sans paiement pour l’instant.</p>`:""}
-    <div class="plans">${Object.keys(PLANS).map(k=>{const p=PLANS[k];return `<article class="plan plan-card-${k}${k==="max"?" plan-popular":""}">
+  const cur=subs.mine&&subs.mine.plan, demo=CONFIG.revooPayDemo||PAY_DEMO;
+  const row=(label,f)=>`<tr><th scope="row">${label}</th>${Object.keys(PLANS).map(k=>`<td>${f(PLANS[k],k)}</td>`).join("")}</tr>`;
+  const yes=`<span class="cmp-yes" aria-label="Inclus">✓</span>`, no=`<span class="cmp-no" aria-label="Non inclus">—</span>`;
+  return `<div class="plans-page">
+    <p class="crumbs"><a href="#/">Accueil</a> › Abonnements</p>
+    <header class="plans-hero"><span class="kicker">Abonnements Revoo</span><h1>Vends plus, et plus vite.</h1>
+      <p>Des mises en avant chaque mois, plus de photos et une boutique à ton image. <b>Sans engagement</b>, résiliable en 3 clics.</p>
+      ${demo?`<p class="plans-demo">Version de démonstration : l’abonnement s’active sans paiement.</p>`:""}</header>
+    <div class="plans">${Object.keys(PLANS).map(k=>{const p=PLANS[k];return `<article class="plan plan-card-${k}${k==="max"?" plan-popular":""}" aria-labelledby="plan-${k}">
       ${k==="max"?`<span class="plan-ribbon">Le plus choisi</span>`:""}
-      <h2><span class="plan-badge plan-${k}">${p.short}</span> ${p.name}</h2>
-      <p class="plan-price"><b>${p.price}</b><span>/mois TTC</span></p>
-      <p class="small muted">${p.pitch}</p>
-      <ul class="plan-perks">${perkList(k)}</ul>
-      ${!state.user?`<a class="btn btn-primary btn-block" href="#/compte">Se connecter</a>`:cur===k?`<button type="button" class="btn btn-outline btn-block" disabled>Ta formule actuelle</button>`:`<button type="button" class="btn btn-primary btn-block" data-subscribe="${k}">${cur?"Passer à "+p.short:"Choisir "+p.short}</button>`}
+      <div class="plan-top"><h2 id="plan-${k}"><span class="plan-badge plan-${k}">${p.short}</span> ${p.name}</h2><p class="plan-pitch">${p.pitch}</p>
+      <p class="plan-price"><b>${p.price}</b><span>par mois, TTC</span></p>
+      ${!state.user?`<a class="btn btn-primary btn-block" href="#/compte">Se connecter pour choisir</a>`:cur===k?`<button type="button" class="btn btn-outline btn-block" disabled>Ta formule actuelle</button>`:`<button type="button" class="btn ${k==="max"?"btn-primary":"btn-outline"} btn-block" data-subscribe="${k}">${cur?"Passer à "+p.short:"Choisir "+p.short}</button>`}</div>
+      <p class="plan-sub">Inclus</p><ul class="plan-perks">${perkList(k)}</ul>
+      <p class="plan-sub">Bientôt</p><ul class="plan-perks plan-soon">${PLAN_SOON[k].map(x=>`<li>${ICON_SOON}<span>${x}</span></li>`).join("")}</ul>
     </article>`}).join("")}</div>
-    <p class="small muted">Prix TTC, renouvelés chaque mois jusqu’à résiliation. La résiliation prend effet à la fin du mois en cours : tu gardes tes avantages jusque-là. Les mises en avant sont toujours affichées « Sponsorisé », et la rotation gratuite « À la une » reste ouverte à tous.</p>`;
+    <section class="plans-compare" aria-labelledby="cmpTitle"><h2 id="cmpTitle">Comparer les formules</h2>
+      <div class="cmp-wrap" tabindex="0" role="region" aria-labelledby="cmpTitle"><table class="cmp"><thead><tr><th scope="col"><span class="sr-only">Avantage</span></th><th scope="col">Gratuit</th>${Object.keys(PLANS).map(k=>`<th scope="col">${PLANS[k].short}</th>`).join("")}</tr></thead><tbody>
+      ${[["Prix par mois",()=>"0 €",p=>p.price],["Mises en avant offertes",()=>"0",p=>p.boosts],["Photos par annonce",()=>FREE_PERKS.photos,p=>p.photos],["Annonces épinglées",()=>no,p=>p.pins||no],["Couleur de boutique",()=>no,(p,k)=>k==="ultra"?yes:no],["Délai de main propre",()=>FREE_PERKS.handoff+" j",p=>p.handoff+" j"],["Badge",()=>no,()=>yes],["Support prioritaire",()=>no,(p,k)=>k==="pro"?no:yes],["Rotation gratuite « À la une »",()=>yes,()=>yes]].map(([l,f0,f])=>`<tr><th scope="row">${l}</th><td>${f0()}</td>${Object.keys(PLANS).map(k=>`<td>${f(PLANS[k],k)}</td>`).join("")}</tr>`).join("")}
+      </tbody></table></div></section>
+    <section class="plans-faq" aria-labelledby="faqTitle"><h2 id="faqTitle">Questions fréquentes</h2>
+      <details><summary>Comment résilier ?</summary><p>Mon compte → Profil et paramètres → Mon abonnement → « Résilier », puis « Confirmer ». Tu peux aussi demander à Reboot. Tu gardes tes avantages jusqu’à la fin du mois en cours, puis plus rien n’est prélevé.</p></details>
+      <details><summary>Je peux changer de formule ?</summary><p>Oui, à tout moment, depuis cette page. Si tu passes à une formule inférieure, les annonces épinglées et la couleur de boutique en trop sont retirées automatiquement.</p></details>
+      <details><summary>Comment fonctionnent les mises en avant ?</summary><p>Dans « Mes annonces », clique sur « Mettre en avant » : l’annonce passe en tête du catalogue et des recherches pendant 48 h, avec la mention « Sponsorisé ». Elles se rechargent chaque mois.</p></details>
+      <details><summary>Les abonnés passent-ils devant tout le monde ?</summary><p>Non. La rotation gratuite « À la une » reste ouverte à tous : toutes les 15 minutes, d’autres annonces passent en tête. Les abonnés ont simplement plus de mises en avant, toujours signalées.</p></details>
+      <details><summary>Les prix incluent-ils la TVA ?</summary><p>Oui, tous les prix affichés sont TTC. En cas de changement de prix, tu es prévenu à l’avance et tu peux résilier.</p></details>
+    </section>
+  </div>`;
 }
 async function subAction(kind,arg){
   let r;
@@ -2565,9 +2668,11 @@ function renderHome(){
   if(seasonal.length>=2)grid($("seasonProducts"),seasonal,"");
   const real=[];state.remote.filter(p=>p.status==="active").sort((a,b)=>Date.parse(b.sellerSince||0)-Date.parse(a.sellerSince||0)).forEach(p=>{if(!real.find(r=>r.id===p.sellerId))real.push({id:p.sellerId,name:p.seller,emoji:sellerInfo(p).emoji})});
   const list=[...real,...(showDemo()?SELLERS.map(x=>({...x,emoji:sellerInfo(x.name).emoji})):[])].slice(0,6);
-  $("sellers").innerHTML=list.map(s=>{const n=av.filter(p=>s.id?p.sellerId===s.id:(p.seller===s.name&&!p.sellerId)).length;const inner=`<span class="avatar" aria-hidden="true">${s.emoji}</span><small>${esc(s.name)}</small><em>${n} article${n>1?"s":""}</em>`;
-    return s.id?`<a class="seller" href="#/vendeur/${s.id}" aria-label="Profil de ${esc(s.name)}">${inner}</a>`:`<button type="button" class="seller" data-seller="${esc(s.name)}" aria-label="Voir les articles de ${esc(s.name)}">${inner}</button>`}).join("")
-    + `<a class="seller seller-join" href="#/vendre"><span class="avatar" aria-hidden="true">+</span><small>Toi ?</small><em>Vendre</em></a>`;
+  $("sellers").innerHTML=list.slice(0,5).map(s=>{const n=av.filter(p=>s.id?p.sellerId===s.id:(p.seller===s.name&&!p.sellerId)).length;const inner=`<span class="avatar" aria-hidden="true">${s.emoji}</span><span class="shop-info"><b>${esc(s.name)}${s.id?planBadge(s.id):""}</b><small>${n} article${n>1?"s":""} en vente</small></span><span class="shop-go" aria-hidden="true">›</span>`;
+    return s.id?`<a class="shop" href="#/vendeur/${s.id}" aria-label="Boutique de ${esc(s.name)}">${inner}</a>`:`<button type="button" class="shop" data-seller="${esc(s.name)}" aria-label="Voir les articles de ${esc(s.name)}">${inner}</button>`}).join("")
+    + `<a class="shop shop-join" href="#/vendre"><span class="avatar" aria-hidden="true">+</span><span class="shop-info"><b>Ouvre ta boutique</b><small>Publier une annonce, c’est gratuit</small></span><span class="shop-go" aria-hidden="true">›</span></a>`;
+  const STYLE_DESC={Vintage:"Pièces d’époque et belles matières",Streetwear:"Sweats, baskets et coupes larges",Chic:"Tailleurs, chemises et élégance",Doux:"Mailles, cocooning et confort"};
+  $("styleTiles").innerHTML=STYLES.map((st,i)=>{const n=av.filter(p=>p.style===st).length;return `<button type="button" class="style-tile st-${i}" data-style="${st}"><span class="st-name">${st}</span><span class="st-desc">${STYLE_DESC[st]||""}</span><span class="st-count">${n} pièce${n>1?"s":""} <span aria-hidden="true">→</span></span></button>`}).join("");
   const top=av.filter(p=>!shown.has(p.id)).sort(byLikes).slice(0,6);
   $("communitySection").hidden=top.length<3;
   $("communityItems").innerHTML=top.map(p=>`<a class="mini" href="#/article/${encodeURIComponent(p.id)}"><div class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" decoding="async"></div><span><b>${eur(p.price)}</b><span class="mini-likes">${ICON_HEART}${likes(p)}</span></span></a>`).join("");
@@ -3598,7 +3703,7 @@ $("filtersClose").addEventListener("click",()=>setFiltersOpen(false));
 $("filtersApply").addEventListener("click",()=>{setFiltersOpen(false);$("catalogueTitle").scrollIntoView({block:"start"})});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("filters").classList.contains("open")&&innerWidth<=920)setFiltersOpen(false)});
 const seasonGo=()=>openCatalogue({season:currentSeason()});
-$("seasonBtn").addEventListener("click",seasonGo);$("discoverSeason").addEventListener("click",seasonGo);
+$("seasonBtn")?.addEventListener("click",seasonGo);$("discoverSeason").addEventListener("click",seasonGo);
 
 /* =========================================================
    REBOOT — assistant à réponses préparées (pas d'IA connectée)
@@ -3698,7 +3803,7 @@ const RB_ABBR={sa:"ca",frai:"frais",fré:"frais",fre:"frais",foto:"photo",fotos:
   annonces:"annonce",photos:"photo",pics:"photo",trucs:"article",truc:"article",articles:"article",fringuer:"vetement",
   achete:"acheter",achat:"acheter",vente:"vendre",vends:"vendre",vend:"vendre",vendu:"vendre",livre:"livraison",livrer:"livraison",livraisons:"livraison",
   login:"connexion",connecte:"connexion",inscrire:"inscription",inscris:"inscription",sinscrire:"inscription"};
-const RB_VOCAB="identifiant avatar bio vacances solde apparence parametre parametres bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot revoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange".split(" ");
+const RB_VOCAB="abonnement abonnements abonne resilier resiliation formule formules premium ultra reprendre identifiant avatar bio vacances solde apparence parametre parametres bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot revoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange".split(" ");
 const RB_VSET=new Set(RB_VOCAB);
 const RB_KEEP4=new Set("mais veux peux sais fais fait avec pour dans sans tout tous bien tres plus elle nous vous leur quoi quel faut doit dois sont suis avez etes sera mois jour cela ceci voir vois dire dit lien site page code cool trop vite deja aussi fois oui non moi toi lui eux mien tien tant donc meme ici quoi part fini bout coin haut gros fort beau vrai faux aide sale chat chez vers avant hier noel".split(" "));
 const RB_KEEP=new Set("quand comme alors aussi encore jamais toute toutes cette celle celui ceux elles leurs quelle quels quelles savoir trouve trouver cherche chercher besoin envie voudrais pourrais pouvez pourquoi mettre prendre donner depuis avant apres semaine couleur faire peux veux peut veut votre notre vraiment maintenant comment autre autres combien merci bonjour salut moins plus entre chez vers sans avec pour dans sous mais rien tout tous etre avoir suis sont avez faut fallait doit dois sait sais connais aimer adore aime marche marcher tester essaye essayer bonne petite petit grand grande taille ensemble quelque chose aider pense crois question reponse simple facile rapide gros grosse jolie joli beau belle".split(" "));
@@ -3791,7 +3896,7 @@ function rebootReply(raw){
   const clauses=t.split(/\s(?:et aussi|et puis|et|puis|aussi|sinon)\s(?=(?:comment|combien|c est|quel|quelle|quels|est ce|ou|pourquoi|je|j|tu|on|il|les|la|le|mon|ma|mes)\b)|[?!.;]+/).map(x=>x.trim()).filter(x=>x.length>1);
   const answers=[];
   for(const c of clauses.length?clauses:[t]){
-    let r=null;for(const [re,fn] of RB_DAILY){if(re.test(c)){r=fn(c);if(r)break}}
+    let r=rbSubs(c);if(!r)for(const [re,fn] of RB_DAILY){if(re.test(c)){r=fn(c);if(r)break}}
     r=r||rbFollowUp(c)||rbIntent(c);
     if(r&&!answers.includes(r))answers.push(r);
     if(answers.length===2)break;
@@ -3805,10 +3910,64 @@ function rebootReply(raw){
   if(answers.length)return answers.join('<hr class="rb-sep">');
   return`<p>Je n’ai pas bien compris. Essaie avec d’autres mots, ou choisis un sujet :</p>${ask("Trouver un vêtement","Comment ça marche ?","Vendre un article","Paiement et sécurité","Livraison","Mon compte","Parler à quelqu’un")}`;
 }
+
+/* Reboot : tout sur les abonnements, et aide à résilier directement dans la discussion */
+function rbSubs(c){
+  const isSub=/abonn|desabonn|premium|formule|revoo (pro|max|ultra)|\b(pro|max|ultra)\b|resili|mise(s)? en avant|booster|sponsoris|engag|\btva\b|\bttc\b/.test(c);
+  if(!isSub)return null;
+  const m=subs.mine, P=PLANS, endTxt=m?new Date(m.current_period_end).toLocaleDateString("fr-FR",{day:"numeric",month:"long"}):"";
+  const needLogin=`<p>Connecte-toi d’abord, et je pourrai m’en occuper avec toi.</p>${go("#/compte","Se connecter")}`;
+  // Résilier
+  if(/resili|desabonn|(annuler|arreter|stopper|supprimer|couper|enlever|finir) (mon |l |l’|cet )?abonn|plus (d|de) abonn|veux plus (d|de|l) abonn/.test(c)&&!/annuler (la )?resiliation/.test(c)){
+    if(!state.user)return needLogin;
+    if(!m)return`<p>Tu n’as <b>aucun abonnement en cours</b> : rien ne sera prélevé.</p>`;
+    if(m.cancel_at_period_end)return`<p>Ton abonnement <b>${P[m.plan].name}</b> est déjà résilié. Tu gardes tes avantages jusqu’au <b>${endTxt}</b>, puis il s’arrête tout seul.</p><div class="reboot-next"><button type="button" class="pill" data-rb-sub="resume">Finalement, je le garde</button></div>`;
+    return`<p>D’accord. Si tu résilies <b>${P[m.plan].name}</b> :</p><p>• tu gardes tous tes avantages jusqu’au <b>${endTxt}</b> ;<br>• ensuite, plus aucun prélèvement ;<br>• tes annonces épinglées et ta couleur de boutique seront retirées à ce moment-là.</p><p><b>Je confirme la résiliation ?</b></p><div class="reboot-next"><button type="button" class="pill pill-danger" data-rb-sub="cancel">Oui, résilier</button><button type="button" class="pill" data-rb-sub="keep">Non, je garde</button></div>`;
+  }
+  // Reprendre
+  if(/reprendre|reactiver|annuler (la )?resiliation|garder (mon )?abonn/.test(c)){
+    if(!state.user)return needLogin;
+    if(!m)return`<p>Tu n’as pas d’abonnement en cours. Tu peux en choisir un ici :</p>${go("#/abonnements","Voir les formules")}`;
+    if(!m.cancel_at_period_end)return`<p>Ton abonnement <b>${P[m.plan].name}</b> est bien actif, rien à faire 👍</p>`;
+    return`<p>Je réactive ton abonnement <b>${P[m.plan].name}</b> ? Il continuera après le ${endTxt}.</p><div class="reboot-next"><button type="button" class="pill" data-rb-sub="resume">Oui, je le garde</button></div>`;
+  }
+  // Mon abonnement / ce qu'il me reste
+  if(/mon abonn|ma formule|mon forfait|quel abonn|suis (je )?abonn|il me reste|combien (de |d )?(mise|boost)|renouvel|prochain prelevement|date/.test(c)){
+    if(!state.user)return needLogin;
+    if(!m)return`<p>Tu n’as pas d’abonnement pour l’instant. Avec <b>Revoo Pro</b> (${P.pro.price}/mois), tu as déjà ${P.pro.boosts} mises en avant par mois et ${P.pro.photos} photos par annonce.</p>${go("#/abonnements","Voir les formules")}`;
+    const left=Math.max(0,P[m.plan].boosts-(m.boosts_used||0));
+    return`<p>Tu es abonné(e) à <b>${P[m.plan].name}</b> (${P[m.plan].price}/mois${m.demo?", démo":""}).</p><p>• Mises en avant restantes ce mois-ci : <b>${left} / ${P[m.plan].boosts}</b><br>• ${m.cancel_at_period_end?`Résilié : fin le <b>${endTxt}</b>`:`Renouvellement le <b>${endTxt}</b>`}</p>${go("#/compte/profil","Gérer mon abonnement")}`;
+  }
+  // Mises en avant
+  if(/mise(s)? en avant|booster|boost|sponsoris|remonter/.test(c))
+    return`<p>Une <b>mise en avant</b> place ton annonce en tête du catalogue et des recherches pendant <b>48 h</b>, avec la mention « Sponsorisé ».</p><p>Les abonnés en reçoivent chaque mois : <b>Pro ${P.pro.boosts}</b>, <b>Max ${P.max.boosts}</b>, <b>Ultra ${P.ultra.boosts}</b>. Pour l’utiliser : <b>Mon compte → Mes annonces → « Mettre en avant »</b>.</p><p>Sans abonnement, ton annonce profite quand même de la rotation gratuite « À la une ».</p>${go("#/compte/annonces","Mes annonces")}`;
+  // Prix, engagement, TVA
+  if(/prix|combien|cout|tarif|cher|tva|ttc|engagement|engage|rembours|paiement|payer|prelev/.test(c))
+    return`<p>Les trois formules, <b>TTC par mois</b> :</p><p>• <b>Revoo Pro</b> : ${P.pro.price}<br>• <b>Revoo Max</b> : ${P.max.price}<br>• <b>Revoo Ultra</b> : ${P.ultra.price}</p><p><b>Sans engagement</b> : tu résilies en 3 clics (ou en me le demandant), et tu gardes tes avantages jusqu’à la fin du mois en cours. Pour toute question de facturation, écris à <b>${LEGAL.email}</b>.</p>${go("#/abonnements","Voir les formules")}`;
+  // Une formule précise
+  const one=(c.match(/\b(pro|max|ultra)\b/)||[])[1];
+  if(one&&!/difference|compar|choisir|laquelle|lequel|mieux|meilleur/.test(c)){const p=P[one];
+    return`<p><b>${p.name}</b> — ${p.price}/mois TTC. ${p.pitch}</p><ul class="rb-list">${perkList(one)}</ul>${state.user&&(!m||m.plan!==one)?`<div class="reboot-next"><button type="button" class="pill" data-subscribe="${one}">${m?"Passer à "+p.short:"Choisir "+p.short}</button></div>`:""}${go("#/abonnements","Comparer les formules")}`}
+  // Comparer / conseiller
+  if(/difference|compar|choisir|laquelle|lequel|mieux|meilleur|conseil|quelle formule/.test(c))
+    return`<p>En résumé :</p><p>• <b>Pro</b> (${P.pro.price}) : tu vends de temps en temps → ${P.pro.boosts} mises en avant, ${P.pro.photos} photos.<br>• <b>Max</b> (${P.max.price}) : tu vends chaque semaine → ${P.max.boosts} mises en avant, ${P.max.photos} photos, ${P.max.pins} annonces épinglées.<br>• <b>Ultra</b> (${P.ultra.price}) : tu as beaucoup d’articles → ${P.ultra.boosts} mises en avant, ${P.ultra.photos} photos, ${P.ultra.pins} épinglées et une couleur de boutique.</p><p>Mon conseil : commence par <b>Max</b> si tu publies plusieurs annonces par mois, tu peux changer quand tu veux.</p>${go("#/abonnements","Voir les formules")}`;
+  // Général
+  return`<p>Il existe trois abonnements <b>sans engagement</b> pour vendre plus vite : <b>Pro</b> (${P.pro.price}/mois), <b>Max</b> (${P.max.price}) et <b>Ultra</b> (${P.ultra.price}). Mises en avant offertes chaque mois, plus de photos, annonces épinglées, badge…</p>${ask("Quelle formule choisir ?","Mon abonnement","Résilier mon abonnement")}${go("#/abonnements","Voir les formules")}`;
+}
+async function rbSubAction(kind){
+  if(kind==="keep"){botSay(`<p>Parfait, ton abonnement continue 👍</p>`);return}
+  const r=await sb.rpc(kind==="cancel"?"cancel_subscription":"resume_subscription");
+  if(r.error){botSay(`<p>Ça n’a pas marché : ${esc(frenchError(r.error))}</p>`);return}
+  await loadSubs();
+  const end=subs.mine?new Date(subs.mine.current_period_end).toLocaleDateString("fr-FR",{day:"numeric",month:"long"}):"";
+  botSay(kind==="cancel"?`<p>C’est fait : ton abonnement est <b>résilié</b>. Tu gardes tes avantages jusqu’au <b>${end}</b>, puis plus rien ne sera prélevé.</p><div class="reboot-next"><button type="button" class="pill" data-rb-sub="resume">Annuler la résiliation</button></div>`:`<p>C’est fait : ton abonnement <b>continue</b> après le ${end}.</p>`);
+  renderView();
+}
 document.querySelectorAll(".chatQuick").forEach(b=>b.addEventListener("click",()=>{userSay(b.textContent);setTimeout(()=>botSay(rebootReply(b.textContent)),200)}));
 $("chatForm").addEventListener("submit",e=>{e.preventDefault();const v=$("chatMessage").value.trim();if(!v)return;userSay(v);$("chatMessage").value="";setTimeout(()=>botSay(rebootReply(v)),250)});
 chatLog.addEventListener("click",e=>{
   const a=e.target.closest("[data-ask]");if(a){userSay(a.dataset.ask);setTimeout(()=>botSay(rebootReply(a.dataset.ask)),200);return}
+  const rs=e.target.closest("[data-rb-sub]");if(rs){if(rs.disabled)return;rs.closest(".reboot-next")?.querySelectorAll("button").forEach(b=>b.disabled=true);userSay(rs.textContent);rbSubAction(rs.dataset.rbSub);return}
   const rf=e.target.closest("[data-reboot-filters]");if(rf){let f={};try{f=JSON.parse(rf.dataset.rebootFilters)}catch(x){}$("searchInput").value=f.q||"";openCatalogue({q:f.q||"",category:f.category||"",style:f.style||"",sizes:f.sizes||[],min:f.min||"",max:f.max||""});if(innerWidth<680)openChat(false);return}
   if(e.target.closest("[data-reboot-season]")){openCatalogue({season:currentSeason()});if(innerWidth<680)openChat(false);return}
   if(e.target.closest("a")&&innerWidth<680)openChat(false);
