@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Sécurité : le navigateur n'exécute que le code du site et ne parle qu'à Supabase -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://htisbuqxnqdahtedgiiz.supabase.co; connect-src 'self' data: https://htisbuqxnqdahtedgiiz.supabase.co wss://htisbuqxnqdahtedgiiz.supabase.co; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if(window.top!==window.self){try{window.top.location.replace(window.location.href)}catch(e){document.documentElement.style.display="none"}}</script>
 <title>Revoo — Tes vêtements ont de l’avenir</title>
 <meta name="description" content="Revoo, la marketplace française de vêtements d’occasion. Achète, vends, donne une seconde vie à tes pièces préférées.">
 <meta name="theme-color" content="#294B68">
@@ -1351,7 +1355,7 @@ html[data-design="2"]:not([data-theme="light"]) .toast{background:#E3ECF3;color:
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+<script src="vendor/supabase-js-2.117.3.js"></script>
 <script>
 "use strict";
 /* Logos intégrés : le site tient en un seul fichier */
