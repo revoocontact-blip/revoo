@@ -1814,6 +1814,68 @@ body.maint-on{overflow:hidden}
 .ft-row.danger label b{color:#8A2E2E}
 @media (max-width:620px){.perm-grid{grid-template-columns:1fr}.perm-tags{margin-left:0}}
 .word-add{display:flex;flex-direction:column;gap:8px}.word-add label{font-weight:700;font-size:14px}.word-add textarea{min-height:90px}.word-add .btn{align-self:flex-start}
+
+/* ===== Mise en page selon la taille d'écran ===== */
+/* Cartes : un peu d'air autour du texte */
+html[data-design="2"] .card-body{padding:10px 10px 12px}
+html[data-design="2"] .product-price::before{display:none}
+/* Grands écrans : on utilise la largeur */
+@media (min-width:1500px){
+  .wrap{width:min(100% - 96px,1600px)}
+  .products,#latestProducts{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .products.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #accountContent,#view-compte .page-head{max-width:1320px}
+  html[data-design="2"] .hero-x .hero-inner{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+}
+@media (min-width:1800px){
+  .wrap{width:min(100% - 128px,1760px)}
+  .products,#latestProducts{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .products.cols-4{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+/* Tablette */
+@media (min-width:681px) and (max-width:1024px){
+  .wrap{width:calc(100% - 48px)}
+  html[data-design="2"] .hero-x .hero-inner{grid-template-columns:minmax(0,1fr);gap:28px}
+  .hx-card{max-width:560px;justify-self:start}
+  .actions{margin-left:auto}
+  .action .label{display:inline}
+  .account-btn .label{display:inline}
+  .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+/* Téléphone */
+@media (max-width:680px){
+  html[data-design="2"] .hero-x .hero-inner{grid-template-columns:minmax(0,1fr)!important;padding-block:28px 24px;gap:20px}
+  .hx-text,.hx-search,.hx-search input{min-width:0}
+  .hx-search{max-width:100%}
+  html[data-design="2"] .hero-x h1{font-size:clamp(32px,9.5vw,42px);line-height:1.04;margin-bottom:14px}
+  html[data-design="2"] .hero-x .lead{font-size:16px;margin-bottom:16px}
+  .hx-card{display:none}
+  .hx-daily{margin-top:20px;padding:12px 14px}
+  .hx-daily #dailyQuote{font-size:15.5px}
+  .hx-cats{gap:6px;margin-bottom:6px}
+  .hx-cats button{padding:7px 13px;font-size:13.5px}
+  .quick{margin-top:24px}
+  .home-block{margin-top:36px}
+  .hb-head{margin-bottom:14px}
+  #latestProducts,.products,.products.cols-4{gap:16px 12px}
+  html[data-design="2"] .card-body{padding:8px 8px 10px}
+  .card-title{font-size:14.5px}
+  .section-head{gap:10px;flex-wrap:wrap}
+  .panel{padding:18px 16px}
+  .product-info{padding:20px 16px}
+  .trust li{padding:16px}
+  .cat-tiles{gap:10px}
+  footer .foot-grid{gap:22px 16px}
+}
+@media (max-width:380px){
+  .wrap{width:calc(100% - 24px)}
+  .products-row{margin:0 -12px;padding:0 12px 6px}
+  .hx-search .btn{padding:10px 14px}
+  .quick-tile{padding:12px}
+  .quick-t small{display:none}
+  .hx-nav-t b{font-size:14px}
+}
 </style>
 </head>
 <body>
