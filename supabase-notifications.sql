@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — e-mail de notification quand on reçoit un nouveau message
+-- ORLEOO — e-mail de notification quand on reçoit un nouveau message
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- (À lancer après supabase-messagerie.sql. Peut être relancé sans risque.)
 --
@@ -70,7 +70,7 @@ begin
     url := 'https://api.brevo.com/v3/smtp/email',
     headers := jsonb_build_object('api-key', api_key, 'Content-Type', 'application/json', 'accept', 'application/json'),
     body := jsonb_build_object(
-      'sender', jsonb_build_object('name', 'Revoo', 'email', 'revoo.contact@gmail.com'),
+      'sender', jsonb_build_object('name', 'Orleoo', 'email', 'revoo.contact@gmail.com'),
       'to', jsonb_build_array(jsonb_build_object('email', to_email)),
       'subject', coalesce((select name from public.profiles where id = new.sender_id), 'Un membre') || ' t’a envoyé un message',
       -- Version sobre (comme un e-mail personnel) : meilleure chance d'arriver dans « Principale »
@@ -79,7 +79,7 @@ begin
         || '<p>' || sender_name || ' t’a envoyé un message à propos de « ' || item_title || ' » :</p>'
         || '<blockquote style="margin:0 0 0 8px;padding-left:12px;border-left:3px solid #A8C4D8;white-space:pre-line">' || preview || '</blockquote>'
         || '<p>Pour lui répondre : <a href="' || link || '">' || link || '</a></p>'
-        || '<p>À bientôt,<br>Revoo</p>'
+        || '<p>À bientôt,<br>Orleoo</p>'
         || '<p style="font-size:12px;color:#777">Tu peux désactiver ces e-mails dans Mon compte, rubrique Profil.</p>',
       'textContent',
         'Bonjour,' || chr(10) || chr(10)
@@ -87,7 +87,7 @@ begin
         || coalesce((select title from public.listings where id = conv.listing_id), 'une annonce') || ' » :' || chr(10) || chr(10)
         || '« ' || left(new.body, 300) || case when char_length(new.body) > 300 then '…' else '' end || ' »' || chr(10) || chr(10)
         || 'Pour lui répondre : ' || link || chr(10) || chr(10)
-        || 'À bientôt,' || chr(10) || 'Revoo' || chr(10) || chr(10)
+        || 'À bientôt,' || chr(10) || 'Orleoo' || chr(10) || chr(10)
         || 'Tu peux désactiver ces e-mails dans Mon compte, rubrique Profil.'
     )
   );

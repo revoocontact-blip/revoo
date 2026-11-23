@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — règle de changement d'identifiant
+-- ORLEOO — règle de changement d'identifiant
 -- 2 changements maximum, 30 jours d'attente avant chacun (depuis l'inscription
 -- ou depuis le dernier changement). Ensuite l'identifiant est définitif.
 -- À coller dans Supabase > SQL Editor > New query, puis « Run ». (Peut être relancé.)

@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — bannière du profil public
+-- ORLEOO — bannière du profil public
 -- À coller dans Supabase > SQL Editor > New query, puis « Run ». (Peut être relancé.)
 -- Les images sont rangées dans le stockage « avatars » (dossier de chaque membre).
 -- =====================================================================

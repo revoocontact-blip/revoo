@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — mode maintenance
+-- ORLEOO — mode maintenance
 -- Ce script est maintenant INCLUS dans supabase-equipe.sql.
 -- Inutile de le lancer : relance simplement supabase-equipe.sql.
 -- =====================================================================

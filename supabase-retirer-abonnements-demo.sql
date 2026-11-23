@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — retirer les abonnements de DÉMO (aucun argent réel n'a été payé)
+-- ORLEOO — retirer les abonnements de DÉMO (aucun argent réel n'a été payé)
 -- À coller dans Supabase > SQL Editor > New query, puis « Run ».
 -- Les comptes concernés repassent en formule gratuite : leurs épingles et
 -- leur couleur de boutique sont retirées. Les annonces ne sont pas touchées.

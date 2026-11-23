@@ -1,10 +1,10 @@
 -- =====================================================================
--- REVOO — équipe (fondateur + admins) et outils de modération autonomes
+-- ORLEOO — équipe (fondateur + admins) et outils de modération autonomes
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- À lancer APRÈS tous les autres scripts. (Peut être relancé sans risque.)
 --
 -- ⚠️ AVANT DE LANCER : tout en bas, remplace TON_ADRESSE_EMAIL par l'adresse
---    du compte Revoo qui sera le compte FONDATEUR (crée-le d'abord sur le site).
+--    du compte Orleoo qui sera le compte FONDATEUR (crée-le d'abord sur le site).
 --
 -- (Contient aussi le mode maintenance : inutile de lancer supabase-maintenance.sql.)
 --
@@ -159,11 +159,11 @@ begin
     url := 'https://api.brevo.com/v3/smtp/email',
     headers := jsonb_build_object('api-key', api_key, 'Content-Type', 'application/json', 'accept', 'application/json'),
     body := jsonb_build_object(
-      'sender', jsonb_build_object('name', 'Revoo', 'email', 'revoo.contact@gmail.com'),
+      'sender', jsonb_build_object('name', 'Orleoo', 'email', 'revoo.contact@gmail.com'),
       'to', jsonb_build_array(jsonb_build_object('email', to_email)),
       'subject', p_subject,
-      'htmlContent', '<p>Bonjour,</p><p style="white-space:pre-line">' || safe || '</p><p>L’équipe Revoo</p>',
-      'textContent', 'Bonjour,' || chr(10) || chr(10) || p_text || chr(10) || chr(10) || 'L’équipe Revoo'));
+      'htmlContent', '<p>Bonjour,</p><p style="white-space:pre-line">' || safe || '</p><p>L’équipe Orleoo</p>',
+      'textContent', 'Bonjour,' || chr(10) || chr(10) || p_text || chr(10) || chr(10) || 'L’équipe Orleoo'));
 exception when others then
   raise warning 'e-mail non envoyé : %', sqlerrm;
 end $$;
@@ -237,8 +237,8 @@ begin
     || '. Motif : ' || trim(p_reason), auth.uid());
   perform public.log_action('Membre suspendu' || case when v_until is null then ' (définitif)' else ' (' || p_days || ' j)' end,
     p_user, null, trim(p_reason) || ' · ' || n || ' annonce(s) retirée(s)');
-  perform public.email_member(p_user, 'Ton compte Revoo est suspendu',
-    'Ton compte Revoo est suspendu' || case when v_until is null then ' définitivement' else ' jusqu’au ' || to_char(v_until at time zone 'Europe/Paris', 'DD/MM/YYYY') end
+  perform public.email_member(p_user, 'Ton compte Orleoo est suspendu',
+    'Ton compte Orleoo est suspendu' || case when v_until is null then ' définitivement' else ' jusqu’au ' || to_char(v_until at time zone 'Europe/Paris', 'DD/MM/YYYY') end
     || '.' || chr(10) || 'Motif : ' || trim(p_reason) || chr(10) || chr(10)
     || 'Tes achats et ventes déjà en cours restent protégés. Si tu penses qu’il s’agit d’une erreur, réponds à cet e-mail.');
 end $$;
@@ -250,9 +250,9 @@ begin
   delete from public.bans where user_id = p_user;
   if not found then raise exception 'Ce membre n’est pas suspendu'; end if;
   insert into public.member_notices (user_id, kind, message, created_by)
-  values (p_user, 'levee', 'Ta suspension est levée : tu peux de nouveau utiliser Revoo normalement. Tes anciennes annonces peuvent être remises en ligne par l’équipe sur demande.', auth.uid());
+  values (p_user, 'levee', 'Ta suspension est levée : tu peux de nouveau utiliser Orleoo normalement. Tes anciennes annonces peuvent être remises en ligne par l’équipe sur demande.', auth.uid());
   perform public.log_action('Suspension levée', p_user, null, null);
-  perform public.email_member(p_user, 'Ta suspension Revoo est levée', 'Ta suspension est levée : tu peux de nouveau utiliser Revoo normalement.');
+  perform public.email_member(p_user, 'Ta suspension Orleoo est levée', 'Ta suspension est levée : tu peux de nouveau utiliser Orleoo normalement.');
 end $$;
 
 create or replace function public.warn_member(p_user uuid, p_message text)
@@ -263,7 +263,7 @@ begin
   if not exists (select 1 from public.profiles where id = p_user) then raise exception 'Membre introuvable'; end if;
   insert into public.member_notices (user_id, kind, message, created_by) values (p_user, 'avertissement', left(trim(p_message), 1000), auth.uid());
   perform public.log_action('Avertissement envoyé', p_user, null, left(trim(p_message), 300));
-  perform public.email_member(p_user, 'Message de l’équipe Revoo', left(trim(p_message), 1000));
+  perform public.email_member(p_user, 'Message de l’équipe Orleoo', left(trim(p_message), 1000));
 end $$;
 
 -- ---------- 5. RECHERCHE DE MEMBRES ----------
@@ -326,7 +326,7 @@ begin
   txt := lower(coalesce(new.title, '') || ' ' || coalesce(new.description, '') || ' ' || coalesce(new.brand, ''));
   select word into w from public.banned_words where txt ~ ('\m' || word || '\M') limit 1;
   if w is not null then
-    raise exception 'Ton annonce contient un mot non autorisé sur Revoo (« % »). Modifie-la puis réessaie.', w;
+    raise exception 'Ton annonce contient un mot non autorisé sur Orleoo (« % »). Modifie-la puis réessaie.', w;
   end if;
   return new;
 end $$;
@@ -377,17 +377,17 @@ begin
   select * into s from public.site_settings where id = 1;
   if s is null then return new; end if;
   if s.maintenance then
-    raise exception 'Revoo est en maintenance%. Réessaie un peu plus tard.',
+    raise exception 'Orleoo est en maintenance%. Réessaie un peu plus tard.',
       case when s.maintenance_until is null then '' else ' jusqu’au ' || to_char(s.maintenance_until at time zone 'Europe/Paris', 'DD/MM à HH24:MI') end;
   end if;
   if tg_table_name = 'listings' and s.pause_listings then
-    raise exception 'Les nouvelles annonces sont mises en pause quelques instants par l’équipe Revoo. Réessaie un peu plus tard.';
+    raise exception 'Les nouvelles annonces sont mises en pause quelques instants par l’équipe Orleoo. Réessaie un peu plus tard.';
   end if;
   if tg_table_name in ('orders','trades') and s.pause_purchases then
-    raise exception 'Les achats et les échanges sont mis en pause quelques instants par l’équipe Revoo. Réessaie un peu plus tard.';
+    raise exception 'Les achats et les échanges sont mis en pause quelques instants par l’équipe Orleoo. Réessaie un peu plus tard.';
   end if;
   if tg_table_name in ('messages','conversations') and s.pause_messages then
-    raise exception 'La messagerie est mise en pause quelques instants par l’équipe Revoo. Réessaie un peu plus tard.';
+    raise exception 'La messagerie est mise en pause quelques instants par l’équipe Orleoo. Réessaie un peu plus tard.';
   end if;
   return new;
 end $$;
@@ -440,7 +440,7 @@ create or replace function public.team_list()
 returns table (user_id uuid, name text, role text, added_at timestamptz, actions_30j int, last_action timestamptz, perms text[])
 language plpgsql stable security definer set search_path = public as $$
 begin
-  if not public.is_admin() then raise exception 'Réservé à l’équipe Revoo'; end if;
+  if not public.is_admin() then raise exception 'Réservé à l’équipe Orleoo'; end if;
   return query
   select a.user_id, coalesce(p.name, '(compte supprimé)'), a.role, a.added_at,
     (select count(*)::int from public.mod_log m where m.actor_id = a.user_id and m.created_at > now() - interval '30 days'),
@@ -500,7 +500,7 @@ end $$;
 create or replace function public.admin_stats()
 returns jsonb language plpgsql stable security definer set search_path = public as $$
 begin
-  if not public.is_admin() then raise exception 'Réservé à l’équipe Revoo'; end if;
+  if not public.is_admin() then raise exception 'Réservé à l’équipe Orleoo'; end if;
   return jsonb_build_object(
     'membres',            (select count(*) from public.profiles),
     'membres_7j',         (select count(*) from public.profiles where created_at > now() - interval '7 days'),
@@ -738,7 +738,7 @@ declare me uuid := auth.uid(); n int;
 begin
   if me is null then raise exception 'Connexion requise'; end if;
   if exists (select 1 from public.admins where user_id = me) then
-    raise exception 'Les comptes de l’équipe Revoo ne peuvent pas être supprimés';
+    raise exception 'Les comptes de l’équipe Orleoo ne peuvent pas être supprimés';
   end if;
   select count(*) into n from public.orders where me in (buyer_id, seller_id) and status in ('paid','shipped','problem');
   if n > 0 then raise exception 'Tu as % vente(s) ou achat(s) en cours : termine-les ou annule-les avant de supprimer ton compte', n; end if;
@@ -785,8 +785,8 @@ begin
     current_period_end = greatest(public.subscriptions.current_period_end, now()) + make_interval(days => p_days),
     cancel_at_period_end = true, boosts_used = 0, updated_at = now();
   insert into public.member_notices (user_id, kind, message, created_by)
-  values (p_user, 'info', 'Cadeau de l’équipe Revoo : Revoo ' || initcap(p_plan) || ' t’est offert pendant ' || p_days || ' jour(s). Profite bien de tes avantages !', auth.uid());
-  perform public.log_action('Abonnement offert', p_user, null, 'Revoo ' || initcap(p_plan) || ' · ' || p_days || ' j');
+  values (p_user, 'info', 'Cadeau de l’équipe Orleoo : Orleoo ' || initcap(p_plan) || ' t’est offert pendant ' || p_days || ' jour(s). Profite bien de tes avantages !', auth.uid());
+  perform public.log_action('Abonnement offert', p_user, null, 'Orleoo ' || initcap(p_plan) || ' · ' || p_days || ' j');
 end $$;
 
 -- Fondateur : mettre en avant une annonce gratuitement

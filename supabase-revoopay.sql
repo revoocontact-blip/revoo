@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO PAY — commandes (interface ; le paiement Mangopay sera branché plus tard)
+-- ORLEOO PAY — commandes (interface ; le paiement Mangopay sera branché plus tard)
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- (À lancer après les autres scripts. Peut être relancé sans risque.)
 --

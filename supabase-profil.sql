@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — profil : photo, identifiant unique, données privées
+-- ORLEOO — profil : photo, identifiant unique, données privées
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- (Peut être relancé sans risque.)
 --

@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — deux nouveaux styles : Sport et Bohème (6 styles au total)
+-- ORLEOO — deux nouveaux styles : Sport et Bohème (6 styles au total)
 -- À coller dans Supabase > SQL Editor > New query, puis « Run ». (Peut être relancé.)
 -- =====================================================================
 do $$ declare c record; begin

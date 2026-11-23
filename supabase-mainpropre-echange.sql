@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — remise en main propre avec code + échanges sécurisés
+-- ORLEOO — remise en main propre avec code + échanges sécurisés
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- À lancer APRÈS supabase-revoopay.sql. (Peut être relancé sans risque.)
 --

@@ -1,13 +1,13 @@
 -- =====================================================================
--- REVOO — renforcement de la sécurité (audit complet)
+-- ORLEOO — renforcement de la sécurité (audit complet)
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- À lancer APRÈS tous les autres scripts. (Peut être relancé sans risque.)
 --
 -- Corrige :
 --  1. Annonces : date de publication non falsifiable, impossible de remettre
---     en vente un article déjà payé ou échangé, photos hébergées par Revoo uniquement.
+--     en vente un article déjà payé ou échangé, photos hébergées par Orleoo uniquement.
 --  2. Profils : « membre depuis » non falsifiable, identifiant au bon format,
---     photo et bannière hébergées par Revoo uniquement.
+--     photo et bannière hébergées par Orleoo uniquement.
 --  3. Anti-abus : limites de messages, conversations, signalements, achats,
 --     échanges et annonces (contre le spam et le sabotage du catalogue).
 --  4. Stockage : nombre de photos limité par compte.
@@ -41,18 +41,18 @@ begin
   else
     new.created_at := old.created_at;            -- impossible de « remonter » une annonce en trichant sur la date
     if public.is_admin() then return new; end if;
-    -- impossible de remettre en vente un article payé (Revoo Pay) ou engagé dans un échange
+    -- impossible de remettre en vente un article payé (Orleoo Pay) ou engagé dans un échange
     if new.status = 'active' and old.status <> 'active' and (
          exists (select 1 from public.orders o where o.listing_id = new.id and o.status <> 'cancelled')
       or exists (select 1 from public.trades t where (t.offered_listing = new.id or t.wanted_listing = new.id)
                    and t.status in ('accepted','problem','completed'))) then
-      raise exception 'Cet article est lié à une vente ou un échange Revoo Pay : il ne peut pas être remis en vente';
+      raise exception 'Cet article est lié à une vente ou un échange Orleoo Pay : il ne peut pas être remis en vente';
     end if;
   end if;
-  -- photos : uniquement celles déposées sur Revoo, dans le dossier du vendeur
+  -- photos : uniquement celles déposées sur Orleoo, dans le dossier du vendeur
   if tg_op = 'INSERT' or new.photos is distinct from old.photos then
     if exists (select 1 from unnest(new.photos) p where p not like base || new.seller_id::text || '/%' or p like '%..%' or p ~ '[\s"''<>]') then
-      raise exception 'Photos invalides : ajoute-les depuis le formulaire Revoo';
+      raise exception 'Photos invalides : ajoute-les depuis le formulaire Orleoo';
     end if;
   end if;
   return new;

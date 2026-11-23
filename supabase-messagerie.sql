@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — messagerie entre acheteurs et vendeurs
+-- ORLEOO — messagerie entre acheteurs et vendeurs
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- (À lancer après supabase-revoo.sql. Peut être relancé sans risque.)
 -- =====================================================================

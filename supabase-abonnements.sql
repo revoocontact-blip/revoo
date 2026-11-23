@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — abonnements Revoo Pro / Max / Ultra (étape 1)
+-- ORLEOO — abonnements Orleoo Pro / Max / Ultra (étape 1)
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- À lancer APRÈS supabase-securite.sql. (Peut être relancé sans risque.)
 --
@@ -107,7 +107,7 @@ declare me uuid := auth.uid(); s record; l record; until timestamptz;
 begin
   perform public.settle_subscriptions();
   select * into s from public.subscriptions where user_id = me and current_period_end > now() for update;
-  if s is null then raise exception 'Les mises en avant offertes sont réservées aux abonnés Revoo Pro, Max et Ultra'; end if;
+  if s is null then raise exception 'Les mises en avant offertes sont réservées aux abonnés Orleoo Pro, Max et Ultra'; end if;
   if s.boosts_used >= public.plan_limit(s.plan, 'boosts') then
     raise exception 'Tu as utilisé tes % mises en avant du mois', public.plan_limit(s.plan, 'boosts');
   end if;
@@ -163,7 +163,7 @@ begin
     end if;
   else  -- profiles
     if new.accent is distinct from old.accent and new.accent is not null and public.plan_of(new.id) <> 'ultra' then
-      raise exception 'La couleur de boutique est réservée à Revoo Ultra';
+      raise exception 'La couleur de boutique est réservée à Orleoo Ultra';
     end if;
   end if;
   return new;

@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — avis sur les vendeurs + e-mails de commande
+-- ORLEOO — avis sur les vendeurs + e-mails de commande
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- (À lancer après supabase-revoopay.sql et supabase-notifications.sql.
 --  Peut être relancé sans risque.)
@@ -51,16 +51,16 @@ begin
   select decrypted_secret into api_key from vault.decrypted_secrets where name = 'brevo_api_key' limit 1;
   if to_email is null or api_key is null then return; end if;
   html := '<p>' || replace(replace(replace(replace(p_text, '&', '&amp;'), '<', '&lt;'), '>', '&gt;'), chr(10), '<br>') || '</p>'
-       || '<p><a href="' || p_link || '">' || p_link || '</a></p><p>À bientôt,<br>Revoo</p>';
+       || '<p><a href="' || p_link || '">' || p_link || '</a></p><p>À bientôt,<br>Orleoo</p>';
   perform net.http_post(
     url := 'https://api.brevo.com/v3/smtp/email',
     headers := jsonb_build_object('api-key', api_key, 'Content-Type', 'application/json', 'accept', 'application/json'),
     body := jsonb_build_object(
-      'sender', jsonb_build_object('name', 'Revoo', 'email', 'revoo.contact@gmail.com'),
+      'sender', jsonb_build_object('name', 'Orleoo', 'email', 'revoo.contact@gmail.com'),
       'to', jsonb_build_array(jsonb_build_object('email', to_email)),
       'subject', p_subject,
       'htmlContent', html,
-      'textContent', p_text || chr(10) || chr(10) || p_link || chr(10) || chr(10) || 'À bientôt,' || chr(10) || 'Revoo'));
+      'textContent', p_text || chr(10) || chr(10) || p_link || chr(10) || chr(10) || 'À bientôt,' || chr(10) || 'Orleoo'));
 exception when others then
   raise warning 'e-mail non envoyé : %', sqlerrm;
 end $$;
@@ -98,7 +98,7 @@ begin
     elsif new.status = 'problem' then
       perform public.send_revoo_email(new.seller_id,
         'Un problème a été signalé sur « ' || new.title || ' »',
-        buyer || ' a signalé un problème sur sa commande' || tag || '. Revoo va examiner la situation. Tu peux échanger avec l’acheteur dans la messagerie.',
+        buyer || ' a signalé un problème sur sa commande' || tag || '. Orleoo va examiner la situation. Tu peux échanger avec l’acheteur dans la messagerie.',
         site || '#/compte/ventes');
     elsif new.status = 'cancelled' then
       perform public.send_revoo_email(new.buyer_id,

@@ -1,28 +1,28 @@
 {
-  "name": "Revoo — Tes vêtements ont de l’avenir",
-  "short_name": "Revoo",
-  "description": "Achète, vends, donne une seconde vie à tes pièces préférées.",
+  "name": "Orleoo — Tes vêtements ont de l’avenir",
+  "short_name": "Orleoo",
+  "description": "Achète, vends et échange tes vêtements et tes livres. Une seconde vie pour tes pièces préférées.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#294B68",
-  "theme_color": "#294B68",
+  "background_color": "#FBF4EA",
+  "theme_color": "#A8462B",
   "icons": [
     {
-      "src": "logos/revoo-icone-192.png?v=4",
+      "src": "logos/orleoo-icone-192.png?v=5",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logos/revoo-icone-512.png?v=4",
+      "src": "logos/orleoo-icone-512.png?v=5",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logos/revoo-icone-maskable.png?v=4",
+      "src": "logos/orleoo-icone-maskable.png?v=5",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

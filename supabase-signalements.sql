@@ -1,10 +1,10 @@
 -- =====================================================================
--- REVOO — signalement d'annonces et modération
+-- ORLEOO — signalement d'annonces et modération
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- (À lancer après supabase-revoo.sql. Peut être relancé sans risque.)
 --
 -- ⚠️ AVANT DE LANCER : vérifie l'adresse e-mail tout en bas du script.
---    Ce doit être l'adresse de TON compte Revoo (celui qui modère).
+--    Ce doit être l'adresse de TON compte Orleoo (celui qui modère).
 -- =====================================================================
 
 -- ---------- 1. MODÉRATEURS ----------
@@ -85,7 +85,7 @@ create policy "modération : traiter les signalements" on public.reports
   for update to authenticated using (public.is_admin()) with check (public.is_admin());
 
 -- ---------- 4. TOI = MODÉRATEUR ----------
--- Remplace l'adresse ci-dessous par celle de TON compte Revoo si elle est différente.
+-- Remplace l'adresse ci-dessous par celle de TON compte Orleoo si elle est différente.
 insert into public.admins (user_id)
 select id from auth.users where lower(email) = lower('revoo.contact@gmail.com')
 on conflict do nothing;

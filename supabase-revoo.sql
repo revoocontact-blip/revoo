@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — base de données Supabase
+-- ORLEOO — base de données Supabase
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- Le script peut être relancé sans risque (il ne supprime aucune donnée).
 -- =====================================================================

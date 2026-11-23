@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — « Supprimer mon compte » directement dans le site / l'application
+-- ORLEOO — « Supprimer mon compte » directement dans le site / l'application
 -- (obligatoire pour l'App Store et Google Play, et prévu par le RGPD)
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- À lancer APRÈS tous les autres scripts. (Peut être relancé sans risque.)

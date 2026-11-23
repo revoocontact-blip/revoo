@@ -1,5 +1,5 @@
 -- =====================================================================
--- REVOO — compteur d'impact en temps réel + mise en avant des annonces
+-- ORLEOO — compteur d'impact en temps réel + mise en avant des annonces
 -- À coller en entier dans Supabase > SQL Editor > New query, puis « Run ».
 -- (Peut être relancé sans risque.)
 --
