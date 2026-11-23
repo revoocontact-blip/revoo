@@ -420,7 +420,7 @@ footer ul a{display:inline-block;padding:4px 0}
 footer ul a:hover{color:var(--navy);text-decoration:underline;text-underline-offset:3px}
 .foot-bottom{border-top:1px solid var(--line);margin-top:30px;padding-top:18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px}
 
-/* ---------- Léo ---------- */
+/* ---------- Loo ---------- */
 .reboot{position:fixed;right:22px;bottom:20px;z-index:50;display:flex;align-items:center;gap:10px;border:0;border-radius:99px;background:var(--brand);color:var(--on-brand);padding:8px 18px 8px 8px;min-height:52px;box-shadow:0 8px 24px rgba(29,43,90,.28);font-weight:700}
 .reboot:hover{background:var(--brand-hover)}
 .reboot-bubble{background:#1D2B5A;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;overflow:hidden}
@@ -1036,7 +1036,7 @@ h1,h2,h3,.page-title{letter-spacing:-.02em}
   .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;border-bottom:0;margin:14px 0 18px}
   .tabs button{background:var(--ice);border:0;border-radius:12px;padding:10px 12px;margin:0;min-height:46px;text-align:center;font-size:14px;line-height:1.25;color:var(--heading)}
   .tabs button[aria-selected="true"]{background:var(--brand);color:var(--on-brand);border:0}
-  /* Léo ne masque plus les formulaires */
+  /* Loo ne masque plus les formulaires */
   body[data-view="compte"] .reboot,body[data-view="vendre"] .reboot,body[data-view="paiement"] .reboot,body[data-view="panier"] .reboot,body[data-view="messages"] .reboot,body[data-view="article"] .reboot{display:none}
   /* Cartes de commande et d'échange plus aérées */
   .order{padding:14px;margin-bottom:14px}
@@ -2415,12 +2415,12 @@ html[data-design="2"]:not([data-theme="light"]) .subnav .nav-atouts button:hover
   </div>
 </footer>
 
-<!-- ================= LÉO ================= -->
+<!-- ================= LOO ================= -->
 <section class="chat" id="chat" role="dialog" aria-modal="false" aria-labelledby="chatTitle">
   <div class="chat-head">
     <span class="reboot-bubble"><img src="logos/orleoo-icone-carre-192.png?v=7" data-logo="icone" alt="" width="36" height="36"></span>
-    <div><b id="chatTitle">Léo</b><small>Assistant Orleoo · réponses automatiques</small></div>
-    <button type="button" id="closeChat" aria-label="Fermer Léo">×</button>
+    <div><b id="chatTitle">Loo</b><small>Assistant Orleoo · réponses automatiques</small></div>
+    <button type="button" id="closeChat" aria-label="Fermer Loo">×</button>
   </div>
   <div class="chat-log" id="chatLog" aria-live="polite"></div>
   <div class="chat-quick" aria-label="Suggestions">
@@ -2433,13 +2433,13 @@ html[data-design="2"]:not([data-theme="light"]) .subnav .nav-atouts button:hover
     <button type="button" class="pill chatQuick">Mon compte</button>
   </div>
   <form class="chat-input" id="chatForm">
-    <label for="chatMessage" class="sr-only">Message à Léo</label>
+    <label for="chatMessage" class="sr-only">Message à Loo</label>
     <input id="chatMessage" placeholder="Écris ta question…" autocomplete="off">
     <button class="btn btn-primary" type="submit">Envoyer</button>
   </form>
 </section>
-<button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat" aria-label="Léo, l’assistant Orleoo">
-  <span class="reboot-bubble"><img src="logos/orleoo-icone-carre-192.png?v=7" data-logo="icone" alt="" width="36" height="36"></span><span class="reboot-label">Léo</span>
+<button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat" aria-label="Loo, l’assistant Orleoo">
+  <span class="reboot-bubble"><img src="logos/orleoo-icone-carre-192.png?v=7" data-logo="icone" alt="" width="36" height="36"></span><span class="reboot-label">Loo</span>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -3804,7 +3804,7 @@ function subscriptionsPage(){
       ${[["Prix par mois",()=>"0 €",p=>p.price],["Mises en avant offertes",()=>"0",p=>p.boosts],["Photos par annonce",()=>FREE_PERKS.photos,p=>p.photos],["Annonces épinglées",()=>no,p=>p.pins||no],["Couleur de boutique",()=>no,(p,k)=>k==="ultra"?yes:no],["Délai de main propre",()=>FREE_PERKS.handoff+" j",p=>p.handoff+" j"],["Badge",()=>no,()=>yes],["Support prioritaire",()=>no,(p,k)=>k==="pro"?no:yes],["Dressing « Boutiques à la une »",()=>no,(p,k)=>k==="ultra"?`${yes} en priorité`:yes],["Rotation gratuite « À la une »",()=>yes,()=>yes]].map(([l,f0,f])=>`<tr><th scope="row">${l}</th><td>${f0()}</td>${Object.keys(PLANS).map(k=>`<td>${f(PLANS[k],k)}</td>`).join("")}</tr>`).join("")}
       </tbody></table></div></section>
     <section class="plans-faq" aria-labelledby="faqTitle"><h2 id="faqTitle">Questions fréquentes</h2>
-      <details><summary>Comment résilier ?</summary><p>Mon compte → Profil et paramètres → Mon abonnement → « Résilier », puis « Confirmer ». Tu peux aussi demander à Léo. Tu gardes tes avantages jusqu’à la fin du mois en cours, puis plus rien n’est prélevé.</p></details>
+      <details><summary>Comment résilier ?</summary><p>Mon compte → Profil et paramètres → Mon abonnement → « Résilier », puis « Confirmer ». Tu peux aussi demander à Loo. Tu gardes tes avantages jusqu’à la fin du mois en cours, puis plus rien n’est prélevé.</p></details>
       <details><summary>Je peux changer de formule ?</summary><p>Oui, à tout moment, depuis cette page. Si tu passes à une formule inférieure, les annonces épinglées et la couleur de boutique en trop sont retirées automatiquement.</p></details>
       <details><summary>Comment fonctionnent les mises en avant ?</summary><p>Dans « Mes annonces », clique sur « Mettre en avant » : l’annonce passe en tête du catalogue et des recherches pendant 48 h, avec la mention « Sponsorisé ». Elles se rechargent chaque mois.</p></details>
       <details><summary>Les abonnés passent-ils devant tout le monde ?</summary><p>Non. La rotation gratuite « À la une » reste ouverte à tous : toutes les 5 minutes, d’autres annonces passent en tête. Les abonnés ont simplement plus de mises en avant, toujours signalées.</p></details>
@@ -4803,9 +4803,9 @@ const PAGES={
     <details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. L’envoi d’e-mails (confirmation, mot de passe oublié) est encore limité pendant le lancement.</p></details>
     <details><summary>Où sont enregistrées mes données ?</summary><p>Ton compte, ton profil, tes annonces et tes favoris sont enregistrés chez Supabase, notre hébergeur de base de données. </p></details>
     <details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce », puis choisis le motif. Ton signalement est confidentiel et sera examiné par Orleoo. Tu n’as pas besoin d’être connecté.</p></details>
-    <details><summary>Qui est Léo ?</summary><p>Léo est l’assistant d’Orleoo. Il répond à partir de réponses préparées à l’avance : il n’est connecté à aucune intelligence artificielle.</p></details>
-    <h2>Nous contacter</h2><p>Pour l’instant, pose ta question à Léo. Les coordonnées officielles d’Orleoo seront publiées ici dès qu’elles seront définies.</p>
-    <button type="button" class="btn btn-primary" data-open-chat>Discuter avec Léo</button>`,
+    <details><summary>Qui est Loo ?</summary><p>Loo est l’assistant d’Orleoo. Il répond à partir de réponses préparées à l’avance : il n’est connecté à aucune intelligence artificielle.</p></details>
+    <h2>Nous contacter</h2><p>Pour l’instant, pose ta question à Loo. Les coordonnées officielles d’Orleoo seront publiées ici dès qu’elles seront définies.</p>
+    <button type="button" class="btn btn-primary" data-open-chat>Discuter avec Loo</button>`,
   "conditions":()=>LEGAL_PAGES["conditions"](),
   "confidentialite":()=>LEGAL_PAGES["confidentialite"](),
   "mentions-legales":()=>LEGAL_PAGES["mentions-legales"]()
@@ -5130,7 +5130,7 @@ const seasonGo=()=>openCatalogue({season:currentSeason()});
 $("seasonBtn")?.addEventListener("click",seasonGo);$("discoverSeason").addEventListener("click",seasonGo);
 
 /* =========================================================
-   LÉO — assistant à réponses préparées (pas d'IA connectée)
+   LOO — assistant à réponses préparées (pas d'IA connectée)
    ========================================================= */
 const chatLog=$("chatLog");
 function botSay(html){const d=document.createElement("div");d.className="msg bot";d.innerHTML=html;chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight}
@@ -5138,21 +5138,21 @@ function userSay(text){const d=document.createElement("div");d.className="msg us
 let chatStarted=false;
 function openChat(open){
   const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);
-  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Léo.</b></p><p>Je peux trouver un vêtement pour toi (essaie « pull taille M moins de 20 € »), t’expliquer le fonctionnement d’Orleoo, et regarder ton compte : où en est ta commande, ton code de remise, tes échanges, ton solde…</p>${state.user&&payOn()?ask("Où en est ma commande ?","Mon code de remise","Mes échanges"):ask("Comment ça marche ?","Trouver un vêtement","Vendre un article")}`)}setTimeout(()=>$("chatMessage").focus(),50)}
+  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Loo.</b></p><p>Je peux trouver un vêtement pour toi (essaie « pull taille M moins de 20 € »), t’expliquer le fonctionnement d’Orleoo, et regarder ton compte : où en est ta commande, ton code de remise, tes échanges, ton solde…</p>${state.user&&payOn()?ask("Où en est ma commande ?","Mon code de remise","Mes échanges"):ask("Comment ça marche ?","Trouver un vêtement","Vendre un article")}`)}setTimeout(()=>$("chatMessage").focus(),50)}
   else $("rebootBtn").focus();
 }
 $("rebootBtn").addEventListener("click",()=>openChat(!$("chat").classList.contains("open")));
 $("closeChat").addEventListener("click",()=>openChat(false));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("chat").classList.contains("open"))openChat(false)});
-/* ---------- Base de connaissances de Léo (réponses préparées, aucune IA) ---------- */
+/* ---------- Base de connaissances de Loo (réponses préparées, aucune IA) ---------- */
 const STOP=new Set("je tu il elle on nous vous un une des de du la le les et ou a au aux en pour avec sur dans mon ma mes ton ta tes cherche chercher recherche trouve trouver veux voudrais voir besoin quoi est ce que qui il y as avez taille prix moins euros euro eur max maximum sous pas cher chere bon bonne plus".split(" "));
 const ask=(...q)=>`<div class="reboot-next">${q.map(x=>`<button type="button" class="pill" data-ask="${esc(x)}">${esc(x)}</button>`).join("")}</div>`;
 const go=(href,label)=>`<a class="pill" href="${href}">${label}</a>`;
 const KB=[
   // Conversation
-  [/^(bonjour|salut|hello|coucou|hey|bonsoir|yo|wesh)\b/, t=>t.split(" ").length<4?`<p>Salut ! Je suis Léo, l’assistant d’Orleoo. Dis-moi ce que tu cherches, par exemple « pull taille M moins de 20 € », ou pose-moi une question.</p>${ask("Comment ça marche ?","Vendre un article","Paiement et sécurité")}`:null],
+  [/^(bonjour|salut|hello|coucou|hey|bonsoir|yo|wesh)\b/, t=>t.split(" ").length<4?`<p>Salut ! Je suis Loo, l’assistant d’Orleoo. Dis-moi ce que tu cherches, par exemple « pull taille M moins de 20 € », ou pose-moi une question.</p>${ask("Comment ça marche ?","Vendre un article","Paiement et sécurité")}`:null],
   [/merci|super|parfait|top\b|genial/, ()=>`<p>Avec plaisir ! Je reste là si tu as besoin.</p>`],
-  [/\b(ia|intelligence|chatgpt|robot|humain|qui es|leo|reboot|ton nom|tu t.?appelles)\b/, ()=>`<p>Je suis Léo, l’assistant d’Orleoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle et je ne lis pas tes messages privés.</p>`],
+  [/\b(ia|intelligence|chatgpt|robot|humain|qui es|loo|leo|reboot|ton nom|tu t.?appelles)\b/, ()=>`<p>Je suis Loo, l’assistant d’Orleoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle et je ne lis pas tes messages privés.</p>`],
   // Orleoo
   [/comment (ca|ça) marche|fonctionne|c.?est quoi (?:revoo|orleoo)|qu.?est.?ce que (?:revoo|orleoo)|presentation/, ()=>`<p><b>Orleoo</b>, c’est une marketplace française de vêtements d’occasion entre particuliers. En 3 étapes :</p><p>1. <b>Trouve</b> une pièce (recherche, catégories, filtres).<br>2. <b>Échange</b> avec le vendeur dans la messagerie.<br>3. <b>Récupère</b>-la en main propre ou par colis.</p>${ask("Acheter un article","Vendre un article","Combien ça coûte ?")}`],
   [/qui (est|sont) derriere|createur|fondateur|a propos/, ()=>`<p>Orleoo est un projet français, en cours de lancement. Son slogan : <b>« Tes vêtements ont de l’avenir »</b></p>${go("#/a-propos","À propos d’Orleoo")}`],
@@ -5206,7 +5206,7 @@ const KB=[
   [/aide|contact|probleme|support|assistance|souci|bug|joindre/, ()=>`<p>Je suis là pour ça ! Dis-moi ton problème en quelques mots. Tu peux aussi consulter la page d’aide, ou écrire à <b>${LEGAL.email}</b>.</p>${go("#/aide","Page d’aide")}${ask("Paiement et sécurité","Je n’ai pas reçu mon article","Mot de passe oublié")}`],
 ];
 /* Recherche intelligente : « pull taille M moins de 20 € femme » */
-/* ---------- Compréhension de Léo : abréviations, synonymes, fautes de frappe, contexte ---------- */
+/* ---------- Compréhension de Loo : abréviations, synonymes, fautes de frappe, contexte ---------- */
 const RB_ABBR={sa:"ca",frai:"frais",fré:"frais",fre:"frais",foto:"photo",fotos:"photo",coli:"colis",colie:"colis",payement:"paiement",paiment:"paiement",pseudonyme:"pseudo",g:"j ai",jai:"j ai",occaz:"occasion",bjr:"bonjour",bsr:"bonsoir",slt:"salut",cc:"coucou",mrc:"merci",mrci:"merci",thx:"merci",thanks:"merci",stp:"",svp:"",plz:"",pls:"",
   cmt:"comment",cmnt:"comment",koman:"comment",commen:"comment",pk:"pourquoi",pq:"pourquoi",pkoi:"pourquoi",pourkoi:"pourquoi",koi:"quoi",kwa:"quoi",
   jsp:"je sais pas",chai:"je sais",tkt:"",dc:"donc",ds:"dans",tt:"tout",tjrs:"toujours",bcp:"beaucoup",qd:"quand",qqn:"quelqu un",qq:"quelque",
@@ -5227,7 +5227,7 @@ const RB_ABBR={sa:"ca",frai:"frais",fré:"frais",fre:"frais",foto:"photo",fotos:
   annonces:"annonce",photos:"photo",pics:"photo",trucs:"article",truc:"article",articles:"article",fringuer:"vetement",
   achete:"acheter",achat:"acheter",vente:"vendre",vends:"vendre",vend:"vendre",vendu:"vendre",livre:"livraison",livrer:"livraison",livraisons:"livraison",
   login:"connexion",connecte:"connexion",inscrire:"inscription",inscris:"inscription",sinscrire:"inscription"};
-const RB_VOCAB="abonnement abonnements abonne resilier resiliation formule formules premium ultra reprendre identifiant avatar bio vacances solde apparence parametre parametres bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot leo revoo orleoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange suspendu suspension avertissement litige remboursement rembourse annuler annulation code echanger echanges complement debloquer delai prolonger regles moderation bloque retiree refusee maintenance main achat achats ventes".split(" ");
+const RB_VOCAB="abonnement abonnements abonne resilier resiliation formule formules premium ultra reprendre identifiant avatar bio vacances solde apparence parametre parametres bonjour bonsoir salut coucou merci comment pourquoi quoi combien probleme paiement payer paye paypal virement carte argent frais gratuit commission livraison colis envoyer emballer transporteur mondial colissimo chronopost relais vendre vendeur acheter acheteur annonce photo prix description rediger titre modifier supprimer marquer compte connexion inscription mot passe oublie profil pseudo prenom message messagerie favori favoris commande suivi retour echange rembourser arnaque fraude signaler contrefacon securite rendez propre taille tailles etat neuf satisfaisant marque entretien laver lavage nouveaute tendance style vintage streetwear chic saison hiver printemps automne femme homme enfant unisexe vetement chaussure accessoire pull jean veste robe jupe chemise sweat manteau pantalon short blouson cardigan gilet doudoune parka legging survetement costume blazer pyjama maillot echarpe bonnet notification mail spam application aide contact sombre theme avis note mineur parents disponible recu jamais fonctionne marche reboot loo leo revoo orleoo article cher pas moins plus recent dernier interdit autorise donnees humain conseiller heure horaire bleu noir blanc rouge vert gris rose beige marron jaune violet orange suspendu suspension avertissement litige remboursement rembourse annuler annulation code echanger echanges complement debloquer delai prolonger regles moderation bloque retiree refusee maintenance main achat achats ventes".split(" ");
 const RB_VSET=new Set(RB_VOCAB);
 const RB_KEEP4=new Set("mais veux peux sais fais fait avec pour dans sans tout tous bien tres plus elle nous vous leur quoi quel faut doit dois sont suis avez etes sera mois jour cela ceci voir vois dire dit lien site page code cool trop vite deja aussi fois oui non moi toi lui eux mien tien tant donc meme ici quoi part fini bout coin haut gros fort beau vrai faux aide sale chat chez vers avant hier noel".split(" "));
 const RB_KEEP=new Set("quand comme alors aussi encore jamais toute toutes cette celle celui ceux elles leurs quelle quels quelles savoir trouve trouver cherche chercher besoin envie voudrais pourrais pouvez pourquoi mettre prendre donner depuis avant apres semaine couleur faire peux veux peut veut votre notre vraiment maintenant comment autre autres combien merci bonjour salut moins plus entre chez vers sans avec pour dans sous mais rien tout tous etre avoir suis sont avez faut fallait doit dois sait sais connais aimer adore aime marche marcher tester essaye essayer bonne petite petit grand grande taille ensemble quelque chose aider pense crois question reponse simple facile rapide gros grosse jolie joli beau belle".split(" "));
@@ -5311,7 +5311,7 @@ function rbFollowUp(c){
   if(f.q&&KB_ARTICLE.test(f.q))nf.q=f.q;
   return searchAnswer(nf);
 }
-/* ---------- Léo personnel : répond avec les vraies infos du membre connecté ---------- */
+/* ---------- Loo personnel : répond avec les vraies infos du membre connecté ---------- */
 const rbLinks=(...l)=>`<div class="reboot-next">${l.map(([h,t])=>`<a class="pill" href="${h}">${t}</a>`).join("")}</div>`;
 function rbOrderLine(o){
   const me=state.user.id,buyer=o.buyer_id===me,mp=o.delivery==="main_propre",code=orders.codes[o.id];
@@ -5438,7 +5438,7 @@ function rebootReply(raw){
   return`<p>Je n’ai pas bien compris. Essaie avec d’autres mots, ou choisis un sujet :</p>${ask("Trouver un vêtement","Comment ça marche ?","Vendre un article","Paiement et sécurité","Livraison","Mon compte","Parler à quelqu’un")}`;
 }
 
-/* Léo : tout sur les abonnements, et aide à résilier directement dans la discussion */
+/* Loo : tout sur les abonnements, et aide à résilier directement dans la discussion */
 function rbSubs(c){
   const isSub=/abonn|desabonn|premium|formule|(?:revoo|orleoo) (pro|max|ultra)|\b(pro|max|ultra)\b|resili|mise(s)? en avant|booster|sponsoris|engag|\btva\b|\bttc\b/.test(c);
   if(!isSub)return null;
