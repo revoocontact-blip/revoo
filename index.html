@@ -2088,6 +2088,39 @@ html[data-design="2"]:not([data-theme="light"]) .subnav .nav-pill button{color:#
 html[data-design="2"]:not([data-theme="light"]) .subnav .nav-pill button:hover,html[data-design="2"]:not([data-theme="light"]) .subnav .nav-pill button[aria-current="true"]{background:rgba(238,240,250,.09)!important}
 html[data-design="2"]:not([data-theme="light"]) .subnav .nav-pill button[data-go="#/fonctionnement"]{color:#F5E663!important}
 }
+
+/* Navigation en 3 groupes */
+html[data-design="2"] .subnav{gap:10px;justify-content:flex-start}
+.nav-univers{display:flex;gap:4px;padding:5px;border-radius:16px;background:#1D2B5A;flex:none}
+html[data-design="2"] .subnav .nav-univers button{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border:0;margin:0;border-radius:11px;background:none;color:#DCE0F2;font:inherit;font-weight:800;font-size:15px;cursor:pointer}
+html[data-design="2"] .subnav .nav-univers button::after{display:none}
+html[data-design="2"] .subnav .nav-univers button[aria-pressed="true"]{background:#F5E663;color:#141A33}
+html[data-design="2"] .subnav .nav-univers button:not([aria-pressed="true"]):hover{background:rgba(255,255,255,.1);color:#fff}
+html[data-design="2"] .subnav .nav-univers button:not([aria-pressed="true"]){color:#DCE0F2!important}
+html[data-design="2"] .subnav .nav-univers button[aria-pressed="true"]{color:#141A33!important}
+@media (max-width:1480px) and (min-width:901px){.nav-atouts-l{display:none}.nav-atouts{padding-left:5px}html[data-design="2"] .subnav .nav-pill button{padding-inline:10px}}
+.nav-univers .nav-ic{opacity:1}
+.nav-atouts{display:flex;align-items:center;gap:2px;padding:5px 5px 5px 12px;border-radius:16px;background:#FCF6C8;border:1px dashed #1D2B5A;flex:none}
+.nav-atouts-l{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1D2B5A;margin-right:4px}
+html[data-design="2"] .subnav .nav-atouts button{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:0;margin:0;border-radius:11px;background:none;color:#141A33;font:inherit;font-weight:700;font-size:15px;white-space:nowrap;cursor:pointer}
+html[data-design="2"] .subnav .nav-atouts button::after{display:none}
+html[data-design="2"] .subnav .nav-atouts button:hover{background:#F5E663}
+.nav-atouts .nav-ic{opacity:1}
+html[data-design="2"] .subnav .sell{margin-left:auto}
+@media (max-width:1240px){.nav-atouts-l{display:none}html[data-design="2"] .subnav .nav-atouts button span{display:none}html[data-design="2"] .subnav .nav-atouts button{padding:9px}.nav-atouts{padding:5px}}
+@media (max-width:900px){html[data-design="2"] .subnav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}html[data-design="2"] .subnav::-webkit-scrollbar{display:none}.nav-pill{overflow:visible;flex:none}html[data-design="2"] .subnav .nav-atouts button span{display:inline}.nav-atouts-l{display:inline}}
+html[data-design="2"][data-theme="dark"] .nav-univers{background:rgba(255,255,255,.06);border:1px solid rgba(238,240,250,.12)}
+html[data-design="2"][data-theme="dark"] .nav-atouts{background:rgba(245,230,99,.08);border-color:rgba(245,230,99,.45)}
+html[data-design="2"][data-theme="dark"] .nav-atouts-l{color:#F5E663}
+html[data-design="2"][data-theme="dark"] .subnav .nav-atouts button{color:#F5E663!important}
+html[data-design="2"][data-theme="dark"] .subnav .nav-atouts button:hover{background:rgba(245,230,99,.14)!important}
+@media (prefers-color-scheme:dark){
+html[data-design="2"]:not([data-theme="light"]) .nav-univers{background:rgba(255,255,255,.06);border:1px solid rgba(238,240,250,.12)}
+html[data-design="2"]:not([data-theme="light"]) .nav-atouts{background:rgba(245,230,99,.08);border-color:rgba(245,230,99,.45)}
+html[data-design="2"]:not([data-theme="light"]) .nav-atouts-l{color:#F5E663}
+html[data-design="2"]:not([data-theme="light"]) .subnav .nav-atouts button{color:#F5E663!important}
+html[data-design="2"]:not([data-theme="light"]) .subnav .nav-atouts button:hover{background:rgba(245,230,99,.14)!important}
+}
 </style>
 </head>
 <body>
@@ -2152,8 +2185,10 @@ html[data-design="2"]:not([data-theme="light"]) .subnav .nav-pill button[data-go
       </div>
     </div>
   </div>
-  <nav class="wrap subnav" aria-label="Catégories">
-    <div class="nav-pill"><button type="button" data-category="Femme"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 4 4 13H6l4-13-1-4Z"/><path d="M10 7h4"/></svg><span>Femme</span></button><button type="button" data-category="Homme"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 4 6l2 4 2-1v12h8V9l2 1 2-4-4-3c-1 2-2.5 3-4 3s-3-1-4-3Z"/></svg><span>Homme</span></button><button type="button" data-category="Enfant"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4c0 1.7 1.3 3 3 3s3-1.3 3-3l4 3-2 3-1.5-1V20h-7V9L7 10 5 7l4-3Z"/></svg><span>Enfant</span></button><button type="button" data-category="Unisexe"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a2 2 0 1 1 2-2"/><path d="M12 7v2L3 16h18l-9-7"/></svg><span>Unisexe</span></button><button type="button" data-category="Livres"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg><span>Livres</span></button><button type="button" data-go="#/fonctionnement"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Échanger</span></button><button type="button" data-new="1"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.3L20 9l-4.4 3.8L17 19l-5-3.1L7 19l1.4-6.2L4 9l5.8-.7L12 3Z"/></svg><span>Nouveautés</span></button></div>
+  <nav class="wrap subnav" aria-label="Navigation">
+    <div class="nav-univers" role="group" aria-label="Univers"><button type="button" data-univers="mode"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a2 2 0 1 1 2-2"/><path d="M12 7v2L3 16h18l-9-7"/></svg><span>Mode</span></button><button type="button" data-univers="livres"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg><span>Livres</span></button></div>
+    <div class="nav-pill" id="navFiltres" role="group" aria-label="Filtres"></div>
+    <div class="nav-atouts" role="group" aria-label="Exclusivités Orleoo"><span class="nav-atouts-l" aria-hidden="true">Exclusif</span><button type="button" data-go="#/fonctionnement"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Échanger</span></button><button type="button" data-go="#/securite" title="Remise en main propre sécurisée"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Main propre</span></button></div>
     <button type="button" class="sell" data-go="#/vendre"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Vendre</span></button>
   </nav>
 </header>
@@ -4054,9 +4089,9 @@ function renderHome(){
 /* =========================================================
    CATALOGUE : recherche + filtres
    ========================================================= */
-const filters = {q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection"};
+const filters = {univers:"",q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection"};
 const PAGE_SIZE=24;let catalogueLimit=PAGE_SIZE;
-function resetFilters(){catalogueLimit=PAGE_SIZE;Object.assign(filters,{q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection"})}
+function resetFilters(){catalogueLimit=PAGE_SIZE;Object.assign(filters,{univers:"",q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection"})}
 function matchesQuery(p,q){
   const hay=norm([p.name,p.brand,p.category,p.style,p.condition,p.size,p.description,p.seller].join(" "));
   return norm(q).split(/\s+/).filter(Boolean).every(w=>hay.includes(w)||(w.length>3&&w.endsWith("s")&&hay.includes(w.slice(0,-1))));
@@ -4066,6 +4101,7 @@ function filtered(){
   let list=available().filter(p=>
     (!filters.q||matchesQuery(p,filters.q)) &&
     (!filters.category||p.category===filters.category) &&
+    (!filters.univers||(filters.univers==="livres"?isBook(p):!isBook(p))) &&
     (!filters.sizes.length||filters.sizes.includes(p.size)) &&
     (!filters.conditions.length||filters.conditions.includes(p.condition)) &&
     (!filters.brand||p.brand===filters.brand) &&
@@ -4095,7 +4131,7 @@ function renderCatalogue(rebuild=true){
   const min=filters.min===""?null:+filters.min, max=filters.max===""?null:+filters.max;
   $("priceError").textContent=(min!=null&&max!=null&&min>max)?"Le prix minimum doit être inférieur au prix maximum.":"";
   const list=filtered();
-  const title=filters.q?`Résultats pour « ${filters.q} »`:filters.seller?`Les articles de ${filters.seller}`:filters.category?(filters.category==="Livres"?"Livres":`Vêtements · ${filters.category}`):filters.style?`Style · ${filters.style}`:filters.season?`Sélection de saison · ${filters.season}`:filters.sort==="populaires"?"Les plus appréciés":"Tous les articles";
+  const title=filters.q?`Résultats pour « ${filters.q} »`:filters.seller?`Les articles de ${filters.seller}`:filters.category?(filters.category==="Livres"?(filters.sizes.length===1?`Livres · ${filters.sizes[0]}`:filters.sort==="recent"&&filters.univers?"Livres · nouveautés":"Livres"):`Mode · ${filters.category}`):filters.univers==="mode"?(filters.sort==="recent"?"Mode · nouveautés":"Mode"):filters.univers==="livres"?"Livres":filters.style?`Style · ${filters.style}`:filters.season?`Sélection de saison · ${filters.season}`:filters.sort==="populaires"?"Les plus appréciés":"Tous les articles";
   $("catalogueTitle").textContent=title;
   $("resultCount").textContent=`${list.length} article${list.length>1?"s":""}`;
   $("filtersApply").textContent=list.length?`Voir ${list.length} article${list.length>1?"s":""}`:"Aucun article";
@@ -4116,6 +4152,27 @@ function renderCatalogue(rebuild=true){
   const more=list.length-catalogueLimit;
   if(more>0)$("catalogueProducts").insertAdjacentHTML("beforeend",`<div class="more-wrap"><button type="button" class="btn btn-outline" id="showMore">Afficher plus <span class="muted">(${more} restant${more>1?"s":""})</span></button></div>`);
 }
+
+/* Barre de navigation : univers / filtres / exclusivités */
+let navUniv="mode";
+const NAV_IC={Femme:'<path d="M9 3h6l-1 4 4 13H6l4-13-1-4Z"/><path d="M10 7h4"/>',Homme:'<path d="M8 3 4 6l2 4 2-1v12h8V9l2 1 2-4-4-3c-1 2-2.5 3-4 3s-3-1-4-3Z"/>',Enfant:'<path d="M9 4c0 1.7 1.3 3 3 3s3-1.3 3-3l4 3-2 3-1.5-1V20h-7V9L7 10 5 7l4-3Z"/>',Unisexe:'<circle cx="9" cy="12" r="4"/><circle cx="15" cy="12" r="4"/>',new:'<path d="M12 3l2.2 5.3L20 9l-4.4 3.8L17 19l-5-3.1L7 19l1.4-6.2L4 9l5.8-.7L12 3Z"/>',fmt:'<path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6"/>'};
+const navIc=d=>`<svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+function renderNav(view){
+  const box=$("navFiltres");if(!box)return;
+  const onCat=view==="catalogue";
+  if(onCat)navUniv=filters.univers==="livres"||filters.category==="Livres"?"livres":filters.univers==="mode"||(filters.category&&filters.category!=="Livres")?"mode":navUniv;
+  const items=navUniv==="livres"?SIZES.livre.map(f=>`<button type="button" data-navfmt="${f}" aria-current="${onCat&&filters.sizes.length===1&&filters.sizes[0]===f}"><span>${f}</span></button>`)
+    :["Femme","Homme","Enfant","Unisexe"].map(c=>`<button type="button" data-navcat="${c}" aria-current="${onCat&&filters.category===c&&!filters.q}">${navIc(NAV_IC[c])}<span>${c}</span></button>`);
+  items.push(`<button type="button" data-navnew="1" aria-current="${onCat&&filters.sort==="recent"&&!filters.sizes.length&&(navUniv==="livres"||!filters.category)}">${navIc(NAV_IC.new)}<span>Nouveautés</span></button>`);
+  box.innerHTML=items.join("");
+  document.querySelectorAll("[data-univers]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.univers===navUniv)));
+}
+document.addEventListener("click",e=>{
+  const u=e.target.closest("[data-univers]");if(u){navUniv=u.dataset.univers;$("searchInput").value="";openCatalogue(navUniv==="livres"?{univers:"livres",category:"Livres"}:{univers:"mode"});return}
+  const c=e.target.closest("[data-navcat]");if(c){$("searchInput").value="";openCatalogue({univers:"mode",category:c.dataset.navcat});return}
+  const f=e.target.closest("[data-navfmt]");if(f){$("searchInput").value="";openCatalogue({univers:"livres",category:"Livres",sizes:[f.dataset.navfmt]});return}
+  const n=e.target.closest("[data-navnew]");if(n){openCatalogue({univers:navUniv,sort:"recent",...(navUniv==="livres"?{category:"Livres"}:{})});return}
+});
 function openCatalogue(patch={}){resetFilters();Object.assign(filters,patch);if(location.hash==="#/catalogue")renderView();else location.hash="#/catalogue"}
 function doSearch(v){openCatalogue({q:v.trim()})}
 document.getElementById("heroSearch")?.addEventListener("submit",e=>{e.preventDefault();const v=$("heroQ").value;if($("searchInput"))$("searchInput").value=v;doSearch(v)});
@@ -4805,7 +4862,7 @@ function renderView(){
   else renderHome();
   $("view-"+view).hidden=false;
   document.querySelectorAll(".tabbar [data-tab]").forEach(a=>{const on=a.dataset.tab===(view==="home"?"home":view==="product"?"catalogue":view);a.toggleAttribute("aria-current",on);if(on)a.setAttribute("aria-current","page")});
-  document.querySelectorAll(".subnav [data-category]").forEach(b=>b.setAttribute("aria-current",view==="catalogue"&&filters.category===b.dataset.category&&!filters.q?"true":"false"));
+  renderNav(view);
   updateCounts();fillSuggestions();
 }
 let lastHash=location.hash;
