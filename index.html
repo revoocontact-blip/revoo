@@ -2530,11 +2530,12 @@ html[data-design="2"] .reboot{border:2px solid var(--o-line)!important;box-shado
    CONFIGURATION — à modifier ici uniquement
    ========================================================= */
 const CONFIG = {
-  fraisFixes: 1,              // 1 € payé par l'acheteur
+  fraisPourcent: 5,           // frais acheteur : 5 % du prix de l'article…
+  fraisFixes: 0.70,           // … + 0,70 € par article (même règle dans supabase-frais.sql)
   paiementIntegre: true,      // tous les paiements passent par Orleoo (aucun paiement direct entre membres). Mode réel/démo : site_settings.payment_mode (SQL)
   revooPayDemo: true,         // true = Orleoo Pay en DÉMO pour tout le monde (aucun argent réel). ⚠️ À METTRE SUR false AVANT L'OUVERTURE AU PUBLIC tant que Mangopay n'est pas branché
                               // true  = PHASE 2 : panier, paiement intégré et frais ci-dessous
-  fraisPar: "article",        // "article" = 1 € par article (10 articles = 10 €) · "commande" = 1 € par commande
+  fraisPar: "article",        // frais calculés pour chaque article
   maxPhotos: 5,
   afficherDemo: "auto",       // "auto" = articles d'exemple affichés tant qu'il y a moins de 12 vraies annonces · true = toujours · false = jamais
   seuilDemo: 12,
@@ -3472,7 +3473,8 @@ async function moderate(action,reportId,listingId){
    ========================================================= */
 const PAY_DEMO=(()=>{try{const q=new URLSearchParams(location.search);if(q.get("revoopay")==="demo")sessionStorage.setItem("revoo.paydemo","1");if(q.get("revoopay")==="off")sessionStorage.removeItem("revoo.paydemo");if(q.get("revoopay")==="off")return false;return CONFIG.revooPayDemo===true||sessionStorage.getItem("revoo.paydemo")==="1"}catch(e){return CONFIG.revooPayDemo===true}})();
 const payOn=()=>CONFIG.paiementIntegre||PAY_DEMO;
-const ORDER_FEE=1;
+const feeOf=pr=>Math.round((Math.round((+pr||0)*100)*CONFIG.fraisPourcent+Math.round(CONFIG.fraisFixes*100)*100)/100)/100;   // calcul en centimes, arrondi comme le serveur
+const FEE_TXT=()=>`${String(CONFIG.fraisPourcent).replace(".",",")} % + ${eur(CONFIG.fraisFixes)}`;
 const orders={mine:[],all:[],loaded:false,codes:{}};
 const ORDER_STATUS={paid:"Payée · à envoyer",shipped:"Envoyée",received:"Reçue",problem:"Problème signalé",cancelled:"Annulée"};
 async function loadOrders(){
@@ -3676,7 +3678,7 @@ function tradeFormHtml(p){
     </fieldset>
     <div class="trade-rules small"><b>Comment ça marche</b><ol>
       <li>${esc(p.seller)} peut accepter, refuser ou <b>contre-proposer</b> un autre montant : vous négociez jusqu’à être d’accord.</li>
-      <li>À l’accord, le complément éventuel et les frais (${eur(ORDER_FEE)} chacun) sont <b>payés et bloqués</b>.</li>
+      <li>À l’accord, le complément éventuel et les frais (${eur(feeOf(p.price))} chacun) sont <b>payés et bloqués</b>.</li>
       <li>Chacun envoie son colis <b>avec un numéro de suivi</b> (obligatoire).</li>
       <li>Quand les <b>deux</b> colis sont arrivés, vous avez <b>48 h</b> pour vérifier. Sans problème signalé, l’échange est validé et le complément versé.</li>
       <li>Un colis non confirmé <b>14 jours</b> après son envoi compte comme reçu.</li></ol></div>
@@ -3969,10 +3971,10 @@ function renderCheckout(id){
     </form>
     <aside class="summary" aria-labelledby="coSum"><h2 id="coSum">Récapitulatif</h2>
       <div class="line"><span>Article</span><span>${eur(p.price)}</span></div>
-      <div class="line"><span>Frais Orleoo Pay</span><span>${eur(ORDER_FEE)}</span></div>
+      <div class="line"><span>Frais Orleoo Pay</span><span>${eur(feeOf(p.price))}</span></div>
       <div class="line"><span>Livraison</span><span class="muted" id="coShip">${checkoutDelivery==="colis"?"À régler avec le vendeur":"Gratuite"}</span></div>
-      <div class="line total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div>
-      ${payerFields()}<button type="submit" form="checkoutForm" class="btn btn-primary btn-block" id="coPay">${payLabel(p.price+ORDER_FEE)}</button>
+      <div class="line total"><span>Total</span><span>${eur(p.price+feeOf(p.price))}</span></div>
+      ${payerFields()}<button type="submit" form="checkoutForm" class="btn btn-primary btn-block" id="coPay">${payLabel(p.price+feeOf(p.price))}</button>
       <p class="error" id="coErr" role="alert"></p>
       <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px">
         <li>Ton argent reste bloqué jusqu’à ce que tu confirmes la réception.</li>
@@ -3993,9 +3995,9 @@ function renderCheckout(id){
       if(!ok)return;
     }
     const b=$("coPay");b.disabled=true;b.textContent="Commande en cours…";$("coErr").textContent="";
-    if(realPay()){const ok=await payByCard([{listing:p.id,delivery:checkoutDelivery}],{p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null},$("coErr"));if(!ok){b.disabled=false;b.textContent=payLabel(p.price+ORDER_FEE)}return}
+    if(realPay()){const ok=await payByCard([{listing:p.id,delivery:checkoutDelivery}],{p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null},$("coErr"));if(!ok){b.disabled=false;b.textContent=payLabel(p.price+feeOf(p.price))}return}
     const {error}=await sb.rpc("create_order",{p_listing:p.id,p_delivery:checkoutDelivery,p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null});
-    if(error){b.disabled=false;b.textContent=payLabel(p.price+ORDER_FEE);$("coErr").textContent=frenchError(error);return}
+    if(error){b.disabled=false;b.textContent=payLabel(p.price+feeOf(p.price));$("coErr").textContent=frenchError(error);return}
     await Promise.all([loadOrders(),loadListings(),loadConversations()]);
     toast("Commande créée (démo, aucun paiement).");
     location.hash="#/compte/achats";
@@ -4014,7 +4016,7 @@ function renderPayCart(){
   const groups={};items.forEach(p=>{(groups[p.sellerId]=groups[p.sellerId]||{seller:p.seller,items:[]}).items.push(p)});
   Object.keys(groups).forEach(k=>{if(!cartDelivery[k])cartDelivery[k]="main_propre"});
   const anyColis=()=>Object.keys(groups).some(k=>cartDelivery[k]==="colis");
-  const subtotal=items.reduce((t,p)=>t+p.price,0),fees=ORDER_FEE*items.length;
+  const subtotal=items.reduce((t,p)=>t+p.price,0),fees=items.reduce((t,p)=>t+feeOf(p.price),0);
   el.innerHTML=`<div class="cart-layout"><form id="payCartForm" novalidate>
     ${Object.entries(groups).map(([sid,g])=>`<div class="panel">
       <h2 style="font-size:17px">Vendu par ${esc(g.seller)} <span class="muted small">· ${g.items.length} article${g.items.length>1?"s":""}</span></h2>
@@ -4040,7 +4042,7 @@ function renderPayCart(){
   </form>
   <aside class="summary" aria-labelledby="pcSum"><h2 id="pcSum">Récapitulatif</h2>
     <div class="line"><span>Articles (${items.length})</span><span>${eur(subtotal)}</span></div>
-    <div class="line"><span>Frais Orleoo Pay<br><small class="muted">${eur(ORDER_FEE)} par article</small></span><span>${eur(fees)}</span></div>
+    <div class="line"><span>Frais Orleoo Pay<br><small class="muted">${FEE_TXT()} par article</small></span><span>${eur(fees)}</span></div>
     <div class="line"><span>Livraison</span><span class="muted" id="pcShip">${anyColis()?"À régler avec le vendeur":"Gratuite"}</span></div>
     <div class="line total"><span>Total</span><span>${eur(subtotal+fees)}</span></div>
     ${payerFields()}<button type="submit" form="payCartForm" class="btn btn-primary btn-block" id="pcPay">${payLabel(subtotal+fees)}</button>
@@ -4315,7 +4317,7 @@ document.getElementById("heroSearch")?.addEventListener("submit",e=>{e.preventDe
 /* =========================================================
    FICHE PRODUIT
    ========================================================= */
-function feesFor(n){return CONFIG.fraisPar==="article"?CONFIG.fraisFixes*n:(n>0?CONFIG.fraisFixes:0)}
+function feesFor(items){return items.reduce((t,p)=>t+feeOf(p.price),0)}
 const feeLabel=()=>CONFIG.fraisPar==="article"?"par article":"par commande";
 function renderProduct(id){
   const p=findProduct(id), v=$("view-product");
@@ -4352,7 +4354,7 @@ function renderProduct(id){
         <div><dt>Ajouté</dt><dd>${ago(p.addedAt)}</dd></div>
       </dl>
       ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
-      ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo Pay</span><span>${eur(ORDER_FEE)}</span></div><div class="total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div><p class="small muted" style="margin:6px 0 0">Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais fixes Orleoo (${feeLabel()})</span><span>${eur(CONFIG.fraisFixes)}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+CONFIG.fraisFixes)}</span></div></div>`}
+      ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo Pay</span><span>${eur(feeOf(p.price))}</span></div><div class="total"><span>Total</span><span>${eur(p.price+feeOf(p.price))}</span></div><p class="small muted" style="margin:6px 0 0">Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo (${FEE_TXT()})</span><span>${eur(feeOf(p.price))}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+feeOf(p.price))}</span></div></div>`}
       ${actions}
       ${sold?"":tradeBlock(p)}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
@@ -4388,7 +4390,7 @@ function renderCart(){
   cleanCart();
   const items=state.cart.map(findProduct).filter(Boolean), el=$("cartContent");
   if(!items.length){el.innerHTML=state.loading?`<div class="empty"><p>Chargement…</p></div>`:`<div class="empty"><p>Ton panier est vide pour le moment.</p><a class="btn btn-primary" href="#/catalogue">Découvrir les vêtements</a></div>`;return}
-  const subtotal=items.reduce((t,p)=>t+p.price,0), fees=feesFor(items.length), total=subtotal+fees;
+  const subtotal=items.reduce((t,p)=>t+p.price,0), fees=feesFor(items), total=subtotal+fees;
   const carrier=CONFIG.transporteurs.find(t=>t.id===state.carrier);
   el.innerHTML=`<div class="cart-layout">
     <section aria-label="Articles du panier">
@@ -4402,7 +4404,7 @@ function renderCart(){
     <aside class="summary" aria-labelledby="sumTitle">
       <h2 id="sumTitle">Récapitulatif</h2>
       <div class="line"><span>Articles (${items.length})</span><span>${eur(subtotal)}</span></div>
-      <div class="line"><span>Frais fixes Orleoo<br><small class="muted">${eur(CONFIG.fraisFixes)} ${feeLabel()}</small></span><span>${eur(fees)}</span></div>
+      <div class="line"><span>Frais Orleoo<br><small class="muted">${FEE_TXT()} ${feeLabel()}</small></span><span>${eur(fees)}</span></div>
       <div class="line"><span>Sous-total</span><span>${eur(total)}</span></div>
       <fieldset class="carriers"><legend class="label">Mode de livraison</legend>
         ${CONFIG.transporteurs.map(t=>`<label class="carrier"><input type="radio" name="carrier" value="${t.id}" ${state.carrier===t.id?"checked":""}><span><b>${t.nom}</b><small>${t.info}</small></span></label>`).join("")}
@@ -4423,7 +4425,7 @@ function simulateOrder(){
   if(!state.user){$("orderError").textContent="Connecte-toi pour simuler une commande.";setTimeout(()=>location.hash="#/compte",900);return}
   if(!state.carrier){$("orderError").textContent="Choisis un mode de livraison.";return}
   const items=state.cart.map(findProduct).filter(Boolean);
-  const subtotal=items.reduce((t,p)=>t+p.price,0), fees=feesFor(items.length);
+  const subtotal=items.reduce((t,p)=>t+p.price,0), fees=feesFor(items);
   const order={id:"R"+Date.now().toString(36).toUpperCase(),date:Date.now(),userId:state.user.id,items:items.map(p=>({id:p.id,name:p.name,price:p.price,size:p.size,seller:p.seller})),subtotal,fees,total:subtotal+fees,carrier:CONFIG.transporteurs.find(t=>t.id===state.carrier).nom};
   state.orders.unshift(order);state.sold.push(...items.map(p=>p.id));state.cart=[];
   save("orders");save("sold");save("cart");updateCounts();
@@ -4678,7 +4680,7 @@ function renderSell(editId){
     document.querySelector('label[for="tSize"]').textContent=book?"Format":"Taille";
     const stf=$("tStyle").closest(".field");if(stf){stf.hidden=book;if(book)$("tStyle").value=""}const cur=$("tSize").value||l?.size;$("tSize").innerHTML=`<option value="">${cat?"Choisir…":"Choisis d’abord une catégorie"}</option>`+list.map(s=>`<option ${s===cur?"selected":""}>${s}</option>`).join("")};
   fillSizes();$("tCat").addEventListener("change",fillSizes);
-  const priceHint=()=>{const v=parseFloat($("tPrice").value);$("priceHint").textContent=v>0?(CONFIG.paiementIntegre?`L’acheteur paiera ${eur(v)} + ${eur(CONFIG.fraisFixes)} de frais fixes Orleoo, hors livraison.`:`Pendant le lancement, 0 € de frais : l’acheteur te paie ${eur(v)} directement.`):""};
+  const priceHint=()=>{const v=parseFloat($("tPrice").value);$("priceHint").textContent=v>0?(CONFIG.paiementIntegre?`L’acheteur paiera ${eur(v)} + ${eur(feeOf(v))} de frais Orleoo (${FEE_TXT()}), hors livraison. Toi, tu reçois ${eur(v)}.`:`Pendant le lancement, 0 € de frais : l’acheteur te paie ${eur(v)} directement.`):""};
   $("tPrice").addEventListener("input",priceHint);priceHint();
   renderPhotos();
   $("photoInput").addEventListener("change",async e=>{
@@ -4794,7 +4796,7 @@ async function toggleStatus(id){
 /* =========================================================
    PAGES D'INFORMATION (aucun texte juridique inventé)
    ========================================================= */
-function feeExample(){return `Exemple : article à 10,00 € + frais fixes ${eur(CONFIG.fraisFixes)} = <b>${eur(10+CONFIG.fraisFixes)}</b> hors livraison.`+(CONFIG.fraisPar==="article"?` Pour 3 articles à 10,00 € : 30,00 € + ${eur(3*CONFIG.fraisFixes)} de frais = <b>${eur(30+3*CONFIG.fraisFixes)}</b> hors livraison.`:"")}
+function feeExample(){return `Exemple : article à 10,00 € + ${eur(feeOf(10))} de frais = <b>${eur(10+feeOf(10))}</b> hors livraison. Article à 40,00 € + ${eur(feeOf(40))} de frais = <b>${eur(40+feeOf(40))}</b>. Le vendeur reçoit toujours le prix affiché.`}
 /* =========================================================
    PAGES LÉGALES — première version, à faire relire par un professionnel
    ========================================================= */
@@ -4876,7 +4878,7 @@ const LEGAL_PAGES={
 <p>Il est interdit de publier tout article ou contenu <b>illégal</b>, notamment : contrefaçons, articles volés, articles dangereux ou interdits à la vente, contenus haineux, violents, discriminatoires ou à caractère sexuel, ainsi que tout contenu portant atteinte aux droits d’autrui. Il est aussi interdit d’utiliser Orleoo pour arnaquer, harceler ou envoyer de la publicité non sollicitée.</p>
 <h2>5. Acheter et payer</h2>
 <p>Tous les paiements entre membres se font <b>sur Orleoo</b>, via son prestataire de paiement. Payer ou se faire payer en dehors d’Orleoo est interdit et peut entraîner la suspension du compte. Orleoo ne peut pas rembourser un paiement fait en dehors du site. Voir <a class="link" href="#/securite">Tout se paie sur Orleoo</a>.</p>
-<p><b>Plus tard</b>, un paiement intégré et sécurisé, Orleoo Pay, sera proposé : l’argent sera bloqué jusqu’à la confirmation de réception, et des frais de ${eur(CONFIG.fraisFixes)} par article seront facturés à l’acheteur. Ces conditions seront complétées avant son activation.</p>
+<p><b>Plus tard</b>, un paiement intégré et sécurisé, Orleoo Pay, sera proposé : l’argent sera bloqué jusqu’à la confirmation de réception, et des frais de ${FEE_TXT()} par article seront facturés à l’acheteur. Ces conditions seront complétées avant son activation.</p>
 <p>Les ventes entre particuliers ne donnent pas lieu au droit de rétractation de 14 jours prévu pour les achats auprès de professionnels.</p>
 <h2>6. Classement des annonces</h2>
 <p>Les annonces sont affichées selon le critère choisi par le visiteur : les plus récentes (par défaut), le prix ou la popularité (nombre de favoris). Aucun vendeur ne peut payer pour être mieux classé.</p>
@@ -4920,7 +4922,7 @@ const PAGES={
     <h2>Les frais</h2><p><b>0 € de frais pendant le lancement.</b> Tu paies uniquement le prix de l’article (et l’envoi si vous choisissez le colis), directement au vendeur.</p>
     <p><a class="btn btn-outline" href="#/securite">Lire les conseils de sécurité</a></p>`:`<p class="crumbs"><a href="#/">Accueil</a> › Fonctionnement</p><h1>Comment fonctionne Orleoo ?</h1>
     <ol class="steps"><li><b>1</b>Tu trouves une pièce grâce à la recherche, aux catégories et aux filtres.</li><li><b>2</b>Tu l’ajoutes au panier et tu choisis ton mode de livraison.</li><li><b>3</b>Le vendeur envoie l’article et tu le reçois.</li></ol>
-    <h2>Les frais</h2><p>L’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais fixes ${feeLabel()}</b>, quel que soit le prix de l’article. Les frais de livraison sont distincts.</p><p>${feeExample()}</p>
+    <h2>Les frais</h2><p>L’acheteur paie <b>${FEE_TXT()} de frais ${feeLabel()}</b> (paiement protégé). Le vendeur reçoit le prix affiché, sans frais. Les frais de livraison sont distincts.</p><p>${feeExample()}</p>
     <p class="note warn">Le paiement et l’envoi ne sont pas encore actifs : les commandes sont simulées pour l’instant.</p>`,
   "acheter":()=>!CONFIG.paiementIntegre?`<p class="crumbs"><a href="#/">Accueil</a> › Acheter</p><h1>Acheter sur Orleoo</h1>
     <ol class="steps"><li><b>1</b>Cherche un vêtement ou parcours les catégories Femme, Homme, Enfant et Unisexe. Ajoute tes coups de cœur aux favoris.</li><li><b>2</b>Clique sur « <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e) » : la conversation avec le vendeur s’ouvre.</li><li><b>3</b>Mettez-vous d’accord : main propre (paiement à la remise) ou colis avec PayPal « Biens et services ».</li></ol>
@@ -5295,7 +5297,7 @@ const KB=[
   [/qui (est|sont) derriere|createur|fondateur|a propos/, ()=>`<p>Orleoo est un projet français, en cours de lancement. Son slogan : <b>« Tes vêtements ont de l’avenir »</b></p>${go("#/a-propos","À propos d’Orleoo")}`],
   // Frais / paiement
   [/(cout|prix|tarif|combien).*(livr|envoi|colis|port)|frais de port|frais d.envoi/, ()=>`<p>Le prix de l’envoi dépend du transporteur et du poids du colis : compare directement sur les sites de Colissimo, Mondial Relay, Relais Colis… Il se règle entre l’acheteur et le vendeur. La remise en main propre, elle, est gratuite.</p>${ask("Bien envoyer un colis","Rendez-vous en main propre")}`],
-  [/frais|commission|combien.*(coute|paye)|cout|gratuit|tarif (?:revoo|orleoo)|combien ca coute/, ()=>!CONFIG.paiementIntegre?`<p><b>0 € de frais pendant le lancement !</b> Tu paies seulement le prix de l’article, directement au vendeur, et l’envoi si vous choisissez le colis.</p><p>Plus tard, avec le paiement intégré Orleoo Pay, il y aura ${eur(CONFIG.fraisFixes)} de frais par article, en échange d’un paiement protégé.</p>${ask("Comment payer ?","Orleoo Pay, c’est quoi ?")}`:`<p>L’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais par article</b>, quel que soit le prix. La livraison est en plus.</p><p>${feeExample()}</p>`],
+  [/frais|commission|combien.*(coute|paye)|cout|gratuit|tarif (?:revoo|orleoo)|combien ca coute/, ()=>!CONFIG.paiementIntegre?`<p><b>0 € de frais pendant le lancement !</b> Tu paies seulement le prix de l’article, directement au vendeur, et l’envoi si vous choisissez le colis.</p><p>Plus tard, avec le paiement intégré Orleoo Pay, il y aura ${FEE_TXT()} de frais par article, en échange d’un paiement protégé.</p>${ask("Comment payer ?","Orleoo Pay, c’est quoi ?")}`:`<p>L’acheteur paie <b>${FEE_TXT()} de frais par article</b>, selon le prix. La livraison est en plus.</p><p>${feeExample()}</p>`],
   [/(?:revoo|orleoo) ?pay|paiement integre|paiement protege/, ()=>`<p><b>Orleoo Pay</b> sera le paiement intégré d’Orleoo : tu paies par carte sur le site, l’argent reste <b>bloqué</b> jusqu’à ce que tu confirmes la réception, puis il est versé au vendeur. En cas de problème, tu es remboursé.</p><p>Il n’est pas encore actif : pour l’instant, le paiement se fait directement entre membres.</p>${ask("Comment payer ?")}`],
   [/paie|paye|paiement|payer|carte|paypal|virement|wero|lydia|cb\b|especes/, ()=>!CONFIG.paiementIntegre?`<p>Pendant le lancement, tu paies <b>directement le vendeur</b> :</p><p>• en <b>main propre</b>, au moment de la remise ;<br>• à distance, uniquement avec <b>PayPal « Biens et services »</b>, qui te protège si l’article n’arrive pas.</p><p><b>Jamais</b> de virement, Wero, Lydia ou PayPal « entre proches » à un inconnu : ces moyens ne te protègent pas.</p>${go("#/securite","Conseils de sécurité")}${ask("Rendez-vous en main propre","Je n’ai pas reçu mon article")}`:`<p>Tout se paie <b>sur Orleoo</b>, par carte. L’argent reste bloqué jusqu’à ta confirmation de réception.</p><p>Payer en dehors d’Orleoo (espèces, virement, PayPal, Lydia, Wero…) est <b>interdit</b> : ce n’est pas protégé et le compte peut être suspendu.</p>${go("#/securite","Tout se paie sur Orleoo")}`],
   [/arnaque|fraude|escroc|suspect|faux compte|mefier|securi/, ()=>`<p>Quelques réflexes simples :</p><p>• Reste sur la messagerie Orleoo pour échanger.<br>• Paie uniquement sur Orleoo : jamais d’espèces, de virement, de PayPal ou de Lydia.<br>• Refuse toute demande de continuer sur WhatsApp, par SMS ou par e-mail.<br>• Ne donne jamais tes codes ni ton mot de passe.</p><p>Un doute ? Utilise le bouton « Signaler cette annonce ».</p>${go("#/securite","Tous les conseils")}`],
@@ -5543,7 +5545,7 @@ const KB_NOW=[
   [/main propre|rendez.?vous|en personne|se voir/, ()=>payOn()?`<p><b>La remise en main propre sécurisée</b> :</p><p>1. L’acheteur <b>paie sur Orleoo</b> avant le rendez-vous : l’argent est bloqué.<br>2. Il reçoit un <b>code à 6 chiffres</b>.<br>3. Au rendez-vous (lieu public, en journée), il vérifie l’article puis donne le code.<br>4. Le vendeur saisit le code : la vente est terminée et il est payé.</p><p>Rendez-vous à faire sous 7 jours (prolongeable). L’acheteur peut annuler avant : remboursé sous 48 h.</p>`:null],
   [/echang|troc|complement/, ()=>payOn()?`<p><b>L’échange Orleoo</b> : propose un de tes vêtements contre celui d’un autre membre, avec un <b>complément d’argent</b> si besoin (négociable).</p><p>• Débloqué après <b>${TRADE_UNLOCK} achats</b> terminés.<br>• Une fois accepté, chacun envoie son colis <b>avec suivi</b>.<br>• Après réception du dernier colis, vous avez <b>48 h</b> pour vérifier ou signaler un problème.<br>• Un colis non confirmé 14 jours après l’envoi compte comme reçu.</p>`:null],
   [/litige|pas recu|jamais recu|pas conforme|abime|probleme (avec|de) (ma|la|mon)|arnaque/, ()=>payOn()?`<p>En cas de problème avec un achat Orleoo Pay :</p><p>1. Ne confirme pas la réception.<br>2. Clique sur <b>« Signaler un problème »</b> dans Mes achats et explique ce qui ne va pas.<br>3. L’argent reste bloqué. L’équipe Orleoo regarde la commande et vos messages, puis tranche : <b>remboursement</b> de l’acheteur ou paiement du vendeur.</p><p>Garde toujours vos échanges dans la messagerie Orleoo : c’est ce qui sert de preuve.</p>${rbLinks(["#/compte/achats","Mes achats"])}`:null],
-  [/(?:revoo|orleoo) ?pay|paiement (protege|integre|securise)|comment (ca se paie|payer)|argent bloque/, ()=>payOn()?`<p><b>Orleoo Pay</b> protège l’acheteur et le vendeur : tu paies sur Orleoo, l’argent est <b>bloqué</b> jusqu’à la réception (ou la saisie du code en main propre), puis versé au vendeur. Frais : ${eur(CONFIG.fraisFixes)} ${feeLabel()}, payés par l’acheteur.</p>${PAY_DEMO?`<p class="small muted">Pendant le lancement, Orleoo Pay fonctionne en démonstration : aucun argent réel n’est débité.</p>`:""}`:null],
+  [/(?:revoo|orleoo) ?pay|paiement (protege|integre|securise)|comment (ca se paie|payer)|argent bloque/, ()=>payOn()?`<p><b>Orleoo Pay</b> protège l’acheteur et le vendeur : tu paies sur Orleoo, l’argent est <b>bloqué</b> jusqu’à la réception (ou la saisie du code en main propre), puis versé au vendeur. Frais : ${FEE_TXT()} ${feeLabel()}, payés par l’acheteur.</p>${PAY_DEMO?`<p class="small muted">Pendant le lancement, Orleoo Pay fonctionne en démonstration : aucun argent réel n’est débité.</p>`:""}`:null],
   [/regle|charte|interdit de|droit de|comportement|moderation|equipe (?:revoo|orleoo)|qui modere/, ()=>`<p>Les règles d’Orleoo, en bref :</p><p>• Des annonces honnêtes : vraies photos, état réel, défauts indiqués.<br>• Pas de contrefaçon ni d’article interdit.<br>• Rester poli et respectueux.<br>• Payer et discuter <b>sur Orleoo</b>, jamais en dehors.</p><p>Une équipe de modération vérifie les signalements. En cas d’écart : avertissement, puis suspension (1, 7, 30 jours ou définitive). Le membre est toujours prévenu du motif, sur le site et par e-mail.</p>`],
   [/signal(e|er)? (un )?(membre|vendeur|acheteur|utilisateur)|harcel|insult|menace/, ()=>`<p>Pour signaler un membre : ouvre une de ses annonces → <b>« Signaler cette annonce »</b> et explique le problème (harcèlement, arnaque…). C’est confidentiel. L’équipe peut l’avertir ou suspendre son compte.</p><p>En cas de menace ou de danger, contacte aussi la police (17).</p>`],
   [/annul\w* (mon |un |l |la |ma |une )?(achat|acheter|commande|vente)/, ()=>payOn()?`<p><b>Annuler</b> :</p><p>• <b>Acheteur, en main propre</b> : tant que le code n’est pas saisi, « Annuler l’achat » dans Mes achats. Remboursé sous 48 h.<br>• <b>Vendeur</b> : « Annuler la vente » dans Mes ventes, l’acheteur est remboursé.<br>• <b>Colis déjà envoyé</b> : signale un problème, l’équipe tranche.</p>`:null],

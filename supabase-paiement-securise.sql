@@ -186,7 +186,18 @@ drop policy if exists "mes virements" on public.payout_requests;
 create policy "mes virements" on public.payout_requests
   for select to authenticated using (user_id = auth.uid() or public.is_admin());
 
--- ---------- 6. DÉMARRER UN PAIEMENT (mode Mangopay) ----------
+-- ---------- 6. FRAIS ----------
+-- Frais acheteur par article : pourcentage du prix + montant fixe (réglables ici)
+alter table public.site_settings add column if not exists fee_percent numeric(5,2) not null default 5;
+alter table public.site_settings add column if not exists fee_fixed numeric(10,2) not null default 0.70;
+create or replace function public.order_fee(p_price numeric)
+returns numeric language sql stable security definer set search_path = public as $$
+  select round(coalesce(p_price,0) * coalesce((select fee_percent from public.site_settings where id = 1), 5) / 100
+               + coalesce((select fee_fixed from public.site_settings where id = 1), 0.70), 2);
+$$;
+grant execute on function public.order_fee(numeric) to anon, authenticated;
+
+-- ---------- 7. DÉMARRER UN PAIEMENT (mode Mangopay) ----------
 -- Réserve les articles 30 minutes et calcule le montant. Le paiement par carte est
 -- ensuite créé par l'Edge Function « orleoo-paiement » (clé serveur Mangopay).
 create or replace function public.start_checkout(
@@ -208,8 +219,8 @@ begin
        or coalesce(trim(p_zip),'') = '' or coalesce(trim(p_city),'') = '') then
       raise exception 'Adresse de livraison incomplète';
     end if;
-    total := total + l.price; fees := fees + 1.00;   -- mêmes frais que create_cart_orders
-    clean := clean || jsonb_build_object('listing', l.id, 'delivery', dlv, 'price', l.price);
+    total := total + l.price; fees := fees + public.order_fee(l.price);   -- mêmes frais que create_cart_orders
+    clean := clean || jsonb_build_object('listing', l.id, 'delivery', dlv, 'price', l.price, 'fee', public.order_fee(l.price));
     update public.listings set status = 'sold' where id = l.id;   -- réservé pendant le paiement
   end loop;
   insert into public.checkouts (buyer_id, kind, items, ship_name, ship_address, ship_zip, ship_city, amount, fee)
@@ -221,7 +232,7 @@ end $$;
 revoke all on function public.start_checkout(jsonb,text,text,text,text) from public, anon;
 grant execute on function public.start_checkout(jsonb,text,text,text,text) to authenticated;
 
--- ---------- 7. APRÈS LE PAIEMENT (appelé UNIQUEMENT par l'Edge Function) ----------
+-- ---------- 8. APRÈS LE PAIEMENT (appelé UNIQUEMENT par l'Edge Function) ----------
 create or replace function public.finalize_checkout(p_checkout uuid, p_payin text)
 returns void language plpgsql security definer set search_path = public as $$
 declare c record; it jsonb; l record; dlv text;
@@ -240,7 +251,7 @@ begin
     select * into l from public.listings where id = (it->>'listing')::uuid;
     insert into public.orders (listing_id, buyer_id, seller_id, title, photo, price, fee, delivery,
                                ship_name, ship_address, ship_zip, ship_city, demo, payment_id)
-    values (l.id, c.buyer_id, l.seller_id, l.title, l.photos[1], (it->>'price')::numeric, 1.00, dlv,
+    values (l.id, c.buyer_id, l.seller_id, l.title, l.photos[1], (it->>'price')::numeric, coalesce((it->>'fee')::numeric, public.order_fee((it->>'price')::numeric)), dlv,
             case when dlv='colis' then c.ship_name end, case when dlv='colis' then c.ship_address end,
             case when dlv='colis' then c.ship_zip end, case when dlv='colis' then c.ship_city end,
             false, c.id);

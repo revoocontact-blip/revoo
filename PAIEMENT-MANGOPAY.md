@@ -29,7 +29,7 @@ Tout est prêt côté site et base de données. Aujourd'hui le site est en **mod
 
 ## Étapes, dans l'ordre
 
-1. **Maintenant** : lance `supabase-paiement-securise.sql` dans Supabase > SQL Editor.
+1. **Maintenant** : lance `supabase-paiement-securise.sql` puis `supabase-frais.sql` dans Supabase > SQL Editor.
 2. **Signer avec Mangopay.** Récupère le *Client ID* et la *clé API*, d'abord en **sandbox** (test).
 3. **Ranger les clés.** Ajoute-les dans Supabase > Edge Functions > **Secrets** (jamais dans le site, jamais dans un message) :
    - `MANGOPAY_CLIENT_ID`
