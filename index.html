@@ -25,8 +25,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <script>try{var t=localStorage.getItem("revoo.theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
-<link rel="preload" href="fonts/inter-latin-600.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/inter-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/plus-jakarta-sans-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32.png?v=11">
 <link rel="icon" type="image/png" sizes="64x64" href="logos/favicon-64.png?v=11">
 <link rel="apple-touch-icon" href="logos/apple-touch-icon.png?v=11">
@@ -48,11 +48,12 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-@font-face{font-family:"Inter";src:url("fonts/inter-latin-400.woff2") format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Inter";src:url("fonts/inter-latin-500.woff2") format("woff2");font-weight:500;font-display:swap}
-@font-face{font-family:"Inter";src:url("fonts/inter-latin-600.woff2") format("woff2");font-weight:600;font-display:swap}
-@font-face{font-family:"Inter";src:url("fonts/inter-latin-700.woff2") format("woff2");font-weight:700 900;font-display:swap}
-body{margin:0;font-family:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+@font-face{font-family:"DM Sans";src:url("fonts/dm-sans-latin-400-normal.woff2") format("woff2");font-weight:400 500;font-display:swap}
+@font-face{font-family:"DM Sans";src:url("fonts/dm-sans-latin-600-normal.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"DM Sans";src:url("fonts/dm-sans-latin-700-normal.woff2") format("woff2");font-weight:700 900;font-display:swap}
+@font-face{font-family:"Fraunces";src:url("fonts/fraunces-latin-600-normal.woff2") format("woff2");font-weight:500 700;font-display:swap}
+@font-face{font-family:"Fraunces";src:url("fonts/fraunces-latin-800-normal.woff2") format("woff2");font-weight:800 900;font-display:swap}
+body{margin:0;font-family:"DM Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
 img{max-width:100%}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
@@ -1881,7 +1882,7 @@ html[data-design="2"] .product-price::before{display:none}
    ========================================================= */
 :root{--o-cream:#FBF7EC;--o-paper:#FFFDF7;--o-terra:#1F4D3A;--o-terra2:#163A2B;--o-brown:#14261E;--o-mustard:#F5E663;--o-line:#14261E;--o-soft:#F1EBD8;--o-shadow:3px 3px 0 #14261E}
 html[data-design="2"] body{background:var(--o-cream) radial-gradient(rgba(23,48,38,.045) 1px,transparent 1.2px) 0 0/22px 22px}
-html[data-design="2"] h1,html[data-design="2"] h2,html[data-design="2"] .page-title,html[data-design="2"] .hb-head h2,html[data-design="2"] .section-head h2,html[data-design="2"] .section-head h3,html[data-design="2"] .quick h2,html[data-design="2"] .product-info h1,html[data-design="2"] .kpi b,html[data-design="2"] .fiche-id h2,html[data-design="2"] .mod-head h2,html[data-design="2"] .season-ed-text h3,html[data-design="2"] .panel>h2{font-family:"Inter",ui-sans-serif,system-ui,sans-serif;font-weight:800;letter-spacing:-.01em}
+html[data-design="2"] h1,html[data-design="2"] h2,html[data-design="2"] .page-title,html[data-design="2"] .hb-head h2,html[data-design="2"] .section-head h2,html[data-design="2"] .section-head h3,html[data-design="2"] .quick h2,html[data-design="2"] .product-info h1,html[data-design="2"] .kpi b,html[data-design="2"] .fiche-id h2,html[data-design="2"] .mod-head h2,html[data-design="2"] .season-ed-text h3,html[data-design="2"] .panel>h2{font-family:"Fraunces",Georgia,serif;font-weight:800;letter-spacing:-.01em}
 h1 em,h2 em,h3 em{font-style:italic;color:var(--o-terra);font-weight:800}
 /* Boutons : étiquette à ombre décalée */
 html[data-design="2"] .btn{border-radius:12px;border:2px solid var(--o-line);box-shadow:var(--o-shadow);transition:transform .15s,box-shadow .15s,background .15s}
@@ -1924,7 +1925,7 @@ html[data-design="2"] .hero2 .hx-daily #dailyQuote{color:var(--o-brown)}
 .tag-hole{position:absolute;top:10px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--o-cream);border:2px solid var(--o-line)}
 .tag-ic{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;border:2px solid currentColor}
 .tag-ic .icon{width:22px;height:22px}
-.tag b{font-family:"Inter",ui-sans-serif,system-ui,sans-serif;font-size:26px;line-height:1.05}
+.tag b{font-family:"Fraunces",Georgia,serif;font-size:26px;line-height:1.05}
 .tag small{font-size:14px;opacity:.9}
 /* Onglets de section */
 .home-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 4px}
@@ -1942,12 +1943,12 @@ html[data-design="2"] .card{background:#fff;border:2px solid var(--o-line);borde
 html[data-design="2"] .card:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--o-line)}
 html[data-design="2"] .card .card-img{border-radius:0;border-bottom:2px solid var(--o-line)}
 html[data-design="2"] .price-tag{background:var(--o-mustard);color:var(--o-brown);border:2px solid var(--o-line);border-radius:4px 10px 10px 4px;font-weight:800;padding:4px 10px 4px 16px;clip-path:polygon(9px 0,100% 0,100% 100%,9px 100%,0 50%)}
-html[data-design="2"] .card-title{font-family:"Inter",ui-sans-serif,system-ui,sans-serif;font-weight:600;font-size:16px}
+html[data-design="2"] .card-title{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:16px}
 html[data-design="2"] .chip-mini{border:1px solid #B9BDD0;background:var(--o-cream);color:var(--o-brown)}
 /* Coin échange */
 .swap{margin-top:64px}
 .swap-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center;padding:32px;border:2px solid var(--o-line);border-radius:22px;background:var(--o-terra);color:#fff;box-shadow:6px 6px 0 var(--o-line)}
-.swap h2{font-family:"Inter",ui-sans-serif,system-ui,sans-serif;font-size:clamp(32px,4vw,52px);margin:0 0 12px;color:#fff}
+.swap h2{font-family:"Fraunces",Georgia,serif;font-size:clamp(32px,4vw,52px);margin:0 0 12px;color:#fff}
 .swap h2 em{color:#F5E663}
 .swap .hero2-kicker{background:transparent;color:#fff;border-color:#fff}
 .swap-text p{color:#EAF8F2;max-width:520px}
@@ -1966,7 +1967,7 @@ html[data-design="2"] .swap-items .hx-empty{color:#5C6077}
 /* Catégories, styles */
 html[data-design="2"] .cat-tiles{grid-template-columns:repeat(5,minmax(0,1fr))}
 html[data-design="2"] .cat-tile{background:var(--o-paper);border:2px solid var(--o-line);border-radius:14px;box-shadow:3px 3px 0 var(--o-line);color:var(--o-brown)}
-html[data-design="2"] .cat-tile span{font-family:"Inter",ui-sans-serif,system-ui,sans-serif;font-size:22px}
+html[data-design="2"] .cat-tile span{font-family:"Fraunces",Georgia,serif;font-size:22px}
 html[data-design="2"] .cat-tile.cat-book{background:var(--o-mustard)}
 html[data-design="2"] .style-tiles>*{border:2px solid var(--o-line);border-radius:14px}
 html[data-design="2"] .season-ed-banner,html[data-design="2"] .shop,html[data-design="2"] .trust li,html[data-design="2"] .sell-steps>*,html[data-design="2"] .panel,html[data-design="2"] .product-info,html[data-design="2"] .order{border:2px solid var(--o-line);border-radius:16px;box-shadow:none}
@@ -2180,95 +2181,23 @@ html[data-design="2"] .products,html[data-design="2"] #latestProducts,html[data-
 html[data-design="2"][data-theme="dark"] .cat-book small,html[data-design="2"][data-theme="dark"] .cat-book span{color:#14261E!important}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .cat-book small,html[data-design="2"]:not([data-theme="light"]) .cat-book span{color:#14261E!important}}
 
-
-/* =====================================================================
-   STYLE ÉPURÉ (Inter, fond blanc, lignes fines, sans ombres décalées)
-   ===================================================================== */
-html[data-design="2"]{--o-shadow:none;--o-cream:#FFFFFF;--o-paper:#FFFFFF;--o-line:#E3E5E1;--o-soft:#F3F5F2;--ep-ink:#171A18;--ep-muted:#5F6661;--ep-g:#1F4D3A;--ep-gl:#E8F1EC}
-html[data-design="2"] body{background:#FFFFFF!important;background-image:none!important;font-family:"Inter",ui-sans-serif,system-ui,sans-serif;letter-spacing:-.005em}
-html[data-design="2"] h1,html[data-design="2"] h2,html[data-design="2"] h3{font-family:"Inter",ui-sans-serif,system-ui,sans-serif!important;font-weight:700!important;letter-spacing:-.02em!important}
-html[data-design="2"] h1 em,html[data-design="2"] h2 em,html[data-design="2"] h3 em{font-style:normal!important}
-/* Boutons */
-html[data-design="2"] .btn{border-radius:6px!important;border:1px solid transparent!important;box-shadow:none!important;font-weight:600!important;transform:none!important;letter-spacing:0!important}
-html[data-design="2"] .btn-primary{background:var(--ep-g)!important;color:#fff!important;border-color:var(--ep-g)!important}
-html[data-design="2"] .btn-primary:hover{background:#163A2B!important}
-html[data-design="2"] .btn-outline{background:#fff!important;color:var(--ep-g)!important;border-color:var(--ep-g)!important}
-html[data-design="2"] .btn-outline:hover{background:var(--ep-gl)!important}
-html[data-design="2"] .viewall,html[data-design="2"] .pill{border-radius:6px!important;border:1px solid var(--ep-g)!important;box-shadow:none!important;color:var(--ep-g)!important;background:#fff!important;transform:none!important;font-weight:600!important}
-/* En-tête */
-html[data-design="2"] .top{background:#fff!important;border-bottom:1px solid #E6E8E4!important;box-shadow:none!important}
-html[data-design="2"] .top .search{background:#F1F3F0!important;border:1px solid transparent!important;border-radius:8px!important;box-shadow:none!important}
-html[data-design="2"] .top .search:focus-within{border-color:var(--ep-g)!important;background:#fff!important}
-html[data-design="2"] .top .search .btn{border-radius:6px!important}
-html[data-design="2"] .top .account-btn{background:#fff!important;color:var(--ep-g)!important;border:1px solid var(--ep-g)!important;border-radius:6px!important;box-shadow:none!important;transform:none!important}
-html[data-design="2"] .top .account-btn:hover{background:var(--ep-gl)!important}
-/* Barre de navigation : simples liens texte */
-html[data-design="2"] .subnav{border-bottom:1px solid #E6E8E4;padding-block:4px!important}
-html[data-design="2"] .subnav .nav-pill-f,html[data-design="2"] .subnav .nav-univers,html[data-design="2"] .subnav .nav-atouts{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
-html[data-design="2"] .subnav .nav-pill-f button,html[data-design="2"] .subnav .nav-univers button,html[data-design="2"] .subnav .nav-atouts button{background:none!important;color:var(--ep-muted)!important;font-weight:500!important;border-radius:0!important;padding:12px 14px!important;box-shadow:inset 0 -2px 0 transparent!important}
-html[data-design="2"] .subnav .nav-pill-f button:hover,html[data-design="2"] .subnav .nav-univers button:hover,html[data-design="2"] .subnav .nav-atouts button:hover{color:var(--ep-ink)!important;background:none!important}
-html[data-design="2"] .subnav .nav-univers button[aria-pressed="true"],html[data-design="2"] .subnav .nav-pill-f button[aria-current="true"]{color:var(--ep-ink)!important;font-weight:600!important;box-shadow:inset 0 -2px 0 var(--ep-g)!important;background:none!important}
-html[data-design="2"] .subnav .nav-atouts-l{display:none!important}
-html[data-design="2"] .subnav .nav-atouts button{color:var(--ep-g)!important;font-weight:600!important}
-html[data-design="2"] .subnav .sell{background:var(--ep-g)!important;color:#fff!important;border:1px solid var(--ep-g)!important;border-radius:6px!important;box-shadow:none!important;font-weight:600!important;transform:none!important}
-/* Accueil */
-html[data-design="2"] .hero2{background:var(--ep-gl)!important;border-bottom:0!important}
-html[data-design="2"] .hero2-text{background:#fff;border-radius:10px;padding:36px 40px;box-shadow:0 2px 14px rgba(20,38,30,.06)}
-html[data-design="2"] .hero2 h1{font-size:clamp(30px,3.4vw,44px)!important;line-height:1.12!important}
-html[data-design="2"] .hero2-kicker{border:0!important;background:var(--ep-gl)!important;color:var(--ep-g)!important;border-radius:6px!important;font-weight:600!important}
-html[data-design="2"] .hx-daily{background:#F6F8F6!important;border-radius:8px!important}
-html[data-design="2"] .tag{transform:none!important;border:0!important;border-radius:10px!important;box-shadow:0 2px 14px rgba(20,38,30,.06)!important}
-html[data-design="2"] .tag-hole{display:none!important}
-html[data-design="2"] .home-tabs button,html[data-design="2"] .sel-tabs button{border:1px solid #DADDD8!important;border-radius:99px!important;box-shadow:none!important;font-weight:500!important;transform:none!important;background:#fff!important;color:var(--ep-ink)!important}
-html[data-design="2"] .sel-tabs button[aria-selected="true"]{background:var(--ep-ink)!important;color:#fff!important;border-color:var(--ep-ink)!important}
-/* Cartes d'annonces */
-html[data-design="2"] .card{border:0!important;box-shadow:none!important;background:transparent!important;border-radius:0!important;transform:none!important}
-html[data-design="2"] .card .image-frame,html[data-design="2"] .card-img{border-radius:6px!important;overflow:hidden;border:0!important}
-html[data-design="2"] .card-title{font-family:"Inter",sans-serif!important;font-weight:500!important;font-size:14px!important;color:var(--ep-ink)!important;letter-spacing:0!important}
-html[data-design="2"] .price-tag{clip-path:none!important;border:0!important;border-radius:4px!important;padding:3px 8px!important;box-shadow:none!important}
-html[data-design="2"] .chip-mini{border-radius:4px!important}
-/* Blocs, tuiles, formulaires */
-html[data-design="2"] .panel,html[data-design="2"] .swap,html[data-design="2"] .cat-tile,html[data-design="2"] .style-tile,html[data-design="2"] .shop,html[data-design="2"] .filters,html[data-design="2"] .hb-card,html[data-design="2"] .quick-tile{box-shadow:none!important;border-width:1px!important;transform:none!important}
-html[data-design="2"] .chip span{border:1px solid #DADDD8!important;border-radius:99px!important;box-shadow:none!important;font-weight:500!important}
-html[data-design="2"] .input,html[data-design="2"] select.input,html[data-design="2"] textarea.input{border:1px solid #D6D9D4!important;border-radius:6px!important;box-shadow:none!important}
-html[data-design="2"] .reboot{border:0!important;border-radius:99px!important;box-shadow:0 4px 18px rgba(20,38,30,.18)!important}
-html[data-design="2"][data-theme="dark"]{--o-line:#2F3341;--ep-ink:#EEF0EC;--ep-muted:#A7ADB8;--ep-gl:#22302A}
-html[data-design="2"][data-theme="dark"] body{background:#14161D!important}
-html[data-design="2"][data-theme="dark"] .top,html[data-design="2"][data-theme="dark"] .top .account-btn{background:#14161D!important}
-html[data-design="2"][data-theme="dark"] .top .search{background:#22252F!important}
-html[data-design="2"][data-theme="dark"] .subnav{border-bottom-color:#262A34}
-html[data-design="2"][data-theme="dark"] .hero2-text,html[data-design="2"][data-theme="dark"] .tag.t1,html[data-design="2"][data-theme="dark"] .tag.t4{background:#1C1F27!important;box-shadow:none!important}html[data-design="2"][data-theme="dark"] .tag{box-shadow:none!important}html[data-design="2"][data-theme="dark"] .hero2-kicker{color:#9FD3B8!important}html[data-design="2"][data-theme="dark"] .hx-daily{background:#22252F!important}
-html[data-design="2"][data-theme="dark"] .home-tabs button,html[data-design="2"][data-theme="dark"] .sel-tabs button{background:#1C1F27!important;border-color:#343946!important}
-html[data-design="2"][data-theme="dark"] .btn-outline,html[data-design="2"][data-theme="dark"] .viewall,html[data-design="2"][data-theme="dark"] .pill{background:transparent!important;color:#9FD3B8!important;border-color:#4E8C6E!important}
-html[data-design="2"][data-theme="dark"] .top .account-btn{color:#9FD3B8!important;border-color:#4E8C6E!important}
-html[data-design="2"][data-theme="dark"] .subnav .nav-atouts button{color:#9FD3B8!important}
-html[data-design="2"][data-theme="dark"] .btn-primary,html[data-design="2"][data-theme="dark"] .subnav .sell{background:#F5E663!important;color:#14261E!important;border-color:#F5E663!important}
-html[data-design="2"][data-theme="dark"] .input{border-color:#343946!important}
-@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]){--o-line:#2F3341;--ep-ink:#EEF0EC;--ep-muted:#A7ADB8;--ep-gl:#22302A}
-html[data-design="2"]:not([data-theme="light"]) body{background:#14161D!important}
-html[data-design="2"]:not([data-theme="light"]) .top,html[data-design="2"]:not([data-theme="light"]) .top .account-btn{background:#14161D!important}
-html[data-design="2"]:not([data-theme="light"]) .top .search{background:#22252F!important}
-html[data-design="2"]:not([data-theme="light"]) .subnav{border-bottom-color:#262A34}
-html[data-design="2"]:not([data-theme="light"]) .hero2-text,html[data-design="2"]:not([data-theme="light"]) .tag.t1,html[data-design="2"]:not([data-theme="light"]) .tag.t4{background:#1C1F27!important;box-shadow:none!important}html[data-design="2"]:not([data-theme="light"]) .tag{box-shadow:none!important}html[data-design="2"]:not([data-theme="light"]) .hero2-kicker{color:#9FD3B8!important}html[data-design="2"]:not([data-theme="light"]) .hx-daily{background:#22252F!important}
-html[data-design="2"]:not([data-theme="light"]) .home-tabs button,html[data-design="2"]:not([data-theme="light"]) .sel-tabs button{background:#1C1F27!important;border-color:#343946!important}
-html[data-design="2"]:not([data-theme="light"]) .btn-outline,html[data-design="2"]:not([data-theme="light"]) .viewall,html[data-design="2"]:not([data-theme="light"]) .pill{background:transparent!important;color:#9FD3B8!important;border-color:#4E8C6E!important}
-html[data-design="2"]:not([data-theme="light"]) .top .account-btn{color:#9FD3B8!important;border-color:#4E8C6E!important}
-html[data-design="2"]:not([data-theme="light"]) .subnav .nav-atouts button{color:#9FD3B8!important}
-html[data-design="2"]:not([data-theme="light"]) .btn-primary,html[data-design="2"]:not([data-theme="light"]) .subnav .sell{background:#F5E663!important;color:#14261E!important;border-color:#F5E663!important}
-html[data-design="2"]:not([data-theme="light"]) .input{border-color:#343946!important}
-}
-html[data-design="2"] .subnav .nav-univers button:not([aria-pressed="true"]){color:var(--ep-muted)!important}
-html[data-design="2"] .subnav .nav-univers button[aria-pressed="true"]{color:var(--ep-ink)!important}
-html[data-design="2"] .subnav .nav-pill-f button[aria-current="true"],html[data-design="2"] .subnav .nav-pill-f button{background:transparent!important}
-html[data-design="2"][data-theme="dark"] .sel-tabs button[aria-selected="true"]{background:#EEF0EC!important;color:#14161D!important;border-color:#EEF0EC!important}
-@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .sel-tabs button[aria-selected="true"]{background:#EEF0EC!important;color:#14161D!important;border-color:#EEF0EC!important}}
+/* ===== Tous les boutons du même style ===== */
+html[data-design="2"] .btn,html[data-design="2"] .top .account-btn,html[data-design="2"] .subnav .sell,html[data-design="2"] .home-tabs button,html[data-design="2"] .sel-tabs button,html[data-design="2"] .viewall,html[data-design="2"] .pill,html[data-design="2"] .chip span,html[data-design="2"] .univ-tools .btn{border:2px solid var(--o-line)!important;border-radius:12px!important;box-shadow:3px 3px 0 var(--o-line)!important;font-weight:800!important;transition:transform .15s,box-shadow .15s,background .15s}
+html[data-design="2"] .btn:hover,html[data-design="2"] .top .account-btn:hover,html[data-design="2"] .subnav .sell:hover,html[data-design="2"] .home-tabs button:hover,html[data-design="2"] .sel-tabs button:hover,html[data-design="2"] .viewall:hover,html[data-design="2"] .pill:hover,html[data-design="2"] .univ-tools .btn:hover,html[data-design="2"] .chip:hover span{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--o-line)!important}
+html[data-design="2"] .btn:active,html[data-design="2"] .top .account-btn:active,html[data-design="2"] .subnav .sell:active,html[data-design="2"] .home-tabs button:active,html[data-design="2"] .sel-tabs button:active,html[data-design="2"] .viewall:active,html[data-design="2"] .pill:active,html[data-design="2"] .univ-tools .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--o-line)!important}
+html[data-design="2"] .chip span{box-shadow:2px 2px 0 var(--o-line)!important;border-width:1.5px!important;border-radius:10px!important;font-weight:700!important}
+html[data-design="2"] .top .search .btn{box-shadow:none!important;border-radius:9px!important}
+html[data-design="2"] .subnav .nav-pill-f,html[data-design="2"] .subnav .nav-univers,html[data-design="2"] .subnav .nav-atouts{border:2px solid var(--o-line)!important;border-radius:14px!important;box-shadow:3px 3px 0 var(--o-line)!important}
+html[data-design="2"] .subnav .nav-pill-f button,html[data-design="2"] .subnav .nav-univers button,html[data-design="2"] .subnav .nav-atouts button{border-radius:10px!important}
+html[data-design="2"] .nav-atouts{border-style:solid!important}
+html[data-design="2"] .reboot{border:2px solid var(--o-line)!important;box-shadow:3px 3px 0 var(--o-line)!important;border-radius:14px!important}
 </style>
 </head>
 <body>
 <a href="#main" class="skip" id="skipLink">Aller au contenu</a>
 <div class="maint" id="maintScreen" role="dialog" aria-modal="true" aria-labelledby="maintTitle" hidden>
   <div class="maint-card">
-    <img class="maint-logo" src="logos/orleoo-logo.png?v=12" alt="Orleoo" data-logo="bleu" width="480" height="122">
+    <img class="maint-logo" src="logos/orleoo-logo.png?v=11" alt="Orleoo" data-logo="bleu" width="480" height="122">
     <div class="maint-img" id="maintImg" hidden></div>
     <h1 id="maintTitle">On fait une petite pause</h1>
     <p id="maintMsg">Orleoo est en maintenance pour s’améliorer. Merci de ta patience !</p>
@@ -2282,7 +2211,7 @@ html[data-design="2"][data-theme="dark"] .sel-tabs button[aria-selected="true"]{
 
 <header class="top">
   <div class="wrap head">
-    <a href="#/" class="logo" aria-label="Orleoo, retour à l’accueil"><img src="logos/orleoo-logo.png?v=12" data-logo="bleu" alt="Orleoo" width="480" height="122"></a>
+    <a href="#/" class="logo" aria-label="Orleoo, retour à l’accueil"><img src="logos/orleoo-logo.png?v=11" data-logo="bleu" alt="Orleoo" width="480" height="122"></a>
     <span class="mod-pill mod-only" id="modPill" aria-hidden="true">Console de modération</span>
     <form class="search" id="topSearch" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -2552,7 +2481,7 @@ html[data-design="2"][data-theme="dark"] .sel-tabs button[aria-selected="true"]{
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <img src="logos/orleoo-logo.png?v=12" data-logo="bleu" alt="Orleoo" width="480" height="122" loading="lazy">
+        <img src="logos/orleoo-logo.png?v=11" data-logo="bleu" alt="Orleoo" width="480" height="122" loading="lazy">
         <p>Tes vêtements ont de l’avenir</p>
       </div>
       <nav aria-label="Orleoo"><h2>Orleoo</h2><ul><li><a href="#/a-propos">À propos d’Orleoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
