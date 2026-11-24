@@ -2180,6 +2180,17 @@ html[data-design="2"] .products,html[data-design="2"] #latestProducts,html[data-
 @media (max-width:1024px) and (prefers-color-scheme:light){html[data-design="2"]:not([data-theme="dark"]) .tab-sell{color:#14261E!important}}
 html[data-design="2"][data-theme="dark"] .cat-book small,html[data-design="2"][data-theme="dark"] .cat-book span{color:#14261E!important}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .cat-book small,html[data-design="2"]:not([data-theme="light"]) .cat-book span{color:#14261E!important}}
+
+/* ===== Tous les boutons du même style ===== */
+html[data-design="2"] .btn,html[data-design="2"] .top .account-btn,html[data-design="2"] .subnav .sell,html[data-design="2"] .home-tabs button,html[data-design="2"] .sel-tabs button,html[data-design="2"] .viewall,html[data-design="2"] .pill,html[data-design="2"] .chip span,html[data-design="2"] .univ-tools .btn{border:2px solid var(--o-line)!important;border-radius:12px!important;box-shadow:3px 3px 0 var(--o-line)!important;font-weight:800!important;transition:transform .15s,box-shadow .15s,background .15s}
+html[data-design="2"] .btn:hover,html[data-design="2"] .top .account-btn:hover,html[data-design="2"] .subnav .sell:hover,html[data-design="2"] .home-tabs button:hover,html[data-design="2"] .sel-tabs button:hover,html[data-design="2"] .viewall:hover,html[data-design="2"] .pill:hover,html[data-design="2"] .univ-tools .btn:hover,html[data-design="2"] .chip:hover span{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--o-line)!important}
+html[data-design="2"] .btn:active,html[data-design="2"] .top .account-btn:active,html[data-design="2"] .subnav .sell:active,html[data-design="2"] .home-tabs button:active,html[data-design="2"] .sel-tabs button:active,html[data-design="2"] .viewall:active,html[data-design="2"] .pill:active,html[data-design="2"] .univ-tools .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--o-line)!important}
+html[data-design="2"] .chip span{box-shadow:2px 2px 0 var(--o-line)!important;border-width:1.5px!important;border-radius:10px!important;font-weight:700!important}
+html[data-design="2"] .top .search .btn{box-shadow:none!important;border-radius:9px!important}
+html[data-design="2"] .subnav .nav-pill-f,html[data-design="2"] .subnav .nav-univers,html[data-design="2"] .subnav .nav-atouts{border:2px solid var(--o-line)!important;border-radius:14px!important;box-shadow:3px 3px 0 var(--o-line)!important}
+html[data-design="2"] .subnav .nav-pill-f button,html[data-design="2"] .subnav .nav-univers button,html[data-design="2"] .subnav .nav-atouts button{border-radius:10px!important}
+html[data-design="2"] .nav-atouts{border-style:solid!important}
+html[data-design="2"] .reboot{border:2px solid var(--o-line)!important;box-shadow:3px 3px 0 var(--o-line)!important;border-radius:14px!important}
 </style>
 </head>
 <body>
@@ -2196,7 +2207,7 @@ html[data-design="2"][data-theme="dark"] .cat-book small,html[data-design="2"][d
 </div>
 
 <div class="site-announce" id="siteAnnounce" role="status" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6L7 10H4Z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg><span></span></div>
-<aside class="demo-bar" id="demoBar" aria-label="Information"><b>0 € de frais</b> pendant le lancement · <a href="#/securite">Acheter en sécurité</a></aside>
+<aside class="demo-bar" id="demoBar" aria-label="Information"><b>Paiement protégé</b> · tout se paie sur Orleoo · <a href="#/securite">En savoir plus</a></aside>
 
 <header class="top">
   <div class="wrap head">
@@ -2520,7 +2531,7 @@ html[data-design="2"][data-theme="dark"] .cat-book small,html[data-design="2"][d
    ========================================================= */
 const CONFIG = {
   fraisFixes: 1,              // 1 € payé par l'acheteur
-  paiementIntegre: false,     // false = PHASE 1 : 0 € de frais, l'acheteur paie le vendeur directement (main propre ou PayPal « Biens et services »)
+  paiementIntegre: true,      // tous les paiements passent par Orleoo (aucun paiement direct entre membres). Mode réel/démo : site_settings.payment_mode (SQL)
   revooPayDemo: true,         // true = Orleoo Pay en DÉMO pour tout le monde (aucun argent réel). ⚠️ À METTRE SUR false AVANT L'OUVERTURE AU PUBLIC tant que Mangopay n'est pas branché
                               // true  = PHASE 2 : panier, paiement intégré et frais ci-dessous
   fraisPar: "article",        // "article" = 1 € par article (10 articles = 10 €) · "commande" = 1 € par commande
@@ -2870,7 +2881,7 @@ async function openThread(id){
       <button class="btn btn-primary" type="submit">Envoyer</button>
     </form>`}
     <p class="error" id="threadErr" role="alert"></p>
-    <p class="muted small">Pour ta sécurité : main propre (paiement à la remise) ou PayPal « Biens et services » uniquement. Jamais de virement, Wero ou PayPal « entre proches » à un inconnu. <a class="link" href="#/securite">Conseils</a></p>`;
+    <p class="muted small">Pour ta sécurité, tout se paie sur Orleoo. Les messages qui contiennent un numéro, un e-mail, un IBAN ou un autre moyen de paiement sont bloqués. <a class="link" href="#/securite">En savoir plus</a></p>`;
   watchImages(el);
   const {data,error}=await sb.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at").eq("conversation_id",id).order("created_at",{ascending:true}).limit(500);
   if(chat.current?.id!==id)return;
@@ -2881,6 +2892,7 @@ async function openThread(id){
   input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("threadForm").requestSubmit()}});
   $("threadForm").addEventListener("submit",async e=>{
     e.preventDefault();const body=input.value.trim();if(!body||chat.sending)return;
+    {const why=offPlatform(body);if(why){$("threadErr").textContent=offPlatformMsg(why);return}}
     chat.sending=true;$("threadErr").textContent="";
     const {data:m,error}=await sb.from("messages").insert({conversation_id:id,body,sender_id:state.user.id}).select("id,conversation_id,sender_id,body,created_at,read_at").single();
     chat.sending=false;
@@ -3897,6 +3909,33 @@ async function subAction(kind,arg){
 
 /* Page de paiement */
 let checkoutDelivery="main_propre";
+
+
+/* Paiement et contacts en dehors d'Orleoo : interdits (même règle que le serveur) */
+function offPlatform(txt){
+  const t=String(txt||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""),sq=t.replace(/[^a-z]/g,"");
+  if(/[a-z0-9._%+-]+\s*(@|\(at\)|\[at\]|\barobase\b)\s*[a-z0-9-]+\.[a-z]{2,}/.test(t))return "une adresse e-mail";
+  if(/(\+|00)\s*33[\s.-]*[1-9]([\s.-]*\d{2}){4}/.test(t)||/\b0[1-9]([\s.-]*\d{2}){4}\b/.test(t))return "un numéro de téléphone";
+  if(/\bfr\s*\d{2}(\s*[0-9a-z]{4}){5}/.test(t)||/\b(iban|rib|bic)\b/.test(t))return "des coordonnées bancaires";
+  if(/(paypal|westernunion|moneygram|mandatcash)/.test(sq)||/\b(lydia|wero|paylib|sumeria|revolut|virement|especes|liquide|cash)\b/.test(t))return "un moyen de paiement extérieur à Orleoo";
+  if(/whatsapp/.test(sq)||/\b(telegram|snapchat|snap|instagram|insta|messenger|signal)\b/.test(t)||/\b(hors|en dehors)( du| de)? (site|orleoo|plateforme|appli|application)\b/.test(t))return "une invitation à continuer en dehors d’Orleoo";
+  return "";
+}
+const offPlatformMsg=why=>`Pour ta sécurité, tout se passe sur Orleoo : pas de paiement ni d’échange de coordonnées en dehors du site. Ton texte contient ${why} : retire-le pour continuer.`;
+
+/* Paiement réel (Mangopay) : activé quand site_settings.payment_mode = 'mangopay' */
+const realPay=()=>((typeof site!=="undefined"&&site.settings)||{}).payment_mode==="mangopay";
+const payLabel=t=>realPay()?`Payer ${eur(t)} par carte`:"Simuler le paiement (démo)";
+const payerFields=()=>realPay()?`<div class="grid-2" style="margin-top:12px"><div class="field"><label for="payFirst">Prénom</label><input class="input" id="payFirst" autocomplete="given-name" maxlength="60"></div><div class="field"><label for="payLast">Nom</label><input class="input" id="payLast" autocomplete="family-name" maxlength="60"></div></div><p class="muted small">Paiement par carte sur la page sécurisée de notre prestataire de paiement : Orleoo ne voit jamais ton numéro de carte.</p>`:"";
+async function payByCard(payload,ship,errEl){
+  const first=($("payFirst")?.value||"").trim(),last=($("payLast")?.value||"").trim();
+  if(!first||!last){errEl.textContent="Indique ton prénom et ton nom pour le paiement par carte.";return false}
+  const r=await sb.rpc("start_checkout",{p_items:payload,...ship});
+  if(r.error){errEl.textContent=frenchError(r.error);return false}
+  const {data,error}=await sb.functions.invoke("orleoo-paiement",{body:{action:"payer",checkout:r.data,firstName:first,lastName:last}});
+  if(error||!data||!data.redirect){errEl.textContent=(data&&data.error)||"Le paiement n’a pas pu démarrer. Réessaie dans un instant.";return false}
+  location.href=data.redirect;return true;
+}
 function renderCheckout(id){
   const v=$("view-paiement"),p=findProduct(id);
   if(!payOn()){location.hash="#/article/"+id;return}
@@ -3933,7 +3972,7 @@ function renderCheckout(id){
       <div class="line"><span>Frais Orleoo Pay</span><span>${eur(ORDER_FEE)}</span></div>
       <div class="line"><span>Livraison</span><span class="muted" id="coShip">${checkoutDelivery==="colis"?"À régler avec le vendeur":"Gratuite"}</span></div>
       <div class="line total"><span>Total</span><span>${eur(p.price+ORDER_FEE)}</span></div>
-      <button type="submit" form="checkoutForm" class="btn btn-primary btn-block" id="coPay">Simuler le paiement (démo)</button>
+      ${payerFields()}<button type="submit" form="checkoutForm" class="btn btn-primary btn-block" id="coPay">${payLabel(p.price+ORDER_FEE)}</button>
       <p class="error" id="coErr" role="alert"></p>
       <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px">
         <li>Ton argent reste bloqué jusqu’à ce que tu confirmes la réception.</li>
@@ -3954,8 +3993,9 @@ function renderCheckout(id){
       if(!ok)return;
     }
     const b=$("coPay");b.disabled=true;b.textContent="Commande en cours…";$("coErr").textContent="";
+    if(realPay()){const ok=await payByCard([{listing:p.id,delivery:checkoutDelivery}],{p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null},$("coErr"));if(!ok){b.disabled=false;b.textContent=payLabel(p.price+ORDER_FEE)}return}
     const {error}=await sb.rpc("create_order",{p_listing:p.id,p_delivery:checkoutDelivery,p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null});
-    if(error){b.disabled=false;b.textContent="Simuler le paiement (démo)";$("coErr").textContent=frenchError(error);return}
+    if(error){b.disabled=false;b.textContent=payLabel(p.price+ORDER_FEE);$("coErr").textContent=frenchError(error);return}
     await Promise.all([loadOrders(),loadListings(),loadConversations()]);
     toast("Commande créée (démo, aucun paiement).");
     location.hash="#/compte/achats";
@@ -4003,7 +4043,7 @@ function renderPayCart(){
     <div class="line"><span>Frais Orleoo Pay<br><small class="muted">${eur(ORDER_FEE)} par article</small></span><span>${eur(fees)}</span></div>
     <div class="line"><span>Livraison</span><span class="muted" id="pcShip">${anyColis()?"À régler avec le vendeur":"Gratuite"}</span></div>
     <div class="line total"><span>Total</span><span>${eur(subtotal+fees)}</span></div>
-    <button type="submit" form="payCartForm" class="btn btn-primary btn-block" id="pcPay">Simuler le paiement (démo)</button>
+    ${payerFields()}<button type="submit" form="payCartForm" class="btn btn-primary btn-block" id="pcPay">${payLabel(subtotal+fees)}</button>
     <p class="error" id="pcErr" role="alert"></p>
     <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px"><li>Ton argent reste bloqué jusqu’à ce que tu confirmes chaque réception.</li><li>Problème ? Signale-le avant de confirmer.</li></ul>
     ${demoCount?`<p class="muted small">${demoCount} article${demoCount>1?"s":""} « Démo » ignoré${demoCount>1?"s":""} : ils ne peuvent pas être achetés.</p>`:""}
@@ -4022,8 +4062,9 @@ function renderPayCart(){
     }
     const b=$("pcPay");b.disabled=true;b.textContent="Commande en cours…";$("pcErr").textContent="";
     const payload=items.map(p=>({listing:p.id,delivery:cartDelivery[p.sellerId]}));
+    if(realPay()){const ok=await payByCard(payload,{p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null},$("pcErr"));if(!ok){b.disabled=false;b.textContent=payLabel(subtotal+fees)}return}
     const {error}=await sb.rpc("create_cart_orders",{p_items:payload,p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null});
-    if(error){b.disabled=false;b.textContent="Simuler le paiement (démo)";$("pcErr").textContent=frenchError(error);await loadListings();return}
+    if(error){b.disabled=false;b.textContent=payLabel(subtotal+fees);$("pcErr").textContent=frenchError(error);await loadListings();return}
     state.cart=state.cart.filter(id=>!items.some(p=>p.id===id));save("cart");
     await Promise.all([loadOrders(),loadListings(),loadConversations()]);
     toast(`${items.length} commande${items.length>1?"s":""} créée${items.length>1?"s":""} (démo, aucun paiement).`);
@@ -4681,6 +4722,7 @@ async function submitListing(existing){
   ok&=fieldError("tCond","tCondErr",v("tCond")?"":"Choisis l’état du vêtement.");
   ok&=fieldError("tPrice","tPriceErr",!(price>=1&&price<=10000)?"Indique un prix entre 1 € et 10 000 €.":"");
   $("photoErr").textContent=draftPhotos.length?"":"Ajoute au moins une photo.";if(!draftPhotos.length)ok=false;
+  {const why=offPlatform(v("tTitle")+" "+v("tDesc"));if(why){ok=false;fieldError("tDesc","tDescErr",offPlatformMsg(why))}}
   if(!ok){$("sellErr").textContent="Certains champs sont à corriger.";document.querySelector('#sellForm [aria-invalid="true"]')?.focus();return}
   const btn=$("sellSubmit"),label=btn.textContent;btn.disabled=true;btn.textContent="Publication en cours…";$("sellErr").textContent="";
   try{
@@ -4833,7 +4875,7 @@ const LEGAL_PAGES={
 <h2>4. Articles et contenus interdits</h2>
 <p>Il est interdit de publier tout article ou contenu <b>illégal</b>, notamment : contrefaçons, articles volés, articles dangereux ou interdits à la vente, contenus haineux, violents, discriminatoires ou à caractère sexuel, ainsi que tout contenu portant atteinte aux droits d’autrui. Il est aussi interdit d’utiliser Orleoo pour arnaquer, harceler ou envoyer de la publicité non sollicitée.</p>
 <h2>5. Acheter et payer</h2>
-<p><b>Pendant la période de lancement</b>, Orleoo ne gère pas le paiement : l’acheteur et le vendeur s’entendent directement (remise en main propre, ou envoi par colis avec paiement PayPal « Biens et services »). Orleoo ne prélève <b>aucuns frais</b> et ne peut pas rembourser un paiement fait en dehors du site. Lis nos <a class="link" href="#/securite">conseils de sécurité</a>.</p>
+<p>Tous les paiements entre membres se font <b>sur Orleoo</b>, via son prestataire de paiement. Payer ou se faire payer en dehors d’Orleoo est interdit et peut entraîner la suspension du compte. Orleoo ne peut pas rembourser un paiement fait en dehors du site. Voir <a class="link" href="#/securite">Tout se paie sur Orleoo</a>.</p>
 <p><b>Plus tard</b>, un paiement intégré et sécurisé, Orleoo Pay, sera proposé : l’argent sera bloqué jusqu’à la confirmation de réception, et des frais de ${eur(CONFIG.fraisFixes)} par article seront facturés à l’acheteur. Ces conditions seront complétées avant son activation.</p>
 <p>Les ventes entre particuliers ne donnent pas lieu au droit de rétractation de 14 jours prévu pour les achats auprès de professionnels.</p>
 <h2>6. Classement des annonces</h2>
@@ -4866,13 +4908,13 @@ const PAGES={
     <p>Notre objectif : rendre l’achat de seconde main plus juste et plus abordable, avec des frais simples et identiques quel que soit le prix de l’article.</p>
     <p>Orleoo est en cours de lancement, en France, en français, avec des prix en euros.</p>`,
   "abonnements":()=>subscriptionsPage(),
-  "securite":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Conseils de sécurité</p><h1>Acheter et vendre en sécurité</h1>
-    <p>Pendant le lancement, <b>Orleoo ne gère pas le paiement</b> : l’acheteur paie directement le vendeur. Suis ces règles simples pour éviter les mauvaises surprises.</p>
-    <h2 class="h-ok">Le plus sûr : la remise en main propre</h2><p>Rencontrez-vous dans un lieu public. L’acheteur regarde l’article et <b>paie au moment de la remise</b>.</p>
-    <h2 class="h-ok">À distance : PayPal « Biens et services » uniquement</h2><p>C’est l’option PayPal qui <b>protège l’acheteur</b> : si l’article n’arrive pas ou ne correspond pas, PayPal peut le rembourser. Les frais PayPal sont à la charge du vendeur. Le vendeur envoie le colis avec <b>suivi</b> et partage le numéro dans la messagerie.</p>
-    <h2 class="h-no">À ne jamais faire avec un inconnu</h2><ul><li>Payer par <b>virement</b>, <b>Wero</b>, <b>Lydia</b>, mandat ou carte cadeau.</li><li>Utiliser PayPal « <b>Envoyer à un proche</b> » : il n’offre aucune protection.</li><li>Cliquer sur un lien de paiement reçu par SMS ou e-mail : reste sur Orleoo et PayPal.</li><li>Communiquer tes codes, ton mot de passe ou tes coordonnées bancaires.</li></ul>
-    <h2>Un doute ?</h2><p>Garde tous vos échanges dans la messagerie Orleoo et utilise le bouton « Signaler cette annonce ». Orleoo peut retirer les annonces frauduleuses.</p>
-    <p class="note">Orleoo ne peut pas rembourser un paiement fait en dehors du site. Un paiement intégré et protégé par Orleoo arrivera dans une prochaine étape.</p>`,
+  "securite":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Paiement sécurisé</p><h1>Tout se paie sur Orleoo</h1>
+    <p>Sur Orleoo, <b>chaque achat et chaque complément d’échange se paie sur le site</b>, par carte bancaire, via notre prestataire de paiement. C’est la seule façon d’être protégé.</p>
+    <h2 class="h-ok">Ton argent est bloqué jusqu’à la réception</h2><p>Quand tu paies, le vendeur ne reçoit pas l’argent tout de suite. Il est versé seulement quand tu confirmes avoir reçu l’article, ou après le délai de vérification. En cas de problème, signale-le <b>avant</b> de confirmer : tout reste bloqué le temps que la modération tranche.</p>
+    <h2 class="h-ok">Remise en main propre : avec le code de remise</h2><p>Tu paies sur Orleoo avant le rendez-vous. Au moment de la remise, tu donnes ton <b>code de remise</b> au vendeur après avoir vérifié l’article : c’est ce code qui débloque son argent. Pas d’espèces.</p>
+    <h2 class="h-no">Interdit sur Orleoo</h2><ul><li>Payer ou se faire payer <b>en dehors d’Orleoo</b> : espèces, virement, PayPal, Lydia, Wero, Revolut, mandat, carte cadeau…</li><li>Échanger son <b>numéro de téléphone</b>, son <b>e-mail</b>, son <b>IBAN</b> ou continuer sur WhatsApp, Instagram, Snapchat… Ces messages sont bloqués automatiquement.</li><li>Cliquer sur un lien de paiement reçu par SMS ou e-mail.</li><li>Communiquer tes codes ou ton mot de passe.</li></ul>
+    <p>Si quelqu’un te propose de payer ailleurs, refuse et utilise le bouton « Signaler ». Un membre qui contourne le paiement Orleoo peut être suspendu.</p>
+    <p class="note">Un paiement fait en dehors d’Orleoo n’est pas protégé : Orleoo ne pourra ni le suivre ni le rembourser.</p>`,
   "fonctionnement":()=>!CONFIG.paiementIntegre?`<p class="crumbs"><a href="#/">Accueil</a> › Fonctionnement</p><h1>Comment fonctionne Orleoo ?</h1>
     <ol class="steps"><li><b>1</b>Tu trouves une pièce grâce à la recherche, aux catégories et aux filtres.</li><li><b>2</b>Tu cliques sur « Je suis intéressé(e) » et tu t’arranges avec le vendeur dans la messagerie.</li><li><b>3</b>Remise en main propre, ou envoi par colis avec paiement PayPal « Biens et services ».</li></ol>
     <h2>Les frais</h2><p><b>0 € de frais pendant le lancement.</b> Tu paies uniquement le prix de l’article (et l’envoi si vous choisissez le colis), directement au vendeur.</p>
@@ -4890,9 +4932,9 @@ const PAGES={
     ${CONFIG.paiementIntegre?"":`<p><b>0 € de frais pendant le lancement</b> : l’acheteur te paie directement, en main propre ou par PayPal « Biens et services » (les frais PayPal sont à ta charge). Envoie toujours tes colis avec suivi. Une fois l’article vendu, clique sur « Marquer vendue » dans Mon compte.</p>`}
     <div class="buy-actions"><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a><a class="btn btn-outline" href="#/securite">Conseils de sécurité</a></div>`,
   "aide":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Aide et contact</p><h1>Aide et contact</h1>
-    <details open><summary>Comment acheter ?</summary><p>Clique sur « <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e) » sur une annonce, puis arrange-toi avec le vendeur dans la messagerie : remise en main propre (paiement à la remise) ou envoi par colis avec paiement PayPal « Biens et services ». <a class="link" href="#/securite">Conseils de sécurité</a></p></details>
+    <details open><summary>Comment acheter ?</summary><p>Ajoute l’article au panier, choisis la livraison (colis ou main propre) et paie par carte sur Orleoo. Ton argent reste bloqué jusqu’à ce que tu confirmes la réception. <a class="link" href="#/securite">Tout se paie sur Orleoo</a></p></details>
     <details><summary>Combien coûte un achat ?</summary><p><b>0 € de frais pendant le lancement.</b> Tu paies uniquement le prix de l’article (et l’envoi si vous choisissez le colis), directement au vendeur.</p></details>
-    <details><summary>Que se passe-t-il si je paie et que je ne reçois rien ?</summary><p>Orleoo ne gère pas encore le paiement et ne peut donc pas rembourser. C’est pour ça qu’il faut payer uniquement en main propre ou avec PayPal « Biens et services », qui permet d’ouvrir un litige et d’être remboursé. Signale aussi l’annonce avec le bouton « 🚩 ».</p></details>
+    <details><summary>Que se passe-t-il si je paie et que je ne reçois rien ?</summary><p>Ne confirme pas la réception et signale le problème depuis ta commande, dans Mon compte. L’argent reste bloqué et la modération tranche : s’il n’y a pas d’envoi, tu es remboursé. Seuls les paiements faits sur Orleoo sont protégés.</p></details>
     <details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente.</p></details>
     <details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. L’envoi d’e-mails (confirmation, mot de passe oublié) est encore limité pendant le lancement.</p></details>
     <details><summary>Où sont enregistrées mes données ?</summary><p>Ton compte, ton profil, tes annonces et tes favoris sont enregistrés chez Supabase, notre hébergeur de base de données. </p></details>
@@ -5255,9 +5297,9 @@ const KB=[
   [/(cout|prix|tarif|combien).*(livr|envoi|colis|port)|frais de port|frais d.envoi/, ()=>`<p>Le prix de l’envoi dépend du transporteur et du poids du colis : compare directement sur les sites de Colissimo, Mondial Relay, Relais Colis… Il se règle entre l’acheteur et le vendeur. La remise en main propre, elle, est gratuite.</p>${ask("Bien envoyer un colis","Rendez-vous en main propre")}`],
   [/frais|commission|combien.*(coute|paye)|cout|gratuit|tarif (?:revoo|orleoo)|combien ca coute/, ()=>!CONFIG.paiementIntegre?`<p><b>0 € de frais pendant le lancement !</b> Tu paies seulement le prix de l’article, directement au vendeur, et l’envoi si vous choisissez le colis.</p><p>Plus tard, avec le paiement intégré Orleoo Pay, il y aura ${eur(CONFIG.fraisFixes)} de frais par article, en échange d’un paiement protégé.</p>${ask("Comment payer ?","Orleoo Pay, c’est quoi ?")}`:`<p>L’acheteur paie <b>${eur(CONFIG.fraisFixes)} de frais par article</b>, quel que soit le prix. La livraison est en plus.</p><p>${feeExample()}</p>`],
   [/(?:revoo|orleoo) ?pay|paiement integre|paiement protege/, ()=>`<p><b>Orleoo Pay</b> sera le paiement intégré d’Orleoo : tu paies par carte sur le site, l’argent reste <b>bloqué</b> jusqu’à ce que tu confirmes la réception, puis il est versé au vendeur. En cas de problème, tu es remboursé.</p><p>Il n’est pas encore actif : pour l’instant, le paiement se fait directement entre membres.</p>${ask("Comment payer ?")}`],
-  [/paie|paye|paiement|payer|carte|paypal|virement|wero|lydia|cb\b|especes/, ()=>!CONFIG.paiementIntegre?`<p>Pendant le lancement, tu paies <b>directement le vendeur</b> :</p><p>• en <b>main propre</b>, au moment de la remise ;<br>• à distance, uniquement avec <b>PayPal « Biens et services »</b>, qui te protège si l’article n’arrive pas.</p><p><b>Jamais</b> de virement, Wero, Lydia ou PayPal « entre proches » à un inconnu : ces moyens ne te protègent pas.</p>${go("#/securite","Conseils de sécurité")}${ask("Rendez-vous en main propre","Je n’ai pas reçu mon article")}`:`<p>Le paiement se fait par carte avec Orleoo Pay. L’argent reste bloqué jusqu’à ta confirmation de réception.</p>`],
-  [/arnaque|fraude|escroc|suspect|faux compte|mefier|securi/, ()=>`<p>Quelques réflexes simples :</p><p>• Reste sur la messagerie Orleoo pour échanger.<br>• Paie en main propre ou avec PayPal « Biens et services ».<br>• Méfie-toi des prix trop bas, des demandes de paiement par virement et des liens reçus par SMS.<br>• Ne donne jamais tes codes ni ton mot de passe.</p><p>Un doute ? Utilise le bouton « Signaler cette annonce ».</p>${go("#/securite","Tous les conseils")}`],
-  [/pas recu|jamais recu|rien recu|ne repond (plus|pas)|probleme (avec|de) (ma|la) commande|litige|rembours/, ()=>`<p>Désolé pour ce souci. Voici quoi faire :</p><p>1. Écris au vendeur dans la messagerie Orleoo.<br>2. Si tu as payé avec <b>PayPal « Biens et services »</b>, ouvre un litige dans ton compte PayPal : il peut te rembourser.<br>3. Signale l’annonce avec le bouton « Signaler cette annonce ».</p><p>Orleoo ne peut pas rembourser un paiement fait en dehors du site.</p>`],
+  [/paie|paye|paiement|payer|carte|paypal|virement|wero|lydia|cb\b|especes/, ()=>!CONFIG.paiementIntegre?`<p>Pendant le lancement, tu paies <b>directement le vendeur</b> :</p><p>• en <b>main propre</b>, au moment de la remise ;<br>• à distance, uniquement avec <b>PayPal « Biens et services »</b>, qui te protège si l’article n’arrive pas.</p><p><b>Jamais</b> de virement, Wero, Lydia ou PayPal « entre proches » à un inconnu : ces moyens ne te protègent pas.</p>${go("#/securite","Conseils de sécurité")}${ask("Rendez-vous en main propre","Je n’ai pas reçu mon article")}`:`<p>Tout se paie <b>sur Orleoo</b>, par carte. L’argent reste bloqué jusqu’à ta confirmation de réception.</p><p>Payer en dehors d’Orleoo (espèces, virement, PayPal, Lydia, Wero…) est <b>interdit</b> : ce n’est pas protégé et le compte peut être suspendu.</p>${go("#/securite","Tout se paie sur Orleoo")}`],
+  [/arnaque|fraude|escroc|suspect|faux compte|mefier|securi/, ()=>`<p>Quelques réflexes simples :</p><p>• Reste sur la messagerie Orleoo pour échanger.<br>• Paie uniquement sur Orleoo : jamais d’espèces, de virement, de PayPal ou de Lydia.<br>• Refuse toute demande de continuer sur WhatsApp, par SMS ou par e-mail.<br>• Ne donne jamais tes codes ni ton mot de passe.</p><p>Un doute ? Utilise le bouton « Signaler cette annonce ».</p>${go("#/securite","Tous les conseils")}`],
+  [/pas recu|jamais recu|rien recu|ne repond (plus|pas)|probleme (avec|de) (ma|la) commande|litige|rembours/, ()=>`<p>Désolé pour ce souci. Voici quoi faire :</p><p>1. Ne confirme pas la réception.<br>2. Ouvre ta commande dans <b>Mon compte</b> et clique sur « Signaler un problème » : l’argent reste bloqué.<br>3. La modération regarde le dossier et peut te rembourser.</p><p>Orleoo ne peut pas rembourser un paiement fait en dehors du site.</p>`],
   [/retour|retourner|echang|retractation|annuler (un )?achat/, ()=>`<p>Entre particuliers, il n’y a pas de droit de rétractation de 14 jours comme chez un professionnel. Un retour ou un échange est possible seulement si le vendeur est d’accord : discutez-en dans la messagerie.</p><p>Conseil : pose toutes tes questions (taille, défauts, mesures) <b>avant</b> d’acheter.</p>`],
   // Livraison / remise
   [/main propre|rendez.?vous|rencontr|se voir/, ()=>`<p>Pour une remise en main propre en toute sécurité :</p><p>• Choisis un <b>lieu public</b> et fréquenté (gare, centre commercial, café), en journée.<br>• Vérifie l’article avant de payer.<br>• Paie au moment de la remise.<br>• Pour les mineurs : viens accompagné d’un adulte.</p>`],
@@ -5442,7 +5484,7 @@ function rbPersonal(c){
       if(team.ban)out.push(`<p>Ton compte est suspendu : tes annonces ont été retirées.</p>`);
     }
     if(site.settings&&site.settings.pause_listings)out.push(`<p>Les nouvelles annonces sont <b>en pause</b> pour quelques instants à la demande de l’équipe.</p>`);
-    out.push(`<p>Une annonce peut être refusée si elle contient un <b>mot interdit</b> (contrefaçon, réplique…), si elle n’est pas un vêtement, ou au-delà de 50 annonces par jour. Le message d’erreur indique toujours la raison : corrige puis réessaie.</p>`);
+    out.push(`<p>Une annonce peut être refusée si elle contient un <b>mot interdit</b> (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo, si elle n’est pas un vêtement, ou au-delà de 50 annonces par jour. Le message d’erreur indique toujours la raison : corrige puis réessaie.</p>`);
     return out.join("")+rbLinks(["#/compte/annonces","Mes annonces"]);
   }
   if(!payOn())return null;
@@ -5622,7 +5664,7 @@ function netBanner(){let b=$("netBar");if(navigator.onLine){if(b)b.remove();retu
 addEventListener("offline",netBanner);addEventListener("online",()=>{netBanner();toast("Connexion rétablie.");loadListings().then(renderView)});netBanner();
 if(!payOn())document.body.classList.add("phase1");
 if(matchMedia("(max-width:680px)").matches)$("searchInput").placeholder="Un vêtement, un livre…";
-if(PAY_DEMO&&!CONFIG.paiementIntegre){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=CONFIG.revooPayDemo?`<b>Démo Orleoo Pay</b> · aucun paiement réel`:`<b>Démo Orleoo Pay</b> · aucun paiement réel · <a href="?revoopay=off">Quitter</a>`}
+if(PAY_DEMO){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=CONFIG.revooPayDemo?`<b>Démo Orleoo Pay</b> · aucun paiement réel`:`<b>Démo Orleoo Pay</b> · aucun paiement réel · <a href="?revoopay=off">Quitter</a>`}
 watchImages();renderView();
 (async()=>{
   if(!sb){toast("Le service de comptes est momentanément indisponible.");return}
