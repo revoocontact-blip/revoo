@@ -4955,7 +4955,7 @@ function renderAccount(tab){
     const w=walletTotals(), tm=themeMode();
     body=`<div class="settings">
     <div class="settings-col">
-      ${inviteHtml()}
+      ${inviteHtml()}${installHtml()}
       <form class="panel" id="profileForm" novalidate>
         <h2>Profil public</h2>
         <p class="muted small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg> Visible par tous les membres, sur ton profil et tes annonces.</p>
@@ -5252,6 +5252,21 @@ async function fillBadges(root){
 document.addEventListener("click",async e=>{const g=e.target.closest("[data-gift-ref]");if(!g)return;
   if(!confirm(`Offrir 1 mois d’abonnement Pro à @${g.dataset.giftName} ?`))return;
   if(await teamRpc("gift_subscription",{p_user:g.dataset.giftRef,p_plan:"pro",p_days:30},"Abonnement offert : le membre est prévenu."))g.disabled=true;});
+
+/* Application installable */
+let installEvt=null;
+if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost")){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;if(location.hash.startsWith("#/compte"))renderView()});
+window.addEventListener("appinstalled",()=>{installEvt=null;toast("Orleoo est installé sur ton appareil !");if(location.hash.startsWith("#/compte"))renderView()});
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function installHtml(){
+  if(isStandalone())return "";
+  if(installEvt)return `<div class="panel install"><h2>Installer l’appli Orleoo</h2><p class="muted small">Ajoute Orleoo à ton écran d’accueil : il s’ouvre en plein écran, comme une appli, et se charge plus vite.</p><button type="button" class="btn btn-primary" data-install>Installer l’appli</button></div>`;
+  if(isIOS())return `<div class="panel install"><h2>Installer l’appli Orleoo</h2><p class="muted small">Sur iPhone ou iPad, dans Safari : touche le bouton <b>Partager</b> (le carré avec une flèche), puis <b>« Sur l’écran d’accueil »</b>.</p></div>`;
+  return "";
+}
+document.addEventListener("click",async e=>{if(!e.target.closest("[data-install]")||!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch(_){}installEvt=null;if(location.hash.startsWith("#/compte"))renderView()});
 
 function renderPhotos(){
   $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button>${i===0?"<figcaption>Couverture</figcaption>":""}</figure>`).join("");
