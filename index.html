@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Sécurité : le navigateur n'exécute que le code du site et ne parle qu'à Supabase -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://htisbuqxnqdahtedgiiz.supabase.co https://books.google.com https://books.googleusercontent.com https://covers.openlibrary.org https://archive.org https://*.archive.org; connect-src 'self' data: https://htisbuqxnqdahtedgiiz.supabase.co wss://htisbuqxnqdahtedgiiz.supabase.co https://www.googleapis.com https://books.google.com https://books.googleusercontent.com https://openlibrary.org https://covers.openlibrary.org https://archive.org https://*.archive.org; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://htisbuqxnqdahtedgiiz.supabase.co https://books.google.com https://books.googleusercontent.com https://covers.openlibrary.org https://archive.org https://*.archive.org; connect-src 'self' data: https://challenges.cloudflare.com https://htisbuqxnqdahtedgiiz.supabase.co wss://htisbuqxnqdahtedgiiz.supabase.co https://www.googleapis.com https://books.google.com https://books.googleusercontent.com https://openlibrary.org https://covers.openlibrary.org https://archive.org https://*.archive.org; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(window.top!==window.self){try{window.top.location.replace(window.location.href)}catch(e){document.documentElement.style.display="none"}}</script>
 <title>Orleoo — Tes vêtements ont de l’avenir</title>
@@ -2556,6 +2556,9 @@ html[data-theme="dark"] .founder-badge{color:#F1DCA6;background:#4A3F24;border-c
 .link-form{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}.link-form .input{flex:1 1 240px;min-width:0}
 .links-actions{flex-wrap:nowrap;justify-content:flex-end}
 .links-table td{vertical-align:middle}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.cap-box{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999}
+.cap-box:empty{display:none}
 </style>
 </head>
 <body>
@@ -2906,6 +2909,7 @@ const CONFIG = {
   fraisFixes: 0.70,           // … + 0,70 € par article (même règle dans supabase-frais.sql)
   vitrine: true,             // true = MODE VITRINE : inscriptions, annonces et messages ouverts, achats « bientôt disponibles » (bouton « Me prévenir »). Mettre false quand Mangopay est branché, ET lancer dans Supabase : update public.site_settings set achats_ouverts = true where id = 1;
   paiementIntegre: true,      // tous les paiements passent par Orleoo (aucun paiement direct entre membres). Mode réel/démo : site_settings.payment_mode (SQL)
+  turnstileSiteKey: "",      // Captcha Cloudflare Turnstile : clé PUBLIQUE (« site key »). Vide = désactivé. Voir CAPTCHA.md
   revooPayDemo: true,         // true = Orleoo Pay en DÉMO pour tout le monde (aucun argent réel). ⚠️ À METTRE SUR false AVANT L'OUVERTURE AU PUBLIC tant que Mangopay n'est pas branché
                               // true  = PHASE 2 : panier, paiement intégré et frais ci-dessous
   fraisPar: "article",        // frais calculés pour chaque article
@@ -5340,7 +5344,8 @@ function renderAccount(tab){
       <button class="btn btn-primary" type="submit">Recevoir le lien</button>
       <p class="error" id="forgotErr" role="alert"></p><p class="note small" id="forgotOk" hidden></p>
     </form>`:`
-    <form class="panel" id="signupForm" novalidate>
+    <form class="panel" id="signupForm" novalidate data-t="${Date.now()}">
+      <div class="hp" aria-hidden="true"><label>Ne pas remplir ce champ <input id="sWebsite" tabindex="-1" autocomplete="off"></label></div>
       <div class="grid-2">
         <div class="field"><label for="sName">Identifiant <span class="hint">(public)</span></label><div class="at-input"><span aria-hidden="true">@</span><input class="input" id="sName" autocomplete="username" required maxlength="20" placeholder="camille_75" autocapitalize="off" spellcheck="false"></div><span class="hint">3 à 20 caractères : lettres, chiffres, point, tiret ou _. Visible sur tes annonces.</span><span class="error" id="sNameErr"></span></div>
         <div class="field"><label for="sCity">Ville <span class="hint">(facultatif, privée)</span></label><input class="input" id="sCity" autocomplete="address-level2" maxlength="40"></div>
@@ -5756,6 +5761,18 @@ async function renderUnsubscribe(tok){
   v.innerHTML=`<p class="crumbs"><a href="#/">Accueil</a> › Désinscription</p><h1>Désinscription</h1><p>${ok?"C’est fait : tu ne recevras plus d’e-mail de notre part.":"Ce lien n’est plus valide, ou tu es déjà désinscrit(e) : tu ne recevras pas d’e-mail de notre part."}</p><a class="btn btn-primary" href="#/">Retour à l’accueil</a>`;
 }
 
+/* Captcha (Cloudflare Turnstile) : actif seulement si CONFIG.turnstileSiteKey est rempli */
+const CAPTCHA_ERR="La vérification anti-robot n’a pas abouti. Recharge la page et réessaie.";
+let tsLoad=null;
+const loadTurnstile=()=>tsLoad||(tsLoad=new Promise((res,rej)=>{if(window.turnstile)return res(window.turnstile);const sc=document.createElement("script");sc.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";sc.async=true;sc.onload=()=>res(window.turnstile);sc.onerror=()=>{tsLoad=null;rej(new Error("captcha"))};document.head.appendChild(sc)}));
+async function captchaToken(){
+  if(!CONFIG.turnstileSiteKey)return undefined;
+  const T=await loadTurnstile();let box=$("capBox");
+  if(!box){box=document.createElement("div");box.id="capBox";box.className="cap-box";box.setAttribute("role","dialog");box.setAttribute("aria-label","Vérification anti-robot");document.body.appendChild(box)}
+  return new Promise((res,rej)=>{box.innerHTML="";let id=null;const done=f=>v=>{try{T.remove(id)}catch(_){}box.innerHTML="";f(v)};
+    id=T.render(box,{sitekey:CONFIG.turnstileSiteKey,appearance:"interaction-only",language:"fr",callback:done(res),"error-callback":done(()=>rej(new Error("captcha"))),"timeout-callback":done(()=>rej(new Error("captcha")))})});
+}
+
 /* Parrainage */
 const inviteUrl=()=>location.origin+location.pathname+"?parrain="+encodeURIComponent(state.user?.name||"")+"#/";
 try{const pq=new URLSearchParams(location.search).get("parrain");if(pq&&/^[A-Za-z0-9._-]{3,20}$/.test(pq))localStorage.setItem("revoo.parrain",pq)}catch(_){}
@@ -5968,7 +5985,8 @@ async function deleteMyAccount(f){
   if(!ok)return;
   busy(f,true,"Vérification…");
   state.reauth=true;
-  const chk=await sb.auth.signInWithPassword({email:state.user.email,password:pwd});
+  let cap0;try{cap0=await captchaToken()}catch(_){}
+  const chk=await sb.auth.signInWithPassword({email:state.user.email,password:pwd,options:{captchaToken:cap0}});
   setTimeout(()=>{state.reauth=false},3000);
   if(chk.error){busy(f,false);fieldError("delPwd","delPwdErr","Mot de passe incorrect.");return}
   if(!confirm("Dernière confirmation : supprimer définitivement ton compte ?")){busy(f,false);return}
@@ -6306,8 +6324,11 @@ document.addEventListener("submit",async e=>{
     if(!nameMsg){try{const r=await sb.rpc("username_available",{p_name:name});if(!r.error&&r.data===false)nameMsg="Cet identifiant est déjà pris. Essaie une variante (ex. "+name+"_75).";}catch(x){}}
     const ok=fieldError("sName","sNameErr",nameMsg) & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"");
     if(!ok)return;
+    if($("sWebsite").value){const okEl=$("signupOk");okEl.hidden=false;okEl.textContent="Compte créé ! Ouvre l’e-mail de confirmation, puis connecte-toi.";return}   // robot : on ne crée rien
+    if(!window.__noTimeTrap&&Date.now()-(+f.dataset.t||0)<2500){$("signupErr").textContent="Un instant… Vérifie tes informations puis réessaie.";return}
     busy(f,true,"Création…");$("signupErr").textContent="";
-    const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city},emailRedirectTo:redirectUrl()}});
+    let cap;try{cap=await captchaToken()}catch(_){busy(f,false);$("signupErr").textContent=CAPTCHA_ERR;return}
+    const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city},emailRedirectTo:redirectUrl(),captchaToken:cap}});
     busy(f,false);
     if(error){$("signupErr").textContent=frenchError(error);return}
     if(data.session){toast(`Bienvenue ${name} !`);location.hash="#/compte/profil";setTimeout(showWelcome,400)}
@@ -6318,7 +6339,8 @@ document.addEventListener("submit",async e=>{
     const ok=fieldError("lEmail","lEmailErr",!emailOk(email)?"Adresse e-mail invalide.":"") & fieldError("lPwd","lPwdErr",pwd?"":"Indique ton mot de passe.");
     if(!ok)return;
     busy(f,true,"Connexion…");$("loginErr").textContent="";
-    const {error}=await sb.auth.signInWithPassword({email,password:pwd});
+    let cap;try{cap=await captchaToken()}catch(_){busy(f,false);$("loginErr").textContent=CAPTCHA_ERR;return}
+    const {error}=await sb.auth.signInWithPassword({email,password:pwd,options:{captchaToken:cap}});
     busy(f,false);
     if(error){$("loginErr").textContent=frenchError(error);return}
     toast("Content de te revoir !");location.hash="#/compte/profil";
@@ -6327,7 +6349,8 @@ document.addEventListener("submit",async e=>{
     const email=$("fEmail").value.trim();
     if(!fieldError("fEmail","fEmailErr",!emailOk(email)?"Adresse e-mail invalide.":""))return;
     busy(f,true,"Envoi…");
-    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl()});
+    let cap;try{cap=await captchaToken()}catch(_){busy(f,false);$("forgotErr").textContent=CAPTCHA_ERR;return}
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl(),captchaToken:cap});
     busy(f,false);
     if(error){$("forgotErr").textContent=frenchError(error);return}
     $("forgotOk").hidden=false;$("forgotOk").textContent="Si un compte existe avec cette adresse, un e-mail vient d’être envoyé. Pense à vérifier tes courriers indésirables.";
@@ -6347,7 +6370,8 @@ document.addEventListener("submit",async e=>{
     if(!ok)return;
     busy(f,true,"Vérification…");
     // On vérifie le mot de passe actuel : une session restée ouverte ne suffit pas pour prendre le compte
-    state.reauth=true;const chk=await sb.auth.signInWithPassword({email:state.user.email,password:cur});setTimeout(()=>{state.reauth=false},3000);
+    let cap1;try{cap1=await captchaToken()}catch(_){}
+    state.reauth=true;const chk=await sb.auth.signInWithPassword({email:state.user.email,password:cur,options:{captchaToken:cap1}});setTimeout(()=>{state.reauth=false},3000);
     if(chk.error){busy(f,false);fieldError("pw0","pw0Err","Mot de passe actuel incorrect.");return}
     busy(f,true,"Enregistrement…");const {error}=await sb.auth.updateUser({password:a});busy(f,false);
     if(error){fieldError("pw1","pw1Err",frenchError(error));return}
