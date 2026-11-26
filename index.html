@@ -2481,6 +2481,23 @@ html[data-theme="dark"] .tb-ok{background:#2F3B33;color:#CFE3CB;border-color:#4E
 .help-sec details{border-bottom:1px solid var(--line);padding:10px 0}
 .help-sec summary{cursor:pointer;font-weight:700}
 .help-sec details p{margin:8px 0 0}
+.old-price{color:var(--muted);font-weight:400;font-size:.8em;margin-right:2px}
+.offer-tag{display:inline-block;font-size:12px;font-weight:600;color:var(--accent,var(--navy));border:1px solid currentColor;border-radius:99px;padding:1px 8px;vertical-align:middle}
+.product-price .offer-tag{font-size:12px;margin-left:6px;color:inherit}
+.product-price .old-price{color:inherit;opacity:.8}
+.offer-line{margin:12px 0 0}
+.offer-form h3{font-size:16px;margin:0 0 4px}.offer-form .tpl{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.lot-hint{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;color:var(--ink)}
+.lot-hint .icon{width:18px;height:18px;flex:none;margin-top:1px;color:var(--muted)}
+.lot-hint.ok b{color:var(--accent,var(--navy))}
+.line.saving span:last-child{color:var(--accent,var(--navy));font-weight:600}
+.offer-sec{font-size:17px;margin:22px 0 10px}
+.offer-row{display:flex;gap:12px;align-items:center;margin-top:8px}.offer-row>div{min-width:0}
+.offer-counter{margin-top:10px}
+.lots-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end}
+.lots-form .field{margin:0}
+@media (max-width:560px){.lots-form{grid-template-columns:1fr 1fr 1fr}.lots-form .btn{grid-column:1/-1}}
+.pp-lot{font-weight:600}
 </style>
 </head>
 <body>
@@ -2997,6 +3014,7 @@ async function loadListings(){
   if(error){state.loadError=frenchError(error);console.warn(error);return}
   state.loadError="";
   state.remote=(data||[]).map(mapListing);
+  await loadLots();
   try{const r=await sb.from("reviews").select("id,order_id,seller_id,buyer_id,rating,comment,demo,created_at,buyer:profiles!reviews_buyer_id_fkey(name)").order("created_at",{ascending:false}).limit(1000);if(!r.error)state.reviews=r.data||[]}catch(e){}
   await loadSubs();
 }
@@ -3041,6 +3059,8 @@ async function loadProfile(session){
   try{const r=await sb.from("profiles").select("username_changes,username_changed_at").eq("id",u.id).maybeSingle();if(!r.error&&r.data){state.user.uChanges=r.data.username_changes||0;state.user.uChangedAt=r.data.username_changed_at}}catch(e){}
   state.user.vacation=null;
   try{const r=await sb.from("profiles").select("vacation").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.vacation=!!r.data.vacation}catch(e){}
+  state.user.lots=null;
+  try{const r=await sb.from("profiles").select("lot2,lot3,lot5").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.lots={2:+r.data.lot2||0,3:+r.data.lot3||0,5:+r.data.lot5||0}}catch(e){}
   state.user.accent="";
   try{const r=await sb.from("profiles").select("accent").eq("id",u.id).maybeSingle();if(!r.error&&r.data)state.user.accent=r.data.accent||""}catch(e){}
 }
@@ -3787,7 +3807,7 @@ async function loadOrders(){
     try{const c=await sb.from("order_codes").select("order_id,code");if(!c.error)(c.data||[]).forEach(x=>orders.codes[x.order_id]=x.code)}catch(e){}
     orders.loaded=true;
   }catch(e){console.warn(e)}
-  await loadTrades();
+  await Promise.all([loadTrades(),loadOffers()]);
 }
 const fmtDT=d=>new Date(d).toLocaleString("fr-FR",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"});
 const orderStatus=o=>o.delivery==="main_propre"&&o.status==="paid"?"Payée · rendez-vous à fixer":o.delivery==="main_propre"&&o.status==="received"?"Remise faite":ORDER_STATUS[o.status]||o.status;
@@ -3934,6 +3954,164 @@ function orderDisputes(list){
    Débloqué après 3 achats confirmés · suivi obligatoire · 48 h après le dernier colis reçu
    ========================================================= */
 const TRADE_UNLOCK=3, TRADE_AUTO_RECEIVE=14*864e5;   // un colis non confirmé 14 jours après l'envoi compte comme reçu
+/* =========================================================
+   OFFRES ET LOTS
+   ========================================================= */
+const offers={list:[],loaded:false}, lots={};
+const offersOpen=()=>payOn()&&!CONFIG.vitrine;
+const OFFER_STATUS={en_attente:"En attente de réponse",contre:"Contre-offre",acceptee:"Acceptée",refusee:"Refusée",annulee:"Annulée",expiree:"Expirée",utilisee:"Achetée"};
+const cents=x=>Math.round((+x||0)*100);
+const minOffer=pr=>Math.max(1,Math.ceil(cents(pr)*50/100)/100);
+const parseEur=v=>{const n=parseFloat(String(v||"").replace(/\s|€/g,"").replace(",","."));return isFinite(n)?Math.round(n*100)/100:NaN};
+async function loadLots(){
+  if(!sb)return;
+  try{const {data,error}=await sb.from("profiles").select("id,lot2,lot3,lot5").or("lot2.gt.0,lot3.gt.0,lot5.gt.0").limit(2000);if(error)return;
+    Object.keys(lots).forEach(k=>delete lots[k]);
+    (data||[]).forEach(r=>{if(r.lot2>0||r.lot3>0||r.lot5>0)lots[r.id]={2:+r.lot2||0,3:+r.lot3||0,5:+r.lot5||0}})}catch(e){}
+}
+async function loadOffers(){
+  offers.list=[];offers.loaded=false;
+  if(!sb||!state.user||!offersOpen())return;
+  try{
+    try{await sb.rpc("expire_offers")}catch(e){}
+    const {data,error}=await sb.from("offers").select("*,listings(title,photos,price,status),buyer:profiles!offers_buyer_id_fkey(name),seller:profiles!offers_seller_id_fkey(name)").order("created_at",{ascending:false}).limit(200);
+    if(error){console.warn(error);return}
+    offers.list=data||[];offers.loaded=true;
+  }catch(e){console.warn(e)}
+}
+/* Réduction de lot (en %) pour n articles du même vendeur : même calcul que le serveur */
+const lotPct=(sid,n)=>{const l=lots[sid];return l?Math.max(n>=2?l[2]:0,n>=3?l[3]:0,n>=5?l[5]:0):0};
+const lotSteps=sid=>{const l=lots[sid];return l?[2,3,5].filter(n=>l[n]>0).map(n=>[n,l[n]]):[]};
+const lotTxt=sid=>lotSteps(sid).map(([n,pc])=>`−${pc} % dès ${n} articles`).join(" · ");
+function acceptedOffer(id){if(!state.user)return null;const now=Date.now();return offers.list.find(o=>o.listing_id===id&&o.buyer_id===state.user.id&&o.status==="acceptee"&&Date.parse(o.valid_until)>now)||null}
+function priceFor(p,n=1){const o=acceptedOffer(p.id);if(o)return Math.min(+o.amount,p.price);const pc=lotPct(p.sellerId,n);return pc?Math.round(cents(p.price)*(100-pc)/100)/100:p.price}
+const offerTodo=()=>state.user?offers.list.filter(o=>(o.seller_id===state.user.id&&o.status==="en_attente")||(o.buyer_id===state.user.id&&(o.status==="contre"||(o.status==="acceptee"&&Date.parse(o.valid_until)>Date.now())))).length:0;
+function lotHint(p){
+  const t=lotTxt(p.sellerId);if(!t||p.mine)return "";
+  return `<p class="lot-hint small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v13H3zM3 7l3-4h12l3 4M9 11h6"/></svg><span><b>Réduction sur les lots</b> chez ${esc(p.seller)} : ${t}. <a class="link" href="#/vendeur/${p.sellerId}">Voir ses articles</a></span></p>`;
+}
+function offerBlock(p){
+  if(!offersOpen()||p.demo||state.isAdmin)return "";
+  if(!state.user)return `<p class="small muted offer-line"><a class="link" href="#/compte">Connecte-toi</a> pour faire une offre au vendeur.</p>`;
+  if(p.sellerVacation)return "";
+  const o=offers.list.find(o=>o.listing_id===p.id&&o.buyer_id===state.user.id&&["en_attente","contre","acceptee"].includes(o.status));
+  if(o&&o.status==="acceptee"&&Date.parse(o.valid_until)>Date.now())return `<p class="note small offer-line"><b>Offre acceptée :</b> cet article est à ${eur(o.amount)} pour toi jusqu’au ${fmtDT(o.valid_until)}.</p>`;
+  if(o&&o.status==="en_attente")return `<div class="note small offer-line"><b>Offre envoyée : ${eur(o.amount)}</b>. Le vendeur a jusqu’au ${fmtDT(o.expires_at)} pour répondre. <button type="button" class="link" data-offer="annuler" data-id="${o.id}">Retirer mon offre</button></div>`;
+  if(o&&o.status==="contre")return `<div class="note small offer-line"><b>Contre-offre du vendeur : ${eur(o.amount)}</b> au lieu de ${eur(p.price)}, valable jusqu’au ${fmtDT(o.expires_at)}.<div class="row-actions" style="justify-content:flex-start;margin-top:8px"><button type="button" class="btn btn-primary" data-offer="accepter" data-id="${o.id}">Accepter ${eur(o.amount)}</button><button type="button" class="btn btn-outline" data-offer="refuser" data-id="${o.id}">Refuser</button></div></div>`;
+  return `<button type="button" class="btn btn-outline btn-block" data-offer="open" data-id="${esc(p.id)}" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12 12 20 3 11V4h7l10 8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg> Faire une offre</button><div id="offerBox"></div>`;
+}
+function offerFormHtml(p){
+  const min=minOffer(p.price), picks=[10,15,20].map(k=>Math.max(min,Math.floor(cents(p.price)*(100-k)/100)/100)).filter((x,i,a)=>x<p.price&&a.indexOf(x)===i);
+  return `<form class="panel offer-form" data-offerform="${esc(p.id)}" novalidate style="margin-top:12px">
+    <h3>Ton offre</h3>
+    <p class="small muted">Prix affiché ${eur(p.price)} · offre minimum ${eur(min)}. Le vendeur a 48 h pour accepter, refuser ou te faire une contre-offre.</p>
+    ${picks.length?`<div class="tpl" role="group" aria-label="Offres rapides">${picks.map(x=>`<button type="button" class="chip-btn" data-offerpick="${x}">${eur(x)}</button>`).join("")}</div>`:""}
+    <div class="field"><label for="offerAmt">Ton prix (€)</label><input class="input" id="offerAmt" inputmode="decimal" autocomplete="off" maxlength="9" placeholder="${eur(Math.max(min,Math.floor(cents(p.price)*0.9)/100)).replace(/\s?€/,"")}" aria-describedby="offerTotal"><span class="error" id="offerErr" role="alert"></span></div>
+    <p class="small muted" id="offerTotal">Si elle est acceptée, tu paies ton prix + les frais Orleoo Pay (${FEE_TXT()}).</p>
+    <button class="btn btn-primary" type="submit">Envoyer l’offre</button>
+  </form>`;
+}
+function offerCard(o){
+  const me=state.user.id, iSell=o.seller_id===me, l=o.listings||{}, ph=(l.photos||[])[0], who=iSell?(o.buyer&&o.buyer.name):(o.seller&&o.seller.name);
+  const live=o.status==="acceptee"&&Date.parse(o.valid_until)>Date.now();
+  let info="",actions="";
+  if(o.status==="en_attente"){
+    if(iSell){info=`<p class="small"><b>À toi de répondre</b> avant le ${fmtDT(o.expires_at)}. Sans réponse, l’offre expire.</p>`;
+      actions=`<button type="button" class="btn btn-primary" data-offer="accepter" data-id="${o.id}">Accepter</button>${o.countered?"":`<button type="button" class="btn btn-outline" data-offer="contre-form" data-id="${o.id}">Contre-offre</button>`}<button type="button" class="btn btn-outline" data-offer="refuser" data-id="${o.id}">Refuser</button>`}
+    else{info=`<p class="small muted">En attente de la réponse de @${esc(who||"vendeur")} (jusqu’au ${fmtDT(o.expires_at)}).</p>`;actions=`<button type="button" class="btn btn-outline" data-offer="annuler" data-id="${o.id}">Retirer mon offre</button>`}
+  } else if(o.status==="contre"){
+    if(iSell)info=`<p class="small muted">Contre-offre envoyée. En attente de la réponse de @${esc(who||"acheteur")} (jusqu’au ${fmtDT(o.expires_at)}).</p>`;
+    else{info=`<p class="small"><b>@${esc(who||"Le vendeur")} te propose ${eur(o.amount)}.</b> Réponds avant le ${fmtDT(o.expires_at)}.</p>`;
+      actions=`<button type="button" class="btn btn-primary" data-offer="accepter" data-id="${o.id}">Accepter ${eur(o.amount)}</button><button type="button" class="btn btn-outline" data-offer="refuser" data-id="${o.id}">Refuser</button>`}
+  } else if(live){
+    if(iSell)info=`<p class="small">@${esc(who||"L’acheteur")} peut acheter l’article à ce prix jusqu’au ${fmtDT(o.valid_until)}.</p>`;
+    else{info=`<p class="small"><b>Offre acceptée !</b> Achète l’article à ${eur(o.amount)} avant le ${fmtDT(o.valid_until)}.</p>`;
+      actions=l.status==="active"?`<a class="btn btn-primary" href="#/paiement/${encodeURIComponent(o.listing_id)}">Acheter à ${eur(o.amount)}</a><button type="button" class="btn btn-outline" data-cart="${esc(o.listing_id)}" aria-pressed="${inCart(o.listing_id)}">${inCart(o.listing_id)?"Dans le panier ✓":"Ajouter au panier"}</button>`:""}
+  }
+  return `<div class="order offer-card">
+    <header><b>${iSell?`Offre de @${esc(who||"membre")}`:`Ton offre à @${esc(who||"membre")}`}</b><span class="status">${o.status==="acceptee"&&!live?"Expirée":OFFER_STATUS[o.status]||o.status}</span></header>
+    <div class="offer-row"><a class="image-frame order-img" href="#/article/${encodeURIComponent(o.listing_id)}" aria-label="Voir l’annonce ${esc(l.title||"")}">${ph?`<img data-safe-image src="${esc(ph)}" alt="">`:""}</a>
+      <div><a href="#/article/${encodeURIComponent(o.listing_id)}"><b>${esc(l.title||"Article")}</b></a><p class="small" style="margin:2px 0 0">Prix affiché <s>${eur(o.list_price)}</s> · ${o.status==="contre"?"contre-offre":"offre"} <b>${eur(o.amount)}</b> <span class="muted" style="white-space:nowrap">(−${Math.max(0,Math.round((1-o.amount/o.list_price)*100))} %)</span></p><p class="small muted" style="margin:2px 0 0">${new Date(o.created_at).toLocaleDateString("fr-FR")}</p></div></div>
+    ${info}
+    ${actions?`<div class="row-actions" style="justify-content:flex-start;margin-top:10px">${actions}</div>`:""}
+    <div id="of-${o.id}"></div>
+  </div>`;
+}
+function offersHtml(){
+  if(!offers.loaded)return `<p class="muted">Chargement…</p>`;
+  const me=state.user.id, rec=offers.list.filter(o=>o.seller_id===me), sent=offers.list.filter(o=>o.buyer_id===me);
+  const sec=(t,list,empty)=>`<h2 class="offer-sec">${t}</h2>${list.length?list.map(offerCard).join(""):`<p class="muted small">${empty}</p>`}`;
+  return `<p class="muted small">Pour faire une offre, ouvre une annonce et clique sur « Faire une offre ». Les offres sans réponse expirent après 48 h.</p>`
+    +sec(`Offres reçues${rec.length?` (${rec.length})`:""}`,rec,"Aucune offre reçue pour le moment.")
+    +sec(`Offres envoyées${sent.length?` (${sent.length})`:""}`,sent,"Tu n’as pas encore fait d’offre.");
+}
+async function offerAction(action,id){
+  if(action==="open"){const box=$("offerBox");if(!box)return;if(box.innerHTML){box.innerHTML="";return}const p=findProduct(id);if(!p)return;box.innerHTML=offerFormHtml(p);$("offerAmt")?.focus();return}
+  if(action==="contre-form"){const box=$("of-"+id),o=offers.list.find(x=>x.id===id);if(!box||!o)return;if(box.innerHTML){box.innerHTML="";return}
+    const max=+((o.listings&&o.listings.price)||o.list_price);
+    box.innerHTML=`<form class="offer-counter" data-offercounter="${o.id}" novalidate><label class="label" for="oc-${o.id}">Ton prix (entre ${eur(o.amount)} et ${eur(max)})</label><div class="handoff-row"><input class="input" id="oc-${o.id}" inputmode="decimal" maxlength="9" autocomplete="off"><button class="btn btn-primary" type="submit">Envoyer</button></div><p class="muted small">Une seule contre-offre possible. L’acheteur a 48 h pour répondre.</p><p class="error" id="oce-${o.id}" role="alert"></p></form>`;
+    $("oc-"+o.id).focus();return}
+  if(action==="refuser"&&!confirm("Refuser cette offre ?"))return;
+  if(action==="annuler"&&!confirm("Retirer ton offre ?"))return;
+  const {error}=await sb.rpc("respond_offer",{p_offer:id,p_action:action});
+  if(error){toast(frenchError(error));await loadOffers();renderView();return}
+  const o=offers.list.find(x=>x.id===id), iSell=o&&o.seller_id===state.user.id;
+  toast(action==="accepter"?(iSell?"Offre acceptée : l’acheteur a 48 h pour payer.":"Contre-offre acceptée : tu as 48 h pour payer à ce prix."):action==="refuser"?"Offre refusée.":"Offre retirée.");
+  await loadOffers();
+  if(action==="accepter"&&!iSell&&o){location.hash="#/paiement/"+encodeURIComponent(o.listing_id);return}
+  renderView();
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-offer]");if(b){e.preventDefault();offerAction(b.dataset.offer,b.dataset.id);return}
+  const k=e.target.closest("[data-offerpick]");if(k){const i=$("offerAmt");if(i){i.value=String(k.dataset.offerpick).replace(".",",");i.dispatchEvent(new Event("input",{bubbles:true}));i.focus()}}
+});
+document.addEventListener("input",e=>{
+  if(e.target.id!=="offerAmt")return;fieldError("offerAmt","offerErr","");const f=e.target.closest("[data-offerform]"),p=f&&findProduct(f.dataset.offerform),v=parseEur(e.target.value),t=$("offerTotal");if(!p||!t)return;
+  t.innerHTML=isFinite(v)&&v>=minOffer(p.price)&&v<p.price?`Si elle est acceptée, tu paies <b>${eur(v+feeOf(v))}</b> (${eur(v)} + ${eur(feeOf(v))} de frais Orleoo Pay) au lieu de ${eur(p.price+feeOf(p.price))}.`:`Si elle est acceptée, tu paies ton prix + les frais Orleoo Pay (${FEE_TXT()}).`;
+});
+document.addEventListener("submit",async e=>{
+  const f=e.target.closest("[data-offerform]"),c=e.target.closest("[data-offercounter]");
+  if(!f&&!c)return;e.preventDefault();
+  if(f){
+    const p=findProduct(f.dataset.offerform);if(!p)return;const v=parseEur($("offerAmt").value),min=minOffer(p.price),err=$("offerErr");
+    const msg=!isFinite(v)?"Indique un montant, par exemple 12,50.":v>=p.price?`Ton offre doit être inférieure au prix affiché (${eur(p.price)}).`:v<min?`Ton offre doit être d’au moins ${eur(min)} (la moitié du prix).`:"";
+    if(!fieldError("offerAmt","offerErr",msg))return;
+    const b=f.querySelector("[type=submit]");b.disabled=true;b.textContent="Envoi…";
+    const {error}=await sb.rpc("make_offer",{p_listing:p.id,p_amount:v});
+    b.disabled=false;b.textContent="Envoyer l’offre";
+    if(error){err.textContent=frenchError(error);return}
+    toast("Offre envoyée ! Le vendeur a 48 h pour répondre. Tu seras prévenu(e) par message.");
+    await Promise.all([loadOffers(),typeof loadConversations==="function"?loadConversations():null]);renderView();return;
+  }
+  const id=c.dataset.offercounter,o=offers.list.find(x=>x.id===id),v=parseEur($("oc-"+id).value),max=+((o&&o.listings&&o.listings.price)||(o&&o.list_price)||0),err=$("oce-"+id);
+  if(!o)return;
+  if(!isFinite(v)||v<=+o.amount||v>=max){err.textContent=`Indique un prix entre ${eur(+o.amount+0.01)} et ${eur(max-0.01)}.`;return}
+  const b=c.querySelector("[type=submit]");b.disabled=true;
+  const {error}=await sb.rpc("respond_offer",{p_offer:id,p_action:"contre",p_amount:v});b.disabled=false;
+  if(error){err.textContent=frenchError(error);return}
+  toast("Contre-offre envoyée. L’acheteur a 48 h pour répondre.");await loadOffers();renderView();
+});
+/* Réglage des lots (vendeur) */
+function lotsPanel(){
+  const l=state.user.lots;if(!l)return "";
+  const opts=v=>[0,5,10,15,20,25,30].map(x=>`<option value="${x}" ${+v===x?"selected":""}>${x?`−${x} %`:"Aucune"}</option>`).join("");
+  return `<div class="panel"><h2>Réductions sur les lots</h2>
+    <p class="muted small">Donne envie d’acheter plusieurs articles chez toi : la réduction s’applique automatiquement dans le panier de l’acheteur. Ton prix affiché ne change pas.</p>
+    <form id="lotsForm" class="lots-form" novalidate>
+      ${[2,3,5].map(n=>`<div class="field"><label for="lot${n}">Dès ${n} articles</label><select class="input" id="lot${n}">${opts(l[n])}</select></div>`).join("")}
+      <button class="btn btn-primary" type="submit">Enregistrer</button>
+    </form><p class="error" id="lotsErr" role="alert"></p></div>`;
+}
+document.addEventListener("submit",async e=>{
+  if(e.target.id!=="lotsForm")return;e.preventDefault();
+  const v={lot2:+$("lot2").value,lot3:+$("lot3").value,lot5:+$("lot5").value};
+  const b=e.target.querySelector("[type=submit]");b.disabled=true;
+  const {error}=await sb.from("profiles").update(v).eq("id",state.user.id);b.disabled=false;
+  if(error){$("lotsErr").textContent=frenchError(error);return}
+  state.user.lots={2:v.lot2,3:v.lot3,5:v.lot5};await loadLots();
+  toast(v.lot2||v.lot3||v.lot5?"Réductions enregistrées : elles s’affichent sur ton profil et tes annonces.":"Réductions sur les lots désactivées.");
+});
+
 const trades={list:[],addr:[],loaded:false};
 const TRADE_STATUS={proposed:"Proposition en attente",accepted:"En cours",completed:"Échange terminé",problem:"Problème signalé",declined:"Refusé",cancelled:"Annulé"};
 async function loadTrades(){
@@ -4256,13 +4434,14 @@ function renderCheckout(id){
   if(!state.user){v.innerHTML=`<div class="page-head narrow"><div class="panel"><h2>Connecte-toi pour acheter</h2><a class="btn btn-primary" href="#/compte">Se connecter</a></div></div>`;return}
   if(!p){v.innerHTML=state.loading?`<p class="muted page-head">Chargement…</p>`:`<div class="page-head"><h1 class="page-title">Article introuvable</h1><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
   if(p.demo||p.mine||p.status!=="active"){v.innerHTML=`<div class="page-head narrow"><div class="empty"><p>${p.demo?"C’est un article de démonstration : il ne peut pas être acheté.":p.mine?"C’est ton annonce : tu ne peux pas l’acheter.":"Cet article n’est plus disponible."}</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div></div>`;return}
+  const pr=priceFor(p,1),op=acceptedOffer(p.id);
   v.innerHTML=`<div class="page-head"><p class="crumbs"><a href="#/">Accueil</a> › <a href="#/article/${p.id}">${esc(p.name)}</a> › Paiement</p><h1 class="page-title">Acheter avec Orleoo Pay</h1></div>
   <div class="cart-layout">
     <form id="checkoutForm" novalidate>
       <div class="panel"><div class="cart-item" style="border:0;padding:0">
         <span class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}"></span>
         <div><h3>${esc(p.name)}</h3><p>${esc(p.size)} · ${esc(p.condition)} · vendu par ${esc(p.seller)}</p></div>
-        <div class="price">${eur(p.price)}</div></div></div>
+        <div class="price">${eur(pr)}</div></div></div>
       <div class="panel"><h2>Livraison</h2>
         <fieldset class="carriers" style="margin:0"><legend class="sr-only">Mode de livraison</legend>
           <label class="carrier"><input type="radio" name="dlv" value="main_propre" ${checkoutDelivery==="main_propre"?"checked":""}><span><b>Remise en main propre</b><small>Vous fixez le rendez-vous ensemble. Tu reçois un code à donner au vendeur seulement si l’article te convient.</small></span></label>
@@ -4282,11 +4461,11 @@ function renderCheckout(id){
       </div>
     </form>
     <aside class="summary" aria-labelledby="coSum"><h2 id="coSum">Récapitulatif</h2>
-      <div class="line"><span>Article</span><span>${eur(p.price)}</span></div>
-      <div class="line"><span>Frais Orleoo Pay</span><span>${eur(feeOf(p.price))}</span></div>
+      <div class="line"><span>Article${op?`<br><small class="muted">ton offre acceptée (au lieu de ${eur(p.price)})</small>`:""}</span><span>${eur(pr)}</span></div>
+      <div class="line"><span>Frais Orleoo Pay</span><span>${eur(feeOf(pr))}</span></div>
       <div class="line"><span>Livraison</span><span class="muted" id="coShip">${checkoutDelivery==="colis"?"À régler avec le vendeur":"Gratuite"}</span></div>
-      <div class="line total"><span>Total</span><span>${eur(p.price+feeOf(p.price))}</span></div>
-      ${payerFields()}<button type="submit" form="checkoutForm" class="btn btn-primary btn-block" id="coPay">${payLabel(p.price+feeOf(p.price))}</button>
+      <div class="line total"><span>Total</span><span>${eur(pr+feeOf(pr))}</span></div>
+      ${payerFields()}<button type="submit" form="checkoutForm" class="btn btn-primary btn-block" id="coPay">${payLabel(pr+feeOf(pr))}</button>
       <p class="error" id="coErr" role="alert"></p>
       <ul class="small muted" style="padding-left:18px;margin:12px 0 0;display:grid;gap:4px">
         <li>Ton argent reste bloqué jusqu’à ce que tu confirmes la réception.</li>
@@ -4307,9 +4486,9 @@ function renderCheckout(id){
       if(!ok)return;
     }
     const b=$("coPay");b.disabled=true;b.textContent="Commande en cours…";$("coErr").textContent="";
-    if(realPay()){const ok=await payByCard([{listing:p.id,delivery:checkoutDelivery}],{p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null},$("coErr"));if(!ok){b.disabled=false;b.textContent=payLabel(p.price+feeOf(p.price))}return}
+    if(realPay()){const ok=await payByCard([{listing:p.id,delivery:checkoutDelivery}],{p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null},$("coErr"));if(!ok){b.disabled=false;b.textContent=payLabel(pr+feeOf(pr))}return}
     const {error}=await sb.rpc("create_order",{p_listing:p.id,p_delivery:checkoutDelivery,p_name:colis?val("cName"):null,p_address:colis?val("cAddr"):null,p_zip:colis?val("cZip"):null,p_city:colis?val("cCity"):null});
-    if(error){b.disabled=false;b.textContent=payLabel(p.price+feeOf(p.price));$("coErr").textContent=frenchError(error);return}
+    if(error){b.disabled=false;b.textContent=payLabel(pr+feeOf(pr));$("coErr").textContent=frenchError(error);return}
     await Promise.all([loadOrders(),loadListings(),loadConversations()]);
     toast("Commande créée (démo, aucun paiement).");
     location.hash="#/compte/achats";
@@ -4328,15 +4507,20 @@ function renderPayCart(){
   const groups={};items.forEach(p=>{(groups[p.sellerId]=groups[p.sellerId]||{seller:p.seller,items:[]}).items.push(p)});
   Object.keys(groups).forEach(k=>{if(!cartDelivery[k])cartDelivery[k]="main_propre"});
   const anyColis=()=>Object.keys(groups).some(k=>cartDelivery[k]==="colis");
-  const subtotal=items.reduce((t,p)=>t+p.price,0),fees=items.reduce((t,p)=>t+feeOf(p.price),0);
+  const nOf=p=>groups[p.sellerId].items.length, prOf=p=>priceFor(p,nOf(p));
+  const listTotal=items.reduce((t,p)=>t+cents(p.price),0)/100,subtotal=items.reduce((t,p)=>t+cents(prOf(p)),0)/100,fees=items.reduce((t,p)=>t+cents(feeOf(prOf(p))),0)/100,saved=Math.round((listTotal-subtotal)*100)/100;
+  const lotLine=(sid,g)=>{const n=g.items.length,pc=lotPct(sid,n),next=lotSteps(sid).find(([k,v])=>k>n&&v>pc);
+    return (pc?`<p class="lot-hint small ok"><b>Réduction lot −${pc} %</b> pour ${n} articles${g.items.some(p=>acceptedOffer(p.id))?" (sauf les articles à prix d’offre)":""}.</p>`:"")
+      +(next?`<p class="lot-hint small">Ajoute ${next[0]-n} article${next[0]-n>1?"s":""} de ${esc(g.seller)} pour <b>−${next[1]} %</b> sur le lot. <a class="link" href="#/vendeur/${sid}">Voir ses articles</a></p>`:"")};
   el.innerHTML=`<div class="cart-layout"><form id="payCartForm" novalidate>
     ${Object.entries(groups).map(([sid,g])=>`<div class="panel">
       <h2 style="font-size:17px">Vendu par ${esc(g.seller)} <span class="muted small">· ${g.items.length} article${g.items.length>1?"s":""}</span></h2>
       ${g.items.map(p=>`<div class="cart-item">
         <a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}"></a>
         <div><h3><a href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a></h3><p>${esc(p.size)} · ${esc(p.condition)}</p></div>
-        <div class="price-col"><div class="price">${eur(p.price)}</div><button type="button" class="link" data-remove="${esc(p.id)}" aria-label="Retirer ${esc(p.name)} du panier">Retirer</button></div>
+        <div class="price-col"><div class="price">${prOf(p)<p.price?`<s class="old-price">${eur(p.price)}</s> `:""}${eur(prOf(p))}</div>${acceptedOffer(p.id)?`<small class="offer-tag">Ton offre</small>`:""}<button type="button" class="link" data-remove="${esc(p.id)}" aria-label="Retirer ${esc(p.name)} du panier">Retirer</button></div>
       </div>`).join("")}
+      ${lotLine(sid,g)}
       <fieldset class="carriers" style="margin-top:12px"><legend class="label">Livraison pour ${esc(g.seller)}</legend>
         <label class="carrier"><input type="radio" name="dlv-${sid}" value="main_propre" data-seller-dlv="${sid}" ${cartDelivery[sid]==="main_propre"?"checked":""}><span><b>Remise en main propre</b><small>Rendez-vous à convenir ensemble. Paiement validé par code, sur place.</small></span></label>
         <label class="carrier"><input type="radio" name="dlv-${sid}" value="colis" data-seller-dlv="${sid}" ${cartDelivery[sid]==="colis"?"checked":""}><span><b>Envoi par colis</b><small>${g.items.length>1?"Tous les articles de ce vendeur dans un seul colis.":"Avec un numéro de suivi."}</small></span></label>
@@ -4353,7 +4537,8 @@ function renderPayCart(){
       <p class="note warn small"><b>Mode démo :</b> le paiement par carte n’est pas encore branché. Le bouton crée des commandes de test, <b>sans aucun paiement</b>.</p></div>
   </form>
   <aside class="summary" aria-labelledby="pcSum"><h2 id="pcSum">Récapitulatif</h2>
-    <div class="line"><span>Articles (${items.length})</span><span>${eur(subtotal)}</span></div>
+    <div class="line"><span>Articles (${items.length})</span><span>${eur(listTotal)}</span></div>
+    ${saved>0?`<div class="line saving"><span>Offres et réductions de lot</span><span>−${eur(saved)}</span></div>`:""}
     <div class="line"><span>Frais Orleoo Pay<br><small class="muted">${FEE_TXT()} par article</small></span><span>${eur(fees)}</span></div>
     <div class="line"><span>Livraison</span><span class="muted" id="pcShip">${anyColis()?"À régler avec le vendeur":"Gratuite"}</span></div>
     <div class="line total"><span>Total</span><span>${eur(subtotal+fees)}</span></div>
@@ -4411,7 +4596,7 @@ async function renderSellerProfile(id){
         <span class="avatar pp-avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
         <div class="pp-id">
           <h1>@${esc(pr.name)}${planBadge(id)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1><div class="trust" data-badges="${id}"></div>
-          <div class="pp-chips">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span></div>
+          <div class="pp-chips">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span>${lotTxt(id)?`<span class="pp-lot">Lots : ${lotTxt(id)}</span>`:""}</div>
         </div>
         <div class="pp-actions">${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}<button type="button" class="btn btn-outline" id="shareProfile">Partager</button></div>
       </div>
@@ -4637,7 +4822,7 @@ const feeLabel=()=>CONFIG.fraisPar==="article"?"par article":"par commande";
 function renderProduct(id){
   const p=findProduct(id), v=$("view-product");
   if(!p){v.innerHTML=state.loading?`<div class="page-head"><p class="muted">Chargement…</p></div>`:`<div class="page-head"><h1 class="page-title">Article introuvable</h1><p class="muted">Cet article n’existe pas ou a été retiré.</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
-  const sold=p.status!=="active"||state.sold.includes(p.id), fav=isFav(p.id), c=inCart(p.id), s=sellerInfo(p);
+  const sold=p.status!=="active"||state.sold.includes(p.id), fav=isFav(p.id), c=inCart(p.id), s=sellerInfo(p), op=sold||p.mine?null:acceptedOffer(p.id), pp=op?priceFor(p,1):p.price;
   const photos=(p.photos&&p.photos.length?p.photos:[p.img]);
   const similar=available().filter(x=>x.id!==p.id&&(x.category===p.category||x.style===p.style)).slice(0,5);
   let actions;
@@ -4659,7 +4844,7 @@ function renderProduct(id){
     <div class="product-info">
       ${eyebrow?`<span class="eyebrow">${eyebrow}</span>`:""}
       <h1>${esc(p.name)}</h1>
-      <div class="product-price">${eur(p.price)}</div>
+      <div class="product-price">${op?`<s class="old-price">${eur(p.price)}</s> ${eur(pp)} <span class="offer-tag">Ton offre</span>`:eur(p.price)}</div>
       <dl class="specs">
         <div><dt>${isBook(p)?"Auteur":"Marque"}</dt><dd>${esc(p.brand||"Non renseignée")}</dd></div>
         <div><dt>${isBook(p)?"Format":"Taille"}</dt><dd>${esc(p.size)}</dd></div>
@@ -4669,8 +4854,9 @@ function renderProduct(id){
         <div><dt>Ajouté</dt><dd>${ago(p.addedAt)}</dd></div>
       </dl>
       ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
-      ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo Pay</span><span>${eur(feeOf(p.price))}</span></div><div class="total"><span>Total</span><span>${eur(p.price+feeOf(p.price))}</span></div><p class="small muted" style="margin:6px 0 0">Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo (${FEE_TXT()})</span><span>${eur(feeOf(p.price))}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+feeOf(p.price))}</span></div></div>`}
+      ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article${op?" (ton offre)":""}</span><span>${eur(pp)}</span></div><div><span>Frais Orleoo Pay</span><span>${eur(feeOf(pp))}</span></div><div class="total"><span>Total</span><span>${eur(pp+feeOf(pp))}</span></div><p class="small muted" style="margin:6px 0 0">Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo (${FEE_TXT()})</span><span>${eur(feeOf(p.price))}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+feeOf(p.price))}</span></div></div>`}
       ${actions}
+      ${sold||p.mine?"":offerBlock(p)+lotHint(p)}
       ${sold?"":tradeBlock(p)}
       <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}${p.sellerId?`<div class="trust" data-badges="${p.sellerId}"></div>`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
       ${p.mine||sold?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
@@ -4820,7 +5006,7 @@ function renderAccount(tab){
   const myOrders=state.orders.filter(o=>!o.userId||o.userId===state.user.id);
   if(state.isAdmin){renderModeration(el);return}
   const tabs=[["profil","Profil et paramètres"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]];
-  if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["echanges",`Échanges (${trades.list.filter(t=>["proposed","accepted","problem"].includes(t.status)).length})`],["portemonnaie","Porte-monnaie"])}
+  if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["echanges",`Échanges (${trades.list.filter(t=>["proposed","accepted","problem"].includes(t.status)).length})`],["portemonnaie","Porte-monnaie"]);if(offersOpen()){const n=offerTodo();tabs.splice(4,0,["offres",`Offres${n?` (${n} à traiter)`:""}`])}}
   {const nw=(growth.hits||[]).filter(h=>!h.seen_at).length;tabs.push(["alertes",`Mes alertes${nw?` (${nw} nouvelle${nw>1?"s":""})`:""}`])}
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
   let body="";
@@ -4829,6 +5015,7 @@ function renderAccount(tab){
   else if(accountTab==="ventes"&&payOn()){body=salesHtml()}
   else if(accountTab==="portemonnaie"&&payOn()){body=walletHtml()}
   else if(accountTab==="echanges"&&payOn()){body=tradesHtml()}
+  else if(accountTab==="offres"&&offersOpen()){body=offersHtml()}
   else if(accountTab==="moderation"&&state.isAdmin){
     body=moderationHtml()+disputesHtml();
   } else if(accountTab==="annonces"){
@@ -4906,6 +5093,7 @@ function renderAccount(tab){
         ${state.user.vacation===null?"":`<div class="set-row"><div><b>Mode vacances</b><small>Tes annonces sont masquées pendant ton absence, puis réapparaissent quand tu le désactives.</small></div><label class="switch"><input type="checkbox" id="vacSwitch" ${state.user.vacation?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Mode vacances</span></label></div>`}
         ${state.user.digest==null?"":`<div class="set-row"><div><b>Nouveautés de la semaine</b><small>Un e-mail le lundi avec les nouvelles annonces qui pourraient te plaire.</small></div><label class="switch"><input type="checkbox" id="digestSwitch" ${state.user.digest?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Recevoir les nouveautés de la semaine</span></label></div>`}${state.user.notify===null?"":`<div class="set-row"><div><b>Notifications par e-mail</b><small>Quand je reçois un nouveau message (1 e-mail max toutes les 30 min par conversation).</small></div><label class="switch"><input type="checkbox" id="notifSwitch" ${state.user.notify?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Notifications par e-mail</span></label></div>`}
       </div>
+      ${lotsPanel()}
       <div class="panel">
         <h2>Mon compte</h2>
         <ul class="set-links">
@@ -5470,7 +5658,7 @@ const PAGES={
   "aide":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Centre d’aide</p><h1>Centre d’aide</h1>
     <div class="help-search"><label for="helpQ" class="sr-only">Chercher dans l’aide</label><input class="input" id="helpQ" type="search" placeholder="Une question ? Ex. : frais, échange, alerte…" autocomplete="off"></div>
     <nav class="help-toc" aria-label="Thèmes"><a class="pill-link" href="#/aide" data-jump="aide-start">Bien démarrer</a><a class="pill-link" href="#/aide" data-jump="aide-vendre">Vendre</a><a class="pill-link" href="#/aide" data-jump="aide-acheter">Acheter</a><a class="pill-link" href="#/aide" data-jump="aide-echanger">Échanger</a><a class="pill-link" href="#/aide" data-jump="aide-securite">Paiement et sécurité</a><a class="pill-link" href="#/aide" data-jump="aide-compte">Compte</a></nav>
-    <section class="help-sec" id="aide-start"><h2>Bien démarrer</h2><details><summary>C’est quoi Orleoo ?</summary><p>Une friperie en ligne entre particuliers : tu achètes, vends ou échanges des vêtements et des livres de seconde main. Tout se fait sur le site, avec un paiement protégé.</p></details><details><summary>Comment créer mon compte ?</summary><p>Clique sur « Se connecter », puis « Créer un compte » : choisis un identifiant public, ton e-mail et un mot de passe d’au moins 8 caractères. C’est gratuit.</p></details><details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente. L’équipe les retire quand il y a assez de vraies annonces.</p></details><details><summary>Puis-je installer Orleoo sur mon téléphone ?</summary><p>Oui. Dans Mon compte, clique sur « Installer l’appli » (Android, ordinateur). Sur iPhone : dans Safari, touche « Partager » puis « Sur l’écran d’accueil ».</p></details></section><section class="help-sec" id="aide-vendre"><h2>Vendre</h2><details><summary>Comment mettre un article en vente ?</summary><p>Clique sur « Vendre », ajoute 1 à 5 photos, un titre, une description, la catégorie, la marque, la taille, l’état et le prix. Un aperçu s’affiche avant la publication.</p></details><details><summary>Comment bien fixer mon prix ?</summary><p>Le formulaire te propose un prix conseillé, calculé d’après les annonces similaires en ligne. Tu restes libre de choisir.</p></details><details><summary>Mon annonce en cours a disparu ?</summary><p>Non : elle est gardée comme brouillon sur ton appareil. En revenant sur « Vendre », clique sur « La reprendre ».</p></details><details><summary>Combien ça me coûte de vendre ?</summary><p>Rien : la mise en ligne est gratuite et tu reçois le prix affiché. Les frais Orleoo sont payés par l’acheteur.</p></details><details><summary>Pourquoi mon annonce a-t-elle été refusée ?</summary><p>Elle contenait un mot interdit (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo. Le message d’erreur indique la raison : corrige puis réessaie.</p></details><details><summary>Où voir les statistiques de mes annonces ?</summary><p>Dans Mon compte, onglet « Mes annonces » : nombre de vues, de favoris et de personnes en attente.</p></details></section><section class="help-sec" id="aide-acheter"><h2>Acheter</h2><details><summary>Comment acheter ?</summary><p>${CONFIG.vitrine?"Les achats ouvrent bientôt. En attendant, clique sur « Me prévenir » sur une annonce : tu seras averti(e) dès que tu pourras l’acheter avec le paiement protégé.":"Ajoute l’article au panier, choisis la livraison (colis ou main propre) et paie par carte sur Orleoo. Ton argent reste bloqué jusqu’à ce que tu confirmes la réception."}</p></details><details><summary>Combien coûtent les frais ?</summary><p>L’acheteur paie 5 % du prix + 0,70 € par article, pour le paiement protégé. Exemple : article à 10 € + 1,20 € de frais. La livraison est en plus.</p></details><details><summary>Comment être prévenu quand un article qui me plaît est publié ?</summary><p>Fais ta recherche ou choisis tes filtres dans le catalogue, puis clique sur « Créer une alerte ». Tu reçois un e-mail dès qu’une annonce correspond, et tu retrouves les résultats dans « Mes alertes ».</p></details><details><summary>Comment retrouver mes coups de cœur ?</summary><p>Clique sur le cœur d’une annonce pour l’ajouter à tes favoris, puis ouvre « Mes favoris ».</p></details></section><section class="help-sec" id="aide-echanger"><h2>Échanger</h2><details><summary>Comment fonctionne l’échange ?</summary><p>Propose un de tes articles contre celui d’un autre membre, avec un complément d’argent si besoin. Une fois accepté, chacun envoie son colis avec suivi, puis vous avez 48 h pour vérifier.</p></details><details><summary>Qui peut échanger ?</summary><p>L’échange est débloqué après 3 achats terminés, pour éviter les faux comptes.</p></details></section><section class="help-sec" id="aide-securite"><h2>Paiement et sécurité</h2><details><summary>Puis-je payer en espèces, par virement ou PayPal ?</summary><p>Non : tout se paie sur Orleoo. Les paiements extérieurs ne sont pas protégés et sont interdits. Les messages qui contiennent un numéro, un e-mail ou un autre moyen de paiement sont bloqués.</p></details><details><summary>Comment marche la remise en main propre ?</summary><p>Tu paies sur Orleoo avant le rendez-vous. Sur place, tu vérifies l’article, puis tu donnes ton code de remise au vendeur : c’est lui qui débloque l’argent.</p></details><details><summary>Que faire si je ne reçois rien ?</summary><p>Ne confirme pas la réception et signale le problème depuis ta commande, dans Mon compte. L’argent reste bloqué et la modération tranche.</p></details><details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce ». C’est confidentiel. L’équipe reçoit aussi automatiquement les annonces qui semblent suspectes.</p></details></section><section class="help-sec" id="aide-compte"><h2>Compte</h2><details><summary>Comment inviter mes amis ?</summary><p>Dans Mon compte, « Invite tes amis » : copie ou partage ton lien. Chaque personne qui s’inscrit avec devient ton filleul.</p></details><details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. Les e-mails d’Orleoo viennent de orleoo.contact@gmail.com.</p></details><details><summary>Comment changer mon mot de passe ou supprimer mon compte ?</summary><p>Dans Mon compte, « Profil et paramètres », rubrique sécurité.</p></details><details><summary>Où sont enregistrées mes données ?</summary><p>Chez Supabase, dans l’Union européenne. Tous les détails sont dans la politique de confidentialité.</p></details></section>
+    <section class="help-sec" id="aide-start"><h2>Bien démarrer</h2><details><summary>C’est quoi Orleoo ?</summary><p>Une friperie en ligne entre particuliers : tu achètes, vends ou échanges des vêtements et des livres de seconde main. Tout se fait sur le site, avec un paiement protégé.</p></details><details><summary>Comment créer mon compte ?</summary><p>Clique sur « Se connecter », puis « Créer un compte » : choisis un identifiant public, ton e-mail et un mot de passe d’au moins 8 caractères. C’est gratuit.</p></details><details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente. L’équipe les retire quand il y a assez de vraies annonces.</p></details><details><summary>Puis-je installer Orleoo sur mon téléphone ?</summary><p>Oui. Dans Mon compte, clique sur « Installer l’appli » (Android, ordinateur). Sur iPhone : dans Safari, touche « Partager » puis « Sur l’écran d’accueil ».</p></details></section><section class="help-sec" id="aide-vendre"><h2>Vendre</h2><details><summary>Comment mettre un article en vente ?</summary><p>Clique sur « Vendre », ajoute 1 à 5 photos, un titre, une description, la catégorie, la marque, la taille, l’état et le prix. Un aperçu s’affiche avant la publication.</p></details><details><summary>Comment bien fixer mon prix ?</summary><p>Le formulaire te propose un prix conseillé, calculé d’après les annonces similaires en ligne. Tu restes libre de choisir.</p></details><details><summary>Mon annonce en cours a disparu ?</summary><p>Non : elle est gardée comme brouillon sur ton appareil. En revenant sur « Vendre », clique sur « La reprendre ».</p></details><details><summary>Combien ça me coûte de vendre ?</summary><p>Rien : la mise en ligne est gratuite et tu reçois le prix affiché. Les frais Orleoo sont payés par l’acheteur.</p></details><details><summary>Pourquoi mon annonce a-t-elle été refusée ?</summary><p>Elle contenait un mot interdit (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo. Le message d’erreur indique la raison : corrige puis réessaie.</p></details><details><summary>Comment répondre à une offre ?</summary><p>Tu reçois un message à chaque offre. Dans Mon compte › Offres, accepte, refuse ou propose ton prix (une seule contre-offre). Sans réponse sous 48 h, l’offre expire.</p></details><details><summary>Comment proposer une réduction sur les lots ?</summary><p>Dans Mon compte › Profil et paramètres, rubrique « Réductions sur les lots » : choisis ta réduction dès 2, 3 et 5 articles. Ton prix affiché ne change pas.</p></details><details><summary>Où voir les statistiques de mes annonces ?</summary><p>Dans Mon compte, onglet « Mes annonces » : nombre de vues, de favoris et de personnes en attente.</p></details></section><section class="help-sec" id="aide-acheter"><h2>Acheter</h2><details><summary>Comment acheter ?</summary><p>${CONFIG.vitrine?"Les achats ouvrent bientôt. En attendant, clique sur « Me prévenir » sur une annonce : tu seras averti(e) dès que tu pourras l’acheter avec le paiement protégé.":"Ajoute l’article au panier, choisis la livraison (colis ou main propre) et paie par carte sur Orleoo. Ton argent reste bloqué jusqu’à ce que tu confirmes la réception."}</p></details><details><summary>Combien coûtent les frais ?</summary><p>L’acheteur paie 5 % du prix + 0,70 € par article, pour le paiement protégé. Exemple : article à 10 € + 1,20 € de frais. La livraison est en plus.</p></details><details><summary>Comment être prévenu quand un article qui me plaît est publié ?</summary><p>Fais ta recherche ou choisis tes filtres dans le catalogue, puis clique sur « Créer une alerte ». Tu reçois un e-mail dès qu’une annonce correspond, et tu retrouves les résultats dans « Mes alertes ».</p></details><details><summary>Puis-je négocier le prix ?</summary><p>Oui : sur l’annonce, clique sur « Faire une offre » (au moins la moitié du prix affiché). Le vendeur a 48 h pour accepter, refuser ou te faire une contre-offre. Une fois acceptée, tu as 48 h pour payer à ce prix. Tout se suit dans Mon compte › Offres.</p></details><details><summary>C’est quoi la réduction sur les lots ?</summary><p>Certains vendeurs offrent une réduction si tu achètes plusieurs de leurs articles (par exemple −10 % dès 2 articles). Elle s’affiche sur leur profil et s’applique automatiquement dans ton panier.</p></details><details><summary>Comment retrouver mes coups de cœur ?</summary><p>Clique sur le cœur d’une annonce pour l’ajouter à tes favoris, puis ouvre « Mes favoris ».</p></details></section><section class="help-sec" id="aide-echanger"><h2>Échanger</h2><details><summary>Comment fonctionne l’échange ?</summary><p>Propose un de tes articles contre celui d’un autre membre, avec un complément d’argent si besoin. Une fois accepté, chacun envoie son colis avec suivi, puis vous avez 48 h pour vérifier.</p></details><details><summary>Qui peut échanger ?</summary><p>L’échange est débloqué après 3 achats terminés, pour éviter les faux comptes.</p></details></section><section class="help-sec" id="aide-securite"><h2>Paiement et sécurité</h2><details><summary>Puis-je payer en espèces, par virement ou PayPal ?</summary><p>Non : tout se paie sur Orleoo. Les paiements extérieurs ne sont pas protégés et sont interdits. Les messages qui contiennent un numéro, un e-mail ou un autre moyen de paiement sont bloqués.</p></details><details><summary>Comment marche la remise en main propre ?</summary><p>Tu paies sur Orleoo avant le rendez-vous. Sur place, tu vérifies l’article, puis tu donnes ton code de remise au vendeur : c’est lui qui débloque l’argent.</p></details><details><summary>Que faire si je ne reçois rien ?</summary><p>Ne confirme pas la réception et signale le problème depuis ta commande, dans Mon compte. L’argent reste bloqué et la modération tranche.</p></details><details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce ». C’est confidentiel. L’équipe reçoit aussi automatiquement les annonces qui semblent suspectes.</p></details></section><section class="help-sec" id="aide-compte"><h2>Compte</h2><details><summary>Comment inviter mes amis ?</summary><p>Dans Mon compte, « Invite tes amis » : copie ou partage ton lien. Chaque personne qui s’inscrit avec devient ton filleul.</p></details><details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. Les e-mails d’Orleoo viennent de orleoo.contact@gmail.com.</p></details><details><summary>Comment changer mon mot de passe ou supprimer mon compte ?</summary><p>Dans Mon compte, « Profil et paramètres », rubrique sécurité.</p></details><details><summary>Où sont enregistrées mes données ?</summary><p>Chez Supabase, dans l’Union européenne. Tous les détails sont dans la politique de confidentialité.</p></details></section>
     <p class="muted" id="helpNone" hidden>Aucune réponse trouvée. Pose ta question à Loo ou écris-nous.</p>
     <section class="help-sec"><h2>Nous contacter</h2><p>Pose ta question à Loo, ou écris-nous à <a class="link" href="mailto:orleoo.contact@gmail.com">orleoo.contact@gmail.com</a>.</p><button type="button" class="btn btn-primary" data-open-chat>Discuter avec Loo</button></section>`,
   "conditions":()=>LEGAL_PAGES["conditions"](),
