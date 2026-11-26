@@ -8,17 +8,24 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(window.top!==window.self){try{window.top.location.replace(window.location.href)}catch(e){document.documentElement.style.display="none"}}</script>
 <title>Orleoo — Tes vêtements ont de l’avenir</title>
-<meta name="description" content="Orleoo, la marketplace française de vêtements d’occasion. Achète, vends, donne une seconde vie à tes pièces préférées.">
+<meta name="description" content="Orleoo, la friperie en ligne française : vêtements et livres de seconde main entre particuliers. Achète, vends ou échange, avec un paiement protégé.">
+<link rel="canonical" href="https://revoocontact-blip.github.io/revoo/">
+<meta name="robots" content="index, follow">
 <meta name="theme-color" content="#2E3238">
 <meta property="og:title" content="Orleoo — Tes vêtements ont de l’avenir">
-<meta property="og:description" content="Achète, vends, donne une seconde vie à tes pièces préférées.">
+<meta property="og:description" content="Vêtements et livres de seconde main entre particuliers. Achète, vends ou échange, avec un paiement protégé.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Orleoo">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:url" content="https://revoocontact-blip.github.io/revoo/">
-<meta property="og:image" content="https://revoocontact-blip.github.io/revoo/logos/orleoo-partage.jpg">
+<meta property="og:image" content="https://revoocontact-blip.github.io/revoo/logos/orleoo-partage.jpg?v=2">
+<meta property="og:image:alt" content="Orleoo — Achète. Échange. Revis.">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Orleoo — Tes vêtements ont de l’avenir">
+<meta name="twitter:description" content="Vêtements et livres de seconde main entre particuliers, avec paiement protégé.">
+<meta name="twitter:image" content="https://revoocontact-blip.github.io/revoo/logos/orleoo-partage.jpg?v=2">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","name":"Orleoo","url":"https://revoocontact-blip.github.io/revoo/","logo":"https://revoocontact-blip.github.io/revoo/logos/orleoo-icone-512.png","slogan":"Tes vêtements ont de l’avenir"},{"@type":"WebSite","name":"Orleoo","url":"https://revoocontact-blip.github.io/revoo/","inLanguage":"fr-FR","description":"Orleoo, la friperie en ligne française : vêtements et livres de seconde main entre particuliers. Achète, vends ou échange, avec un paiement protégé."}]}</script>
 <link rel="canonical" href="https://revoocontact-blip.github.io/revoo/">
 <link rel="manifest" href="manifest.webmanifest?v=4">
 <meta name="apple-mobile-web-app-title" content="Orleoo">
@@ -2539,6 +2546,9 @@ html[data-design="2"]:not([data-theme="dark"]) .btn-primary:hover,html[data-desi
 html[data-design="2"]:not([data-theme="dark"]) .subnav .nav-univers button[aria-pressed="true"],html[data-design="2"]:not([data-theme="dark"]) .subnav .nav-pill-f button[aria-current="true"]{box-shadow:inset 0 -2px 0 #3F5A47!important}
 html[data-design="2"]:not([data-theme="dark"]) .top .search:focus-within{border-color:#3F5A47!important}
 }
+
+/* Mode vitrine : pas de panier tant que les achats ne sont pas ouverts */
+body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!important}
 </style>
 </head>
 <body>
@@ -2880,6 +2890,7 @@ html[data-design="2"]:not([data-theme="dark"]) .top .search:focus-within{border-
 const CONFIG = {
   fraisPourcent: 5,           // frais acheteur : 5 % du prix de l'article…
   fraisFixes: 0.70,           // … + 0,70 € par article (même règle dans supabase-frais.sql)
+  vitrine: true,             // true = MODE VITRINE : inscriptions, annonces et messages ouverts, achats « bientôt disponibles » (bouton « Me prévenir »). Mettre false quand Mangopay est branché.
   paiementIntegre: true,      // tous les paiements passent par Orleoo (aucun paiement direct entre membres). Mode réel/démo : site_settings.payment_mode (SQL)
   revooPayDemo: true,         // true = Orleoo Pay en DÉMO pour tout le monde (aucun argent réel). ⚠️ À METTRE SUR false AVANT L'OUVERTURE AU PUBLIC tant que Mangopay n'est pas branché
                               // true  = PHASE 2 : panier, paiement intégré et frais ci-dessous
@@ -4261,6 +4272,21 @@ async function subAction(kind,arg){
 let checkoutDelivery="main_propre";
 
 
+
+/* Mode vitrine : « Me prévenir » quand les achats ouvrent */
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-notify]");if(!b||!CONFIG.vitrine)return;
+  e.preventDefault();
+  if(!state.user){toast("Connecte-toi pour être prévenu(e) à l’ouverture des achats.");location.hash="#/compte";return}
+  const id=b.dataset.notify;
+  let ok=true;
+  if(!/^d\d+$/.test(id)){try{const {error}=await sb.from("launch_waitlist").upsert({listing_id:id},{onConflict:"user_id,listing_id",ignoreDuplicates:true});if(error)ok=false}catch(_){ok=false}}
+  try{const k="revoo.notify";const l=JSON.parse(localStorage.getItem(k)||"[]");if(!l.includes(id)){l.push(id);localStorage.setItem(k,JSON.stringify(l))}}catch(_){}
+  b.textContent="On te prévient ✓";b.disabled=true;
+  toast(ok?"C’est noté : on te prévient dès que les achats ouvrent.":"C’est noté sur cet appareil : on te prévient dès que les achats ouvrent.");
+});
+if(CONFIG.vitrine){document.body.classList.add("vitrine");const db=$("demoBar");if(db){db.classList.remove("paydemo");db.innerHTML=`<b>Les achats ouvrent bientôt</b> · inscris-toi et publie tes annonces dès maintenant · <a href="#/vendre">Vendre</a>`}}
+
 /* Paiement et contacts en dehors d'Orleoo : interdits (même règle que le serveur) */
 function offPlatform(txt){
   const t=String(txt||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""),sq=t.replace(/[^a-z]/g,"");
@@ -4474,6 +4500,7 @@ function card(p){
   const fav=isFav(p.id), c=inCart(p.id), s=sellerInfo(p);
   const tag = p.mine ? "Ton annonce" : p.demo ? "Démo" : isBoosted(p) ? "Sponsorisé" : p.pinned&&location.hash.startsWith("#/vendeur/") ? "Épinglée" : "";
   const cartBtn = p.mine ? `<a class="btn btn-outline" href="#/compte/annonces">Gérer l’annonce</a>`
+    : CONFIG.vitrine ? `<button type="button" class="btn btn-outline" data-notify="${esc(p.id)}">Me prévenir</button>`
     : payOn()&&!p.demo ? `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`
     : !CONFIG.paiementIntegre||p.demo ? `<button type="button" class="btn btn-outline" data-contact="${esc(p.id)}" aria-label="Je suis intéressé(e) par ${esc(p.name)}">Intéressé(e)</button>`
     : `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`;
@@ -4678,6 +4705,7 @@ function renderProduct(id){
   else if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions">${lockedBy(p.id)?"":`<a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a>`}<button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
+  else if(CONFIG.vitrine) actions=`<div class="buy-actions buy-sticky buy-main"><button type="button" class="btn btn-primary" data-notify="${esc(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg> Me prévenir</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Ajouter aux favoris"}</button></div><p class="note small" style="margin-top:10px"><b>Les achats ouvrent bientôt sur Orleoo.</b> Ajoute l’article à tes favoris ou clique sur « Me prévenir » : on te prévient dès que tu peux l’acheter, avec le paiement protégé.</p>`;
   else if(payOn()&&!p.demo) actions=`<div class="buy-actions buy-sticky buy-main"><a class="btn btn-primary" href="#/paiement/${encodeURIComponent(p.id)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/></svg> Acheter avec Orleoo Pay</a><button type="button" class="btn btn-outline btn-icon" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}<span class="sr-only">${fav?"Retirer des favoris":"Ajouter aux favoris"}</span></button></div><div class="buy-actions buy-more"><button type="button" class="btn btn-outline" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Poser une question</button></div><div id="contactNote"></div>`;
   else if(!CONFIG.paiementIntegre) actions=`<div class="buy-actions buy-sticky buy-main"><button type="button" class="btn btn-primary" id="contactSeller"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Je suis intéressé(e)</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div><div id="contactNote"></div>`;
   else actions=`<div class="buy-actions"><button type="button" class="btn ${c?"btn-outline":"btn-primary"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button><button type="button" class="btn btn-outline" data-fav="${esc(p.id)}" aria-pressed="${fav}">${ICON_HEART}${fav?" Dans tes favoris":" Favoris"}</button></div>`;
@@ -5350,6 +5378,7 @@ function renderView(){
   else if(name==="univers"&&UNIVERS[arg]){view="univers";renderUnivers(arg)}
   else if(name==="article"){view="product";renderProduct(arg)}
   else if(name==="favoris"){view="favoris";renderFavorites()}
+  else if(CONFIG.vitrine&&(name==="panier"||name==="paiement")){view="page";$("pageContent").innerHTML=`<p class="crumbs"><a href="#/">Accueil</a> › Achats</p><h1>Les achats ouvrent bientôt</h1><p>Orleoo prépare son paiement protégé. En attendant, tu peux t’inscrire, publier tes annonces, échanger avec les membres et ajouter des articles à tes favoris.</p><p>Sur chaque annonce, clique sur « Me prévenir » : tu seras averti(e) dès que tu pourras l’acheter.</p><div class="buy-actions"><a class="btn btn-primary" href="#/catalogue">Voir les annonces</a><a class="btn btn-outline" href="#/vendre">Vendre un article</a></div>`}
   else if(name==="panier"&&payOn()){view="panier";renderPayCart()}
   else if(name==="panier"&&!CONFIG.paiementIntegre){view="page";$("pageContent").innerHTML=PAGES["acheter"]()}
   else if(name==="panier"){view="panier";renderCart()}
@@ -6027,7 +6056,7 @@ function netBanner(){let b=$("netBar");if(navigator.onLine){if(b)b.remove();retu
 addEventListener("offline",netBanner);addEventListener("online",()=>{netBanner();toast("Connexion rétablie.");loadListings().then(renderView)});netBanner();
 if(!payOn())document.body.classList.add("phase1");
 if(matchMedia("(max-width:680px)").matches)$("searchInput").placeholder="Un vêtement, un livre…";
-if(PAY_DEMO){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=CONFIG.revooPayDemo?`<b>Démo Orleoo Pay</b> · aucun paiement réel`:`<b>Démo Orleoo Pay</b> · aucun paiement réel · <a href="?revoopay=off">Quitter</a>`}
+if(PAY_DEMO&&!CONFIG.vitrine){const b=$("demoBar");b.classList.add("paydemo");b.innerHTML=CONFIG.revooPayDemo?`<b>Démo Orleoo Pay</b> · aucun paiement réel`:`<b>Démo Orleoo Pay</b> · aucun paiement réel · <a href="?revoopay=off">Quitter</a>`}
 watchImages();renderView();
 (async()=>{
   if(!sb){toast("Le service de comptes est momentanément indisponible.");return}
