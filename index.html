@@ -2516,6 +2516,18 @@ html[data-design="2"]:not([data-theme="light"]) .home-block{border-top:1px solid
 html[data-design="2"][data-theme="light"] .tag.t2 small{color:#4E545A!important}html[data-design="2"][data-theme="light"] .swap h2 em,html[data-design="2"][data-theme="light"] #swapTitle em{color:#C7DBC3!important}
 @media (prefers-color-scheme:light){html[data-design="2"]:not([data-theme="dark"]) .tag.t2 small{color:#4E545A!important}html[data-design="2"]:not([data-theme="dark"]) .swap h2 em,html[data-design="2"]:not([data-theme="dark"]) #swapTitle em{color:#C7DBC3!important}}
 @media (max-width:900px){html[data-design="2"] .subnav .nav-atouts .nav-atouts-l{display:none!important}}
+
+/* Charte graphique (#/charte) */
+.ch{margin:28px 0;padding-top:20px;border-top:1px solid var(--o-line,#ddd)}
+.ch h2{font-size:22px;margin:0 0 14px}
+.ch-h1{font-family:"DM Sans",sans-serif;font-weight:800;font-size:44px;letter-spacing:-.03em;margin:0}
+.ch-sws{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.ch-sw{display:grid;grid-template-columns:44px 44px 1fr;gap:4px 8px;align-items:center}
+.ch-sw span{width:44px;height:44px;border-radius:10px;border:1px solid rgba(128,128,128,.35);grid-row:span 2}
+.ch-sw b{font-size:14px}.ch-sw small{font-size:12px;opacity:.75;grid-column:3}
+.ch-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ch-tags{max-width:820px}
+.ch-cards{max-width:900px}
 </style>
 </head>
 <body>
@@ -5229,6 +5241,19 @@ function safetyBox(p){return `<div class="safety" aria-label="Paiement et sécur
   <li class="no">Jamais de virement, Wero ou PayPal « entre proches ».</li></ul>
   <a class="link small" href="#/securite">Conseils de sécurité</a></div>`}
 const PAGES={
+  "charte":()=>{const sw=(n,l,d)=>`<div class="ch-sw"><span style="background:${l}"></span><span style="background:${d}"></span><b>${n}</b><small>clair ${l} · sombre ${d}</small></div>`;
+    const P=DEMO_PRODUCTS;return `<p class="crumbs"><a href="#/">Accueil</a> › Charte graphique</p><h1>Charte graphique Orleoo</h1>
+    <p class="muted">Page de référence (non visible dans les menus). Chaque élément a un numéro : pour demander un changement, cite le numéro. Passe en mode sombre pour voir l’autre version.</p>
+    <section class="ch"><h2>1. Couleurs</h2><div class="ch-sws">${sw("Fond","#FAF8F3","#272B30")}${sw("Surface (cartes)","#FFFFFF","#31363C")}${sw("Texte","#2E3238","#ECEFF1")}${sw("Action (boutons principaux)","#2E3238","#3F5A47")}${sw("Accent sauge","#4A6852","#A9C4A4")}${sw("Bordures","#E4E2DC","#49515A")}</div></section>
+    <section class="ch"><h2>2. Textes</h2><p class="ch-h1" style="font-size:44px;line-height:1.1;font-weight:800;margin:0">Grand titre <em>accent</em></p><h2 style="margin:6px 0">Titre de section <em>accent</em></h2><p>Texte courant : les vêtements et les livres des autres ont encore plein d’histoires à raconter.</p><p class="muted small">Petit texte secondaire.</p></section>
+    <section class="ch"><h2>3. Boutons</h2><div class="ch-row"><button type="button" class="btn btn-primary">3a · Principal</button><button type="button" class="btn btn-outline">3b · Secondaire</button><button type="button" class="viewall">3c · Tout voir →</button><button type="button" class="btn btn-danger">3d · Supprimer</button></div>
+      <div class="ch-row home-tabs" style="margin-top:12px"><button type="button">3e · Raccourci</button><button type="button">Raccourci</button></div>
+      <div class="ch-row sel-tabs" style="margin-top:12px"><button type="button" aria-selected="true">3f · Onglet choisi</button><button type="button" aria-selected="false">Onglet</button></div>
+      <div class="ch-row" style="margin-top:12px"><label class="chip"><input type="checkbox" checked><span>3g · Filtre coché</span></label><label class="chip"><input type="checkbox"><span>Filtre</span></label></div></section>
+    <section class="ch"><h2>4. Tuiles de l’accueil</h2><div class="tags ch-tags"><a class="tag t1" href="#/catalogue"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><b>Acheter</b><small>Des pièces uniques, choisies par d’autres</small></a><a class="tag t2" href="#/fonctionnement"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><b>Échanger</b><small>Ton vêtement contre un autre, avec ou sans complément</small></a><a class="tag t3" href="#/catalogue" data-category="Livres"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg></span><b>Livres</b><small>Romans, BD, mangas : une 2e lecture</small></a><a class="tag t4" href="#/vendre"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><b>Vendre</b><small>Gratuit, en quelques minutes</small></a></div></section>
+    <section class="ch"><h2>5. Cartes d’annonces</h2><div class="products ch-cards">${[P[0],P[12]||P[1],P[2]].map(card).join("")}</div></section>
+    <section class="ch"><h2>6. Champs de formulaire</h2><div class="ch-row"><input class="input" placeholder="6a · Champ texte" style="max-width:280px"><select class="input" style="max-width:220px"><option>6b · Liste</option></select></div></section>
+    <section class="ch"><h2>7. Étiquettes</h2><div class="ch-row"><span class="price-tag" style="position:static">7a · 24,00 €</span><span class="chip-mini">7b · M</span><span class="chip-mini">Très bon état</span><span class="status">7c · Statut</span><span class="hero2-kicker" style="margin:0">7d · Badge</span></div></section>`},
   "a-propos":()=>`<p class="crumbs"><a href="#/">Accueil</a> › À propos</p><h1>À propos d’Orleoo</h1>
     <p><b>Tes vêtements ont de l’avenir</b></p>
     <p>Orleoo est une marketplace française dédiée à la vente et à l’achat de vêtements d’occasion entre particuliers. Achète, vends, donne une seconde vie à tes pièces préférées.</p>
