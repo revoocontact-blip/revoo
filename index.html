@@ -2539,6 +2539,7 @@ html[data-design="2"]:not([data-theme="dark"]) .btn-primary:hover,html[data-desi
 html[data-design="2"]:not([data-theme="dark"]) .subnav .nav-univers button[aria-pressed="true"],html[data-design="2"]:not([data-theme="dark"]) .subnav .nav-pill-f button[aria-current="true"]{box-shadow:inset 0 -2px 0 #3F5A47!important}
 html[data-design="2"]:not([data-theme="dark"]) .top .search:focus-within{border-color:#3F5A47!important}
 }
+@media (max-width:1360px) and (min-width:901px){html[data-design="2"] .subnav .nav-atouts button span{display:none}html[data-design="2"] .subnav .nav-atouts-l{display:none!important}}
 </style>
 </head>
 <body>
@@ -2564,7 +2565,7 @@ html[data-design="2"]:not([data-theme="dark"]) .top .search:focus-within{border-
     <form class="search" id="topSearch" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <label for="searchInput" class="sr-only">Rechercher des vêtements</label>
-      <input id="searchInput" type="search" placeholder="Un vêtement, un livre, une marque…" autocomplete="off">
+      <input id="searchInput" type="search" placeholder="Un vêtement, un livre, un objet…" autocomplete="off">
       <button class="btn btn-primary search-go" type="submit" aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="search-go-label">Rechercher</span></button>
     </form>
     <div class="actions">
@@ -2605,9 +2606,9 @@ html[data-design="2"]:not([data-theme="dark"]) .top .search:focus-within{border-
   </div>
   <nav class="wrap subnav" aria-label="Navigation">
     <div class="nav-pill nav-pill-f" id="navFiltres"></div>
-    <div class="nav-univers" role="group" aria-label="Univers"><button type="button" data-univers="mode"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a2 2 0 1 1 2-2"/><path d="M12 7v2L3 16h18l-9-7"/></svg><span>Mode</span></button><button type="button" data-univers="livres"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg><span>Livres</span></button></div>
+    <div class="nav-univers" role="group" aria-label="Univers"><button type="button" data-univers="mode"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a2 2 0 1 1 2-2"/><path d="M12 7v2L3 16h18l-9-7"/></svg><span>Mode</span></button><button type="button" data-univers="livres"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg><span>Livres</span></button><button type="button" data-univers="electronique"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg><span>Électronique</span></button><button type="button" data-univers="maison"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg><span>Maison</span></button></div>
     <div class="nav-right">
-    <div class="nav-atouts" role="group" aria-label="Exclusivités Orleoo"><span class="nav-atouts-l" aria-hidden="true">Exclusif</span><button type="button" data-go="#/fonctionnement"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Échanger</span></button><button type="button" data-go="#/securite" title="Remise en main propre sécurisée"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Main propre</span></button></div>
+    <div class="nav-atouts" role="group" aria-label="Exclusivités Orleoo"><span class="nav-atouts-l" aria-hidden="true">Exclusif</span><button type="button" data-go="#/fonctionnement"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Échanger</span></button><button type="button" data-go="#/main-propre" title="Remise en main propre sécurisée"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Main propre</span></button><button type="button" data-go="#/securite"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>Paiement protégé</span></button></div>
     <button type="button" class="sell" data-go="#/vendre"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Vendre</span></button>
     </div>
   </nav>
@@ -2620,9 +2621,9 @@ html[data-design="2"]:not([data-theme="dark"]) .top .search:focus-within{border-
   <section class="hero2" aria-labelledby="heroTitle">
     <div class="wrap hero2-in">
       <div class="hero2-text">
-        <p class="hero2-kicker">Friperie en ligne · vêtements &amp; livres</p>
+        <p class="hero2-kicker">Seconde main · mode, livres, électronique, maison</p>
         <h1 id="heroTitle">Achète. Échange. <em>Revis.</em></h1>
-        <p class="lead">Les vêtements et les livres des autres ont encore plein d’histoires à raconter. Achète, vends ou échange entre particuliers, en toute sécurité.</p>
+        <p class="lead">Les vêtements, les livres et les objets des autres ont encore plein d’histoires à raconter. Achète, vends ou échange entre particuliers, en toute sécurité.</p>
         <p class="hx-daily"><span class="hx-daily-l">Phrase du jour</span><span id="dailyQuote">Chaque vêtement mérite une nouvelle histoire.</span></p>
       </div>
       <div class="tags" aria-label="Que veux-tu faire ?"><a class="tag t1" href="#/catalogue"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><b>Acheter</b><small>Des pièces uniques, choisies par d’autres</small></a><a class="tag t2" href="#/fonctionnement"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><b>Échanger</b><small>Ton vêtement contre un autre, avec ou sans complément</small></a><a class="tag t3" href="#/catalogue" data-category="Livres"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg></span><b>Livres</b><small>Romans, BD, mangas : une 2e lecture</small></a><a class="tag t4" href="#/vendre"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><b>Vendre</b><small>Gratuit, en quelques minutes</small></a></div>
@@ -2899,12 +2900,17 @@ const CONFIG = {
     {id:"relaiscolis", nom:"Relais Colis", info:"Livraison en point relais"}
   ]
 };
-const CATEGORIES = ["Femme","Homme","Enfant","Unisexe","Livres"];
+const CATEGORIES = ["Femme","Homme","Enfant","Unisexe","Livres","Électronique","Maison"];
 const isBook=p=>(p&&(p.category||p))==="Livres";
+/* Univers : chaque catégorie hors mode forme son propre univers */
+const UNIV_CAT={livres:"Livres",electronique:"Électronique",maison:"Maison"};
+const CAT_UNIV={"Livres":"livres","Électronique":"electronique","Maison":"maison"};
+const univOf=p=>CAT_UNIV[(p&&(p.category||p))]||"mode";
+const typeLabel=c=>c==="Livres"?"Format":(c==="Électronique"||c==="Maison")?"Type":"Taille";
 const CONDITIONS = ["Neuf avec étiquette","Très bon état","Bon état","Satisfaisant"];
 const STYLES = ["Vintage","Streetwear","Chic","Doux","Sport","Bohème"];
-const SIZES = {adulte:["XS","S","M","L","XL","XXL"], enfant:["2 ans","4 ans","6 ans","8 ans","10 ans","12 ans","14 ans"], livre:["Poche","Broché","Relié","BD","Manga","Beau livre"]};
-const SIZE_ORDER = [...SIZES.adulte, ...SIZES.enfant, ...SIZES.livre];
+const SIZES = {adulte:["XS","S","M","L","XL","XXL"], enfant:["2 ans","4 ans","6 ans","8 ans","10 ans","12 ans","14 ans"], livre:["Poche","Broché","Relié","BD","Manga","Beau livre"], electronique:["Téléphone","Tablette","Ordinateur","Console","Audio","Photo","Accessoire"], maison:["Déco","Vaisselle","Linge","Luminaire","Meuble","Rangement","Cuisine"]};
+const SIZE_ORDER = [...SIZES.adulte, ...SIZES.enfant, ...SIZES.livre, ...SIZES.electronique, ...SIZES.maison];
 const ALL_SEASONS = ["printemps","été","automne","hiver"];
 const SELLERS = [
   {name:"Camille",emoji:"🌷",since:"Vendeuse de démonstration"},
@@ -4508,7 +4514,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-selcat]");
 function renderHome(){
   const season=currentSeason(), ui=SEASON_UI[season], av=available();
   const byNew=[...av].sort((a,b)=>b.addedAt-a.addedAt), byLikes=(a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt;
-  const pool=selCat==="Livres"?av.filter(isBook):selCat==="mode"?av.filter(p=>!isBook(p)):av;
+  const pool=selCat==="Livres"?av.filter(isBook):selCat==="mode"?av.filter(p=>univOf(p)==="mode"):av;
   const latest=featured(pool).slice(0,8), shown=new Set(latest.map(p=>p.id));
   document.querySelectorAll("[data-selcat]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.selcat===selCat)));
   const books=byNew.filter(isBook).slice(0,4);
@@ -4559,7 +4565,7 @@ function filtered(){
   let list=available().filter(p=>
     (!filters.q||matchesQuery(p,filters.q)) &&
     (!filters.category||p.category===filters.category) &&
-    (!filters.univers||(filters.univers==="livres"?isBook(p):!isBook(p))) &&
+    (!filters.univers||univOf(p)===filters.univers) &&
     (!filters.sizes.length||filters.sizes.includes(p.size)) &&
     (!filters.conditions.length||filters.conditions.includes(p.condition)) &&
     (!filters.brand||p.brand===filters.brand) &&
@@ -4589,7 +4595,7 @@ function renderCatalogue(rebuild=true){
   const min=filters.min===""?null:+filters.min, max=filters.max===""?null:+filters.max;
   $("priceError").textContent=(min!=null&&max!=null&&min>max)?"Le prix minimum doit être inférieur au prix maximum.":"";
   const list=filtered();
-  const title=filters.q?`Résultats pour « ${filters.q} »`:filters.seller?`Les articles de ${filters.seller}`:filters.category?(filters.category==="Livres"?(filters.sizes.length===1?`Livres · ${filters.sizes[0]}`:filters.sort==="recent"&&filters.univers?"Livres · nouveautés":"Livres"):`Mode · ${filters.category}`):filters.univers==="mode"?(filters.sort==="recent"?"Mode · nouveautés":"Mode"):filters.univers==="livres"?"Livres":filters.style?`Style · ${filters.style}`:filters.season?`Sélection de saison · ${filters.season}`:filters.sort==="populaires"?"Les plus appréciés":"Tous les articles";
+  const title=filters.q?`Résultats pour « ${filters.q} »`:filters.seller?`Les articles de ${filters.seller}`:filters.category?(CAT_UNIV[filters.category]&&filters.category!=="Livres"?(filters.sizes.length===1?`${filters.category} · ${filters.sizes[0]}`:filters.category):filters.category==="Livres"?(filters.sizes.length===1?`Livres · ${filters.sizes[0]}`:filters.sort==="recent"&&filters.univers?"Livres · nouveautés":"Livres"):`Mode · ${filters.category}`):filters.univers==="mode"?(filters.sort==="recent"?"Mode · nouveautés":"Mode"):filters.univers==="livres"?"Livres":UNIV_CAT[filters.univers]?UNIV_CAT[filters.univers]:filters.style?`Style · ${filters.style}`:filters.season?`Sélection de saison · ${filters.season}`:filters.sort==="populaires"?"Les plus appréciés":"Tous les articles";
   $("catalogueTitle").textContent=title;
   $("resultCount").textContent=`${list.length} article${list.length>1?"s":""}`;
   $("filtersApply").textContent=list.length?`Voir ${list.length} article${list.length>1?"s":""}`:"Aucun article";
@@ -4613,8 +4619,10 @@ function renderCatalogue(rebuild=true){
 
 /* Pages univers : toutes les annonces d'un type, sans panneau de filtres */
 const UNIVERS={
-  mode:{title:"Mode",lead:"Tous les vêtements et accessoires en vente : femme, homme, enfant et unisexe.",test:p=>!isBook(p)},
-  livres:{title:"Livres",lead:"Tous les livres en vente : romans, BD, mangas, beaux livres… une deuxième vie pour chaque histoire.",test:p=>isBook(p)}
+  mode:{title:"Mode",lead:"Tous les vêtements et accessoires en vente : femme, homme, enfant et unisexe.",test:p=>univOf(p)==="mode"},
+  livres:{title:"Livres",lead:"Tous les livres en vente : romans, BD, mangas, beaux livres… une deuxième vie pour chaque histoire.",test:p=>isBook(p)},
+  electronique:{title:"Électronique",lead:"Téléphones, tablettes, consoles, audio, photo… de l’électronique d’occasion entre particuliers.",test:p=>univOf(p)==="electronique"},
+  maison:{title:"Maison",lead:"Déco, vaisselle, linge, luminaires, petits meubles… tout pour la maison, en seconde main.",test:p=>univOf(p)==="maison"}
 };
 let univSort="selection",univLimit=48,univCur="";
 function renderUnivers(k){
@@ -4634,7 +4642,7 @@ function renderUnivers(k){
 $("univSort").addEventListener("change",e=>{univSort=e.target.value;renderUnivers(univCur)});
 document.addEventListener("click",e=>{
   if(e.target.closest("#univMore")){univLimit+=48;renderUnivers(univCur);return}
-  if(e.target.closest("#univFilters")){e.preventDefault();openCatalogue(univCur==="livres"?{univers:"livres",category:"Livres"}:{univers:"mode"})}
+  if(e.target.closest("#univFilters")){e.preventDefault();openCatalogue(UNIV_CAT[univCur]?{univers:univCur,category:UNIV_CAT[univCur]}:{univers:"mode"})}
 });
 
 /* Barre de navigation : univers / filtres / exclusivités */
@@ -4643,8 +4651,8 @@ const navIc=d=>`<svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true">
 function renderNav(view){
   const box=$("navFiltres");if(!box)return;
   const onCat=view==="catalogue";
-  if(onCat)navUniv=filters.univers==="livres"||filters.category==="Livres"?"livres":filters.univers==="mode"||(filters.category&&filters.category!=="Livres")?"mode":navUniv;
-  const nb=onCat?[filters.q,filters.category&&filters.category!=="Livres",filters.brand,filters.style,filters.seller,filters.season,filters.min,filters.max].filter(Boolean).length+filters.sizes.length+filters.conditions.length+(filters.sort!=="selection"?1:0):0;
+  if(onCat)navUniv=filters.univers||(filters.category?univOf(filters.category):navUniv);
+  const nb=onCat?[filters.q,filters.category&&!CAT_UNIV[filters.category],filters.brand,filters.style,filters.seller,filters.season,filters.min,filters.max].filter(Boolean).length+filters.sizes.length+filters.conditions.length+(filters.sort!=="selection"?1:0):0;
   box.innerHTML=`<button type="button" class="nav-filtres" data-navfiltres="1" aria-current="${onCat}">${navIc('<path d="M4 6h16M7 12h10M10 18h4"/>')}<span>Filtres</span>${nb?`<b class="nav-nb" aria-label="${nb} filtre${nb>1?"s":""} actif${nb>1?"s":""}">${nb}</b>`:""}</button>`;
   document.querySelectorAll("[data-univers]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.univers===navUniv));b.toggleAttribute("aria-current",view==="univers"&&b.dataset.univers===navUniv);if(view==="univers"&&b.dataset.univers===navUniv)b.setAttribute("aria-current","page")});
 }
@@ -4652,11 +4660,11 @@ document.addEventListener("click",e=>{
   const u=e.target.closest("[data-univers]");if(u){navUniv=u.dataset.univers;location.hash="#/univers/"+navUniv;return}
   if(e.target.closest("[data-navfiltres]")){
     const open=()=>{if(innerWidth<=920)setFiltersOpen(true);else{$("filters").scrollIntoView({behavior:"smooth",block:"start"});$("fQuery")?.focus({preventScroll:true})}};
-    if(location.hash==="#/catalogue")open();else{openCatalogue(navUniv==="livres"?{univers:"livres",category:"Livres"}:{univers:"mode"});setTimeout(open,80)}
+    if(location.hash==="#/catalogue")open();else{openCatalogue(UNIV_CAT[navUniv]?{univers:navUniv,category:UNIV_CAT[navUniv]}:{univers:"mode"});setTimeout(open,80)}
     return}
   const c=e.target.closest("[data-navcat]");if(c){$("searchInput").value="";openCatalogue({univers:"mode",category:c.dataset.navcat});return}
   const f=e.target.closest("[data-navfmt]");if(f){$("searchInput").value="";openCatalogue({univers:"livres",category:"Livres",sizes:[f.dataset.navfmt]});return}
-  const n=e.target.closest("[data-navnew]");if(n){openCatalogue({univers:navUniv,sort:"recent",...(navUniv==="livres"?{category:"Livres"}:{})});return}
+  const n=e.target.closest("[data-navnew]");if(n){openCatalogue({univers:navUniv,sort:"recent",...(UNIV_CAT[navUniv]?{category:UNIV_CAT[navUniv]}:{})});return}
 });
 function openCatalogue(patch={}){resetFilters();Object.assign(filters,patch);if(location.hash==="#/catalogue")renderView();else location.hash="#/catalogue"}
 function doSearch(v){openCatalogue({q:v.trim()})}
@@ -4695,7 +4703,7 @@ function renderProduct(id){
       <div class="product-price">${eur(p.price)}</div>
       <dl class="specs">
         <div><dt>${isBook(p)?"Auteur":"Marque"}</dt><dd>${esc(p.brand||"Non renseignée")}</dd></div>
-        <div><dt>${isBook(p)?"Format":"Taille"}</dt><dd>${esc(p.size)}</dd></div>
+        <div><dt>${typeLabel(p.category)}</dt><dd>${esc(p.size)}</dd></div>
         <div><dt>État</dt><dd>${esc(p.condition)}</dd></div>
         <div><dt>Catégorie</dt><dd>${esc(p.category)}</dd></div>
         ${p.style?`<div><dt>Style</dt><dd>${esc(p.style)}</dd></div>`:""}
@@ -5023,10 +5031,10 @@ function renderSell(editId){
     <div class="buy-actions"><button class="btn btn-primary" type="submit" id="sellSubmit">${l?"Enregistrer les modifications":"Publier l’annonce"}</button>${l?`<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button>`:""}</div>
     <p class="error" id="sellErr" role="alert"></p>
   </form>`;
-  const fillSizes=()=>{const cat=$("tCat").value,book=cat==="Livres",list=cat==="Enfant"?SIZES.enfant:book?SIZES.livre:cat?SIZES.adulte:[];
-    document.querySelector('label[for="tBrand"]').textContent=book?"Auteur":"Marque";$("tBrand").placeholder=book?"Ex. : Victor Hugo":"Ex. : Sans marque";
-    document.querySelector('label[for="tSize"]').textContent=book?"Format":"Taille";
-    const stf=$("tStyle").closest(".field");if(stf){stf.hidden=book;if(book)$("tStyle").value=""}const cur=$("tSize").value||l?.size;$("tSize").innerHTML=`<option value="">${cat?"Choisir…":"Choisis d’abord une catégorie"}</option>`+list.map(s=>`<option ${s===cur?"selected":""}>${s}</option>`).join("")};
+  const fillSizes=()=>{const cat=$("tCat").value,book=cat==="Livres",obj=cat==="Électronique"||cat==="Maison",list=cat==="Enfant"?SIZES.enfant:book?SIZES.livre:cat==="Électronique"?SIZES.electronique:cat==="Maison"?SIZES.maison:cat?SIZES.adulte:[];
+    document.querySelector('label[for="tBrand"]').textContent=book?"Auteur":"Marque";$("tBrand").placeholder=book?"Ex. : Victor Hugo":cat==="Électronique"?"Ex. : Apple, Samsung, Sony…":"Ex. : Sans marque";
+    document.querySelector('label[for="tSize"]').textContent=typeLabel(cat);
+    const stf=$("tStyle").closest(".field");if(stf){stf.hidden=book||obj;if(book||obj)$("tStyle").value=""}const cur=$("tSize").value||l?.size;$("tSize").innerHTML=`<option value="">${cat?"Choisir…":"Choisis d’abord une catégorie"}</option>`+list.map(s=>`<option ${s===cur?"selected":""}>${s}</option>`).join("")};
   fillSizes();$("tCat").addEventListener("change",fillSizes);
   const priceHint=()=>{const v=parseFloat($("tPrice").value);$("priceHint").textContent=v>0?(CONFIG.paiementIntegre?`L’acheteur paiera ${eur(v)} + ${eur(feeOf(v))} de frais Orleoo (${FEE_TXT()}), hors livraison. Toi, tu reçois ${eur(v)}.`:`Pendant le lancement, 0 € de frais : l’acheteur te paie ${eur(v)} directement.`):""};
   $("tPrice").addEventListener("input",priceHint);priceHint();
@@ -5068,7 +5076,7 @@ async function submitListing(existing){
   ok&=fieldError("tDesc","tDescErr",v("tDesc").length<10?"Décris ton article en au moins 10 caractères.":"");
   ok&=fieldError("tCat","tCatErr",v("tCat")?"":"Choisis une catégorie.");
   ok&=fieldError("tBrand","tBrandErr",v("tBrand")?"":"Indique la marque (ou « Sans marque »).");
-  ok&=fieldError("tSize","tSizeErr",v("tSize")?"":(v("tCat")==="Livres"?"Choisis un format.":"Choisis une taille."));
+  ok&=fieldError("tSize","tSizeErr",v("tSize")?"":(v("tCat")==="Livres"?"Choisis un format.":(v("tCat")==="Électronique"||v("tCat")==="Maison")?"Choisis un type.":"Choisis une taille."));
   ok&=fieldError("tCond","tCondErr",v("tCond")?"":"Choisis l’état du vêtement.");
   ok&=fieldError("tPrice","tPriceErr",!(price>=1&&price<=10000)?"Indique un prix entre 1 € et 10 000 €.":"");
   $("photoErr").textContent=draftPhotos.length?"":"Ajoute au moins une photo.";if(!draftPhotos.length)ok=false;
@@ -5252,6 +5260,11 @@ function safetyBox(p){return `<div class="safety" aria-label="Paiement et sécur
   <li class="no">Jamais de virement, Wero ou PayPal « entre proches ».</li></ul>
   <a class="link small" href="#/securite">Conseils de sécurité</a></div>`}
 const PAGES={
+  "main-propre":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Main propre sécurisée</p><h1>La remise en main propre sécurisée</h1>
+    <p>Sur Orleoo, tu peux récupérer un article en main propre <b>sans jamais payer en espèces</b>.</p>
+    <ol class="steps"><li><b>1</b>Tu achètes l’article sur Orleoo et tu choisis « Remise en main propre ». Tu paies par carte : l’argent est bloqué.</li><li><b>2</b>Vous fixez le rendez-vous dans la messagerie Orleoo, dans un lieu public.</li><li><b>3</b>Sur place, tu vérifies l’article. S’il te convient, tu donnes ton <b>code de remise</b> au vendeur : c’est ce code qui débloque son argent.</li></ol>
+    <h2>Et si ça ne va pas ?</h2><p>Si l’article ne correspond pas, ne donne pas ton code. Si la remise n’a pas lieu dans le délai prévu, la commande est annulée et tu es remboursé.</p>
+    <p><a class="btn btn-outline" href="#/securite">Tout savoir sur le paiement protégé</a></p>`,
   "charte":()=>{const sw=(n,l,d)=>`<div class="ch-sw"><span style="background:${l}"></span><span style="background:${d}"></span><b>${n}</b><small>clair ${l} · sombre ${d}</small></div>`;
     const P=DEMO_PRODUCTS;return `<p class="crumbs"><a href="#/">Accueil</a> › Charte graphique</p><h1>Charte graphique Orleoo</h1>
     <p class="muted">Page de référence (non visible dans les menus). Chaque élément a un numéro : pour demander un changement, cite le numéro. Passe en mode sombre pour voir l’autre version.</p>
@@ -5847,7 +5860,7 @@ function rbPersonal(c){
       if(team.ban)out.push(`<p>Ton compte est suspendu : tes annonces ont été retirées.</p>`);
     }
     if(site.settings&&site.settings.pause_listings)out.push(`<p>Les nouvelles annonces sont <b>en pause</b> pour quelques instants à la demande de l’équipe.</p>`);
-    out.push(`<p>Une annonce peut être refusée si elle contient un <b>mot interdit</b> (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo, si elle n’est pas un vêtement, ou au-delà de 50 annonces par jour. Le message d’erreur indique toujours la raison : corrige puis réessaie.</p>`);
+    out.push(`<p>Une annonce peut être refusée si elle contient un <b>mot interdit</b> (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo, si elle n’est pas dans une rubrique acceptée (mode, livres, électronique, maison), ou au-delà de 50 annonces par jour. Le message d’erreur indique toujours la raison : corrige puis réessaie.</p>`);
     return out.join("")+rbLinks(["#/compte/annonces","Mes annonces"]);
   }
   if(!payOn())return null;
