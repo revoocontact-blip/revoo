@@ -39,6 +39,7 @@ Chaque script peut être relancé sans risque.
 | 27 | `supabase-qualite.sql` | Qualité des annonces : détection automatique des annonces suspectes, coups de cœur |
 | 28 | `supabase-hebdo.sql` | E-mail « Nouveautés de la semaine » (uniquement pour les membres qui l'acceptent) |
 | 29 | `supabase-offres-lots.sql` | « Faire une offre » (offre, contre-offre, 48 h) et réductions sur les lots |
+| 30 | `supabase-verrou-vitrine.sql` | Mode vitrine : le serveur refuse commandes, paiements et échanges tant que les achats ne sont pas ouverts |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 

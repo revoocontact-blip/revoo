@@ -43,8 +43,8 @@ Tout est prêt côté site et base de données. Aujourd'hui le site est en **mod
 6. **Tester en sandbox** avec les cartes de test Mangopay.
 7. **Ouvrir pour de vrai** :
    - passe `MANGOPAY_BASE` sur `https://api.mangopay.com` avec les clés de production ;
-   - dans Supabase, lance `update public.site_settings set payment_mode = 'mangopay' where id = 1;` ;
-   - dans `index.html`, mets `revooPayDemo: false`.
+   - dans Supabase, lance `update public.site_settings set payment_mode = 'mangopay', achats_ouverts = true where id = 1;` (ouvre les achats côté serveur) ;
+   - dans `index.html`, mets `revooPayDemo: false` et `vitrine: false`.
 
 ## Encore à construire avec Mangopay (avant l'ouverture)
 
