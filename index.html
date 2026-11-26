@@ -2563,6 +2563,19 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
 .sp-desc{white-space:pre-wrap;font-size:14px;max-height:120px;overflow:auto;margin:0 0 8px}
 @media (max-width:600px){.sp-grid{grid-template-columns:1fr}.sp-img{max-width:260px}}
 .wait-panel{margin-bottom:16px}.wait-top{margin:6px 0 0;padding-left:20px;display:grid;gap:4px}
+
+/* Croissance */
+#saveAlert{margin-left:10px}
+.alert-row{padding:14px 0;border-top:1px solid var(--line)}.alert-row:first-of-type{border-top:0}
+.alert-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}.alert-top small{display:block;margin-top:2px}
+.alert-items{margin-top:12px}
+.invite-link{display:flex;gap:8px;flex-wrap:wrap}.invite-link .input{flex:1;min-width:200px}
+.lstats{display:flex;gap:14px;flex-wrap:wrap;margin:4px 0 0;color:var(--muted)}
+.trust{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tb{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--ice,#f1f1ee);color:var(--ink);border:1px solid var(--line)}
+.tb-ok{background:#EEF3ED;color:#33503C;border-color:#CFDCCB}
+html[data-theme="dark"] .tb-ok{background:#2F3B33;color:#CFE3CB;border-color:#4E6A56}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .tb-ok{background:#2F3B33;color:#CFE3CB;border-color:#4E6A56}}
 </style>
 </head>
 <body>
@@ -2783,7 +2796,7 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
         <button type="button" class="btn btn-outline filters-toggle" id="filtersToggle" aria-expanded="false" aria-controls="filters">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg> Filtres <span id="filterNb"></span>
         </button>
-        <span class="count" id="resultCount" role="status"></span>
+        <span class="count" id="resultCount" role="status"></span><button type="button" class="btn btn-outline btn-sm" id="saveAlert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg> Créer une alerte</button>
         <label class="sort">Trier par
           <select id="sortSelect">
             <option value="selection">Sélection Orleoo</option>
@@ -3149,8 +3162,9 @@ async function onSession(session,event){
   // Re-vérification du mot de passe (ex. suppression du compte) : même personne, rien à recharger
   if(event==="SIGNED_IN"&&session&&state.user&&session.user.id===state.user.id&&state.reauth)return;
   if(event==="PASSWORD_RECOVERY"){state.recovery=true}
-  if(session){await loadProfile(session);await loadSubs();await syncFavorites();await loadConversations();await loadAdmin();await loadOrders();startRealtime()}
-  else {state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0}
+  if(session){await loadProfile(session);await loadSubs();await syncFavorites();await loadConversations();await loadAdmin();await loadOrders();startRealtime();await applyReferral();loadGrowth().then(()=>{if(location.hash.startsWith("#/compte"))renderView()})}
+  else {growth.searches=[];growth.hits=[];growth.refs=null;growth.stats={};growth.loaded=false}
+  if(!session){state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0}
   state.remote.forEach(p=>p.mine=!!state.user&&state.user.id===p.sellerId);
   renderView();
   if(event==="PASSWORD_RECOVERY")location.hash="#/compte";
@@ -3422,6 +3436,7 @@ async function loadTeamData(which){
   if(!which||which==="bord")jobs.push(loadSite());
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(sb.rpc("founder_stats").then(r=>{if(!r.error)team.fstats=r.data}));
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(Promise.all([sb.rpc("waitlist_stats"),sb.rpc("waitlist_top",{p_limit:5})]).then(([a,t])=>{team.wait=a.error?null:{...((a.data||[])[0]||{membres:0,demandes:0}),top:t.error?[]:(t.data||[])}}).catch(()=>{team.wait=null}));
+  if((!which||which==="bord")&&state.role==="fondateur")jobs.push(sb.rpc("referral_top",{p_limit:10}).then(r=>{team.refTop=r.error?null:(r.data||[])}));
   if(which==="bord"&&!can("journal"))team.log=[];
   if(!which||which==="bord")jobs.push(sb.rpc("admin_stats").then(r=>{if(!r.error&&r.data&&!r.data.erreur)team.stats=r.data}));
   if(!which||which==="equipe"||which==="bord")jobs.push(sb.rpc("team_list").then(r=>{if(!r.error)team.list=r.data||[]}));
@@ -3649,7 +3664,9 @@ function founderHtml(){
   const waitBlock=w?`<div class="panel wait-panel"><h2>Attendent l’ouverture des achats</h2>
     <div class="kpis"><div class="kpi"><b>${Number(w.membres)}</b><span>Membre${Number(w.membres)>1?"s":""} en attente</span><small>ont cliqué sur « Me prévenir »</small></div><div class="kpi"><b>${Number(w.demandes)}</b><span>Demande${Number(w.demandes)>1?"s":""} au total</span><small>une par annonce attendue</small></div></div>
     ${w.top&&w.top.length?`<h3 class="small-h">Annonces les plus attendues</h3><ol class="wait-top">${w.top.map(x=>`<li><a class="link" href="#/article/${encodeURIComponent(x.listing_id)}">${esc(x.titre)}</a> <span class="muted">· ${eur(Number(x.prix))} · ${Number(x.attentes)} personne${Number(x.attentes)>1?"s":""}</span></li>`).join("")}</ol>`:`<p class="muted small">Personne n’a encore cliqué sur « Me prévenir ».</p>`}</div>`:"";
-  return `${waitBlock}<div class="panel founder"><h2>Tes chiffres</h2>
+  const rt=team.refTop;
+  const refBlock=rt?`<div class="panel wait-panel"><h2>Meilleurs parrains</h2>${rt.length?`<table class="legal-table"><thead><tr><th>Membre</th><th>Filleuls</th><th>Filleuls qui vendent</th><th></th></tr></thead><tbody>${rt.map(x=>`<tr><td><a class="link" href="#/vendeur/${x.user_id}">@${esc(x.identifiant)}</a></td><td>${Number(x.filleuls)}</td><td>${Number(x.filleuls_actifs)}</td><td><button type="button" class="btn btn-outline btn-sm" data-gift-ref="${x.user_id}" data-gift-name="${esc(x.identifiant)}">Offrir 1 mois Pro</button></td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Personne n’a encore parrainé de membre. Chaque membre trouve son lien d’invitation dans « Profil et paramètres ».</p>`}</div>`:"";
+  return `${waitBlock}${refBlock}<div class="panel founder"><h2>Tes chiffres</h2>
     <div class="kpis">
       <div class="kpi"><b>${eur(Number(f.frais_mois))}</b><span>Frais encaissés ce mois-ci</span><small>${eur(Number(f.frais_encaisses))} depuis le début</small></div>
       <div class="kpi"><b>${eur(mrr)}</b><span>Abonnements par mois</span><small>${nAb} abonné${nAb>1?"s":""} payant${nAb>1?"s":""}${f.abonnes_demo?` · ${f.abonnes_demo} offert${f.abonnes_demo>1?"s":""} ou démo`:""}</small></div>
@@ -4498,7 +4515,7 @@ async function renderSellerProfile(id){
       <div class="pp-body">
         <span class="avatar pp-avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
         <div class="pp-id">
-          <h1>@${esc(pr.name)}${planBadge(id)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1>
+          <h1>@${esc(pr.name)}${planBadge(id)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1><div class="trust" data-badges="${id}"></div>
           <div class="pp-chips">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span></div>
         </div>
         <div class="pp-actions">${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}<button type="button" class="btn btn-outline" id="shareProfile">Partager</button></div>
@@ -4517,6 +4534,7 @@ async function renderSellerProfile(id){
   v.querySelectorAll("[data-pptab]").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.pptab;v.querySelectorAll("[data-pptab]").forEach(x=>x.setAttribute("aria-selected",x===b));$("ppArticles").hidden=t!=="articles";$("ppAvis").hidden=t!=="avis"}));
   $("shareProfile").addEventListener("click",async()=>{const url=location.origin+location.pathname+"#/vendeur/"+id;try{if(navigator.share){await navigator.share({title:"@"+pr.name+" sur Orleoo",url});return}await navigator.clipboard.writeText(url);toast("Lien du profil copié !")}catch(e){if(e&&e.name==="AbortError")return;prompt("Copie ce lien :",url)}});
   document.title=`${pr.name} — Orleoo`;
+  fillBadges(v);
 }
 
 /* =========================================================
@@ -4759,7 +4777,7 @@ function renderProduct(id){
       ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo Pay</span><span>${eur(feeOf(p.price))}</span></div><div class="total"><span>Total</span><span>${eur(p.price+feeOf(p.price))}</span></div><p class="small muted" style="margin:6px 0 0">Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:!CONFIG.paiementIntegre?safetyBox(p):`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo (${FEE_TXT()})</span><span>${eur(feeOf(p.price))}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+feeOf(p.price))}</span></div></div>`}
       ${actions}
       ${sold?"":tradeBlock(p)}
-      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
+      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}${p.sellerId?`<div class="trust" data-badges="${p.sellerId}"></div>`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
       ${p.mine||sold||!CONFIG.paiementIntegre?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
       <button type="button" class="link small" id="shareBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Partager</button>
       ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">Signaler cette annonce</button><div id="reportBox"></div>`:""}
@@ -4777,6 +4795,7 @@ function renderProduct(id){
     catch(e){if(e&&e.name==="AbortError")return;prompt("Copie ce lien :",url)}
   });
   document.title=`${p.name} — Orleoo`;
+  countView(p);fillBadges(v);
 }
 
 /* =========================================================
@@ -4907,9 +4926,11 @@ function renderAccount(tab){
   if(state.isAdmin){renderModeration(el);return}
   const tabs=[["profil","Profil et paramètres"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]].filter(t=>CONFIG.paiementIntegre||t[0]!=="commandes");
   if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["echanges",`Échanges (${trades.list.filter(t=>["proposed","accepted","problem"].includes(t.status)).length})`],["portemonnaie","Porte-monnaie"])}
+  {const nw=(growth.hits||[]).filter(h=>!h.seen_at).length;tabs.push(["alertes",`Mes alertes${nw?` (${nw} nouvelle${nw>1?"s":""})`:""}`])}
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
   let body="";
-  if(accountTab==="achats"&&payOn()){body=purchasesHtml()}
+  if(accountTab==="alertes"){body=alertsHtml()}
+  else if(accountTab==="achats"&&payOn()){body=purchasesHtml()}
   else if(accountTab==="ventes"&&payOn()){body=salesHtml()}
   else if(accountTab==="portemonnaie"&&payOn()){body=walletHtml()}
   else if(accountTab==="echanges"&&payOn()){body=tradesHtml()}
@@ -4919,7 +4940,7 @@ function renderAccount(tab){
     if(state.user.vacation)body=`<p class="note small">Mode vacances activé : tes annonces sont masquées pour les autres membres. Désactive-le dans « Profil et paramètres ».</p>`;
     body=mine.length?`<div class="panel">${mine.map(l=>`<div class="listing-row">
       <a class="image-frame" href="#/article/${encodeURIComponent(l.id)}"><img data-safe-image src="${esc(l.img)}" alt="${esc(l.name)}"></a>
-      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p><p>${isBoosted(l)?`<span class="status boosted">En avant jusqu’au ${fmtDT(l.boostedUntil)}</span> `:""}<span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Orleoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
+      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p>${statLine(l.id)}<p>${isBoosted(l)?`<span class="status boosted">En avant jusqu’au ${fmtDT(l.boostedUntil)}</span> `:""}<span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Orleoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
       <div class="row-actions">${l.status==="removed"||lockedBy(l.id)?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}${l.status==="active"&&subs.mine?`<button type="button" class="btn btn-outline" data-boost="${esc(l.id)}">Mettre en avant</button>`:""}${l.status==="active"&&myPerk("pins")>0?`<button type="button" class="btn btn-outline" data-pin="${esc(l.id)}" aria-pressed="${l.pinned}">${l.pinned?"Désépingler":"Épingler"}</button>`:""}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
     </div>`).join("")}</div><a class="btn btn-primary" href="#/vendre">Ajouter une annonce</a>`
     :`<div class="empty"><p>Tu n’as pas encore d’annonce.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
@@ -4934,6 +4955,7 @@ function renderAccount(tab){
     const w=walletTotals(), tm=themeMode();
     body=`<div class="settings">
     <div class="settings-col">
+      ${inviteHtml()}
       <form class="panel" id="profileForm" novalidate>
         <h2>Profil public</h2>
         <p class="muted small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg> Visible par tous les membres, sur ton profil et tes annonces.</p>
@@ -5146,6 +5168,90 @@ function showSellPreview(existing){
   box.addEventListener("click",e=>{if(e.target===box)close()});
   $("spGo").focus();
 }
+
+/* =========================================================
+   CROISSANCE : alertes, parrainage, statistiques, badges
+   ========================================================= */
+const growth={searches:[],hits:[],refs:null,stats:{},badges:{},loaded:false};
+async function loadGrowth(){
+  if(!sb||!state.user)return;
+  const [a,b,c,d]=await Promise.all([
+    sb.from("saved_searches").select("*").order("created_at",{ascending:false}),
+    sb.from("alert_hits").select("id,search_id,listing_id,created_at,seen_at").order("created_at",{ascending:false}).limit(60),
+    sb.rpc("my_referrals"),sb.rpc("my_listing_stats")]);
+  growth.searches=a.error?[]:(a.data||[]);growth.hits=b.error?[]:(b.data||[]);growth.refs=c.error?null:c.data;
+  growth.stats={};if(!d.error)(d.data||[]).forEach(x=>growth.stats[x.listing_id]=x);
+  growth.loaded=true;
+}
+const alertLabel=f=>[f.q&&`« ${f.q} »`,f.category,f.sizes.length&&`Taille ${f.sizes.join(", ")}`,f.conditions.length&&f.conditions.join(", "),f.brand,f.min!==""&&`dès ${f.min} €`,f.max!==""&&`jusqu’à ${f.max} €`].filter(Boolean).join(" · ");
+$("saveAlert").addEventListener("click",async()=>{
+  if(!state.user){toast("Connecte-toi pour créer une alerte.");location.hash="#/compte";return}
+  const f=filters,label=alertLabel(f);
+  if(!label){toast("Fais d’abord une recherche ou choisis des filtres, puis crée l’alerte.");return}
+  const row={label:label.slice(0,120),q:f.q||null,category:f.category||null,sizes:f.sizes,conditions:f.conditions,brand:f.brand||null,min_price:f.min===""?null:+f.min,max_price:f.max===""?null:+f.max};
+  const {error}=await sb.from("saved_searches").insert(row);
+  if(error){toast(frenchError(error));return}
+  toast("Alerte créée : on te prévient dès qu’une annonce correspond.");loadGrowth();
+});
+function alertsHtml(){
+  if(!growth.loaded){loadGrowth().then(()=>{if(accountTab==="alertes")renderView()});return `<div class="panel"><p class="muted">Chargement de tes alertes…</p></div>`}
+  if(growth.hits.some(h=>!h.seen_at))setTimeout(()=>{sb.rpc("mark_alerts_seen");growth.hits.forEach(h=>h.seen_at=h.seen_at||new Date().toISOString())},1500);
+  if(!growth.searches.length)return `<div class="empty"><p>Tu n’as pas encore d’alerte.</p><p class="muted small">Fais une recherche ou choisis des filtres dans le catalogue, puis clique sur « Créer une alerte » : on te prévient par e-mail dès qu’une annonce correspond.</p><a class="btn btn-primary" href="#/catalogue">Chercher un article</a></div>`;
+  const byS=id=>growth.hits.filter(h=>h.search_id===id);
+  return `<div class="panel"><h2>Mes alertes (${growth.searches.length}/10)</h2>${growth.searches.map(x=>{const h=byS(x.id),nw=h.filter(y=>!y.seen_at).length;
+    const items=h.map(y=>state.remote.find(p=>p.id===y.listing_id)).filter(p=>p&&p.status==="active").slice(0,4);
+    return `<div class="alert-row"><div class="alert-top"><div><b>${esc(x.label)}</b><small class="muted">${h.length} annonce${h.length>1?"s":""} trouvée${h.length>1?"s":""}${nw?` · <span class="status">${nw} nouvelle${nw>1?"s":""}</span>`:""}</small></div>
+      <div class="row-actions"><button type="button" class="btn btn-outline btn-sm" data-alert-open="${x.id}">Voir les annonces</button><button type="button" class="btn btn-outline btn-sm" data-alert-del="${x.id}" aria-label="Supprimer l’alerte ${esc(x.label)}">Supprimer</button></div></div>
+      ${items.length?`<div class="products alert-items">${items.map(card).join("")}</div>`:""}</div>`}).join("")}</div>`;
+}
+document.addEventListener("click",async e=>{
+  const o=e.target.closest("[data-alert-open]");if(o){const x=growth.searches.find(y=>y.id===o.dataset.alertOpen);if(x)openCatalogue({q:x.q||"",category:x.category||"",sizes:x.sizes||[],conditions:x.conditions||[],brand:x.brand||"",min:x.min_price??"",max:x.max_price??""});return}
+  const d=e.target.closest("[data-alert-del]");if(d){if(!confirm("Supprimer cette alerte ?"))return;const {error}=await sb.from("saved_searches").delete().eq("id",d.dataset.alertDel);if(error){toast(frenchError(error));return}growth.searches=growth.searches.filter(y=>y.id!==d.dataset.alertDel);growth.hits=growth.hits.filter(y=>y.search_id!==d.dataset.alertDel);toast("Alerte supprimée.");renderView();return}
+  const c=e.target.closest("[data-invite-copy]");if(c){const url=inviteUrl();try{await navigator.clipboard.writeText(url);toast("Lien copié !")}catch(_){prompt("Copie ton lien d’invitation :",url)}return}
+  const sh=e.target.closest("[data-invite-share]");if(sh){const url=inviteUrl();if(navigator.share){try{await navigator.share({title:"Orleoo",text:"Rejoins-moi sur Orleoo : vêtements et livres de seconde main, avec paiement protégé.",url})}catch(_){}}else{try{await navigator.clipboard.writeText(url);toast("Lien copié !")}catch(_){prompt("Copie ton lien d’invitation :",url)}}return}
+});
+/* Parrainage */
+const inviteUrl=()=>location.origin+location.pathname+"?parrain="+encodeURIComponent(state.user?.name||"")+"#/";
+try{const pq=new URLSearchParams(location.search).get("parrain");if(pq&&/^[A-Za-z0-9._-]{3,20}$/.test(pq))localStorage.setItem("revoo.parrain",pq)}catch(_){}
+async function applyReferral(){
+  let n=null;try{n=localStorage.getItem("revoo.parrain")}catch(_){}
+  if(!n||!state.user||!sb)return;
+  if(n.toLowerCase()===String(state.user.name||"").toLowerCase()){try{localStorage.removeItem("revoo.parrain")}catch(_){}return}
+  const {error}=await sb.rpc("set_referrer",{p_name:n});
+  if(!error){try{localStorage.removeItem("revoo.parrain")}catch(_){}}
+}
+function inviteHtml(){
+  if(!state.user)return "";
+  const n=growth.refs;
+  return `<div class="panel invite"><h2>Invite tes amis</h2><p class="muted small">Partage ton lien : chaque personne qui s’inscrit avec devient ton filleul. Les meilleurs parrains peuvent recevoir un mois d’abonnement offert par l’équipe Orleoo.</p>
+    <div class="invite-link"><input class="input" readonly value="${esc(inviteUrl())}" aria-label="Ton lien d’invitation"><button type="button" class="btn btn-primary" data-invite-copy>Copier</button><button type="button" class="btn btn-outline" data-invite-share>Partager</button></div>
+    <p class="small" style="margin:10px 0 0">${n==null?"":`<b>${n}</b> ami${n>1?"s":""} inscrit${n>1?"s":""} grâce à toi.`}</p></div>`;
+}
+/* Statistiques : une vue par annonce et par session */
+function countView(p){
+  if(!sb||!p||p.demo||p.mine)return;
+  try{const k="revoo.v."+p.id;if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1")}catch(_){}
+  sb.rpc("bump_view",{p_listing:p.id}).then(()=>{},()=>{});
+}
+const statLine=id=>{const x=growth.stats[id];if(!x)return "";return `<p class="lstats small"><span title="Vues">👁 ${x.vues} vue${x.vues>1?"s":""}</span><span title="Favoris">♥ ${x.favoris} favori${x.favoris>1?"s":""}</span>${CONFIG.vitrine?`<span title="Me prévenir">🔔 ${x.attentes} en attente</span>`:""}</p>`};
+/* Badges de confiance */
+async function fillBadges(root){
+  const els=[...(root||document).querySelectorAll("[data-badges]")];
+  for(const el of els){
+    const id=el.dataset.badges;if(!isUuid(id))continue;
+    if(!growth.badges[id]){const {data,error}=await sb.rpc("seller_badges",{p_user:id});if(error||!data)continue;growth.badges[id]=data}
+    const b=growth.badges[id],out=[];
+    if(b.depuis)out.push(`<span class="tb">Membre depuis ${new Date(b.depuis).toLocaleDateString("fr-FR",{month:"long",year:"numeric"})}</span>`);
+    if(b.ventes>0)out.push(`<span class="tb">${b.ventes} vente${b.ventes>1?"s":""} réussie${b.ventes>1?"s":""}</span>`);
+    if(b.avis>=3&&b.note>=4.5)out.push(`<span class="tb tb-ok">Vendeur fiable</span>`);
+    if(b.conversations>=3&&b.reponse_h!=null&&b.reponse_h<=2)out.push(`<span class="tb tb-ok">Répond vite</span>`);
+    el.innerHTML=out.join("");
+  }
+}
+
+document.addEventListener("click",async e=>{const g=e.target.closest("[data-gift-ref]");if(!g)return;
+  if(!confirm(`Offrir 1 mois d’abonnement Pro à @${g.dataset.giftName} ?`))return;
+  if(await teamRpc("gift_subscription",{p_user:g.dataset.giftRef,p_plan:"pro",p_days:30},"Abonnement offert : le membre est prévenu."))g.disabled=true;});
 
 function renderPhotos(){
   $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button>${i===0?"<figcaption>Couverture</figcaption>":""}</figure>`).join("");
