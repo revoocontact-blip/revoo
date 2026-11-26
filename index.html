@@ -2549,6 +2549,18 @@ html[data-design="2"]:not([data-theme="dark"]) .top .search:focus-within{border-
 
 /* Mode vitrine : pas de panier tant que les achats ne sont pas ouverts */
 body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!important}
+
+/* Formulaire de vente : conseils, prix conseillé, aperçu */
+.sell-tips{margin-top:10px;font-size:14px}.sell-tips summary{cursor:pointer;font-weight:700}
+.sell-tips ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px}
+.price-sug{display:block;margin-top:6px;font-size:13.5px}.price-sug .link{font-weight:700}
+.sell-prev{width:min(760px,100%);max-height:92vh;overflow:auto}
+.sp-grid{display:grid;grid-template-columns:minmax(0,240px) 1fr;gap:18px}
+.sp-img{position:relative;border-radius:12px;overflow:hidden;background:var(--pale,#eee);aspect-ratio:4/5}.sp-img img{width:100%;height:100%;object-fit:cover;display:block}
+.sp-img .price-tag{position:absolute;left:10px;bottom:10px}
+.sp-dl{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:10px 0;font-size:14px}.sp-dl dt{color:var(--muted);font-size:12.5px}.sp-dl dd{margin:0;font-weight:600}
+.sp-desc{white-space:pre-wrap;font-size:14px;max-height:120px;overflow:auto;margin:0 0 8px}
+@media (max-width:600px){.sp-grid{grid-template-columns:1fr}.sp-img{max-width:260px}}
 </style>
 </head>
 <body>
@@ -5041,6 +5053,13 @@ function renderSell(editId){
         <label for="photoInput" class="btn btn-outline">Ajouter des photos</label>
         <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" multiple class="sr-only" aria-describedby="photoLabel photoErr">
         <p class="muted small" style="margin:8px 0 0">JPG, PNG ou WebP. Les photos sont réduites automatiquement.</p>
+        <details class="sell-tips"><summary>Nos conseils pour des photos qui vendent</summary><ul>
+          <li><b>Lumière du jour</b> : près d’une fenêtre, sans flash.</li>
+          <li><b>Fond simple</b> : un mur clair, un drap ou un parquet, sans objets autour.</li>
+          <li><b>Article bien présenté</b> : repassé ou défroissé, à plat, sur un cintre ou porté.</li>
+          <li><b>Plusieurs angles</b> : devant, dos, étiquette (marque, taille, matière) et détails.</li>
+          <li><b>Défauts visibles</b> : une tache ou un accroc photographié inspire confiance.</li>
+          <li><b>Pour un livre</b> : couverture, dos, quatrième de couverture et état des pages.</li></ul></details>
         <div class="photo-list" id="photoList"></div>
       </div>
       <span class="error" id="photoErr"></span>
@@ -5053,7 +5072,7 @@ function renderSell(editId){
       <div class="field"><label for="tSize">Taille</label><select class="input" id="tSize"></select><span class="error" id="tSizeErr"></span></div>
       <div class="field"><label for="tCond">État</label><select class="input" id="tCond">${opt(CONDITIONS,l?.condition,"Choisir…")}</select><span class="error" id="tCondErr"></span></div>
       <div class="field"><label for="tStyle">Style <span class="hint">(facultatif)</span></label><select class="input" id="tStyle">${opt(STYLES,l?.style,"Aucun")}</select></div>
-      <div class="field"><label for="tPrice">Prix (€)</label><input class="input" id="tPrice" type="number" inputmode="decimal" min="1" max="10000" step="0.5" value="${l?l.price:""}"><span class="hint" id="priceHint"></span><span class="error" id="tPriceErr"></span></div>
+      <div class="field"><label for="tPrice">Prix (€)</label><input class="input" id="tPrice" type="number" inputmode="decimal" min="1" max="10000" step="0.5" value="${l?l.price:""}"><span class="hint" id="priceHint"></span><span class="price-sug" id="priceSug" aria-live="polite"></span><span class="error" id="tPriceErr"></span></div>
     </div>
     <div class="buy-actions"><button class="btn btn-primary" type="submit" id="sellSubmit">${l?"Enregistrer les modifications":"Publier l’annonce"}</button>${l?`<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button>`:""}</div>
     <p class="error" id="sellErr" role="alert"></p>
@@ -5063,6 +5082,7 @@ function renderSell(editId){
     document.querySelector('label[for="tSize"]').textContent=book?"Format":"Taille";
     const stf=$("tStyle").closest(".field");if(stf){stf.hidden=book;if(book)$("tStyle").value=""}const cur=$("tSize").value||l?.size;$("tSize").innerHTML=`<option value="">${cat?"Choisir…":"Choisis d’abord une catégorie"}</option>`+list.map(s=>`<option ${s===cur?"selected":""}>${s}</option>`).join("")};
   fillSizes();$("tCat").addEventListener("change",fillSizes);
+  ["tCat","tBrand","tSize","tCond"].forEach(id=>$(id).addEventListener("change",showPriceSug));$("tBrand").addEventListener("input",showPriceSug);showPriceSug();
   const priceHint=()=>{const v=parseFloat($("tPrice").value);$("priceHint").textContent=v>0?(CONFIG.paiementIntegre?`L’acheteur paiera ${eur(v)} + ${eur(feeOf(v))} de frais Orleoo (${FEE_TXT()}), hors livraison. Toi, tu reçois ${eur(v)}.`:`Pendant le lancement, 0 € de frais : l’acheteur te paie ${eur(v)} directement.`):""};
   $("tPrice").addEventListener("input",priceHint);priceHint();
   renderPhotos();
@@ -5077,6 +5097,49 @@ function renderSell(editId){
   });
   $("sellForm").addEventListener("submit",e=>{e.preventDefault();submitListing(l)});
 }
+/* Suggestion de prix : d'après les annonces similaires en ligne */
+function priceSuggestion(cat,brand,size,cond){
+  if(!cat)return null;
+  const pool=available().filter(p=>!p.mine&&p.category===cat);
+  const by=(f)=>pool.filter(f);
+  const b=(brand||"").trim().toLowerCase();
+  let set=b&&b!=="sans marque"?by(p=>(p.brand||"").toLowerCase()===b):[];
+  if(set.length<3)set=pool;
+  if(cond){const c=set.filter(p=>p.condition===cond);if(c.length>=3)set=c}
+  if(set.length<3)return null;
+  const v=set.map(p=>p.price).sort((x,y)=>x-y),q=f=>v[Math.min(v.length-1,Math.max(0,Math.round((v.length-1)*f)))];
+  const r5=x=>Math.max(1,Math.round(x*2)/2);
+  return {low:r5(q(.25)),mid:r5(q(.5)),high:r5(q(.75)),n:set.length,brand:set!==pool&&b&&b!=="sans marque"};
+}
+function showPriceSug(){
+  const el=$("priceSug");if(!el)return;
+  const s=priceSuggestion($("tCat").value,$("tBrand").value,$("tSize").value,$("tCond").value);
+  if(!el.dataset.bound){el.dataset.bound="1";el.addEventListener("pointerdown",e=>{const b=e.target.closest("#useSug");if(b){e.preventDefault();$("tPrice").value=b.dataset.mid;$("tPrice").dispatchEvent(new Event("input"))}});el.addEventListener("click",e=>{const b=e.target.closest("#useSug");if(b){$("tPrice").value=b.dataset.mid;$("tPrice").dispatchEvent(new Event("input"))}})}
+  if(!s){el.innerHTML=$("tCat").value?`<span class="muted small">Astuce : regarde le prix d’articles similaires dans le catalogue pour fixer le tien.</span>`:"";return}
+  el.innerHTML=`<span>Prix conseillé : <b>${eur(s.low)} – ${eur(s.high)}</b> <span class="muted">(d’après ${s.n} annonce${s.n>1?"s":""} ${s.brand?"de la même marque":"de la même catégorie"})</span></span> <button type="button" class="link" id="useSug" data-mid="${s.mid}">Utiliser ${eur(s.mid)}</button>`;
+}
+/* Aperçu de l'annonce avant publication */
+let sellPreviewOk=false;
+function showSellPreview(existing){
+  const v=id=>$(id).value.trim(),price=parseFloat(String($("tPrice").value).replace(",","."));
+  const name=(state.user&&state.user.name)||"toi";
+  const lab=v("tCat")==="Livres"?"Format":"Taille";
+  document.body.insertAdjacentHTML("beforeend",`<div class="crop-backdrop" id="sellPrev" role="dialog" aria-modal="true" aria-labelledby="sellPrevT"><div class="crop sell-prev">
+    <h2 id="sellPrevT" style="margin:0 0 4px">Aperçu de ton annonce</h2><p class="muted small" style="margin:0 0 14px">Voici ce que les visiteurs verront. Vérifie que tout est juste avant de publier.</p>
+    <div class="sp-grid"><div class="sp-img"><img src="${esc(draftPhotos[0]||"")}" alt=""><span class="price-tag">${eur(price)}</span></div>
+    <div><h3 style="margin:0 0 6px">${esc(v("tTitle"))}</h3><p class="card-meta"><span class="chip-mini">${esc(v("tSize"))}</span><span class="chip-mini">${esc(v("tCond"))}</span></p>
+    <dl class="sp-dl"><div><dt>Catégorie</dt><dd>${esc(v("tCat"))}</dd></div><div><dt>${v("tCat")==="Livres"?"Auteur":"Marque"}</dt><dd>${esc(v("tBrand"))}</dd></div><div><dt>${lab}</dt><dd>${esc(v("tSize"))}</dd></div><div><dt>Photos</dt><dd>${draftPhotos.length}</dd></div><div><dt>Vendeur</dt><dd>${esc(name)}</dd></div></dl>
+    <p class="sp-desc">${esc(v("tDesc"))}</p>
+    ${CONFIG.paiementIntegre?`<p class="small muted">Tu recevras <b>${eur(price)}</b>. L’acheteur paiera ${eur(price+feeOf(price))} avec les frais Orleoo.</p>`:""}</div></div>
+    <div class="crop-foot buy-actions" style="margin-top:16px"><button type="button" class="btn btn-outline" id="spBack">Modifier</button><button type="button" class="btn btn-primary" id="spGo">${existing?"Enregistrer":"Publier l’annonce"}</button></div></div></div>`);
+  const box=$("sellPrev"),close=()=>{box.remove();document.removeEventListener("keydown",esc_)};
+  const esc_=e=>{if(e.key==="Escape")close()};document.addEventListener("keydown",esc_);
+  $("spBack").addEventListener("click",()=>{close();$("tTitle").focus()});
+  $("spGo").addEventListener("click",()=>{close();sellPreviewOk=true;submitListing(existing)});
+  box.addEventListener("click",e=>{if(e.target===box)close()});
+  $("spGo").focus();
+}
+
 function renderPhotos(){
   $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button>${i===0?"<figcaption>Couverture</figcaption>":""}</figure>`).join("");
   $("photoList").querySelectorAll("[data-delphoto]").forEach(b=>b.addEventListener("click",()=>{draftPhotos.splice(+b.dataset.delphoto,1);renderPhotos()}));
@@ -5109,6 +5172,8 @@ async function submitListing(existing){
   $("photoErr").textContent=draftPhotos.length?"":"Ajoute au moins une photo.";if(!draftPhotos.length)ok=false;
   {const why=offPlatform(v("tTitle")+" "+v("tDesc"));if(why){ok=false;fieldError("tDesc","tDescErr",offPlatformMsg(why))}}
   if(!ok){$("sellErr").textContent="Certains champs sont à corriger.";document.querySelector('#sellForm [aria-invalid="true"]')?.focus();return}
+  if(!sellPreviewOk){showSellPreview(existing);return}
+  sellPreviewOk=false;
   const btn=$("sellSubmit"),label=btn.textContent;btn.disabled=true;btn.textContent="Publication en cours…";$("sellErr").textContent="";
   try{
     const photos=await uploadPhotos(draftPhotos);
