@@ -12,6 +12,9 @@
 --   • chaque vendeur choisit une réduction dès 2, 3 et 5 articles achetés chez lui ;
 --   • la réduction s'applique aux articles sans offre acceptée.
 -- Le prix payé est TOUJOURS recalculé ici, sur le serveur.
+-- Mode vitrine (achats pas encore ouverts) : une offre acceptée garde son prix,
+--   et les 48 h pour payer démarrent à l'ouverture des achats :
+--   update public.site_settings set achats_ouverts = true where id = 1;
 -- =====================================================================
 
 -- ---------- 1. RÉDUCTIONS SUR LES LOTS (réglées par le vendeur) ----------
@@ -35,6 +38,13 @@ $$;
 grant execute on function public.lot_percent(uuid, int) to anon, authenticated;
 
 -- ---------- 2. OFFRES ----------
+alter table public.site_settings add column if not exists achats_ouverts boolean not null default false;
+create or replace function public.achats_ouverts()
+returns boolean language sql stable security definer set search_path = public as $$
+  select coalesce((select achats_ouverts from public.site_settings where id = 1), false);
+$$;
+grant execute on function public.achats_ouverts() to anon, authenticated;
+
 create table if not exists public.offers (
   id          uuid primary key default gen_random_uuid(),
   listing_id  uuid not null references public.listings(id) on delete cascade,
@@ -72,7 +82,7 @@ create or replace function public.expire_offers()
 returns void language sql security definer set search_path = public as $$
   update public.offers set status = 'expiree', updated_at = now()
    where (status in ('en_attente','contre') and expires_at < now())
-      or (status = 'acceptee' and valid_until < now());
+      or (status = 'acceptee' and valid_until is not null and valid_until < now());
 $$;
 grant execute on function public.expire_offers() to authenticated;
 
@@ -163,10 +173,13 @@ begin
 
   if p_action = 'accepter' then
     if o.amount >= l.price then raise exception 'Le prix de l’article a baissé : il est déjà plus bas que cette offre'; end if;
-    update public.offers set status = 'acceptee', valid_until = now() + interval '48 hours', updated_at = now() where id = o.id;
+    update public.offers set status = 'acceptee',
+      valid_until = case when public.achats_ouverts() then now() + interval '48 hours' end,   -- vitrine : 48 h dès l'ouverture
+      updated_at = now() where id = o.id;
     perform public.offer_message(o, case when me = o.seller_id
-      then 'Offre acceptée : « ' || left(l.title, 80) || ' » est à ' || public.eur_txt(o.amount) || ' pour toi pendant 48 h.'
-      else 'J’accepte la contre-offre : ' || public.eur_txt(o.amount) || '. Je passe au paiement.' end);
+      then 'Offre acceptée : « ' || left(l.title, 80) || ' » est à ' || public.eur_txt(o.amount) || ' pour toi '
+           || case when public.achats_ouverts() then 'pendant 48 h.' else 'pendant 48 h dès l’ouverture des achats.' end
+      else 'J’accepte la contre-offre : ' || public.eur_txt(o.amount) || '.' end);
     return;
   end if;
 
@@ -209,7 +222,7 @@ declare l record; o numeric;
 begin
   select price, seller_id into l from public.listings where id = p_listing;
   select min(amount) into o from public.offers
-   where listing_id = p_listing and buyer_id = p_buyer and status = 'acceptee' and valid_until > now();
+   where listing_id = p_listing and buyer_id = p_buyer and status = 'acceptee' and (valid_until is null or valid_until > now());
   if o is not null then return least(o, l.price); end if;
   return round(l.price * (100 - public.lot_percent(l.seller_id, coalesce(p_n, 1))) / 100.0, 2);
 end $$;
@@ -363,6 +376,21 @@ begin
     values (l.id, c.buyer_id, l.seller_id) on conflict (listing_id, buyer_id) do nothing;
   end loop;
 end $$;
+
+-- Ouverture des achats : les offres acceptées pendant la vitrine ont 48 h à partir de maintenant
+create or replace function public.open_purchases_offers()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.achats_ouverts and not coalesce(old.achats_ouverts, false) then
+    update public.offers set valid_until = now() + interval '48 hours', updated_at = now()
+     where status = 'acceptee' and valid_until is null;
+  end if;
+  return new;
+end $$;
+revoke all on function public.open_purchases_offers() from public, anon, authenticated;
+drop trigger if exists site_settings_open_offers on public.site_settings;
+create trigger site_settings_open_offers after update of achats_ouverts on public.site_settings
+  for each row execute function public.open_purchases_offers();
 
 -- Expiration automatique toutes les 15 minutes (avec les autres délais)
 do $$ begin
