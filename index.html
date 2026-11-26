@@ -3113,12 +3113,12 @@ function mapListing(r){
 async function loadListings(){
   if(!sb){state.loading=false;return}
   let cols="id,seller_id,title,description,category,brand,size,condition,style,price,photos,status,created_at,boosted_until,pinned,staff_pick,";
-  let {data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300);
-  if(error&&/staff_pick/.test(error.message||"")){cols=cols.replace("staff_pick,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
-  if(error&&/pinned/.test(error.message||"")){cols=cols.replace("pinned,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
-  if(error&&/boosted_until/.test(error.message||"")){cols=cols.replace("boosted_until,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
-  if(error&&/avatar_url/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation)").order("created_at",{ascending:false}).limit(300));
-  if(error&&/vacation/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at)").order("created_at",{ascending:false}).limit(300));
+  let {data,error}=await sb.from("listings").select(cols+"profiles!listings_seller_id_fkey(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300);
+  if(error&&/staff_pick/.test(error.message||"")){cols=cols.replace("staff_pick,","");({data,error}=await sb.from("listings").select(cols+"profiles!listings_seller_id_fkey(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
+  if(error&&/pinned/.test(error.message||"")){cols=cols.replace("pinned,","");({data,error}=await sb.from("listings").select(cols+"profiles!listings_seller_id_fkey(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
+  if(error&&/boosted_until/.test(error.message||"")){cols=cols.replace("boosted_until,","");({data,error}=await sb.from("listings").select(cols+"profiles!listings_seller_id_fkey(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
+  if(error&&/avatar_url/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles!listings_seller_id_fkey(name,created_at,vacation)").order("created_at",{ascending:false}).limit(300));
+  if(error&&/vacation/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles!listings_seller_id_fkey(name,created_at)").order("created_at",{ascending:false}).limit(300));
   state.loading=false;
   if(error){state.loadError=frenchError(error);console.warn(error);return}
   state.loadError="";
@@ -3337,7 +3337,7 @@ async function loadAdmin(){
   }catch(e){console.warn(e);state.isAdmin=false}
 }
 async function loadReports(){
-  const {data,error}=await sb.from("reports").select("id,listing_id,reason,details,contact_email,status,created_at,listings(title,photos,status,price,profiles(name))").order("created_at",{ascending:false}).limit(200);
+  const {data,error}=await sb.from("reports").select("id,listing_id,reason,details,contact_email,status,created_at,listings(title,photos,status,price,profiles!listings_seller_id_fkey(name))").order("created_at",{ascending:false}).limit(200);
   if(error){console.warn(error);return}
   mod.reports=data||[];mod.loaded=true;
 }
