@@ -41,6 +41,7 @@ Chaque script peut être relancé sans risque.
 | 29 | `supabase-offres-lots.sql` | « Faire une offre » (offre, contre-offre, 48 h) et réductions sur les lots |
 | 30 | `supabase-verrou-vitrine.sql` | Mode vitrine : le serveur refuse commandes, paiements et échanges tant que les achats ne sont pas ouverts |
 | 31 | `supabase-vendeurs-fondateurs.sql` | Badge « Vendeur fondateur » : les 100 premiers membres avec 5 annonces |
+| 32 | `supabase-fidelite.sql` | Baisses de prix, « Mes tailles », blocage de membres, coup de pouce aux annonces, tableau de bord du lancement |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 

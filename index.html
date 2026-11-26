@@ -2514,6 +2514,37 @@ html[data-theme="dark"] .founder-badge{color:#F1DCA6;background:#4A3F24;border-c
 .isbn-cover img{width:72px;height:auto;max-height:110px;object-fit:contain;border-radius:4px;border:1px solid var(--line);background:#fff;flex:none}
 .isbn-cover p{margin:6px 0 0}
 .isbn-cover>div{min-width:0}.isbn-cover .btn{white-space:normal;text-align:left;height:auto;min-height:40px}
+.drop-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.drop-list li{display:flex;gap:12px;align-items:center}.drop-list .image-frame{width:56px;height:70px;border-radius:8px;flex:none}
+.drop-list p{margin:2px 0 0}.drop-pc{font-weight:600;color:var(--accent,var(--navy))}
+.my-sizes-box{margin:10px 0}.my-sizes-box p{margin:0 0 8px}
+.sizes-pick{display:flex;flex-wrap:wrap;gap:6px;border:0;padding:0;margin:0}
+#mySizesBtn[aria-pressed="true"]{background:var(--accent,var(--navy));border-color:var(--accent,var(--navy));color:#fff}
+.block-link{color:var(--muted)}
+.blocked-list li{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nudge{margin-top:8px;padding:10px 12px;border-radius:8px;background:var(--ice);color:var(--ink)}
+.photo-list figure{position:relative}
+.photo-list .enh-btn{left:4px;right:auto;color:#2E3238;font-size:16px;font-weight:400;cursor:pointer}
+.photo-list .enh-btn.on{background:#3F5A47;color:#fff;font-size:18px}
+.bb-list{display:grid;gap:12px;margin-bottom:16px}
+.bb-row{position:relative;display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:start;margin:0}
+.bb-photo{display:grid;gap:6px;justify-items:start}.bb-photo img{width:96px;height:120px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.bb-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.bb-fields .field{margin:0}
+.bb-del{position:absolute;top:8px;right:10px;border:0;background:none;font-size:22px;line-height:1;color:var(--muted);cursor:pointer;padding:4px 8px}
+.bb-err{grid-column:1/-1;margin:0}.bb-err:empty{display:none}
+@media (max-width:560px){.bb-row{grid-template-columns:72px 1fr}.bb-photo img{width:72px;height:90px}}
+.launch-head{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:12px}.launch-head h2{margin:0}
+.launch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.launch-tile{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:2px}
+.lt-label{font-size:13px;color:var(--muted)}.lt-total{font-size:26px;line-height:1.1}.lt-sub{color:var(--muted)}
+.spark{width:100%;height:84px;margin-top:6px;cursor:crosshair;overflow:visible}
+.spark:focus-visible{outline:2px solid var(--accent,var(--navy));outline-offset:3px;border-radius:4px}
+.sp-base{stroke:var(--line);stroke-width:1}
+.sp-line{fill:none;stroke:var(--accent,#4A6852);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.sp-cross{stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke}
+.sp-dot{fill:var(--accent,#4A6852);stroke:var(--surface,#fff);stroke-width:2;vector-effect:non-scaling-stroke}
+.lt-tip{min-height:1.4em}
+.launch-table{margin-top:12px}.launch-table summary{cursor:pointer;font-weight:600}.table-scroll{overflow-x:auto}
 </style>
 </head>
 <body>
@@ -2739,6 +2770,7 @@ html[data-theme="dark"] .founder-badge{color:#F1DCA6;background:#4A3F24;border-c
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg> Filtres <span id="filterNb"></span>
         </button>
         <span class="count" id="resultCount" role="status"></span><button type="button" class="btn btn-outline btn-sm" id="saveAlert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg> Créer une alerte</button>
+        <button type="button" class="btn btn-outline btn-sm" id="mySizesBtn" aria-pressed="false" aria-controls="mySizesBox">Mes tailles</button>
         <label class="sort">Trier par
           <select id="sortSelect">
             <option value="selection">Sélection Orleoo</option>
@@ -2749,6 +2781,7 @@ html[data-theme="dark"] .founder-badge{color:#F1DCA6;background:#4A3F24;border-c
           </select>
         </label>
       </div>
+      <div class="panel my-sizes-box" id="mySizesBox" hidden></div>
       <div class="active-filters" id="activeFilters"></div>
       <div class="products cols-4" id="catalogueProducts"></div>
     </section>
@@ -3094,7 +3127,8 @@ async function onSession(session,event){
   if(event==="SIGNED_IN"&&session&&state.user&&session.user.id===state.user.id&&state.reauth)return;
   if(event==="PASSWORD_RECOVERY"){state.recovery=true}
   if(session){await loadProfile(session);await loadSubs();await syncFavorites();await loadConversations();await loadAdmin();await loadOrders();startRealtime();await applyReferral();loadGrowth().then(()=>{if(location.hash.startsWith("#/compte"))renderView()})}
-  else {growth.searches=[];growth.hits=[];growth.refs=null;growth.stats={};growth.loaded=false}
+  else {growth.searches=[];growth.hits=[];growth.drops=[];growth.refs=null;growth.stats={};growth.loaded=false}
+  if(session){loadBlocks();loadMySizes()}else blocks.list=[];
   if(!session){state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0}
   state.remote.forEach(p=>p.mine=!!state.user&&state.user.id===p.sellerId);
   renderView();
@@ -3180,6 +3214,25 @@ function renderMessages(id){
     :`<div class="empty"><p>Aucune conversation pour le moment.</p><p class="small">Pour écrire à un vendeur, ouvre une annonce et clique sur « Contacter ».</p><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;
   watchImages(el);
 }
+/* Bloquer un membre */
+const blocks={list:[],names:{}};
+async function loadBlocks(){blocks.list=[];if(!sb||!state.user)return;try{const r=await sb.from("blocks").select("blocked_id,created_at").order("created_at",{ascending:false});if(r.error)return;blocks.list=r.data||[];
+  const ids=blocks.list.map(b=>b.blocked_id).filter(i=>!blocks.names[i]);if(ids.length){const q=await sb.from("profiles").select("id,name").in("id",ids);(q.data||[]).forEach(x=>blocks.names[x.id]=x.name)}}catch(e){}}
+const iBlocked=uid=>blocks.list.some(b=>b.blocked_id===uid);
+async function setBlock(uid,name,on){
+  if(on&&!confirm(`Bloquer @${name} ? Vous ne pourrez plus vous écrire ni vous faire d’offre. Ses offres en cours sont annulées. Il ou elle ne sera pas prévenu(e).`))return false;
+  const q=on?sb.from("blocks").insert({blocker_id:state.user.id,blocked_id:uid}):sb.from("blocks").delete().eq("blocker_id",state.user.id).eq("blocked_id",uid);
+  const {error}=await q;if(error&&!/duplicate/.test(error.message||"")){toast(frenchError(error));return false}
+  blocks.names[uid]=name;await loadBlocks();toast(on?`@${name} est bloqué(e).`:`@${name} est débloqué(e).`);return true;
+}
+function blocksPanel(){
+  if(!blocks.list.length)return "";
+  return `<div class="panel"><h2>Membres bloqués</h2><p class="muted small">Ils ne peuvent plus t’écrire ni te faire d’offre.</p><ul class="set-links blocked-list">${blocks.list.map(b=>`<li><span>@${esc(blocks.names[b.blocked_id]||"membre")}</span><button type="button" class="btn btn-outline btn-sm" data-unblock="${b.blocked_id}" data-name="${esc(blocks.names[b.blocked_id]||"membre")}">Débloquer</button></li>`).join("")}</ul></div>`;
+}
+document.addEventListener("click",async e=>{
+  const u=e.target.closest("[data-unblock]");if(u){if(await setBlock(u.dataset.unblock,u.dataset.name,false))renderView();return}
+  const b=e.target.closest("[data-block]");if(b){const on=b.dataset.on==="1";if(await setBlock(b.dataset.block,b.dataset.name,on))renderView();return}
+});
 async function openThread(id){
   const el=$("msgContent");
   let c=chat.convs.find(x=>x.id===id);
@@ -3194,20 +3247,22 @@ async function openThread(id){
       <span><b>${esc(c.title)}</b><br><span class="muted small">${c.price!=null?eur(Number(c.price))+" · ":""}${esc(c.role)}</span></span>
     </a>
     <div class="thread-log" id="threadLog" aria-live="polite"><p class="muted small">Chargement…</p></div>
-    ${c.gone?`<p class="note small">Ce membre a supprimé son compte : tu ne peux plus lui écrire. L’historique reste visible ici.</p>`:`<form class="thread-form" id="threadForm">
+    ${c.gone?`<p class="note small">Ce membre a supprimé son compte : tu ne peux plus lui écrire. L’historique reste visible ici.</p>`:iBlocked(c.otherId)?`<p class="note small">Tu as bloqué @${esc(c.other)} : vous ne pouvez plus vous écrire. <button type="button" class="link" data-block="${c.otherId}" data-name="${esc(c.other)}" data-on="0">Débloquer</button></p>`:`<p class="note small" id="blockedMe" hidden>Tu ne peux plus écrire à ce membre.</p><form class="thread-form" id="threadForm">
       <label for="threadInput" class="sr-only">Ton message à ${esc(c.other)}</label>
       <textarea class="input" id="threadInput" rows="2" maxlength="2000" placeholder="Écris ton message…"></textarea>
       <button class="btn btn-primary" type="submit">Envoyer</button>
     </form>`}
     <p class="error" id="threadErr" role="alert"></p>
-    <p class="muted small">Pour ta sécurité, tout se paie sur Orleoo. Les messages qui contiennent un numéro, un e-mail, un IBAN ou un autre moyen de paiement sont bloqués. <a class="link" href="#/securite">En savoir plus</a></p>`;
+    <p class="muted small">Pour ta sécurité, tout se paie sur Orleoo. Les messages qui contiennent un numéro, un e-mail, un IBAN ou un autre moyen de paiement sont bloqués. <a class="link" href="#/securite">En savoir plus</a></p>
+    ${c.gone||!c.otherId||iBlocked(c.otherId)?"":`<p class="small"><button type="button" class="link block-link" data-block="${c.otherId}" data-name="${esc(c.other)}" data-on="1">Bloquer @${esc(c.other)}</button></p>`}`;
+  if(!c.gone&&c.otherId&&!iBlocked(c.otherId))sb.rpc("blocked_me",{p_other:c.otherId}).then(r=>{if(r.data===true&&chat.current===c){const f=$("threadForm"),n=$("blockedMe");if(f)f.hidden=true;if(n)n.hidden=false}}).catch(()=>{});
   watchImages(el);
   const {data,error}=await sb.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at").eq("conversation_id",id).order("created_at",{ascending:true}).limit(500);
   if(chat.current?.id!==id)return;
   if(error){$("threadLog").innerHTML=`<p class="error">${frenchError(error)}</p>`;return}
   chat.messages=data||[];renderThreadLog();
   if(chat.messages.some(m=>!m.read_at&&m.sender_id!==state.user.id))markRead(id);
-  const input=$("threadInput");
+  const input=$("threadInput");if(!input)return;
   input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("threadForm").requestSubmit()}});
   $("threadForm").addEventListener("submit",async e=>{
     e.preventDefault();const body=input.value.trim();if(!body||chat.sending)return;
@@ -3368,6 +3423,7 @@ async function loadTeamData(which){
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(sb.rpc("founder_stats").then(r=>{if(!r.error)team.fstats=r.data}));
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(Promise.all([sb.rpc("waitlist_stats"),sb.rpc("waitlist_top",{p_limit:5})]).then(([a,t])=>{team.wait=a.error?null:{...((a.data||[])[0]||{membres:0,demandes:0}),top:t.error?[]:(t.data||[])}}).catch(()=>{team.wait=null}));
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(sb.rpc("referral_top",{p_limit:10}).then(r=>{team.refTop=r.error?null:(r.data||[])}));
+  if((!which||which==="bord")&&state.role==="fondateur")jobs.push(sb.rpc("launch_stats",{p_days:team.launchDays||30}).then(r=>{team.launch=r.error?null:r.data}));
   if(which==="bord"&&!can("journal"))team.log=[];
   if(!which||which==="bord")jobs.push(sb.rpc("admin_stats").then(r=>{if(!r.error&&r.data&&!r.data.erreur)team.stats=r.data}));
   if(!which||which==="equipe"||which==="bord")jobs.push(sb.rpc("team_list").then(r=>{if(!r.error)team.list=r.data||[]}));
@@ -3584,6 +3640,36 @@ function actFormsHtml(id){
       <button class="btn btn-danger" type="submit">Suspendre le compte</button></form>`:""}
   </div>`;
 }
+/* ---------- Lancement : petits graphiques, un par chiffre ---------- */
+const LAUNCH_METRICS=[["membres","Inscriptions","membres"],["annonces","Annonces publiées","annonces"],["fondateurs","Vendeurs fondateurs","fondateurs"],["attentes","« Me prévenir »","membres en attente"],["filleuls","Parrainages","filleuls"]];
+const fmtD2=d=>new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+function sparkSvg(key,days){
+  const W=300,H=84,P=6,vals=days.map(d=>Number(d[key])||0),mx=Math.max(1,...vals),n=vals.length;
+  const X=i=>P+(n<2?0:i*(W-2*P)/(n-1)),Y=v=>H-P-v/mx*(H-2*P-10);
+  const pts=vals.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" tabindex="0" data-spark="${key}" aria-label="Évolution jour par jour, maximum ${mx} par jour. Flèches gauche et droite pour lire chaque jour.">
+    <line class="sp-base" x1="${P}" y1="${H-P}" x2="${W-P}" y2="${H-P}"/><polyline class="sp-line" points="${pts}"/><line class="sp-cross" x1="0" y1="${P}" x2="0" y2="${H-P}" hidden/><circle class="sp-dot" r="4" cx="0" cy="0" hidden/></svg>`;
+}
+function launchHtml(){
+  const L=team.launch;if(!L)return "";
+  const days=L.jours||[],t=L.totaux||{},span=team.launchDays||30;
+  return `<div class="panel launch"><div class="launch-head"><h2>Lancement</h2><div class="segmented" role="radiogroup" aria-label="Période">${[[7,"7 jours"],[30,"30 jours"],[90,"90 jours"]].map(([v,l])=>`<label><input type="radio" name="launchDays" value="${v}" ${span===v?"checked":""}><span>${l}</span></label>`).join("")}</div></div>
+    <div class="launch-grid">${LAUNCH_METRICS.map(([k,l,u])=>{const sum=days.reduce((a,d)=>a+(Number(d[k])||0),0);return `<div class="launch-tile"><span class="lt-label">${l}</span><b class="lt-total">${Number(t[k]||0)}</b><span class="lt-sub small">+${sum} sur ${span} jours</span>${sparkSvg(k,days)}<span class="lt-tip small" aria-live="polite" data-tip="${k}">&nbsp;</span></div>`}).join("")}</div>
+    <details class="launch-table"><summary>Voir le tableau jour par jour</summary><div class="table-scroll"><table class="legal-table"><thead><tr><th>Jour</th>${LAUNCH_METRICS.map(m=>`<th>${m[1]}</th>`).join("")}</tr></thead><tbody>${[...days].reverse().map(d=>`<tr><td>${fmtD2(d.jour)}</td>${LAUNCH_METRICS.map(m=>`<td>${Number(d[m[0]])||0}</td>`).join("")}</tr>`).join("")}</tbody></table></div></details>
+    <p class="muted small">Un pic le jour d’un post Instagram ? C’est qu’il a marché. Les totaux comptent depuis le début.</p></div>`;
+}
+function sparkShow(svg,i){
+  const L=team.launch;if(!L)return;const days=L.jours||[],k=svg.dataset.spark;if(!days.length)return;i=Math.max(0,Math.min(days.length-1,i));svg.dataset.i=i;
+  const W=300,H=84,P=6,vals=days.map(d=>Number(d[k])||0),mx=Math.max(1,...vals),n=vals.length,x=P+(n<2?0:i*(W-2*P)/(n-1)),y=H-P-vals[i]/mx*(H-2*P-10);
+  const c=svg.querySelector(".sp-cross"),d=svg.querySelector(".sp-dot");c.setAttribute("x1",x);c.setAttribute("x2",x);c.hidden=false;d.setAttribute("cx",x);d.setAttribute("cy",y);d.hidden=false;
+  const m=LAUNCH_METRICS.find(z=>z[0]===k),tip=svg.parentElement.querySelector(".lt-tip");if(tip){tip.textContent="";const b=document.createElement("b");b.textContent=String(vals[i]);tip.append(b,document.createTextNode(` ${m[2]} · ${fmtD2(days[i].jour)}`))}
+}
+document.addEventListener("pointermove",e=>{const svg=e.target.closest&&e.target.closest("svg[data-spark]");if(!svg)return;const r=svg.getBoundingClientRect(),n=((team.launch||{}).jours||[]).length;sparkShow(svg,Math.round((e.clientX-r.left)/r.width*(n-1)))});
+document.addEventListener("pointerleave",e=>{const svg=e.target.matches&&e.target.matches("svg[data-spark]")?e.target:null;if(!svg)return;svg.querySelector(".sp-cross").hidden=true;svg.querySelector(".sp-dot").hidden=true;const t=svg.parentElement.querySelector(".lt-tip");if(t)t.innerHTML="&nbsp;"},true);
+document.addEventListener("focusin",e=>{const svg=e.target.closest&&e.target.closest("svg[data-spark]");if(svg)sparkShow(svg,svg.dataset.i!=null?+svg.dataset.i:((team.launch||{}).jours||[]).length-1)});
+document.addEventListener("keydown",e=>{const svg=e.target.closest&&e.target.closest("svg[data-spark]");if(!svg||!["ArrowLeft","ArrowRight","Home","End"].includes(e.key))return;e.preventDefault();const n=((team.launch||{}).jours||[]).length,i=+(svg.dataset.i??n-1);sparkShow(svg,e.key==="Home"?0:e.key==="End"?n-1:i+(e.key==="ArrowRight"?1:-1))});
+document.addEventListener("change",async e=>{if(e.target.name!=="launchDays")return;team.launchDays=+e.target.value;const r=await sb.rpc("launch_stats",{p_days:team.launchDays});if(!r.error){team.launch=r.data;renderView()}});
+
 /* ---------- Outils du fondateur ---------- */
 function founderHtml(){
   const f=team.fstats;
@@ -3597,7 +3683,7 @@ function founderHtml(){
     ${w.top&&w.top.length?`<h3 class="small-h">Annonces les plus attendues</h3><ol class="wait-top">${w.top.map(x=>`<li><a class="link" href="#/article/${encodeURIComponent(x.listing_id)}">${esc(x.titre)}</a> <span class="muted">· ${eur(Number(x.prix))} · ${Number(x.attentes)} personne${Number(x.attentes)>1?"s":""}</span></li>`).join("")}</ol>`:`<p class="muted small">Personne n’a encore cliqué sur « Me prévenir ».</p>`}</div>`:"";
   const rt=team.refTop;
   const refBlock=rt?`<div class="panel wait-panel"><h2>Meilleurs parrains</h2>${rt.length?`<table class="legal-table"><thead><tr><th>Membre</th><th>Filleuls</th><th>Filleuls qui vendent</th><th></th></tr></thead><tbody>${rt.map(x=>`<tr><td><a class="link" href="#/vendeur/${x.user_id}">@${esc(x.identifiant)}</a></td><td>${Number(x.filleuls)}</td><td>${Number(x.filleuls_actifs)}</td><td><button type="button" class="btn btn-outline btn-sm" data-gift-ref="${x.user_id}" data-gift-name="${esc(x.identifiant)}">Offrir 1 mois Pro</button></td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Personne n’a encore parrainé de membre. Chaque membre trouve son lien d’invitation dans « Profil et paramètres ».</p>`}</div>`:"";
-  return `${waitBlock}${refBlock}<div class="panel founder"><h2>Tes chiffres</h2>
+  return `${launchHtml()}${waitBlock}${refBlock}<div class="panel founder"><h2>Tes chiffres</h2>
     <div class="kpis">
       <div class="kpi"><b>${eur(Number(f.frais_mois))}</b><span>Frais encaissés ce mois-ci</span><small>${eur(Number(f.frais_encaisses))} depuis le début</small></div>
       <div class="kpi"><b>${eur(mrr)}</b><span>Abonnements par mois</span><small>${nAb} abonné${nAb>1?"s":""} payant${nAb>1?"s":""}${f.abonnes_demo?` · ${f.abonnes_demo} offert${f.abonnes_demo>1?"s":""} ou démo`:""}</small></div>
@@ -4184,7 +4270,7 @@ async function lookupIsbn(isbn){
   return null;
 }
 function isbnBoxHtml(){
-  return `<div class="isbn-box" id="isbnBox"><p><b>Tu vends un livre ?</b> Scanne son code-barres : le titre, l’auteur et la couverture se remplissent tout seuls.</p>
+  return `<div class="isbn-box" id="isbnBox"><p><b>Tu vends un livre ?</b> Scanne son code-barres : le titre, l’auteur et la couverture se remplissent tout seuls. <a class="link" href="#/vendre/livres">Plusieurs livres ? Vide ta bibliothèque d’un coup</a></p>
     <div class="isbn-row"><label class="btn btn-outline" for="isbnPhoto"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6v12M7 6v12M10 6v12M14 6v12M17 6v12M20 6v12"/></svg> Scanner le code-barres</label><input id="isbnPhoto" type="file" accept="image/*" capture="environment" class="sr-only">
     <span class="isbn-or small muted">ou</span><input class="input" id="isbnInput" inputmode="numeric" maxlength="17" autocomplete="off" placeholder="ISBN : 13 chiffres sous le code-barres" aria-label="ISBN du livre (13 chiffres sous le code-barres)"><button type="button" class="btn btn-outline" id="isbnGo">Chercher</button></div>
     <p class="small" id="isbnMsg" role="status"></p><div id="isbnCover"></div></div>`;
@@ -4221,6 +4307,76 @@ document.addEventListener("click",async e=>{
   catch(err){u.disabled=false;u.textContent="Ajouter cette couverture aux photos";const m=$("isbnMsg");m.className="small error";m.textContent="Impossible de récupérer cette couverture : prends simplement ton livre en photo."}
 });
 document.addEventListener("keydown",e=>{if(e.target.id==="isbnInput"&&e.key==="Enter"){e.preventDefault();$("isbnGo").click()}});
+
+/* Vider ma bibliothèque : scanner plusieurs livres puis tout publier */
+let bookBatch=[];const BATCH_MAX=20;
+const batchKey=()=>"revoo.books."+(state.user?state.user.id:"");
+function saveBatch(){try{localStorage.setItem(batchKey(),JSON.stringify(bookBatch))}catch(e){try{localStorage.setItem(batchKey(),JSON.stringify(bookBatch.map(b=>({...b,photo:""}))))}catch(_){}}}
+function renderBookBatch(){
+  const el=$("sellContent");$("sellTitle").textContent="Vider ma bibliothèque";document.title="Vider ma bibliothèque — Orleoo";
+  if(!state.user){el.innerHTML=`<div class="panel"><h2>Connecte-toi pour vendre</h2><a class="btn btn-primary" href="#/compte">Se connecter</a></div>`;return}
+  if(!bookBatch.length){try{bookBatch=JSON.parse(localStorage.getItem(batchKey())||"[]")}catch(e){bookBatch=[]}}
+  const opt=(arr,v,ph)=>`<option value="">${ph}</option>`+arr.map(a=>`<option ${a===v?"selected":""}>${a}</option>`).join("");
+  el.innerHTML=`<p class="crumbs" style="margin-top:-6px"><a href="#/vendre">← Vendre un seul article</a></p>${foundingNote()}
+  <div class="isbn-box"><p><b>1. Scanne tes livres à la suite</b> (jusqu’à ${BATCH_MAX}). Chaque livre trouvé s’ajoute à la liste.</p>
+    <div class="isbn-row"><label class="btn btn-primary" for="bbPhoto"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6v12M7 6v12M10 6v12M14 6v12M17 6v12M20 6v12"/></svg> Scanner un livre</label><input id="bbPhoto" type="file" accept="image/*" capture="environment" class="sr-only">
+    <span class="isbn-or small muted">ou</span><input class="input" id="bbIsbn" inputmode="numeric" maxlength="17" autocomplete="off" placeholder="ISBN : 13 chiffres" aria-label="ISBN du livre (13 chiffres sous le code-barres)"><button type="button" class="btn btn-outline" id="bbAdd">Ajouter</button></div>
+    <p class="small" id="bbMsg" role="status"></p></div>
+  ${bookBatch.length?`<h2 class="offer-sec">2. Indique le format, l’état et le prix (${bookBatch.length} livre${bookBatch.length>1?"s":""})</h2>
+  <div class="bb-list">${bookBatch.map((b,i)=>`<div class="panel bb-row" data-bb="${i}">
+    <div class="bb-photo">${b.photo?`<img src="${esc(b.photo)}" alt="Photo de ${esc(b.title)}">`:`<span class="muted small">Pas de photo</span>`}<label class="link small" for="bbp-${i}">${b.photo?"Remplacer par ma photo":"Ajouter une photo"}</label><input id="bbp-${i}" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only" data-bbphoto="${i}"></div>
+    <div class="bb-fields">
+      <div class="field"><label for="bbt-${i}">Titre</label><input class="input" id="bbt-${i}" data-bbf="title" maxlength="60" value="${esc(b.title)}"></div>
+      <div class="field"><label for="bba-${i}">Auteur</label><input class="input" id="bba-${i}" data-bbf="author" maxlength="40" value="${esc(b.author)}"></div>
+      <div class="field"><label for="bbs-${i}">Format</label><select class="input" id="bbs-${i}" data-bbf="size">${opt(SIZES.livre,b.size,"Choisir…")}</select></div>
+      <div class="field"><label for="bbc-${i}">État</label><select class="input" id="bbc-${i}" data-bbf="cond">${opt(CONDITIONS,b.cond,"Choisir…")}</select></div>
+      <div class="field"><label for="bbr-${i}">Prix (€)</label><input class="input" id="bbr-${i}" data-bbf="price" type="number" inputmode="decimal" min="1" max="10000" step="0.5" value="${esc(b.price||"")}"></div>
+    </div>
+    <button type="button" class="bb-del" data-bbdel="${i}" aria-label="Retirer « ${esc(b.title)} » de la liste">×</button>
+    <p class="error small bb-err" id="bbe-${i}"></p></div>`).join("")}</div>
+  <div class="buy-actions"><button type="button" class="btn btn-primary" id="bbPublish">Publier les ${bookBatch.length} livre${bookBatch.length>1?"s":""}</button><button type="button" class="btn btn-outline" id="bbClear">Vider la liste</button></div>
+  <p class="error" id="bbErr" role="alert"></p>`:`<div class="empty"><p>Ta liste est vide : scanne ton premier livre.</p></div>`}`;
+}
+function batchMsg(t,cls="small"){const m=$("bbMsg");if(m){m.className=cls;m.textContent=t}}
+async function addToBatch(isbn){
+  if(bookBatch.length>=BATCH_MAX){batchMsg(`Maximum ${BATCH_MAX} livres à la fois : publie d’abord cette liste.`,"small error");return}
+  if(bookBatch.some(b=>b.isbn===isbn)){batchMsg("Ce livre est déjà dans ta liste.","small error");return}
+  batchMsg("Recherche du livre…");
+  const b=await lookupIsbn(isbn);
+  if(!b){batchMsg(`Livre introuvable pour l’ISBN ${isbn}. Vends-le avec le formulaire simple.`,"small error");return}
+  let photo="";if(b.cover){try{const r=await fetch(b.cover);if(r.ok){const bl=await r.blob();if(bl.type.startsWith("image/"))photo=await compress(new File([bl],"couverture.jpg",{type:bl.type}))}}catch(e){}}
+  bookBatch.unshift({isbn,title:b.title.slice(0,60),author:b.authors.join(", ").slice(0,40),publisher:b.publisher,year:b.year,pages:b.pages,photo,size:"",cond:"",price:""});
+  saveBatch();renderBookBatch();batchMsg(`« ${b.title} » ajouté. Scanne le suivant !`,"small ok");
+}
+document.addEventListener("change",async e=>{
+  if(e.target.id==="bbPhoto"){const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;batchMsg("Lecture du code-barres…");let isbn="";try{isbn=await decodeBarcode(f)}catch(_){}
+    if(!isbn){batchMsg("Code-barres illisible. Reprends la photo de plus près, bien à plat et éclairée, ou tape les 13 chiffres.","small error");return}addToBatch(isbn);return}
+  const ph=e.target.closest("[data-bbphoto]");if(ph){const i=+ph.dataset.bbphoto,f=ph.files&&ph.files[0];ph.value="";if(!f||!bookBatch[i])return;try{bookBatch[i].photo=await compress(f);saveBatch();renderBookBatch()}catch(_){toast("Impossible de lire cette photo.")}return}
+  const fl=e.target.closest("[data-bbf]");if(fl){const i=+fl.closest("[data-bb]").dataset.bb;if(bookBatch[i]){bookBatch[i][fl.dataset.bbf]=fl.value;saveBatch();const er=$("bbe-"+i);if(er)er.textContent=""}}
+});
+document.addEventListener("input",e=>{const fl=e.target.closest("[data-bbf]");if(!fl)return;const i=+fl.closest("[data-bb]").dataset.bb;if(bookBatch[i]){bookBatch[i][fl.dataset.bbf]=fl.value;saveBatch()}});
+document.addEventListener("keydown",e=>{if(e.target.id==="bbIsbn"&&e.key==="Enter"){e.preventDefault();$("bbAdd").click()}});
+document.addEventListener("click",async e=>{
+  if(e.target.closest("#bbAdd")){const isbn=isbn13($("bbIsbn").value);if(!isbn){batchMsg("ISBN invalide : tape les 13 chiffres écrits sous le code-barres (ils commencent par 978 ou 979).","small error");$("bbIsbn").focus();return}$("bbIsbn").value="";addToBatch(isbn);return}
+  const d=e.target.closest("[data-bbdel]");if(d){bookBatch.splice(+d.dataset.bbdel,1);saveBatch();renderBookBatch();return}
+  if(e.target.closest("#bbClear")){if(!confirm("Vider toute la liste ?"))return;bookBatch=[];saveBatch();renderBookBatch();return}
+  if(!e.target.closest("#bbPublish"))return;
+  let bad=0;bookBatch.forEach((b,i)=>{const pr=parseFloat(String(b.price).replace(",","."));const m=!b.photo?"Ajoute une photo.":String(b.title||"").trim().length<3?"Titre trop court.":!b.size?"Choisis le format.":!b.cond?"Choisis l’état.":!(pr>=1&&pr<=10000)?"Prix entre 1 € et 10 000 €.":"";const el=$("bbe-"+i);if(el)el.textContent=m;if(m)bad++});
+  if(bad){$("bbErr").textContent=`${bad} livre${bad>1?"s":""} à compléter.`;document.querySelector(".bb-err:not(:empty)")?.closest(".bb-row")?.scrollIntoView({block:"center"});return}
+  const btn=$("bbPublish");btn.disabled=true;$("bbErr").textContent="";const wasFounder=foundingRank(state.user.id);let ok=0;
+  for(const b of [...bookBatch]){
+    btn.textContent=`Publication ${ok+1}/${bookBatch.length+ok}…`;
+    try{const photos=await uploadPhotos([b.photo]);
+      const desc=[`${b.title}${b.author?` de ${b.author}`:""}.`,[b.publisher,b.year].filter(Boolean).join(", ")+(b.pages?`${b.publisher||b.year?". ":""}${b.pages} pages.`:b.publisher||b.year?".":""),`ISBN ${b.isbn}.`,`État : ${b.cond.toLowerCase()}.`].filter(Boolean).join("\n");
+      const {error}=await sb.from("listings").insert({title:b.title.trim(),description:desc.slice(0,1000),category:"Livres",brand:(b.author||"Auteur inconnu").trim(),size:b.size,condition:b.cond,style:null,price:Math.round(parseFloat(String(b.price).replace(",","."))*100)/100,photos,seller_id:state.user.id});
+      if(error){await removePhotos(photos);throw error}
+      bookBatch.splice(bookBatch.indexOf(b),1);saveBatch();ok++;
+    }catch(err){$("bbErr").textContent=`« ${b.title} » : ${frenchError(err)}`;break}
+  }
+  await loadListings();const nowFounder=foundingRank(state.user.id);
+  if(!bookBatch.length){toast(nowFounder&&!wasFounder?`${ok} livres publiés. Bravo, tu es Vendeur fondateur n°${nowFounder} !`:`${ok} livre${ok>1?"s":""} publié${ok>1?"s":""} !`);location.hash="#/compte/annonces"}
+  else{renderBookBatch();if(ok)toast(`${ok} livre${ok>1?"s":""} publié${ok>1?"s":""}. Corrige le suivant puis relance.`)}
+});
 
 /* =========================================================
    STORY INSTAGRAM (image 1080 × 1920 de l'annonce)
@@ -4853,9 +5009,20 @@ function renderHome(){
 /* =========================================================
    CATALOGUE : recherche + filtres
    ========================================================= */
-const filters = {univers:"",q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection"};
+const filters = {univers:"",q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection",mine:false};
 const PAGE_SIZE=24;let catalogueLimit=PAGE_SIZE;
-function resetFilters(){catalogueLimit=PAGE_SIZE;Object.assign(filters,{univers:"",q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection"})}
+/* « Mes tailles » : enregistrées sur l'appareil, et sur le compte si connecté */
+let mySizes=[];try{mySizes=JSON.parse(localStorage.getItem("revoo.sizes")||"[]").filter(x=>typeof x==="string").slice(0,20)}catch(e){}
+const MY_SIZE_CHOICES=()=>[...SIZES.adulte,...SIZES.enfant];
+const fitsMe=p=>!isBook(p)&&mySizes.includes(p.size);
+async function loadMySizes(){if(!sb||!state.user)return;try{const r=await sb.from("profiles_private").select("my_sizes").eq("id",state.user.id).maybeSingle();if(!r.error&&r.data&&Array.isArray(r.data.my_sizes)&&r.data.my_sizes.length){mySizes=r.data.my_sizes;try{localStorage.setItem("revoo.sizes",JSON.stringify(mySizes))}catch(e){}}}catch(e){}}
+async function saveMySizes(list){
+  mySizes=[...new Set(list)].slice(0,20);try{localStorage.setItem("revoo.sizes",JSON.stringify(mySizes))}catch(e){}
+  if(sb&&state.user){const {error}=await sb.from("profiles_private").upsert({id:state.user.id,my_sizes:mySizes,updated_at:new Date().toISOString()});if(error&&!/my_sizes/.test(error.message||"")){toast(frenchError(error));return false}}
+  return true;
+}
+const sizesChooser=(id)=>`<fieldset class="sizes-pick" id="${id}"><legend class="sr-only">Mes tailles</legend>${MY_SIZE_CHOICES().map(z=>`<label class="chip"><input type="checkbox" name="mysize" value="${esc(z)}" ${mySizes.includes(z)?"checked":""}><span>${esc(z)}</span></label>`).join("")}</fieldset>`;
+function resetFilters(){catalogueLimit=PAGE_SIZE;Object.assign(filters,{univers:"",q:"",category:"",sizes:[],conditions:[],brand:"",style:"",seller:"",season:"",min:"",max:"",sort:"selection",mine:filters.mine&&mySizes.length>0})}
 function matchesQuery(p,q){
   const hay=norm([p.name,p.brand,p.category,p.style,p.condition,p.size,p.description,p.seller].join(" "));
   return norm(q).split(/\s+/).filter(Boolean).every(w=>hay.includes(w)||(w.length>3&&w.endsWith("s")&&hay.includes(w.slice(0,-1))));
@@ -4872,10 +5039,12 @@ function filtered(){
     (!filters.style||p.style===filters.style) &&
     (!filters.seller||p.seller===filters.seller) &&
     (!filters.season||(p.seasons||[]).includes(filters.season)) &&
-    (min==null||p.price>=min) && (max==null||p.price<=max));
+    (min==null||p.price>=min) && (max==null||p.price<=max) &&
+    (!filters.mine||!mySizes.length||isBook(p)||mySizes.includes(p.size)));
   const sorters={recent:(a,b)=>b.addedAt-a.addedAt,"prix-asc":(a,b)=>a.price-b.price,"prix-desc":(a,b)=>b.price-a.price,populaires:(a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt};
-  if(!sorters[filters.sort])return featured(list);
-  return list.sort(sorters[filters.sort]);
+  const out=sorters[filters.sort]?list.sort(sorters[filters.sort]):featured(list);
+  if(mySizes.length&&!filters.mine&&filters.sort==="selection"){const a=out.filter(fitsMe),b=out.filter(p=>!fitsMe(p));return a.concat(b)}   // ce qui me va d'abord
+  return out;
 }
 function chip(name,value,checked,type="checkbox"){return `<label class="chip"><input type="${type}" name="${name}" value="${esc(value)}" ${checked?"checked":""}><span>${esc(value||"Toutes")}</span></label>`}
 function buildFilterControls(){
@@ -4897,6 +5066,7 @@ function renderCatalogue(rebuild=true){
   const list=filtered();
   const title=filters.q?`Résultats pour « ${filters.q} »`:filters.seller?`Les articles de ${filters.seller}`:filters.category?(filters.category==="Livres"?(filters.sizes.length===1?`Livres · ${filters.sizes[0]}`:filters.sort==="recent"&&filters.univers?"Livres · nouveautés":"Livres"):`Mode · ${filters.category}`):filters.univers==="mode"?(filters.sort==="recent"?"Mode · nouveautés":"Mode"):filters.univers==="livres"?"Livres":filters.style?`Style · ${filters.style}`:filters.season?`Sélection de saison · ${filters.season}`:filters.sort==="populaires"?"Les plus appréciés":"Tous les articles";
   $("catalogueTitle").textContent=title;
+  {const b=$("mySizesBtn");if(b){b.setAttribute("aria-pressed",String(!!(filters.mine&&mySizes.length)));b.textContent=mySizes.length?`Mes tailles (${mySizes.join(", ")})`.slice(0,40)+(`Mes tailles (${mySizes.join(", ")})`.length>40?"…)":""):"Mes tailles"}}
   $("resultCount").textContent=`${list.length} article${list.length>1?"s":""}`;
   $("filtersApply").textContent=list.length?`Voir ${list.length} article${list.length>1?"s":""}`:"Aucun article";
   const act=[];
@@ -5040,6 +5210,9 @@ function renderProduct(id){
    ========================================================= */
 function renderFavorites(){
   const list=allProducts().filter(p=>isFav(p.id)&&p.status==="active"&&!state.sold.includes(p.id));
+  if(!$("favDrops"))$("favNote").insertAdjacentHTML("afterend",`<p class="note small" id="favDrops" hidden></p>`);
+  if(state.user&&!growth.loaded)loadGrowth().then(()=>{if(location.hash==="#/favoris")renderFavorites()});
+  {const n=latestDrops().filter(d=>list.some(p=>p.id===d.listing_id&&p.price<d.old_price)).length,b=$("favDrops");if(b){b.hidden=!n;b.innerHTML=n?`<b>${n} de tes favoris ${n>1?"ont":"a"} baissé de prix.</b> <a class="link" href="#/compte/alertes">Voir les baisses</a>`:""}}
   $("favNote").textContent=state.user?"Enregistrés sur ton compte (sauf les articles de démonstration).":"Enregistrés sur cet appareil. Connecte-toi pour les retrouver partout.";
   grid($("favoriteProducts"),list,`<p>Tu n’as pas encore de favoris. Appuie sur le cœur d’un article pour le retrouver ici.</p><a class="btn btn-primary" href="#/catalogue">Découvrir les vêtements</a>`);
 }
@@ -5163,7 +5336,7 @@ function renderAccount(tab){
   if(state.isAdmin){renderModeration(el);return}
   const tabs=[["profil","Profil et paramètres"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]];
   if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["echanges",`Échanges (${trades.list.filter(t=>["proposed","accepted","problem"].includes(t.status)).length})`],["portemonnaie","Porte-monnaie"]);if(offersOpen()){const n=offerTodo();tabs.splice(4,0,["offres",`Offres${n?` (${n} à traiter)`:""}`])}}
-  {const nw=(growth.hits||[]).filter(h=>!h.seen_at).length;tabs.push(["alertes",`Mes alertes${nw?` (${nw} nouvelle${nw>1?"s":""})`:""}`])}
+  {const nw=(growth.hits||[]).filter(h=>!h.seen_at).length+latestDrops().filter(d=>!d.seen_at).length;tabs.push(["alertes",`Mes alertes${nw?` (${nw} nouvelle${nw>1?"s":""})`:""}`])}
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
   let body="";
   if(accountTab==="alertes"){body=alertsHtml()}
@@ -5178,7 +5351,7 @@ function renderAccount(tab){
     if(state.user.vacation)body=`<p class="note small">Mode vacances activé : tes annonces sont masquées pour les autres membres. Désactive-le dans « Profil et paramètres ».</p>`;
     body=mine.length?`<div class="panel">${mine.map(l=>`<div class="listing-row">
       <a class="image-frame" href="#/article/${encodeURIComponent(l.id)}"><img data-safe-image src="${esc(l.img)}" alt="${esc(l.name)}"></a>
-      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p>${statLine(l.id)}<p>${isBoosted(l)?`<span class="status boosted">En avant jusqu’au ${fmtDT(l.boostedUntil)}</span> `:""}<span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Orleoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
+      <div><h3>${esc(l.name)}</h3><p>${eur(l.price)} · ${esc(l.size)} · ${esc(l.condition)}</p>${statLine(l.id)}${nudgeBox(l)}<p>${isBoosted(l)?`<span class="status boosted">En avant jusqu’au ${fmtDT(l.boostedUntil)}</span> `:""}<span class="status">${l.status==="active"?"En ligne":l.status==="removed"?"Retirée par la modération":lockedBy(l.id)?`Vendue via Orleoo Pay (${lockedBy(l.id)})`:"Vendue (masquée)"}</span></p></div>
       <div class="row-actions">${l.status==="removed"||lockedBy(l.id)?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}${l.status==="active"&&subs.mine?`<button type="button" class="btn btn-outline" data-boost="${esc(l.id)}">Mettre en avant</button>`:""}${l.status==="active"&&myPerk("pins")>0?`<button type="button" class="btn btn-outline" data-pin="${esc(l.id)}" aria-pressed="${l.pinned}">${l.pinned?"Désépingler":"Épingler"}</button>`:""}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
     </div>`).join("")}</div><a class="btn btn-primary" href="#/vendre">Ajouter une annonce</a>`
     :`<div class="empty"><p>Tu n’as pas encore d’annonce.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
@@ -5251,6 +5424,8 @@ function renderAccount(tab){
         ${state.user.digest==null?"":`<div class="set-row"><div><b>Nouveautés de la semaine</b><small>Un e-mail le lundi avec les nouvelles annonces qui pourraient te plaire.</small></div><label class="switch"><input type="checkbox" id="digestSwitch" ${state.user.digest?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Recevoir les nouveautés de la semaine</span></label></div>`}${state.user.notify===null?"":`<div class="set-row"><div><b>Notifications par e-mail</b><small>Quand je reçois un nouveau message (1 e-mail max toutes les 30 min par conversation).</small></div><label class="switch"><input type="checkbox" id="notifSwitch" ${state.user.notify?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Notifications par e-mail</span></label></div>`}
       </div>
       ${lotsPanel()}
+      <div class="panel" id="tailles"><h2>Mes tailles</h2><p class="muted small">Le catalogue te montre d’abord les articles à ta taille, et le bouton « Mes tailles » ne garde qu’eux.</p>${sizesChooser("profSizes")}<button type="button" class="btn btn-primary" id="profSizesSave" style="margin-top:12px">Enregistrer</button></div>
+      ${blocksPanel()}
       <div class="panel">
         <h2>Mon compte</h2>
         <ul class="set-links">
@@ -5300,6 +5475,7 @@ function renderAccount(tab){
 let draftPhotos=[];   // URL https (déjà en ligne) ou data: (nouvelle photo)
 function renderSell(editId){
   const el=$("sellContent");
+  if(editId==="livres")return renderBookBatch();
   if(!state.user){$("sellTitle").textContent="Vends un vêtement";el.innerHTML=`<div class="panel"><h2>Connecte-toi pour vendre</h2><p class="muted">Pour déposer une annonce, il faut un compte Orleoo. C’est gratuit.</p><a class="btn btn-primary" href="#/compte">Créer un compte ou se connecter</a></div>`;return}
   const l=editId?state.remote.find(x=>x.id===editId&&x.mine):null;
   if(l&&l.status==="removed"){el.innerHTML=`<div class="empty"><p>Cette annonce a été retirée par la modération et ne peut plus être modifiée.</p><a class="btn btn-primary" href="#/compte/annonces">Mes annonces</a></div>`;return}
@@ -5409,7 +5585,7 @@ function showSellPreview(existing){
 /* =========================================================
    CROISSANCE : alertes, parrainage, statistiques, badges
    ========================================================= */
-const growth={searches:[],hits:[],refs:null,stats:{},badges:{},loaded:false};
+const growth={searches:[],hits:[],drops:[],refs:null,stats:{},badges:{},loaded:false};
 async function loadGrowth(){
   if(!sb||!state.user)return;
   const [a,b,c,d]=await Promise.all([
@@ -5418,6 +5594,7 @@ async function loadGrowth(){
     sb.rpc("my_referrals"),sb.rpc("my_listing_stats")]);
   growth.searches=a.error?[]:(a.data||[]);growth.hits=b.error?[]:(b.data||[]);growth.refs=c.error?null:c.data;
   growth.stats={};if(!d.error)(d.data||[]).forEach(x=>growth.stats[x.listing_id]=x);
+  try{const r=await sb.from("price_drops").select("id,listing_id,old_price,new_price,created_at,seen_at").order("created_at",{ascending:false}).limit(60);growth.drops=r.error?[]:(r.data||[])}catch(e){growth.drops=[]}
   growth.loaded=true;
 }
 const alertLabel=f=>[f.q&&`« ${f.q} »`,f.category,f.sizes.length&&`Taille ${f.sizes.join(", ")}`,f.conditions.length&&f.conditions.join(", "),f.brand,f.min!==""&&`dès ${f.min} €`,f.max!==""&&`jusqu’à ${f.max} €`].filter(Boolean).join(" · ");
@@ -5432,6 +5609,9 @@ $("saveAlert").addEventListener("click",async()=>{
 });
 function alertsHtml(){
   if(!growth.loaded){loadGrowth().then(()=>{if(accountTab==="alertes")renderView()});return `<div class="panel"><p class="muted">Chargement de tes alertes…</p></div>`}
+  return dropsHtml()+alertsListHtml();
+}
+function alertsListHtml(){
   if(growth.hits.some(h=>!h.seen_at))setTimeout(()=>{sb.rpc("mark_alerts_seen");growth.hits.forEach(h=>h.seen_at=h.seen_at||new Date().toISOString())},1500);
   if(!growth.searches.length)return `<div class="empty"><p>Tu n’as pas encore d’alerte.</p><p class="muted small">Fais une recherche ou choisis des filtres dans le catalogue, puis clique sur « Créer une alerte » : on te prévient par e-mail dès qu’une annonce correspond.</p><a class="btn btn-primary" href="#/catalogue">Chercher un article</a></div>`;
   const byS=id=>growth.hits.filter(h=>h.search_id===id);
@@ -5447,6 +5627,15 @@ document.addEventListener("click",async e=>{
   const c=e.target.closest("[data-invite-copy]");if(c){const url=inviteUrl();try{await navigator.clipboard.writeText(url);toast("Lien copié !")}catch(_){prompt("Copie ton lien d’invitation :",url)}return}
   const sh=e.target.closest("[data-invite-share]");if(sh){const url=inviteUrl();if(navigator.share){try{await navigator.share({title:"Orleoo",text:"Rejoins-moi sur Orleoo : vêtements et livres de seconde main, avec paiement protégé.",url})}catch(_){}}else{try{await navigator.clipboard.writeText(url);toast("Lien copié !")}catch(_){prompt("Copie ton lien d’invitation :",url)}}return}
 });
+/* Baisses de prix sur mes favoris (la plus récente par article) */
+function latestDrops(){const seen=new Set();return (growth.drops||[]).filter(d=>{if(seen.has(d.listing_id))return false;seen.add(d.listing_id);return true})}
+function dropsHtml(){
+  const list=latestDrops().map(d=>({d,p:state.remote.find(x=>x.id===d.listing_id)})).filter(x=>x.p&&x.p.status==="active");
+  if(!list.length)return "";
+  if(list.some(x=>!x.d.seen_at))setTimeout(()=>{sb.rpc("mark_price_drops_seen");growth.drops.forEach(d=>d.seen_at=d.seen_at||new Date().toISOString())},1500);
+  return `<div class="panel"><h2>Baisses de prix sur tes favoris</h2><ul class="drop-list">${list.map(({d,p})=>`<li><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}" tabindex="-1" aria-hidden="true"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><a class="link" href="#/article/${encodeURIComponent(p.id)}"><b>${esc(p.name)}</b></a><p class="small"><s class="muted">${eur(+d.old_price)}</s> → <b>${eur(p.price)}</b> <span class="drop-pc">−${Math.round((1-p.price/d.old_price)*100)} %</span>${d.seen_at?"":` <span class="status">Nouveau</span>`}</p><p class="small muted">${new Date(d.created_at).toLocaleDateString("fr-FR")}</p></div></li>`).join("")}</ul></div>`;
+}
+
 /* Parrainage */
 const inviteUrl=()=>location.origin+location.pathname+"?parrain="+encodeURIComponent(state.user?.name||"")+"#/";
 try{const pq=new URLSearchParams(location.search).get("parrain");if(pq&&/^[A-Za-z0-9._-]{3,20}$/.test(pq))localStorage.setItem("revoo.parrain",pq)}catch(_){}
@@ -5470,6 +5659,20 @@ function countView(p){
   try{const k="revoo.v."+p.id;if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1")}catch(_){}
   sb.rpc("bump_view",{p_listing:p.id}).then(()=>{},()=>{});
 }
+/* Coup de pouce : 14 jours sans favori */
+function nudgeBox(l){
+  const x=growth.stats[l.id];if(l.status!=="active"||!x||Number(x.favoris)>0||Date.now()-l.addedAt<14*864e5||lockedBy(l.id))return "";
+  const np=Math.max(1,Math.floor(l.price*0.9*2)/2);
+  return `<div class="nudge small"><b>Un coup de pouce ?</b> Pas encore de favori après ${Math.floor((Date.now()-l.addedAt)/864e5)} jours.
+    <div class="row-actions" style="justify-content:flex-start;margin-top:6px">${np<l.price?`<button type="button" class="btn btn-outline btn-sm" data-nudge-price="${esc(l.id)}" data-price="${np}">Baisser à ${eur(np)} (−10 %)</button>`:""}<a class="btn btn-outline btn-sm" href="#/vendre/${encodeURIComponent(l.id)}">Ajouter une photo portée</a></div></div>`;
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-nudge-price]");if(!b)return;const l=state.remote.find(x=>x.id===b.dataset.nudgePrice&&x.mine),np=+b.dataset.price;if(!l)return;
+  if(!confirm(`Passer « ${l.name} » de ${eur(l.price)} à ${eur(np)} ?`))return;b.disabled=true;
+  const {error}=await sb.from("listings").update({price:np}).eq("id",l.id);
+  if(error){b.disabled=false;toast(frenchError(error));return}
+  await loadListings();toast(`Prix baissé à ${eur(np)}. Les personnes qui suivent ton article sont prévenues.`);renderView();
+});
 const statLine=id=>{const x=growth.stats[id];if(!x)return "";return `<p class="lstats small"><span title="Vues">👁 ${x.vues} vue${x.vues>1?"s":""}</span><span title="Favoris">♥ ${x.favoris} favori${x.favoris>1?"s":""}</span>${CONFIG.vitrine?`<span title="Me prévenir">🔔 ${x.attentes} en attente</span>`:""}</p>`};
 /* Badges de confiance */
 async function fillBadges(root){
@@ -5565,9 +5768,28 @@ document.addEventListener("input",e=>{if(e.target.id!=="helpQ")return;
   document.querySelectorAll(".help-sec").forEach(sec=>{const ds=sec.querySelectorAll("details");if(ds.length)sec.hidden=[...ds].every(d=>d.hidden)});
   $("helpNone").hidden=!!any});
 
+const photoOrig=new Map();   // photo améliorée -> originale (pour annuler)
 function renderPhotos(){
-  $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button>${i===0?"<figcaption>Couverture</figcaption>":""}</figure>`).join("");
+  $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button>${i===0?"<figcaption>Couverture</figcaption>":""}${ph.startsWith("data:")?(photoOrig.has(ph)?`<button type="button" class="enh-btn on" data-enhance="${i}" title="Photo améliorée : annuler" aria-label="Annuler l’amélioration de la photo ${i+1}">↶</button>`:`<button type="button" class="enh-btn" data-enhance="${i}" title="Améliorer la photo (lumière, couleurs, cadrage)" aria-label="Améliorer la photo ${i+1}">✨</button>`):""}</figure>`).join("");
   $("photoList").querySelectorAll("[data-delphoto]").forEach(b=>b.addEventListener("click",()=>{draftPhotos.splice(+b.dataset.delphoto,1);renderPhotos();saveDraft()}));
+  $("photoList").querySelectorAll("[data-enhance]").forEach(b=>b.addEventListener("click",async()=>{const i=+b.dataset.enhance,ph=draftPhotos[i];
+    if(photoOrig.has(ph)){draftPhotos[i]=photoOrig.get(ph);photoOrig.delete(ph);renderPhotos();saveDraft();return}
+    b.disabled=true;try{const out=await enhancePhoto(ph);photoOrig.set(out,ph);draftPhotos[i]=out;renderPhotos();saveDraft();$("photoList").querySelectorAll("[data-enhance]")[i]?.focus()}catch(e){b.disabled=false;toast("Cette photo n’a pas pu être améliorée.")}}));
+}
+/* Lumière et couleurs corrigées automatiquement, recadrage 4:5 des photos en largeur */
+async function enhancePhoto(src){
+  const img=await loadImg(src),r=4/5;let sx=0,sy=0,sw=img.width,sh=img.height;
+  if(sw/sh>1.05){const w=Math.round(sh*r);sx=Math.round((sw-w)/2);sw=w}
+  const c=document.createElement("canvas");c.width=sw;c.height=sh;const x=c.getContext("2d");x.drawImage(img,sx,sy,sw,sh,0,0,sw,sh);
+  const d=x.getImageData(0,0,sw,sh),a=d.data,n=a.length/4,H=[new Uint32Array(256),new Uint32Array(256),new Uint32Array(256)];let lum=0;
+  for(let i=0;i<a.length;i+=4){H[0][a[i]]++;H[1][a[i+1]]++;H[2][a[i+2]]++;lum+=a[i]*.2126+a[i+1]*.7152+a[i+2]*.0722}
+  const pct=(h,q)=>{let s=0;for(let v=0;v<256;v++){s+=h[v];if(s>=n*q)return v}return 255};
+  const lo0=H.map(h=>pct(h,.005)),hi0=H.map(h=>Math.max(pct(h,.995),1)),gl=Math.min(...lo0),gh=Math.max(...hi0);
+  const lo=lo0.map(v=>(v+gl)/2),hi=hi0.map(v=>(v+gh)/2);   // balance des blancs à moitié : jamais de dominante inversée
+  const mean=lum/n/255,gamma=mean<.42?Math.max(.7,Math.log(.5)/Math.log(Math.max(mean,.05))):1;
+  const lut=[0,1,2].map(k=>{const t=new Uint8ClampedArray(256),l=Math.min(lo[k],50),h=Math.max(hi[k],l+110);for(let v=0;v<256;v++)t[v]=255*Math.pow(Math.min(1,Math.max(0,(v-l)/(h-l))),gamma);return t});
+  for(let i=0;i<a.length;i+=4){let R=lut[0][a[i]],G=lut[1][a[i+1]],B=lut[2][a[i+2]];const g=(R+G+B)/3;a[i]=g+(R-g)*1.06;a[i+1]=g+(G-g)*1.06;a[i+2]=g+(B-g)*1.06}
+  x.putImageData(d,0,0);return c.toDataURL("image/jpeg",.86);
 }
 function compress(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error("image"));img.onload=()=>{const max=1200,s=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.8))};img.src=r.result};r.readAsDataURL(file)})}
 const dataUrlToBlob=d=>fetch(d).then(r=>r.blob());
@@ -5818,7 +6040,7 @@ const PAGES={
   "aide":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Centre d’aide</p><h1>Centre d’aide</h1>
     <div class="help-search"><label for="helpQ" class="sr-only">Chercher dans l’aide</label><input class="input" id="helpQ" type="search" placeholder="Une question ? Ex. : frais, échange, alerte…" autocomplete="off"></div>
     <nav class="help-toc" aria-label="Thèmes"><a class="pill-link" href="#/aide" data-jump="aide-start">Bien démarrer</a><a class="pill-link" href="#/aide" data-jump="aide-vendre">Vendre</a><a class="pill-link" href="#/aide" data-jump="aide-acheter">Acheter</a><a class="pill-link" href="#/aide" data-jump="aide-echanger">Échanger</a><a class="pill-link" href="#/aide" data-jump="aide-securite">Paiement et sécurité</a><a class="pill-link" href="#/aide" data-jump="aide-compte">Compte</a></nav>
-    <section class="help-sec" id="aide-start"><h2>Bien démarrer</h2><details><summary>C’est quoi Orleoo ?</summary><p>Une friperie en ligne entre particuliers : tu achètes, vends ou échanges des vêtements et des livres de seconde main. Tout se fait sur le site, avec un paiement protégé.</p></details><details><summary>Comment créer mon compte ?</summary><p>Clique sur « Se connecter », puis « Créer un compte » : choisis un identifiant public, ton e-mail et un mot de passe d’au moins 8 caractères. C’est gratuit.</p></details><details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente. L’équipe les retire quand il y a assez de vraies annonces.</p></details><details><summary>Puis-je installer Orleoo sur mon téléphone ?</summary><p>Oui. Dans Mon compte, clique sur « Installer l’appli » (Android, ordinateur). Sur iPhone : dans Safari, touche « Partager » puis « Sur l’écran d’accueil ».</p></details></section><section class="help-sec" id="aide-vendre"><h2>Vendre</h2><details><summary>Comment mettre un article en vente ?</summary><p>Clique sur « Vendre », ajoute 1 à 5 photos, un titre, une description, la catégorie, la marque, la taille, l’état et le prix. Un aperçu s’affiche avant la publication.</p></details><details><summary>Comment bien fixer mon prix ?</summary><p>Le formulaire te propose un prix conseillé, calculé d’après les annonces similaires en ligne. Tu restes libre de choisir.</p></details><details><summary>Mon annonce en cours a disparu ?</summary><p>Non : elle est gardée comme brouillon sur ton appareil. En revenant sur « Vendre », clique sur « La reprendre ».</p></details><details><summary>Combien ça me coûte de vendre ?</summary><p>Rien : la mise en ligne est gratuite et tu reçois le prix affiché. Les frais Orleoo sont payés par l’acheteur.</p></details><details><summary>Pourquoi mon annonce a-t-elle été refusée ?</summary><p>Elle contenait un mot interdit (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo. Le message d’erreur indique la raison : corrige puis réessaie.</p></details><details><summary>Comment répondre à une offre ?</summary><p>Tu reçois un message à chaque offre. Dans Mon compte › Offres, accepte, refuse ou propose ton prix (une seule contre-offre). Sans réponse sous 48 h, l’offre expire.</p></details><details><summary>Comment proposer une réduction sur les lots ?</summary><p>Dans Mon compte › Profil et paramètres, rubrique « Réductions sur les lots » : choisis ta réduction dès 2, 3 et 5 articles. Ton prix affiché ne change pas.</p></details><details><summary>C’est quoi le badge « Vendeur fondateur » ?</summary><p>Les ${FOUNDING_MAX} premiers membres qui publient ${FOUNDING_NEED} annonces le gagnent, pour toujours, avec leur numéro. Il s’affiche sur leur profil et leurs annonces. Les places restantes sont indiquées sur la page « Vendre ».</p></details><details><summary>Comment vendre un livre rapidement ?</summary><p>Sur « Vendre », clique sur « Scanner le code-barres » et prends en photo le code-barres au dos du livre (ou tape les 13 chiffres de l’ISBN). Le titre, l’auteur et la couverture se remplissent tout seuls : il reste l’état, le format et le prix.</p></details><details><summary>Comment partager mon annonce sur Instagram ?</summary><p>Ouvre ton annonce et clique sur « Story Instagram » : une image aux couleurs d’Orleoo est créée avec ta photo et ton prix. Le lien de l’annonce est copié : dans ta story, ajoute le sticker « Lien » et colle-le.</p></details><details><summary>Où voir les statistiques de mes annonces ?</summary><p>Dans Mon compte, onglet « Mes annonces » : nombre de vues, de favoris et de personnes en attente.</p></details></section><section class="help-sec" id="aide-acheter"><h2>Acheter</h2><details><summary>Comment acheter ?</summary><p>${CONFIG.vitrine?"Les achats ouvrent bientôt. En attendant, clique sur « Me prévenir » sur une annonce : tu seras averti(e) dès que tu pourras l’acheter avec le paiement protégé.":"Ajoute l’article au panier, choisis la livraison (colis ou main propre) et paie par carte sur Orleoo. Ton argent reste bloqué jusqu’à ce que tu confirmes la réception."}</p></details><details><summary>Combien coûtent les frais ?</summary><p>L’acheteur paie 5 % du prix + 0,70 € par article, pour le paiement protégé. Exemple : article à 10 € + 1,20 € de frais. La livraison est en plus.</p></details><details><summary>Comment être prévenu quand un article qui me plaît est publié ?</summary><p>Fais ta recherche ou choisis tes filtres dans le catalogue, puis clique sur « Créer une alerte ». Tu reçois un e-mail dès qu’une annonce correspond, et tu retrouves les résultats dans « Mes alertes ».</p></details><details><summary>Puis-je négocier le prix ?</summary><p>Oui : sur l’annonce, clique sur « Faire une offre » (au moins la moitié du prix affiché). Le vendeur a 48 h pour accepter, refuser ou te faire une contre-offre. Une fois acceptée, tu as 48 h pour payer à ce prix (avant l’ouverture des achats : 48 h à partir de l’ouverture). Tout se suit dans Mon compte › Offres.</p></details><details><summary>C’est quoi la réduction sur les lots ?</summary><p>Certains vendeurs offrent une réduction si tu achètes plusieurs de leurs articles (par exemple −10 % dès 2 articles). Elle s’affiche sur leur profil et s’applique automatiquement dans ton panier.</p></details><details><summary>Comment retrouver mes coups de cœur ?</summary><p>Clique sur le cœur d’une annonce pour l’ajouter à tes favoris, puis ouvre « Mes favoris ».</p></details></section><section class="help-sec" id="aide-echanger"><h2>Échanger</h2><details><summary>Comment fonctionne l’échange ?</summary><p>Propose un de tes articles contre celui d’un autre membre, avec un complément d’argent si besoin. Une fois accepté, chacun envoie son colis avec suivi, puis vous avez 48 h pour vérifier.</p></details><details><summary>Qui peut échanger ?</summary><p>L’échange est débloqué après 3 achats terminés, pour éviter les faux comptes.</p></details></section><section class="help-sec" id="aide-securite"><h2>Paiement et sécurité</h2><details><summary>Puis-je payer en espèces, par virement ou PayPal ?</summary><p>Non : tout se paie sur Orleoo. Les paiements extérieurs ne sont pas protégés et sont interdits. Les messages qui contiennent un numéro, un e-mail ou un autre moyen de paiement sont bloqués.</p></details><details><summary>Comment marche la remise en main propre ?</summary><p>Tu paies sur Orleoo avant le rendez-vous. Sur place, tu vérifies l’article, puis tu donnes ton code de remise au vendeur : c’est lui qui débloque l’argent.</p></details><details><summary>Que faire si je ne reçois rien ?</summary><p>Ne confirme pas la réception et signale le problème depuis ta commande, dans Mon compte. L’argent reste bloqué et la modération tranche.</p></details><details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce ». C’est confidentiel. L’équipe reçoit aussi automatiquement les annonces qui semblent suspectes.</p></details></section><section class="help-sec" id="aide-compte"><h2>Compte</h2><details><summary>Comment inviter mes amis ?</summary><p>Dans Mon compte, « Invite tes amis » : copie ou partage ton lien. Chaque personne qui s’inscrit avec devient ton filleul.</p></details><details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. Les e-mails d’Orleoo viennent de orleoo.contact@gmail.com.</p></details><details><summary>Comment changer mon mot de passe ou supprimer mon compte ?</summary><p>Dans Mon compte, « Profil et paramètres », rubrique sécurité.</p></details><details><summary>Où sont enregistrées mes données ?</summary><p>Chez Supabase, dans l’Union européenne. Tous les détails sont dans la politique de confidentialité.</p></details></section>
+    <section class="help-sec" id="aide-start"><h2>Bien démarrer</h2><details><summary>C’est quoi Orleoo ?</summary><p>Une friperie en ligne entre particuliers : tu achètes, vends ou échanges des vêtements et des livres de seconde main. Tout se fait sur le site, avec un paiement protégé.</p></details><details><summary>Comment créer mon compte ?</summary><p>Clique sur « Se connecter », puis « Créer un compte » : choisis un identifiant public, ton e-mail et un mot de passe d’au moins 8 caractères. C’est gratuit.</p></details><details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente. L’équipe les retire quand il y a assez de vraies annonces.</p></details><details><summary>Puis-je installer Orleoo sur mon téléphone ?</summary><p>Oui. Dans Mon compte, clique sur « Installer l’appli » (Android, ordinateur). Sur iPhone : dans Safari, touche « Partager » puis « Sur l’écran d’accueil ».</p></details></section><section class="help-sec" id="aide-vendre"><h2>Vendre</h2><details><summary>Comment mettre un article en vente ?</summary><p>Clique sur « Vendre », ajoute 1 à 5 photos, un titre, une description, la catégorie, la marque, la taille, l’état et le prix. Un aperçu s’affiche avant la publication.</p></details><details><summary>Comment bien fixer mon prix ?</summary><p>Le formulaire te propose un prix conseillé, calculé d’après les annonces similaires en ligne. Tu restes libre de choisir.</p></details><details><summary>Mon annonce en cours a disparu ?</summary><p>Non : elle est gardée comme brouillon sur ton appareil. En revenant sur « Vendre », clique sur « La reprendre ».</p></details><details><summary>Combien ça me coûte de vendre ?</summary><p>Rien : la mise en ligne est gratuite et tu reçois le prix affiché. Les frais Orleoo sont payés par l’acheteur.</p></details><details><summary>Pourquoi mon annonce a-t-elle été refusée ?</summary><p>Elle contenait un mot interdit (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo. Le message d’erreur indique la raison : corrige puis réessaie.</p></details><details><summary>Comment répondre à une offre ?</summary><p>Tu reçois un message à chaque offre. Dans Mon compte › Offres, accepte, refuse ou propose ton prix (une seule contre-offre). Sans réponse sous 48 h, l’offre expire.</p></details><details><summary>Comment proposer une réduction sur les lots ?</summary><p>Dans Mon compte › Profil et paramètres, rubrique « Réductions sur les lots » : choisis ta réduction dès 2, 3 et 5 articles. Ton prix affiché ne change pas.</p></details><details><summary>C’est quoi le badge « Vendeur fondateur » ?</summary><p>Les ${FOUNDING_MAX} premiers membres qui publient ${FOUNDING_NEED} annonces le gagnent, pour toujours, avec leur numéro. Il s’affiche sur leur profil et leurs annonces. Les places restantes sont indiquées sur la page « Vendre ».</p></details><details><summary>J’ai beaucoup de livres à vendre</summary><p>Sur « Vendre », clique sur « Vide ta bibliothèque d’un coup » : scanne tes livres à la suite (jusqu’à 20), indique pour chacun le format, l’état et le prix, puis publie tout en une fois.</p></details><details><summary>Comment rendre mes photos plus belles ?</summary><p>Après avoir ajouté une photo, clique sur « Améliorer » : la lumière et les couleurs sont corrigées, et une photo prise en largeur est recadrée. Un clic sur « annuler » remet l’originale.</p></details><details><summary>Comment vendre un livre rapidement ?</summary><p>Sur « Vendre », clique sur « Scanner le code-barres » et prends en photo le code-barres au dos du livre (ou tape les 13 chiffres de l’ISBN). Le titre, l’auteur et la couverture se remplissent tout seuls : il reste l’état, le format et le prix.</p></details><details><summary>Comment partager mon annonce sur Instagram ?</summary><p>Ouvre ton annonce et clique sur « Story Instagram » : une image aux couleurs d’Orleoo est créée avec ta photo et ton prix. Le lien de l’annonce est copié : dans ta story, ajoute le sticker « Lien » et colle-le.</p></details><details><summary>Où voir les statistiques de mes annonces ?</summary><p>Dans Mon compte, onglet « Mes annonces » : nombre de vues, de favoris et de personnes en attente.</p></details></section><section class="help-sec" id="aide-acheter"><h2>Acheter</h2><details><summary>Comment acheter ?</summary><p>${CONFIG.vitrine?"Les achats ouvrent bientôt. En attendant, clique sur « Me prévenir » sur une annonce : tu seras averti(e) dès que tu pourras l’acheter avec le paiement protégé.":"Ajoute l’article au panier, choisis la livraison (colis ou main propre) et paie par carte sur Orleoo. Ton argent reste bloqué jusqu’à ce que tu confirmes la réception."}</p></details><details><summary>Combien coûtent les frais ?</summary><p>L’acheteur paie 5 % du prix + 0,70 € par article, pour le paiement protégé. Exemple : article à 10 € + 1,20 € de frais. La livraison est en plus.</p></details><details><summary>Comment être prévenu quand un article qui me plaît est publié ?</summary><p>Fais ta recherche ou choisis tes filtres dans le catalogue, puis clique sur « Créer une alerte ». Tu reçois un e-mail dès qu’une annonce correspond, et tu retrouves les résultats dans « Mes alertes ».</p></details><details><summary>Puis-je négocier le prix ?</summary><p>Oui : sur l’annonce, clique sur « Faire une offre » (au moins la moitié du prix affiché). Le vendeur a 48 h pour accepter, refuser ou te faire une contre-offre. Une fois acceptée, tu as 48 h pour payer à ce prix (avant l’ouverture des achats : 48 h à partir de l’ouverture). Tout se suit dans Mon compte › Offres.</p></details><details><summary>C’est quoi la réduction sur les lots ?</summary><p>Certains vendeurs offrent une réduction si tu achètes plusieurs de leurs articles (par exemple −10 % dès 2 articles). Elle s’affiche sur leur profil et s’applique automatiquement dans ton panier.</p></details><details><summary>Comment savoir si un favori baisse de prix ?</summary><p>C’est automatique : quand un vendeur baisse le prix d’un article que tu as en favori, tu reçois un e-mail et la baisse apparaît dans Mon compte › Mes alertes.</p></details><details><summary>Comment voir d’abord les articles à ma taille ?</summary><p>Dans le catalogue, clique sur « Mes tailles » et coche tes tailles. Elles passent en premier, et un clic sur le bouton ne garde qu’elles. Tu peux aussi les régler dans Mon compte › Profil et paramètres.</p></details><details><summary>Comment retrouver mes coups de cœur ?</summary><p>Clique sur le cœur d’une annonce pour l’ajouter à tes favoris, puis ouvre « Mes favoris ».</p></details></section><section class="help-sec" id="aide-echanger"><h2>Échanger</h2><details><summary>Comment fonctionne l’échange ?</summary><p>Propose un de tes articles contre celui d’un autre membre, avec un complément d’argent si besoin. Une fois accepté, chacun envoie son colis avec suivi, puis vous avez 48 h pour vérifier.</p></details><details><summary>Qui peut échanger ?</summary><p>L’échange est débloqué après 3 achats terminés, pour éviter les faux comptes.</p></details></section><section class="help-sec" id="aide-securite"><h2>Paiement et sécurité</h2><details><summary>Puis-je payer en espèces, par virement ou PayPal ?</summary><p>Non : tout se paie sur Orleoo. Les paiements extérieurs ne sont pas protégés et sont interdits. Les messages qui contiennent un numéro, un e-mail ou un autre moyen de paiement sont bloqués.</p></details><details><summary>Comment marche la remise en main propre ?</summary><p>Tu paies sur Orleoo avant le rendez-vous. Sur place, tu vérifies l’article, puis tu donnes ton code de remise au vendeur : c’est lui qui débloque l’argent.</p></details><details><summary>Que faire si je ne reçois rien ?</summary><p>Ne confirme pas la réception et signale le problème depuis ta commande, dans Mon compte. L’argent reste bloqué et la modération tranche.</p></details><details><summary>Comment bloquer un membre ?</summary><p>Ouvre ta conversation avec lui et clique sur « Bloquer ». Vous ne pouvez plus vous écrire ni vous faire d’offre, et il n’est pas prévenu. Tu peux le débloquer dans Mon compte › Profil et paramètres.</p></details><details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce ». C’est confidentiel. L’équipe reçoit aussi automatiquement les annonces qui semblent suspectes.</p></details></section><section class="help-sec" id="aide-compte"><h2>Compte</h2><details><summary>Comment inviter mes amis ?</summary><p>Dans Mon compte, « Invite tes amis » : copie ou partage ton lien. Chaque personne qui s’inscrit avec devient ton filleul.</p></details><details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. Les e-mails d’Orleoo viennent de orleoo.contact@gmail.com.</p></details><details><summary>Comment changer mon mot de passe ou supprimer mon compte ?</summary><p>Dans Mon compte, « Profil et paramètres », rubrique sécurité.</p></details><details><summary>Où sont enregistrées mes données ?</summary><p>Chez Supabase, dans l’Union européenne. Tous les détails sont dans la politique de confidentialité.</p></details></section>
     <p class="muted" id="helpNone" hidden>Aucune réponse trouvée. Pose ta question à Loo ou écris-nous.</p>
     <section class="help-sec"><h2>Nous contacter</h2><p>Pose ta question à Loo, ou écris-nous à <a class="link" href="mailto:orleoo.contact@gmail.com">orleoo.contact@gmail.com</a>.</p><button type="button" class="btn btn-primary" data-open-chat>Discuter avec Loo</button></section>`,
   "conditions":()=>LEGAL_PAGES["conditions"](),
@@ -6137,6 +6359,14 @@ let qTimer;
 $("fQuery").addEventListener("input",e=>{clearTimeout(qTimer);qTimer=setTimeout(()=>{filters.q=e.target.value.trim();$("searchInput").value=filters.q;renderCatalogue(false)},250)});
 ["fMin","fMax"].forEach(id=>$(id).addEventListener("input",e=>{filters[id==="fMin"?"min":"max"]=e.target.value===""||+e.target.value<0?"":e.target.value;renderCatalogue(false)}));
 $("sortSelect").addEventListener("change",e=>{filters.sort=e.target.value;renderCatalogue(false)});
+function openSizesBox(){const box=$("mySizesBox");box.innerHTML=`<p><b>Choisis tes tailles</b> <span class="muted small">: on te montre d’abord ce qui te va. Enregistré ${state.user?"sur ton compte":"sur cet appareil"}.</span></p>${sizesChooser("catSizes")}<div class="row-actions" style="justify-content:flex-start;margin-top:10px"><button type="button" class="btn btn-primary btn-sm" id="mySizesSave">Enregistrer et filtrer</button><button type="button" class="btn btn-outline btn-sm" id="mySizesClose">Fermer</button></div>`;box.hidden=false;box.querySelector("input")?.focus()}
+document.addEventListener("click",async e=>{
+  if(e.target.closest("#mySizesBtn")){if(!mySizes.length||!$("mySizesBox").hidden){if($("mySizesBox").hidden)openSizesBox();else $("mySizesBox").hidden=true;return}filters.mine=!filters.mine;catalogueLimit=PAGE_SIZE;renderCatalogue(false);if(filters.mine)toast("Seulement tes tailles (les livres restent visibles). Appui long ou double-clic pour les modifier.");return}
+  if(e.target.closest("#mySizesClose")){$("mySizesBox").hidden=true;$("mySizesBtn").focus();return}
+  if(e.target.closest("#mySizesSave")){const l=[...document.querySelectorAll('#catSizes input:checked')].map(i=>i.value);if(!await saveMySizes(l))return;$("mySizesBox").hidden=true;filters.mine=l.length>0;catalogueLimit=PAGE_SIZE;renderCatalogue(false);toast(l.length?"Tailles enregistrées.":"Tailles effacées.");return}
+  if(e.target.closest("#profSizesSave")){const l=[...document.querySelectorAll('#profSizes input:checked')].map(i=>i.value);if(await saveMySizes(l))toast(l.length?"Tes tailles sont enregistrées : le catalogue te montre d’abord ce qui te va.":"Tailles effacées.");return}
+});
+$("mySizesBtn").addEventListener("dblclick",()=>{if(mySizes.length)openSizesBox()});
 $("resetFilters").addEventListener("click",()=>{resetFilters();$("searchInput").value="";renderCatalogue()});
 function setFiltersOpen(o){$("filters").classList.toggle("open",o);$("filtersToggle").setAttribute("aria-expanded",o);document.body.classList.toggle("sheet-open",o&&innerWidth<=920);if(o&&innerWidth<=920)setTimeout(()=>$("filtersClose").focus(),50);else if(!o)$("filtersToggle").focus()}
 $("filtersToggle").addEventListener("click",()=>setFiltersOpen(!$("filters").classList.contains("open")));
