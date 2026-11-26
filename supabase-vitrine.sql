@@ -28,4 +28,12 @@ returns table (membres bigint, demandes bigint) language sql stable security def
 $$;
 grant execute on function public.waitlist_stats() to authenticated;
 
+-- Pour le fondateur : les annonces les plus attendues
+create or replace function public.waitlist_top(p_limit int default 5)
+returns table (listing_id uuid, titre text, prix numeric, attentes bigint) language sql stable security definer set search_path = public as $$
+  select l.id, l.title, l.price, count(*) from public.launch_waitlist w join public.listings l on l.id = w.listing_id
+  where public.is_admin() group by l.id, l.title, l.price order by count(*) desc, l.title limit greatest(1, least(coalesce(p_limit, 5), 20));
+$$;
+grant execute on function public.waitlist_top(int) to authenticated;
+
 select 'Mode vitrine prêt : liste « Me prévenir » créée' as info;

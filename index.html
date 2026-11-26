@@ -2561,6 +2561,7 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
 .sp-dl{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:10px 0;font-size:14px}.sp-dl dt{color:var(--muted);font-size:12.5px}.sp-dl dd{margin:0;font-weight:600}
 .sp-desc{white-space:pre-wrap;font-size:14px;max-height:120px;overflow:auto;margin:0 0 8px}
 @media (max-width:600px){.sp-grid{grid-template-columns:1fr}.sp-img{max-width:260px}}
+.wait-panel{margin-bottom:16px}.wait-top{margin:6px 0 0;padding-left:20px;display:grid;gap:4px}
 </style>
 </head>
 <body>
@@ -3419,6 +3420,7 @@ async function loadTeamData(which){
   const jobs=[];
   if(!which||which==="bord")jobs.push(loadSite());
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(sb.rpc("founder_stats").then(r=>{if(!r.error)team.fstats=r.data}));
+  if((!which||which==="bord")&&state.role==="fondateur")jobs.push(Promise.all([sb.rpc("waitlist_stats"),sb.rpc("waitlist_top",{p_limit:5})]).then(([a,t])=>{team.wait=a.error?null:{...((a.data||[])[0]||{membres:0,demandes:0}),top:t.error?[]:(t.data||[])}}).catch(()=>{team.wait=null}));
   if(which==="bord"&&!can("journal"))team.log=[];
   if(!which||which==="bord")jobs.push(sb.rpc("admin_stats").then(r=>{if(!r.error&&r.data&&!r.data.erreur)team.stats=r.data}));
   if(!which||which==="equipe"||which==="bord")jobs.push(sb.rpc("team_list").then(r=>{if(!r.error)team.list=r.data||[]}));
@@ -3642,7 +3644,11 @@ function founderHtml(){
   const ab=f.abonnes||{},nAb=(ab.pro||0)+(ab.max||0)+(ab.ultra||0),pr=k=>parseFloat(String(PLANS[k].price).replace(",",".")),mrr=(ab.pro||0)*pr("pro")+(ab.max||0)*pr("max")+(ab.ultra||0)*pr("ultra");
   const days=f.jours||[],mx=Math.max(1,...days.map(d=>d.membres+d.annonces+d.commandes));
   const bar=d=>`<div class="day" title="${fmtD(d.jour)} : ${d.membres} membre(s), ${d.annonces} annonce(s), ${d.commandes} commande(s)"><span class="b-c" style="height:${d.commandes/mx*100}%"></span><span class="b-a" style="height:${d.annonces/mx*100}%"></span><span class="b-m" style="height:${d.membres/mx*100}%"></span><small>${new Date(d.jour).getDate()}</small></div>`;
-  return `<div class="panel founder"><h2>Tes chiffres</h2>
+  const w=team.wait;
+  const waitBlock=w?`<div class="panel wait-panel"><h2>Attendent l’ouverture des achats</h2>
+    <div class="kpis"><div class="kpi"><b>${Number(w.membres)}</b><span>Membre${Number(w.membres)>1?"s":""} en attente</span><small>ont cliqué sur « Me prévenir »</small></div><div class="kpi"><b>${Number(w.demandes)}</b><span>Demande${Number(w.demandes)>1?"s":""} au total</span><small>une par annonce attendue</small></div></div>
+    ${w.top&&w.top.length?`<h3 class="small-h">Annonces les plus attendues</h3><ol class="wait-top">${w.top.map(x=>`<li><a class="link" href="#/article/${encodeURIComponent(x.listing_id)}">${esc(x.titre)}</a> <span class="muted">· ${eur(Number(x.prix))} · ${Number(x.attentes)} personne${Number(x.attentes)>1?"s":""}</span></li>`).join("")}</ol>`:`<p class="muted small">Personne n’a encore cliqué sur « Me prévenir ».</p>`}</div>`:"";
+  return `${waitBlock}<div class="panel founder"><h2>Tes chiffres</h2>
     <div class="kpis">
       <div class="kpi"><b>${eur(Number(f.frais_mois))}</b><span>Frais encaissés ce mois-ci</span><small>${eur(Number(f.frais_encaisses))} depuis le début</small></div>
       <div class="kpi"><b>${eur(mrr)}</b><span>Abonnements par mois</span><small>${nAb} abonné${nAb>1?"s":""} payant${nAb>1?"s":""}${f.abonnes_demo?` · ${f.abonnes_demo} offert${f.abonnes_demo>1?"s":""} ou démo`:""}</small></div>
