@@ -42,6 +42,7 @@ Chaque script peut être relancé sans risque.
 | 30 | `supabase-verrou-vitrine.sql` | Mode vitrine : le serveur refuse commandes, paiements et échanges tant que les achats ne sont pas ouverts |
 | 31 | `supabase-vendeurs-fondateurs.sql` | Badge « Vendeur fondateur » : les 100 premiers membres avec 5 annonces |
 | 32 | `supabase-fidelite.sql` | Baisses de prix, « Mes tailles », blocage de membres, coup de pouce aux annonces, tableau de bord du lancement |
+| 33 | `supabase-lancement.sql` | Liens suivis (?src=), date d’ouverture et liste e-mail des visiteurs (e-mail le jour J) |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 
