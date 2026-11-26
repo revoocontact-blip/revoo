@@ -2576,6 +2576,13 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
 .tb-ok{background:#EEF3ED;color:#33503C;border-color:#CFDCCB}
 html[data-theme="dark"] .tb-ok{background:#2F3B33;color:#CFE3CB;border-color:#4E6A56}
 @media (prefers-color-scheme:dark){html:not([data-theme="light"]) .tb-ok{background:#2F3B33;color:#CFE3CB;border-color:#4E6A56}}
+
+.welcome{width:min(460px,100%);text-align:center;padding:26px 22px}
+.wl-step{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+.wl-ic{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:#EEF3ED;color:#3F5A47;margin-bottom:10px}.wl-ic .icon{width:26px;height:26px}
+.welcome h2{margin:0 0 8px}.welcome p{margin:0 0 10px}
+.wl-dots{display:flex;gap:6px;justify-content:center;margin:12px 0 16px}.wl-dots span{width:8px;height:8px;border-radius:50%;background:var(--line)}.wl-dots span.on{background:#3F5A47;width:20px;border-radius:99px}
+.welcome .crop-foot{justify-content:center}
 </style>
 </head>
 <body>
@@ -5268,6 +5275,29 @@ function installHtml(){
 }
 document.addEventListener("click",async e=>{if(!e.target.closest("[data-install]")||!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch(_){}installEvt=null;if(location.hash.startsWith("#/compte"))renderView()});
 
+/* Guide de bienvenue (une seule fois, après l'inscription) */
+function showWelcome(){
+  try{if(localStorage.getItem("revoo.welcome"))return;localStorage.setItem("revoo.welcome","1")}catch(_){}
+  const I=d=>`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  const S=[
+    {ic:I('<path d="M12 5v14M5 12h14"/>'),t:"Vends en quelques minutes",d:"Prends 2 ou 3 photos à la lumière du jour, choisis la catégorie et l’état : Orleoo te propose un prix conseillé et un aperçu avant de publier. C’est gratuit.",cta:["Vendre un article","#/vendre"]},
+    {ic:I('<path d="M4 8h13l-3-3M20 16H7l3 3"/>'),t:"Échange tes pièces",d:"Propose un de tes articles contre celui d’un autre membre, avec un complément d’argent si besoin. Chacun envoie son colis avec suivi, et la modération veille.",cta:["Comment ça marche","#/fonctionnement"]},
+    {ic:I('<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>'),t:"Tout se paie sur Orleoo",d:CONFIG.vitrine?"Le paiement protégé arrive bientôt : l’argent restera bloqué jusqu’à la réception. En attendant, clique sur « Me prévenir » sur les annonces qui te plaisent.":"L’argent reste bloqué jusqu’à ce que tu confirmes la réception. Ne paie jamais en dehors du site : ce n’est pas protégé.",cta:["En savoir plus","#/securite"]}];
+  let i=0;
+  document.body.insertAdjacentHTML("beforeend",`<div class="crop-backdrop" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="crop welcome"><div id="wlBody"></div></div></div>`);
+  const box=$("welcome"),close=()=>{box.remove();document.removeEventListener("keydown",k)};
+  const k=e=>{if(e.key==="Escape")close();if(e.key==="ArrowRight"&&i<2){i++;draw()}if(e.key==="ArrowLeft"&&i>0){i--;draw()}};
+  const draw=()=>{const x=S[i];$("wlBody").innerHTML=`<p class="wl-step">Bienvenue sur Orleoo · ${i+1}/3</p><span class="wl-ic">${x.ic}</span><h2 id="wlT">${x.t}</h2><p>${x.d}</p>
+    <p><a class="link" href="${x.cta[1]}" data-wl-go>${x.cta[0]} →</a></p>
+    <div class="wl-dots" aria-hidden="true">${S.map((_,j)=>`<span class="${j===i?"on":""}"></span>`).join("")}</div>
+    <div class="crop-foot buy-actions"><button type="button" class="btn btn-outline" id="wlPrev" ${i===0?"hidden":""}>Précédent</button><button type="button" class="btn btn-primary" id="wlNext">${i<2?"Suivant":"C’est parti !"}</button></div>`;
+    $("wlNext").addEventListener("click",()=>{if(i<2){i++;draw()}else close()});
+    $("wlPrev").addEventListener("click",()=>{i--;draw()});
+    box.querySelector("[data-wl-go]").addEventListener("click",close);
+    $("wlNext").focus()};
+  document.addEventListener("keydown",k);draw();
+}
+
 function renderPhotos(){
   $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button>${i===0?"<figcaption>Couverture</figcaption>":""}</figure>`).join("");
   $("photoList").querySelectorAll("[data-delphoto]").forEach(b=>b.addEventListener("click",()=>{draftPhotos.splice(+b.dataset.delphoto,1);renderPhotos()}));
@@ -5680,7 +5710,7 @@ document.addEventListener("submit",async e=>{
     const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city},emailRedirectTo:redirectUrl()}});
     busy(f,false);
     if(error){$("signupErr").textContent=frenchError(error);return}
-    if(data.session){toast(`Bienvenue ${name} !`);location.hash="#/compte/profil"}
+    if(data.session){toast(`Bienvenue ${name} !`);location.hash="#/compte/profil";setTimeout(showWelcome,400)}
     else{const okEl=$("signupOk");okEl.hidden=false;okEl.innerHTML=`Compte créé ! Ouvre l’e-mail envoyé à <b>${esc(email)}</b> pour confirmer ton adresse, puis connecte-toi.`}
   }
   if(f.id==="loginForm"){e.preventDefault();
