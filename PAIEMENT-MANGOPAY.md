@@ -24,12 +24,12 @@ Tout est prêt côté site et base de données. Aujourd'hui le site est en **mod
 
 | Fichier | Rôle |
 |---|---|
-| `supabase-paiement-securise.sql` | À lancer dans Supabase (SQL Editor). Ajoute le blocage, les tables de paiement et le mode de paiement. |
+| `supabase/sql/supabase-paiement-securise.sql` | À lancer dans Supabase (SQL Editor). Ajoute le blocage, les tables de paiement et le mode de paiement. |
 | `supabase/functions/orleoo-paiement/index.ts` | Fonction serveur qui parle à Mangopay. **À tester en sandbox avant toute mise en production.** |
 
 ## Étapes, dans l'ordre
 
-1. **Maintenant** : lance `supabase-paiement-securise.sql` puis `supabase-frais.sql` dans Supabase > SQL Editor.
+1. **Maintenant** : lance `supabase/sql/supabase-paiement-securise.sql` puis `supabase/sql/supabase-frais.sql` dans Supabase > SQL Editor.
 2. **Signer avec Mangopay.** Récupère le *Client ID* et la *clé API*, d'abord en **sandbox** (test).
 3. **Ranger les clés.** Ajoute-les dans Supabase > Edge Functions > **Secrets** (jamais dans le site, jamais dans un message) :
    - `MANGOPAY_CLIENT_ID`
