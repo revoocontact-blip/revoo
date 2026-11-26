@@ -70,7 +70,7 @@ begin
     url := 'https://api.brevo.com/v3/smtp/email',
     headers := jsonb_build_object('api-key', api_key, 'Content-Type', 'application/json', 'accept', 'application/json'),
     body := jsonb_build_object(
-      'sender', jsonb_build_object('name', 'Orleoo', 'email', 'revoo.contact@gmail.com'),
+      'sender', jsonb_build_object('name', 'Orleoo', 'email', 'orleoo.contact@gmail.com'),
       'to', jsonb_build_array(jsonb_build_object('email', to_email)),
       'subject', coalesce((select name from public.profiles where id = new.sender_id), 'Un membre') || ' t’a envoyé un message',
       -- Version sobre (comme un e-mail personnel) : meilleure chance d'arriver dans « Principale »

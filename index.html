@@ -3016,7 +3016,7 @@ function sellerInfo(p){
 }
 
 /* Produits disponibles = annonces réelles + démo, sans les articles vendus */
-function showDemo(){return CONFIG.afficherDemo===true||(CONFIG.afficherDemo==="auto"&&state.remote.filter(p=>p.status==="active").length<CONFIG.seuilDemo)}
+function showDemo(){if(typeof site!=="undefined"&&site.settings&&site.settings.show_demo===false)return false;return CONFIG.afficherDemo===true||(CONFIG.afficherDemo==="auto"&&state.remote.filter(p=>p.status==="active").length<CONFIG.seuilDemo)}
 function allProducts(){return [...state.remote, ...(showDemo()?DEMO_PRODUCTS:[])]}
 function available(){return allProducts().filter(p=>p.status==="active"&&!state.sold.includes(p.id)&&!(p.sellerVacation&&!p.mine))}
 function sellerReviews(id){return (state.reviews||[]).filter(r=>r.seller_id===id&&(!r.demo||(typeof PAY_DEMO!=="undefined"&&PAY_DEMO)))}
@@ -3504,6 +3504,10 @@ function settingsTeamHtml(){
       <p class="small muted">Arrive dans « Mon compte » de chaque membre, avec un bouton « J’ai compris » (pas d’e-mail). Un envoi par heure maximum.</p>
       <div class="field"><label for="bcMsg">Message</label><textarea class="input" id="bcMsg" maxlength="1000" placeholder="Ex. : Nouveau ! Vous pouvez maintenant échanger vos vêtements avec un complément d’argent."></textarea></div>
       <button class="btn btn-primary" type="submit">Envoyer à tous les membres</button></form>`:""}
+    ${can("signalements")?`<form class="panel" id="demoForm"><h2>Annonces de démonstration</h2>
+      <p class="small muted">Les 16 annonces « Démo » servent à remplir le site au lancement. Retire-les quand il y a assez de vraies annonces.</p>
+      <div class="set-row"><div><b>Afficher les annonces de démonstration</b><small>${st.show_demo===false?"Actuellement retirées":"Actuellement affichées"}</small></div><label class="switch"><input type="checkbox" id="dShow" ${st.show_demo===false?"":"checked"}><span aria-hidden="true"></span><span class="sr-only">Afficher les annonces de démonstration</span></label></div>
+      <button class="btn btn-primary" type="submit">Enregistrer</button></form>`:""}
     ${can("pauses")?`<form class="panel" id="pauseForm"><h2>Pauses</h2>
       <p class="small muted">En cas de problème (bug, paiement, spam…), mets en pause une seule partie du site. Un bandeau prévient les visiteurs, et le serveur bloque l’action.</p>
       ${[["pL","pause_listings","Nouvelles annonces","Plus personne ne peut publier."],["pP","pause_purchases","Achats et échanges","Plus personne ne peut acheter ni proposer un échange. Les commandes en cours continuent."],["pM","pause_messages","Messagerie","Plus personne ne peut envoyer de message."]].map(([id,k,t,d])=>`<div class="set-row"><div><b>${t}</b><small>${d}</small></div><label class="switch"><input type="checkbox" id="${id}" ${st[k]?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Mettre en pause : ${t}</span></label></div>`).join("")}
@@ -3738,6 +3742,9 @@ function bindTeam(el){
     const pause=!!(site.settings||{}).pause_listings;
     if(await teamRpc("set_site_settings",{p_announcement:$("sAnn").value,p_level:(sf.querySelector("input[name=sLvl]:checked")||{}).value||"info",p_pause:pause},"Annonce enregistrée."))await loadSite()});
   const bc=el.querySelector("#bcForm");if(bc)bc.addEventListener("submit",async e=>{e.preventDefault();const m=$("bcMsg").value.trim();if(m.length<5){toast("Écris le message.");return}if(!confirm("Envoyer ce message à TOUS les membres ?"))return;const r=await sb.rpc("broadcast_notice",{p_message:m});if(r.error){toast(frenchError(r.error));return}toast(`Message envoyé à ${r.data} membre${r.data>1?"s":""}.`);$("bcMsg").value=""});
+  const dfm=el.querySelector("#demoForm");if(dfm)dfm.addEventListener("submit",async e=>{e.preventDefault();
+    const show=$("dShow").checked;if(!show&&!confirm("Retirer les annonces de démonstration pour tous les visiteurs ?"))return;
+    if(await teamRpc("set_show_demo",{p_show:show},show?"Annonces de démonstration affichées.":"Annonces de démonstration retirées.")){await loadSite();await loadTeamData("reglages")}});
   const pf=el.querySelector("#pauseForm");if(pf)pf.addEventListener("submit",async e=>{e.preventDefault();
     const v={p_listings:$("pL").checked,p_purchases:$("pP").checked,p_messages:$("pM").checked};
     if((v.p_listings||v.p_purchases||v.p_messages)&&!confirm("Appliquer ces pauses pour tous les membres ?"))return;
@@ -5179,7 +5186,7 @@ function feeExample(){return `Exemple : article à 10,00 € + ${eur(feeOf(10))}
 const LEGAL={
   editeur:"Ahmed Boubetache",
   statut:"particulier (entreprise en cours de création)",
-  email:"revoo.contact@gmail.com",
+  email:"orleoo.contact@gmail.com",
   site:"https://revoocontact-blip.github.io/revoo/",
   majDate:"7 novembre 2026",
   ageMin:13
