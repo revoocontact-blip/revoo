@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Sécurité : le navigateur n'exécute que le code du site et ne parle qu'à Supabase -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://htisbuqxnqdahtedgiiz.supabase.co; connect-src 'self' data: https://htisbuqxnqdahtedgiiz.supabase.co wss://htisbuqxnqdahtedgiiz.supabase.co; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://htisbuqxnqdahtedgiiz.supabase.co https://books.google.com https://books.googleusercontent.com https://covers.openlibrary.org https://archive.org https://*.archive.org; connect-src 'self' data: https://htisbuqxnqdahtedgiiz.supabase.co wss://htisbuqxnqdahtedgiiz.supabase.co https://www.googleapis.com https://books.google.com https://books.googleusercontent.com https://openlibrary.org https://covers.openlibrary.org https://archive.org https://*.archive.org; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(window.top!==window.self){try{window.top.location.replace(window.location.href)}catch(e){document.documentElement.style.display="none"}}</script>
 <title>Orleoo — Tes vêtements ont de l’avenir</title>
@@ -2498,6 +2498,22 @@ html[data-theme="dark"] .tb-ok{background:#2F3B33;color:#CFE3CB;border-color:#4E
 .lots-form .field{margin:0}
 @media (max-width:560px){.lots-form{grid-template-columns:1fr 1fr 1fr}.lots-form .btn{grid-column:1/-1}}
 .pp-lot{font-weight:600}
+.founder-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#7A5A12;background:#F6ECD2;border:1px solid #E7D3A1;border-radius:99px;padding:2px 9px 2px 7px;vertical-align:middle;margin-left:6px;white-space:nowrap}
+.founder-badge .icon{width:13px;height:13px;fill:currentColor;stroke:none}
+h1 .founder-badge{font-size:13px}
+html[data-theme="dark"] .founder-badge{color:#F1DCA6;background:#4A3F24;border-color:#6B5A30}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .founder-badge{color:#F1DCA6;background:#4A3F24;border-color:#6B5A30}}
+.founder-note{margin-bottom:14px}.founder-note .trade-progress{margin-top:8px}
+.isbn-box{border:1px dashed var(--line);border-radius:10px;padding:14px 16px;margin:0 0 18px;background:var(--surface)}
+.isbn-box>p:first-child{margin:0 0 10px}
+.isbn-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.isbn-row .input{flex:1 1 220px;min-width:0;width:auto}
+.isbn-row .btn .icon{width:18px;height:18px}
+#isbnMsg{margin:8px 0 0}#isbnMsg:empty{display:none}#isbnMsg.ok b{color:var(--accent,var(--navy))}
+.isbn-cover{display:flex;gap:14px;align-items:center;margin-top:10px}
+.isbn-cover img{width:72px;height:auto;max-height:110px;object-fit:contain;border-radius:4px;border:1px solid var(--line);background:#fff;flex:none}
+.isbn-cover p{margin:6px 0 0}
+.isbn-cover>div{min-width:0}.isbn-cover .btn{white-space:normal;text-align:left;height:auto;min-height:40px}
 </style>
 </head>
 <body>
@@ -3014,7 +3030,7 @@ async function loadListings(){
   if(error){state.loadError=frenchError(error);console.warn(error);return}
   state.loadError="";
   state.remote=(data||[]).map(mapListing);
-  await loadLots();
+  await Promise.all([loadLots(),loadFounding()]);
   try{const r=await sb.from("reviews").select("id,order_id,seller_id,buyer_id,rating,comment,demo,created_at,buyer:profiles!reviews_buyer_id_fkey(name)").order("created_at",{ascending:false}).limit(1000);if(!r.error)state.reviews=r.data||[]}catch(e){}
   await loadSubs();
 }
@@ -4115,6 +4131,141 @@ document.addEventListener("submit",async e=>{
   toast(v.lot2||v.lot3||v.lot5?"Réductions enregistrées : elles s’affichent sur ton profil et tes annonces.":"Réductions sur les lots désactivées.");
 });
 
+/* =========================================================
+   VENDEURS FONDATEURS (100 premiers vendeurs avec 5 annonces)
+   ========================================================= */
+const FOUNDING_MAX=100, FOUNDING_NEED=5, founding={list:[],loaded:false};
+async function loadFounding(){
+  if(!sb)return;
+  try{const {data,error}=await sb.from("founding_sellers").select("user_id,rank").order("rank",{ascending:true}).limit(FOUNDING_MAX);if(error)return;founding.list=data||[];founding.loaded=true}catch(e){}
+  const b=$("foundBar");if(b)b.innerHTML=founding.loaded&&foundingPlaces()>0?` · <a href="#/vendre">Vendeur fondateur : plus que ${foundingPlaces()} place${foundingPlaces()>1?"s":""}</a>`:"";
+}
+const foundingRank=uid=>(founding.list.find(f=>f.user_id===uid)||{}).rank||0;
+const foundingPlaces=()=>Math.max(0,FOUNDING_MAX-founding.list.length);
+const foundingBadge=uid=>{const r=foundingRank(uid);return r?` <span class="founder-badge" title="Un des 100 premiers vendeurs d’Orleoo"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg>Vendeur fondateur n°${r}</span>`:""};
+function foundingNote(){
+  if(!founding.loaded||!state.user)return "";
+  const r=foundingRank(state.user.id);
+  if(r)return `<p class="note small founder-note"><b>Tu es Vendeur fondateur n°${r}</b> : ton badge est à toi pour toujours, sur ton profil et tes annonces. Merci d’avoir lancé Orleoo !</p>`;
+  if(!foundingPlaces())return "";
+  const n=state.remote.filter(p=>p.mine&&["active","sold"].includes(p.status)).length, left=Math.max(0,FOUNDING_NEED-n);
+  return `<div class="note small founder-note"><b>Badge Vendeur fondateur : plus que ${foundingPlaces()} place${foundingPlaces()>1?"s":""} sur ${FOUNDING_MAX}.</b> Publie ${FOUNDING_NEED} annonces pour l’obtenir à vie${left?` : encore ${left}, tu en as ${Math.min(n,FOUNDING_NEED)}`:""}.<span class="trade-progress" aria-hidden="true"><i style="width:${Math.min(100,n/FOUNDING_NEED*100)}%"></i></span></div>`;
+}
+
+/* =========================================================
+   SCANNER UN LIVRE (code-barres ISBN)
+   ========================================================= */
+function isbn13(raw){
+  let d=String(raw||"").toUpperCase().replace(/[^0-9X]/g,"");
+  if(d.length===10&&/^\d{9}[\dX]$/.test(d)){let t=0;for(let i=0;i<10;i++)t+=(d[i]==="X"?10:+d[i])*(10-i);if(t%11)return "";d="978"+d.slice(0,9);let u=0;for(let i=0;i<12;i++)u+=+d[i]*(i%2?3:1);return d+((10-u%10)%10)}
+  if(d.length!==13||!/^97[89]\d{10}$/.test(d))return "";
+  let t=0;for(let i=0;i<12;i++)t+=+d[i]*(i%2?3:1);return (10-t%10)%10===+d[12]?d:"";
+}
+let zxingLoad=null;
+const loadZxing=()=>zxingLoad||(zxingLoad=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="vendor/zxing-library-0.21.3.min.js";sc.onload=()=>res(window.ZXing);sc.onerror=()=>{zxingLoad=null;rej(new Error("zxing"))};document.head.appendChild(sc)}));
+async function decodeBarcode(file){
+  const img=await new Promise((res,rej)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error("image"))};i.src=u});
+  if("BarcodeDetector" in window){try{const det=new BarcodeDetector({formats:["ean_13"]});const r=await det.detect(img);const ok=r.map(x=>isbn13(x.rawValue)).find(Boolean);if(ok)return ok}catch(e){}}
+  const Z=await loadZxing();
+  for(const max of [1600,1000,2400]){
+    const sc=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    try{const hints=new Map([[Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13]],[Z.DecodeHintType.TRY_HARDER,true]]);
+      const txt=new Z.MultiFormatReader().decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(c))),hints).getText();const ok=isbn13(txt);if(ok)return ok}catch(e){}
+  }
+  return "";
+}
+async function lookupIsbn(isbn){
+  const get=async u=>{const r=await fetch(u);if(!r.ok)throw new Error(r.status);return r.json()};
+  try{const d=await get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`),v=d.items&&d.items[0]&&d.items[0].volumeInfo;
+    if(v&&v.title)return {title:v.title+(v.subtitle&&(v.title+v.subtitle).length<55?` : ${v.subtitle}`:""),authors:v.authors||[],publisher:v.publisher||"",year:(v.publishedDate||"").slice(0,4),pages:v.pageCount||0,
+      cover:v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail||"").replace(/^http:/,"https:").replace("&edge=curl","")}}catch(e){}
+  try{const d=await get(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`),v=d["ISBN:"+isbn];
+    if(v&&v.title)return {title:v.title,authors:(v.authors||[]).map(a=>a.name),publisher:((v.publishers||[])[0]||{}).name||"",year:(String(v.publish_date||"").match(/\d{4}/)||[""])[0],pages:v.number_of_pages||0,cover:(v.cover&&(v.cover.large||v.cover.medium))||""}}catch(e){}
+  return null;
+}
+function isbnBoxHtml(){
+  return `<div class="isbn-box" id="isbnBox"><p><b>Tu vends un livre ?</b> Scanne son code-barres : le titre, l’auteur et la couverture se remplissent tout seuls.</p>
+    <div class="isbn-row"><label class="btn btn-outline" for="isbnPhoto"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6v12M7 6v12M10 6v12M14 6v12M17 6v12M20 6v12"/></svg> Scanner le code-barres</label><input id="isbnPhoto" type="file" accept="image/*" capture="environment" class="sr-only">
+    <span class="isbn-or small muted">ou</span><input class="input" id="isbnInput" inputmode="numeric" maxlength="17" autocomplete="off" placeholder="ISBN : 13 chiffres sous le code-barres" aria-label="ISBN du livre (13 chiffres sous le code-barres)"><button type="button" class="btn btn-outline" id="isbnGo">Chercher</button></div>
+    <p class="small" id="isbnMsg" role="status"></p><div id="isbnCover"></div></div>`;
+}
+async function fillFromIsbn(isbn){
+  const msg=$("isbnMsg");msg.className="small";msg.textContent="Recherche du livre…";$("isbnCover").innerHTML="";
+  const b=await lookupIsbn(isbn);
+  if(!$("isbnMsg"))return;
+  if(!b){msg.className="small error";msg.textContent=`Livre introuvable pour l’ISBN ${isbn}. Remplis les champs à la main.`;return}
+  const set=(id,v,ev="input")=>{const el=$(id);if(el&&v){el.value=v;el.dispatchEvent(new Event(ev,{bubbles:true}))}};
+  set("tCat","Livres","change");
+  set("tTitle",b.title.slice(0,60));
+  set("tBrand",b.authors.join(", ").slice(0,40));
+  if(!$("tDesc").value.trim())set("tDesc",[`${b.title}${b.authors.length?` de ${b.authors.join(", ")}`:""}.`,[b.publisher,b.year].filter(Boolean).join(", ")+(b.pages?`${b.publisher||b.year?". ":""}${b.pages} pages.`:b.publisher||b.year?".":""),`ISBN ${isbn}.`,"","État : "].filter((x,i)=>x!==""||i>2).join("\n").slice(0,1000));
+  $("isbnInput").value=isbn;
+  msg.className="small ok";msg.innerHTML=`<b>Trouvé !</b> Vérifie les champs, puis choisis le format, l’état et ton prix.`;
+  if(b.cover)$("isbnCover").innerHTML=`<div class="isbn-cover"><img src="${esc(b.cover)}" alt="Couverture de ${esc(b.title)}" onerror="this.closest('.isbn-cover').remove()"><div><button type="button" class="btn btn-outline" id="isbnUseCover" data-src="${esc(b.cover)}">Ajouter cette couverture aux photos</button><p class="muted small">Ajoute aussi une photo de <b>ton</b> exemplaire, pour montrer son état.</p></div></div>`;
+  $("tSize")?.focus();
+}
+document.addEventListener("change",async e=>{
+  if(e.target.id!=="isbnPhoto")return;const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
+  const msg=$("isbnMsg");msg.className="small";msg.textContent="Lecture du code-barres…";
+  let isbn="";try{isbn=await decodeBarcode(f)}catch(err){}
+  if(!isbn){msg.className="small error";msg.textContent="Code-barres illisible. Reprends la photo de plus près, bien à plat et éclairée, ou tape les 13 chiffres.";return}
+  fillFromIsbn(isbn);
+});
+document.addEventListener("click",async e=>{
+  if(e.target.closest("#isbnGo")){const isbn=isbn13($("isbnInput").value);if(!isbn){const m=$("isbnMsg");m.className="small error";m.textContent="ISBN invalide : tape les 13 chiffres écrits sous le code-barres (ils commencent par 978 ou 979).";$("isbnInput").focus();return}fillFromIsbn(isbn);return}
+  const u=e.target.closest("#isbnUseCover");if(!u)return;
+  if(draftPhotos.length>=myPerk("photos")){$("photoErr").textContent=`Maximum ${myPerk("photos")} photos.`;return}
+  u.disabled=true;u.textContent="Ajout…";
+  try{const r=await fetch(u.dataset.src);if(!r.ok)throw new Error(r.status);const bl=await r.blob();if(!bl.type.startsWith("image/"))throw new Error("type");
+    draftPhotos.push(await compress(new File([bl],"couverture.jpg",{type:bl.type})));renderPhotos();saveDraft();u.textContent="Couverture ajoutée ✓"}
+  catch(err){u.disabled=false;u.textContent="Ajouter cette couverture aux photos";const m=$("isbnMsg");m.className="small error";m.textContent="Impossible de récupérer cette couverture : prends simplement ton livre en photo."}
+});
+document.addEventListener("keydown",e=>{if(e.target.id==="isbnInput"&&e.key==="Enter"){e.preventDefault();$("isbnGo").click()}});
+
+/* =========================================================
+   STORY INSTAGRAM (image 1080 × 1920 de l'annonce)
+   ========================================================= */
+function loadImg(src,cors){return new Promise((res,rej)=>{const i=new Image();if(cors)i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=()=>rej(new Error("img"));i.src=src})}
+function roundRect(x,c,y,w,h,r){x.beginPath();x.moveTo(c+r,y);x.arcTo(c+w,y,c+w,y+h,r);x.arcTo(c+w,y+h,c,y+h,r);x.arcTo(c,y+h,c,y,r);x.arcTo(c,y,c+w,y,r);x.closePath()}
+function wrapLines(x,text,max,lines){const words=String(text).split(/\s+/),out=[];let cur="";for(const w of words){const t=cur?cur+" "+w:w;if(x.measureText(t).width>max&&cur){out.push(cur);cur=w}else cur=t}if(cur)out.push(cur);if(out.length>lines){out.length=lines;let l=out[lines-1];while(l&&x.measureText(l+"…").width>max)l=l.slice(0,-1);out[lines-1]=l.trim()+"…"}return out}
+async function storyImage(p){
+  const W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  try{await Promise.all([document.fonts.load('700 64px "DM Sans"'),document.fonts.load('400 34px "DM Sans"')])}catch(e){}
+  x.fillStyle="#FAF8F3";x.fillRect(0,0,W,H);
+  try{const logo=await loadImg("logos/orleoo-logo.png");x.drawImage(logo,90,190,288,72)}catch(e){x.fillStyle="#2E3238";x.font='700 72px "DM Sans", sans-serif';x.fillText("Orleoo",90,254)}
+  x.fillStyle="#4A6852";x.font='600 30px "DM Sans", sans-serif';x.textAlign="right";x.fillText(isBook(p)?"Livre de seconde main":"Seconde main",W-90,239);x.textAlign="left";
+  const px=90,py=310,pw=900,ph=980;
+  x.save();roundRect(x,px,py,pw,ph,32);x.clip();x.fillStyle="#E4E2DC";x.fillRect(px,py,pw,ph);
+  try{const im=await loadImg((p.photos&&p.photos[0])||p.img,true),s=Math.max(pw/im.width,ph/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,px+(pw-w)/2,py+(ph-h)/2,w,h)}catch(e){}
+  x.restore();
+  // prix
+  x.font='700 64px "DM Sans", sans-serif';const price=eur(p.price),tw=x.measureText(price).width;
+  x.fillStyle="#3F5A47";roundRect(x,px+28,py+ph-128,tw+64,100,50);x.fill();x.fillStyle="#FFFFFF";x.fillText(price,px+60,py+ph-56);
+  // titre et détails
+  x.fillStyle="#2E3238";x.font='700 62px "DM Sans", sans-serif';
+  const lines=wrapLines(x,p.name,W-180,2);lines.forEach((l,i)=>x.fillText(l,90,1386+i*76));
+  let y=1386+lines.length*76+8;
+  x.fillStyle="#5A607A";x.font='400 36px "DM Sans", sans-serif';x.fillText([p.brand,p.size,p.condition].filter(Boolean).join(" · ").slice(0,60),90,y);
+  // bas
+  x.strokeStyle="#E4E2DC";x.lineWidth=2;x.beginPath();x.moveTo(90,1590);x.lineTo(W-90,1590);x.stroke();
+  x.fillStyle="#2E3238";x.font='700 40px "DM Sans", sans-serif';x.fillText("Dispo sur Orleoo",90,1660);
+  x.fillStyle="#4A6852";x.font='400 32px "DM Sans", sans-serif';x.fillText(`@${p.seller} · lien en sticker`,90,1712);
+  return await new Promise(res=>c.toBlob(res,"image/png"));
+}
+async function shareStory(p,btn){
+  const old=btn.innerHTML;btn.disabled=true;btn.textContent="Création de l’image…";
+  const url=location.origin+location.pathname+"#/article/"+encodeURIComponent(p.id);
+  try{
+    const blob=await storyImage(p);if(!blob)throw new Error("canvas");
+    let copied=false;try{await navigator.clipboard.writeText(url);copied=true}catch(e){}
+    const file=new File([blob],"orleoo-story.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:p.name});}catch(e){if(e&&e.name!=="AbortError")throw e}}
+    else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="orleoo-story.png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+    toast(copied?"Image prête ! Le lien est copié : dans ta story, ajoute le sticker « Lien » et colle-le.":"Image prête ! Dans ta story, ajoute le sticker « Lien » avec l’adresse de l’annonce.");
+  }catch(e){console.warn(e);toast("L’image n’a pas pu être créée. Réessaie dans un instant.")}
+  btn.disabled=false;btn.innerHTML=old;
+}
+
 const trades={list:[],addr:[],loaded:false};
 const TRADE_STATUS={proposed:"Proposition en attente",accepted:"En cours",completed:"Échange terminé",problem:"Problème signalé",declined:"Refusé",cancelled:"Annulé"};
 async function loadTrades(){
@@ -4404,7 +4555,7 @@ document.addEventListener("click",async e=>{
   b.textContent="On te prévient ✓";b.disabled=true;
   toast(ok?"C’est noté : on te prévient dès que les achats ouvrent.":"C’est noté sur cet appareil : on te prévient dès que les achats ouvrent.");
 });
-if(CONFIG.vitrine){document.body.classList.add("vitrine");const db=$("demoBar");if(db){db.classList.remove("paydemo");db.innerHTML=`<b>Les achats ouvrent bientôt</b> · inscris-toi et publie tes annonces dès maintenant · <a href="#/vendre">Vendre</a>`}}
+if(CONFIG.vitrine){document.body.classList.add("vitrine");const db=$("demoBar");if(db){db.classList.remove("paydemo");db.innerHTML=`<b>Les achats ouvrent bientôt</b> · inscris-toi et publie tes annonces dès maintenant · <a href="#/vendre">Vendre</a><span id="foundBar"></span>`}}
 
 /* Paiement et contacts en dehors d'Orleoo : interdits (même règle que le serveur) */
 function offPlatform(txt){
@@ -4598,7 +4749,7 @@ async function renderSellerProfile(id){
       <div class="pp-body">
         <span class="avatar pp-avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
         <div class="pp-id">
-          <h1>@${esc(pr.name)}${planBadge(id)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1><div class="trust" data-badges="${id}"></div>
+          <h1>@${esc(pr.name)}${planBadge(id)}${foundingBadge(id)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1><div class="trust" data-badges="${id}"></div>
           <div class="pp-chips">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span>${lotTxt(id)?`<span class="pp-lot">Lots : ${lotTxt(id)}</span>`:""}</div>
         </div>
         <div class="pp-actions">${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}<button type="button" class="btn btn-outline" id="shareProfile">Partager</button></div>
@@ -4861,8 +5012,9 @@ function renderProduct(id){
       ${actions}
       ${sold||p.mine?"":offerBlock(p)+lotHint(p)}
       ${sold?"":tradeBlock(p)}
-      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}${p.sellerId?`<div class="trust" data-badges="${p.sellerId}"></div>`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
+      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}${foundingBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}${p.sellerId?`<div class="trust" data-badges="${p.sellerId}"></div>`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
       ${p.mine||sold?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
+      ${p.demo?"":`<button type="button" class="link small" id="storyBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="16.8" cy="7.2" r=".6"/></svg> Story Instagram</button>`}
       <button type="button" class="link small" id="shareBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Partager</button>
       ${!p.mine&&!p.demo&&!sold&&sb?`<button type="button" class="link small" id="reportBtn" style="margin-top:8px">Signaler cette annonce</button><div id="reportBox"></div>`:""}
     </div>
@@ -4873,6 +5025,7 @@ function renderProduct(id){
   v.querySelectorAll("[data-photo]").forEach(b=>b.addEventListener("click",()=>{$("mainPhoto").src=photos[+b.dataset.photo];v.querySelectorAll("[data-photo]").forEach(x=>x.setAttribute("aria-current",x===b))}));
   $("contactSeller")?.addEventListener("click",()=>contactSeller(p));
   $("reportBtn")?.addEventListener("click",()=>openReportForm(p));
+  $("storyBtn")?.addEventListener("click",e=>shareStory(p,e.currentTarget));
   $("shareBtn")?.addEventListener("click",async()=>{
     const url=location.origin+location.pathname+"#/article/"+encodeURIComponent(p.id), text=`${p.name} — ${eur(p.price)} sur Orleoo`;
     try{if(navigator.share){await navigator.share({title:p.name,text,url});return}await navigator.clipboard.writeText(url);toast("Lien copié ! Tu peux le coller où tu veux.")}
@@ -5029,6 +5182,7 @@ function renderAccount(tab){
       <div class="row-actions">${l.status==="removed"||lockedBy(l.id)?"":`<a class="btn btn-outline" href="#/vendre/${encodeURIComponent(l.id)}">Modifier</a><button type="button" class="btn btn-outline" data-status="${esc(l.id)}">${l.status==="active"?"Marquer vendue":"Remettre en ligne"}</button>`}${l.status==="active"&&subs.mine?`<button type="button" class="btn btn-outline" data-boost="${esc(l.id)}">Mettre en avant</button>`:""}${l.status==="active"&&myPerk("pins")>0?`<button type="button" class="btn btn-outline" data-pin="${esc(l.id)}" aria-pressed="${l.pinned}">${l.pinned?"Désépingler":"Épingler"}</button>`:""}<button type="button" class="btn btn-danger" data-delete="${esc(l.id)}">Supprimer</button></div>
     </div>`).join("")}</div><a class="btn btn-primary" href="#/vendre">Ajouter une annonce</a>`
     :`<div class="empty"><p>Tu n’as pas encore d’annonce.</p><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a></div>`;
+    body=foundingNote()+body;
   } else if(accountTab==="commandes"){
     body=myOrders.length?myOrders.map(o=>`<div class="order"><header><b>Commande ${esc(o.id)}</b><span>${new Date(o.date).toLocaleDateString("fr-FR")}</span></header>
       <ul>${o.items.map(i=>`<li>${esc(i.name)} (${esc(i.size)}) — ${eur(i.price)}</li>`).join("")}</ul>
@@ -5155,8 +5309,9 @@ function renderSell(editId){
   draftPhotos=l?[...l.photos]:[];
   const opt=(arr,v,ph)=>`<option value="">${ph}</option>`+arr.map(a=>`<option ${a===v?"selected":""}>${a}</option>`).join("");
   el.innerHTML=`
-  ${draftBanner(!!l)}<p class="note">Ton annonce sera <b>visible par tous les visiteurs</b> d’Orleoo. Ton identifiant apparaîtra comme vendeur.</p>
+  ${draftBanner(!!l)}${l?"":foundingNote()}<p class="note">Ton annonce sera <b>visible par tous les visiteurs</b> d’Orleoo. Ton identifiant apparaîtra comme vendeur.</p>
   <form class="panel" id="sellForm" novalidate>
+    ${l?"":isbnBoxHtml()}
     <div class="field">
       <span class="label" id="photoLabel">Photos <span class="hint">(1 à ${myPerk("photos")}, la première sert de couverture)</span></span>
       <div class="photo-drop">
@@ -5456,8 +5611,10 @@ async function submitListing(existing){
     if(error){await removePhotos(photos.filter(u=>!draftPhotos.includes(u)));throw error}
     if(!existing){if($("sellForm"))$("sellForm").dataset.wired="0";clearDraft()}
     if(existing)await removePhotos(existing.photos.filter(u=>!photos.includes(u)));
+    const wasFounder=foundingRank(state.user.id);
     await loadListings();
-    toast(existing?"Annonce modifiée.":"Annonce publiée ! Elle est visible par tous.");
+    const nowFounder=foundingRank(state.user.id);
+    toast(!existing&&nowFounder&&!wasFounder?`Bravo ! Tu es Vendeur fondateur n°${nowFounder} : ton badge est à vie.`:existing?"Annonce modifiée.":"Annonce publiée ! Elle est visible par tous.");
     location.hash="#/compte/annonces";
   }catch(err){console.warn(err);$("sellErr").textContent=frenchError(err);btn.disabled=false;btn.textContent=label}
 }
@@ -5661,7 +5818,7 @@ const PAGES={
   "aide":()=>`<p class="crumbs"><a href="#/">Accueil</a> › Centre d’aide</p><h1>Centre d’aide</h1>
     <div class="help-search"><label for="helpQ" class="sr-only">Chercher dans l’aide</label><input class="input" id="helpQ" type="search" placeholder="Une question ? Ex. : frais, échange, alerte…" autocomplete="off"></div>
     <nav class="help-toc" aria-label="Thèmes"><a class="pill-link" href="#/aide" data-jump="aide-start">Bien démarrer</a><a class="pill-link" href="#/aide" data-jump="aide-vendre">Vendre</a><a class="pill-link" href="#/aide" data-jump="aide-acheter">Acheter</a><a class="pill-link" href="#/aide" data-jump="aide-echanger">Échanger</a><a class="pill-link" href="#/aide" data-jump="aide-securite">Paiement et sécurité</a><a class="pill-link" href="#/aide" data-jump="aide-compte">Compte</a></nav>
-    <section class="help-sec" id="aide-start"><h2>Bien démarrer</h2><details><summary>C’est quoi Orleoo ?</summary><p>Une friperie en ligne entre particuliers : tu achètes, vends ou échanges des vêtements et des livres de seconde main. Tout se fait sur le site, avec un paiement protégé.</p></details><details><summary>Comment créer mon compte ?</summary><p>Clique sur « Se connecter », puis « Créer un compte » : choisis un identifiant public, ton e-mail et un mot de passe d’au moins 8 caractères. C’est gratuit.</p></details><details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente. L’équipe les retire quand il y a assez de vraies annonces.</p></details><details><summary>Puis-je installer Orleoo sur mon téléphone ?</summary><p>Oui. Dans Mon compte, clique sur « Installer l’appli » (Android, ordinateur). Sur iPhone : dans Safari, touche « Partager » puis « Sur l’écran d’accueil ».</p></details></section><section class="help-sec" id="aide-vendre"><h2>Vendre</h2><details><summary>Comment mettre un article en vente ?</summary><p>Clique sur « Vendre », ajoute 1 à 5 photos, un titre, une description, la catégorie, la marque, la taille, l’état et le prix. Un aperçu s’affiche avant la publication.</p></details><details><summary>Comment bien fixer mon prix ?</summary><p>Le formulaire te propose un prix conseillé, calculé d’après les annonces similaires en ligne. Tu restes libre de choisir.</p></details><details><summary>Mon annonce en cours a disparu ?</summary><p>Non : elle est gardée comme brouillon sur ton appareil. En revenant sur « Vendre », clique sur « La reprendre ».</p></details><details><summary>Combien ça me coûte de vendre ?</summary><p>Rien : la mise en ligne est gratuite et tu reçois le prix affiché. Les frais Orleoo sont payés par l’acheteur.</p></details><details><summary>Pourquoi mon annonce a-t-elle été refusée ?</summary><p>Elle contenait un mot interdit (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo. Le message d’erreur indique la raison : corrige puis réessaie.</p></details><details><summary>Comment répondre à une offre ?</summary><p>Tu reçois un message à chaque offre. Dans Mon compte › Offres, accepte, refuse ou propose ton prix (une seule contre-offre). Sans réponse sous 48 h, l’offre expire.</p></details><details><summary>Comment proposer une réduction sur les lots ?</summary><p>Dans Mon compte › Profil et paramètres, rubrique « Réductions sur les lots » : choisis ta réduction dès 2, 3 et 5 articles. Ton prix affiché ne change pas.</p></details><details><summary>Où voir les statistiques de mes annonces ?</summary><p>Dans Mon compte, onglet « Mes annonces » : nombre de vues, de favoris et de personnes en attente.</p></details></section><section class="help-sec" id="aide-acheter"><h2>Acheter</h2><details><summary>Comment acheter ?</summary><p>${CONFIG.vitrine?"Les achats ouvrent bientôt. En attendant, clique sur « Me prévenir » sur une annonce : tu seras averti(e) dès que tu pourras l’acheter avec le paiement protégé.":"Ajoute l’article au panier, choisis la livraison (colis ou main propre) et paie par carte sur Orleoo. Ton argent reste bloqué jusqu’à ce que tu confirmes la réception."}</p></details><details><summary>Combien coûtent les frais ?</summary><p>L’acheteur paie 5 % du prix + 0,70 € par article, pour le paiement protégé. Exemple : article à 10 € + 1,20 € de frais. La livraison est en plus.</p></details><details><summary>Comment être prévenu quand un article qui me plaît est publié ?</summary><p>Fais ta recherche ou choisis tes filtres dans le catalogue, puis clique sur « Créer une alerte ». Tu reçois un e-mail dès qu’une annonce correspond, et tu retrouves les résultats dans « Mes alertes ».</p></details><details><summary>Puis-je négocier le prix ?</summary><p>Oui : sur l’annonce, clique sur « Faire une offre » (au moins la moitié du prix affiché). Le vendeur a 48 h pour accepter, refuser ou te faire une contre-offre. Une fois acceptée, tu as 48 h pour payer à ce prix (avant l’ouverture des achats : 48 h à partir de l’ouverture). Tout se suit dans Mon compte › Offres.</p></details><details><summary>C’est quoi la réduction sur les lots ?</summary><p>Certains vendeurs offrent une réduction si tu achètes plusieurs de leurs articles (par exemple −10 % dès 2 articles). Elle s’affiche sur leur profil et s’applique automatiquement dans ton panier.</p></details><details><summary>Comment retrouver mes coups de cœur ?</summary><p>Clique sur le cœur d’une annonce pour l’ajouter à tes favoris, puis ouvre « Mes favoris ».</p></details></section><section class="help-sec" id="aide-echanger"><h2>Échanger</h2><details><summary>Comment fonctionne l’échange ?</summary><p>Propose un de tes articles contre celui d’un autre membre, avec un complément d’argent si besoin. Une fois accepté, chacun envoie son colis avec suivi, puis vous avez 48 h pour vérifier.</p></details><details><summary>Qui peut échanger ?</summary><p>L’échange est débloqué après 3 achats terminés, pour éviter les faux comptes.</p></details></section><section class="help-sec" id="aide-securite"><h2>Paiement et sécurité</h2><details><summary>Puis-je payer en espèces, par virement ou PayPal ?</summary><p>Non : tout se paie sur Orleoo. Les paiements extérieurs ne sont pas protégés et sont interdits. Les messages qui contiennent un numéro, un e-mail ou un autre moyen de paiement sont bloqués.</p></details><details><summary>Comment marche la remise en main propre ?</summary><p>Tu paies sur Orleoo avant le rendez-vous. Sur place, tu vérifies l’article, puis tu donnes ton code de remise au vendeur : c’est lui qui débloque l’argent.</p></details><details><summary>Que faire si je ne reçois rien ?</summary><p>Ne confirme pas la réception et signale le problème depuis ta commande, dans Mon compte. L’argent reste bloqué et la modération tranche.</p></details><details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce ». C’est confidentiel. L’équipe reçoit aussi automatiquement les annonces qui semblent suspectes.</p></details></section><section class="help-sec" id="aide-compte"><h2>Compte</h2><details><summary>Comment inviter mes amis ?</summary><p>Dans Mon compte, « Invite tes amis » : copie ou partage ton lien. Chaque personne qui s’inscrit avec devient ton filleul.</p></details><details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. Les e-mails d’Orleoo viennent de orleoo.contact@gmail.com.</p></details><details><summary>Comment changer mon mot de passe ou supprimer mon compte ?</summary><p>Dans Mon compte, « Profil et paramètres », rubrique sécurité.</p></details><details><summary>Où sont enregistrées mes données ?</summary><p>Chez Supabase, dans l’Union européenne. Tous les détails sont dans la politique de confidentialité.</p></details></section>
+    <section class="help-sec" id="aide-start"><h2>Bien démarrer</h2><details><summary>C’est quoi Orleoo ?</summary><p>Une friperie en ligne entre particuliers : tu achètes, vends ou échanges des vêtements et des livres de seconde main. Tout se fait sur le site, avec un paiement protégé.</p></details><details><summary>Comment créer mon compte ?</summary><p>Clique sur « Se connecter », puis « Créer un compte » : choisis un identifiant public, ton e-mail et un mot de passe d’au moins 8 caractères. C’est gratuit.</p></details><details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente. L’équipe les retire quand il y a assez de vraies annonces.</p></details><details><summary>Puis-je installer Orleoo sur mon téléphone ?</summary><p>Oui. Dans Mon compte, clique sur « Installer l’appli » (Android, ordinateur). Sur iPhone : dans Safari, touche « Partager » puis « Sur l’écran d’accueil ».</p></details></section><section class="help-sec" id="aide-vendre"><h2>Vendre</h2><details><summary>Comment mettre un article en vente ?</summary><p>Clique sur « Vendre », ajoute 1 à 5 photos, un titre, une description, la catégorie, la marque, la taille, l’état et le prix. Un aperçu s’affiche avant la publication.</p></details><details><summary>Comment bien fixer mon prix ?</summary><p>Le formulaire te propose un prix conseillé, calculé d’après les annonces similaires en ligne. Tu restes libre de choisir.</p></details><details><summary>Mon annonce en cours a disparu ?</summary><p>Non : elle est gardée comme brouillon sur ton appareil. En revenant sur « Vendre », clique sur « La reprendre ».</p></details><details><summary>Combien ça me coûte de vendre ?</summary><p>Rien : la mise en ligne est gratuite et tu reçois le prix affiché. Les frais Orleoo sont payés par l’acheteur.</p></details><details><summary>Pourquoi mon annonce a-t-elle été refusée ?</summary><p>Elle contenait un mot interdit (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo. Le message d’erreur indique la raison : corrige puis réessaie.</p></details><details><summary>Comment répondre à une offre ?</summary><p>Tu reçois un message à chaque offre. Dans Mon compte › Offres, accepte, refuse ou propose ton prix (une seule contre-offre). Sans réponse sous 48 h, l’offre expire.</p></details><details><summary>Comment proposer une réduction sur les lots ?</summary><p>Dans Mon compte › Profil et paramètres, rubrique « Réductions sur les lots » : choisis ta réduction dès 2, 3 et 5 articles. Ton prix affiché ne change pas.</p></details><details><summary>C’est quoi le badge « Vendeur fondateur » ?</summary><p>Les ${FOUNDING_MAX} premiers membres qui publient ${FOUNDING_NEED} annonces le gagnent, pour toujours, avec leur numéro. Il s’affiche sur leur profil et leurs annonces. Les places restantes sont indiquées sur la page « Vendre ».</p></details><details><summary>Comment vendre un livre rapidement ?</summary><p>Sur « Vendre », clique sur « Scanner le code-barres » et prends en photo le code-barres au dos du livre (ou tape les 13 chiffres de l’ISBN). Le titre, l’auteur et la couverture se remplissent tout seuls : il reste l’état, le format et le prix.</p></details><details><summary>Comment partager mon annonce sur Instagram ?</summary><p>Ouvre ton annonce et clique sur « Story Instagram » : une image aux couleurs d’Orleoo est créée avec ta photo et ton prix. Le lien de l’annonce est copié : dans ta story, ajoute le sticker « Lien » et colle-le.</p></details><details><summary>Où voir les statistiques de mes annonces ?</summary><p>Dans Mon compte, onglet « Mes annonces » : nombre de vues, de favoris et de personnes en attente.</p></details></section><section class="help-sec" id="aide-acheter"><h2>Acheter</h2><details><summary>Comment acheter ?</summary><p>${CONFIG.vitrine?"Les achats ouvrent bientôt. En attendant, clique sur « Me prévenir » sur une annonce : tu seras averti(e) dès que tu pourras l’acheter avec le paiement protégé.":"Ajoute l’article au panier, choisis la livraison (colis ou main propre) et paie par carte sur Orleoo. Ton argent reste bloqué jusqu’à ce que tu confirmes la réception."}</p></details><details><summary>Combien coûtent les frais ?</summary><p>L’acheteur paie 5 % du prix + 0,70 € par article, pour le paiement protégé. Exemple : article à 10 € + 1,20 € de frais. La livraison est en plus.</p></details><details><summary>Comment être prévenu quand un article qui me plaît est publié ?</summary><p>Fais ta recherche ou choisis tes filtres dans le catalogue, puis clique sur « Créer une alerte ». Tu reçois un e-mail dès qu’une annonce correspond, et tu retrouves les résultats dans « Mes alertes ».</p></details><details><summary>Puis-je négocier le prix ?</summary><p>Oui : sur l’annonce, clique sur « Faire une offre » (au moins la moitié du prix affiché). Le vendeur a 48 h pour accepter, refuser ou te faire une contre-offre. Une fois acceptée, tu as 48 h pour payer à ce prix (avant l’ouverture des achats : 48 h à partir de l’ouverture). Tout se suit dans Mon compte › Offres.</p></details><details><summary>C’est quoi la réduction sur les lots ?</summary><p>Certains vendeurs offrent une réduction si tu achètes plusieurs de leurs articles (par exemple −10 % dès 2 articles). Elle s’affiche sur leur profil et s’applique automatiquement dans ton panier.</p></details><details><summary>Comment retrouver mes coups de cœur ?</summary><p>Clique sur le cœur d’une annonce pour l’ajouter à tes favoris, puis ouvre « Mes favoris ».</p></details></section><section class="help-sec" id="aide-echanger"><h2>Échanger</h2><details><summary>Comment fonctionne l’échange ?</summary><p>Propose un de tes articles contre celui d’un autre membre, avec un complément d’argent si besoin. Une fois accepté, chacun envoie son colis avec suivi, puis vous avez 48 h pour vérifier.</p></details><details><summary>Qui peut échanger ?</summary><p>L’échange est débloqué après 3 achats terminés, pour éviter les faux comptes.</p></details></section><section class="help-sec" id="aide-securite"><h2>Paiement et sécurité</h2><details><summary>Puis-je payer en espèces, par virement ou PayPal ?</summary><p>Non : tout se paie sur Orleoo. Les paiements extérieurs ne sont pas protégés et sont interdits. Les messages qui contiennent un numéro, un e-mail ou un autre moyen de paiement sont bloqués.</p></details><details><summary>Comment marche la remise en main propre ?</summary><p>Tu paies sur Orleoo avant le rendez-vous. Sur place, tu vérifies l’article, puis tu donnes ton code de remise au vendeur : c’est lui qui débloque l’argent.</p></details><details><summary>Que faire si je ne reçois rien ?</summary><p>Ne confirme pas la réception et signale le problème depuis ta commande, dans Mon compte. L’argent reste bloqué et la modération tranche.</p></details><details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce ». C’est confidentiel. L’équipe reçoit aussi automatiquement les annonces qui semblent suspectes.</p></details></section><section class="help-sec" id="aide-compte"><h2>Compte</h2><details><summary>Comment inviter mes amis ?</summary><p>Dans Mon compte, « Invite tes amis » : copie ou partage ton lien. Chaque personne qui s’inscrit avec devient ton filleul.</p></details><details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. Les e-mails d’Orleoo viennent de orleoo.contact@gmail.com.</p></details><details><summary>Comment changer mon mot de passe ou supprimer mon compte ?</summary><p>Dans Mon compte, « Profil et paramètres », rubrique sécurité.</p></details><details><summary>Où sont enregistrées mes données ?</summary><p>Chez Supabase, dans l’Union européenne. Tous les détails sont dans la politique de confidentialité.</p></details></section>
     <p class="muted" id="helpNone" hidden>Aucune réponse trouvée. Pose ta question à Loo ou écris-nous.</p>
     <section class="help-sec"><h2>Nous contacter</h2><p>Pose ta question à Loo, ou écris-nous à <a class="link" href="mailto:orleoo.contact@gmail.com">orleoo.contact@gmail.com</a>.</p><button type="button" class="btn btn-primary" data-open-chat>Discuter avec Loo</button></section>`,
   "conditions":()=>LEGAL_PAGES["conditions"](),
