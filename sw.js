@@ -2,7 +2,7 @@
    - Pages : réseau d'abord, copie en mémoire si pas de connexion.
    - Polices, logos, icônes, bibliothèque : mémoire d'abord (rapide).
    - Base de données et paiements : jamais mis en mémoire. */
-const VERSION = "orleoo-v1";
+const VERSION = "orleoo-v2";
 const STATIC = ["./", "./index.html", "./manifest.webmanifest", "./vendor/supabase-js-2.117.3.js",
   "./fonts/dm-sans-latin-400-normal.woff2", "./fonts/dm-sans-latin-600-normal.woff2", "./fonts/dm-sans-latin-700-normal.woff2",
   "./logos/orleoo-logo.png", "./logos/orleoo-icone-192.png", "./logos/favicon-32.png"];
@@ -24,4 +24,24 @@ self.addEventListener("fetch", e => {
   if (/\/(fonts|logos|vendor)\//.test(url.pathname) || url.pathname.endsWith(".webmanifest")) {
     e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => { if (r.ok) { const copy = r.clone(); caches.open(VERSION).then(c => c.put(req, copy)); } return r; })));
   }
+});
+
+/* Notifications sur téléphone */
+self.addEventListener("push", e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { title: "Orleoo", body: e.data ? e.data.text() : "" }; }
+  const url = typeof d.url === "string" && d.url.startsWith("#/") ? d.url : "#/";
+  e.waitUntil(self.registration.showNotification(d.title || "Orleoo", {
+    body: d.body || "", icon: "./logos/orleoo-icone-192.png", badge: "./logos/favicon-32.png",
+    data: { url }, tag: url, renotify: true, lang: "fr"
+  }));
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || "#/";
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+    const w = list.find(c => c.url.startsWith(self.registration.scope));
+    if (w) { w.postMessage({ type: "open", url }); return w.focus(); }
+    return self.clients.openWindow(self.registration.scope + url);
+  }));
 });

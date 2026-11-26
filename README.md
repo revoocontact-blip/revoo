@@ -11,6 +11,7 @@ Site de seconde main pour les vêtements et les livres : https://revoocontact-bl
 | `sitemap.xml` | Référencement Google. |
 | `fonts/`, `logos/`, `vendor/` | Polices, logos et bibliothèques utilisées par le site (Supabase, lecteur de code-barres ZXing). |
 | `supabase/sql/` | Scripts de la base de données, avec leur ordre ([mode d'emploi](supabase/sql/README.md)). |
-| `supabase/functions/` | Fonction serveur du paiement Mangopay (pas encore active). |
+| `supabase/functions/` | Fonctions serveur : `orleoo-push` (notifications sur téléphone, active) et `orleoo-paiement` (Mangopay, pas encore active). |
 | `PAIEMENT-MANGOPAY.md` | Étapes pour brancher le paiement. |
+| `CAPTCHA.md` | Activer le captcha anti-robots (Cloudflare Turnstile). |
 | `kit-reseaux/` | Visuels et textes pour les réseaux sociaux. |

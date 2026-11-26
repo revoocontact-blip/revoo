@@ -43,6 +43,7 @@ Chaque script peut être relancé sans risque.
 | 31 | `supabase-vendeurs-fondateurs.sql` | Badge « Vendeur fondateur » : les 100 premiers membres avec 5 annonces |
 | 32 | `supabase-fidelite.sql` | Baisses de prix, « Mes tailles », blocage de membres, coup de pouce aux annonces, tableau de bord du lancement |
 | 33 | `supabase-lancement.sql` | Liens suivis (?src=), date d’ouverture et liste e-mail des visiteurs (e-mail le jour J) |
+| 34 | `supabase-notifications-push.sql` | Notifications sur téléphone : appareils abonnés et envoi (messages, ventes, baisses de prix, alertes) via la fonction `orleoo-push` |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 
