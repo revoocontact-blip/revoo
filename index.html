@@ -2583,6 +2583,7 @@ html[data-theme="dark"] .tb-ok{background:#2F3B33;color:#CFE3CB;border-color:#4E
 .welcome h2{margin:0 0 8px}.welcome p{margin:0 0 10px}
 .wl-dots{display:flex;gap:6px;justify-content:center;margin:12px 0 16px}.wl-dots span{width:8px;height:8px;border-radius:50%;background:var(--line)}.wl-dots span.on{background:#3F5A47;width:20px;border-radius:99px}
 .welcome .crop-foot{justify-content:center}
+.draft-note{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.draft-note .link{font-weight:700}
 </style>
 </head>
 <body>
@@ -2676,6 +2677,10 @@ html[data-theme="dark"] .tb-ok{background:#2F3B33;color:#CFE3CB;border-color:#4E
   <div class="wrap">
     <nav class="home-tabs" aria-label="Sur cette page"><button type="button" data-jump="hbSelection">La sélection</button><button type="button" data-jump="hbEchange">Le coin échange</button><button type="button" data-jump="hbLivres">Le coin lecture</button><button type="button" data-jump="hbExplorer">Explorer</button><button type="button" data-jump="hbBoutiques">Boutiques</button><button type="button" data-jump="hbVendre">Vendre</button></nav>
 
+    <section class="home-block" id="hbPicks" aria-labelledby="picksTitle" hidden>
+      <header class="hb-head"><div><h2 id="picksTitle">Les coups de cœur <em>de l’équipe</em></h2><p>Des pièces choisies à la main par l’équipe Orleoo.</p></div></header>
+      <div class="products" id="picksProducts"></div>
+    </section>
     <section class="home-block" id="hbSelection" aria-labelledby="latestTitle">
       <header class="hb-head"><div><h2 id="latestTitle">La sélection <em>du moment</em></h2><p>Renouvelée toutes les 5 minutes, gratuitement pour tous.</p></div><button type="button" class="viewall" data-selection="1">Tout voir →</button></header>
       <div class="sel-tabs" role="tablist" aria-label="Filtrer la sélection"><button type="button" role="tab" data-selcat="" aria-selected="true">Tout</button><button type="button" role="tab" data-selcat="mode" aria-selected="false">Vêtements</button><button type="button" role="tab" data-selcat="Livres" aria-selected="false">Livres</button></div>
@@ -3096,12 +3101,13 @@ function mapListing(r){
   return {id:r.id,name:r.title,description:r.description,category:r.category,brand:r.brand,size:r.size,condition:r.condition,style:r.style||"",
     price:Number(r.price),photos:r.photos||[],img:(r.photos||[])[0]||"",status:r.status,addedAt:Date.parse(r.created_at),
     seller:r.profiles?.name||"Membre",sellerId:r.seller_id,sellerSince:r.profiles?.created_at,sellerVacation:!!r.profiles?.vacation,sellerAvatar:r.profiles?.avatar_url||"",likes:0,seasons:ALL_SEASONS,
-    real:true,mine:!!state.user&&state.user.id===r.seller_id,boostedUntil:r.boosted_until?Date.parse(r.boosted_until):0,pinned:!!r.pinned};
+    real:true,mine:!!state.user&&state.user.id===r.seller_id,boostedUntil:r.boosted_until?Date.parse(r.boosted_until):0,pinned:!!r.pinned,staffPick:!!r.staff_pick};
 }
 async function loadListings(){
   if(!sb){state.loading=false;return}
-  let cols="id,seller_id,title,description,category,brand,size,condition,style,price,photos,status,created_at,boosted_until,pinned,";
+  let cols="id,seller_id,title,description,category,brand,size,condition,style,price,photos,status,created_at,boosted_until,pinned,staff_pick,";
   let {data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300);
+  if(error&&/staff_pick/.test(error.message||"")){cols=cols.replace("staff_pick,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
   if(error&&/pinned/.test(error.message||"")){cols=cols.replace("pinned,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
   if(error&&/boosted_until/.test(error.message||"")){cols=cols.replace("boosted_until,","");({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation,avatar_url)").order("created_at",{ascending:false}).limit(300))}
   if(error&&/avatar_url/.test(error.message||""))({data,error}=await sb.from("listings").select(cols+"profiles(name,created_at,vacation)").order("created_at",{ascending:false}).limit(300));
@@ -4587,6 +4593,7 @@ function renderHome(){
   const season=currentSeason(), ui=SEASON_UI[season], av=available();
   const byNew=[...av].sort((a,b)=>b.addedAt-a.addedAt), byLikes=(a,b)=>likes(b)-likes(a)||b.addedAt-a.addedAt;
   const pool=selCat==="Livres"?av.filter(isBook):selCat==="mode"?av.filter(p=>!isBook(p)):av;
+  {const picks=av.filter(p=>p.staffPick).slice(0,8);$("hbPicks").hidden=!picks.length;if(picks.length)grid($("picksProducts"),picks,"")}
   const latest=featured(pool).slice(0,8), shown=new Set(latest.map(p=>p.id));
   document.querySelectorAll("[data-selcat]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.selcat===selCat)));
   const books=byNew.filter(isBook).slice(0,4);
@@ -4752,7 +4759,7 @@ function renderProduct(id){
   const photos=(p.photos&&p.photos.length?p.photos:[p.img]);
   const similar=available().filter(x=>x.id!==p.id&&(x.category===p.category||x.style===p.style)).slice(0,5);
   let actions;
-  if(state.user&&state.isAdmin) actions=p.demo?`<p class="note small">Article de démonstration : aucune action de modération possible.</p>`:`<div class="mod-actions"><span class="mod-badge small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><b>Modération</b><div class="buy-actions" style="margin-top:8px">${p.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-listing="${esc(p.id)}">Remettre en ligne</button>`:`<button type="button" class="btn btn-danger" data-mod="remove" data-listing="${esc(p.id)}">Retirer l’annonce</button>`}<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Profil du vendeur</a><a class="btn btn-outline" href="#/compte/moderation">Retour à la console</a></div></div>`;
+  if(state.user&&state.isAdmin) actions=p.demo?`<p class="note small">Article de démonstration : aucune action de modération possible.</p>`:`<div class="mod-actions"><span class="mod-badge small"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><b>Modération</b><div class="buy-actions" style="margin-top:8px">${p.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-listing="${esc(p.id)}">Remettre en ligne</button>`:`<button type="button" class="btn btn-danger" data-mod="remove" data-listing="${esc(p.id)}">Retirer l’annonce</button>`}${p.status==="active"?`<button type="button" class="btn btn-outline" data-pick="${esc(p.id)}" data-on="${p.staffPick?0:1}">${p.staffPick?"Retirer des coups de cœur":"♥ Coup de cœur de l’équipe"}</button>`:""}<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Profil du vendeur</a><a class="btn btn-outline" href="#/compte/moderation">Retour à la console</a></div></div>`;
   else if(p.mine&&p.status==="removed") actions=`<p><span class="sold-badge">Retirée par la modération</span></p><p class="muted">Cette annonce n’est plus visible. Tu peux la supprimer.</p><div class="buy-actions"><button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(p.mine) actions=`${sold?'<p><span class="sold-badge">Vendue</span></p>':""}<div class="buy-actions">${lockedBy(p.id)?"":`<a class="btn btn-primary" href="#/vendre/${encodeURIComponent(p.id)}">Modifier l’annonce</a>`}<button type="button" class="btn btn-danger" data-delete="${esc(p.id)}">Supprimer</button></div>`;
   else if(sold) actions=`<p><span class="sold-badge">Vendu</span></p><p class="muted">Cet article n’est plus proposé à l’achat.</p>`;
@@ -5081,7 +5088,7 @@ function renderSell(editId){
   draftPhotos=l?[...l.photos]:[];
   const opt=(arr,v,ph)=>`<option value="">${ph}</option>`+arr.map(a=>`<option ${a===v?"selected":""}>${a}</option>`).join("");
   el.innerHTML=`
-  <p class="note">Ton annonce sera <b>visible par tous les visiteurs</b> d’Orleoo. Ton identifiant apparaîtra comme vendeur.</p>
+  ${draftBanner(!!l)}<p class="note">Ton annonce sera <b>visible par tous les visiteurs</b> d’Orleoo. Ton identifiant apparaîtra comme vendeur.</p>
   <form class="panel" id="sellForm" novalidate>
     <div class="field">
       <span class="label" id="photoLabel">Photos <span class="hint">(1 à ${myPerk("photos")}, la première sert de couverture)</span></span>
@@ -5129,9 +5136,10 @@ function renderSell(editId){
       if(!f.type.startsWith("image/")){$("photoErr").textContent=`« ${f.name} » n’est pas une image.`;continue}
       try{draftPhotos.push(await compress(f))}catch(err){$("photoErr").textContent=`Impossible de lire « ${f.name} ».`}
     }
-    renderPhotos();
+    renderPhotos();saveDraft();
   });
   $("sellForm").addEventListener("submit",e=>{e.preventDefault();submitListing(l)});
+  wireDraft(!!l);
 }
 /* Suggestion de prix : d'après les annonces similaires en ligne */
 function priceSuggestion(cat,brand,size,cond){
@@ -5298,9 +5306,39 @@ function showWelcome(){
   document.addEventListener("keydown",k);draw();
 }
 
+/* Coups de cœur de l'équipe */
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-pick]");if(!b)return;
+  const on=b.dataset.on==="1";if(await teamRpc("set_staff_pick",{p_listing:b.dataset.pick,p_on:on},on?"Ajouté aux coups de cœur de l’accueil.":"Retiré des coups de cœur.")){await loadListings();renderView()}});
+/* Brouillon d'annonce : gardé sur l'appareil tant que l'annonce n'est pas publiée */
+const DRAFT_KEY=()=>"revoo.draft."+(state.user?.id||"");
+const DRAFT_FIELDS=["tTitle","tDesc","tCat","tBrand","tSize","tCond","tStyle","tPrice"];
+function saveDraft(){if(!state.user||!$("sellForm")||$("sellForm").dataset.edit==="1"||$("sellForm").dataset.wired!=="1")return;
+  const d={at:Date.now(),f:{}};DRAFT_FIELDS.forEach(id=>{const el=$(id);if(el)d.f[id]=el.value});
+  if(!Object.values(d.f).some(v=>String(v||"").trim())&&!draftPhotos.length){clearDraft();return}
+  try{localStorage.setItem(DRAFT_KEY(),JSON.stringify({...d,photos:draftPhotos}))}catch(_){try{localStorage.setItem(DRAFT_KEY(),JSON.stringify(d))}catch(__){}}}
+function clearDraft(){try{localStorage.removeItem(DRAFT_KEY())}catch(_){}}
+function readDraft(){try{return JSON.parse(localStorage.getItem(DRAFT_KEY())||"null")}catch(_){return null}}
+function restoreDraft(d){DRAFT_FIELDS.forEach(id=>{if(id==="tSize")return;const el=$(id);if(el&&d.f[id]!=null)el.value=d.f[id]});
+  $("tCat").dispatchEvent(new Event("change"));if(d.f.tSize!=null)$("tSize").value=d.f.tSize;
+  if(Array.isArray(d.photos)){draftPhotos=d.photos.slice(0,myPerk("photos"));renderPhotos()}
+  $("tPrice").dispatchEvent(new Event("input"));showPriceSug();}
+function draftBanner(editing){
+  if(editing)return "";const d=readDraft();if(!d)return "";
+  return `<div class="note draft-note" id="draftNote"><b>Tu as une annonce en cours</b> (commencée ${new Date(d.at).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})}). <button type="button" class="link" id="draftLoad">La reprendre</button> · <button type="button" class="link" id="draftDrop">Repartir de zéro</button></div>`;
+}
+function wireDraft(editing){
+  const f=$("sellForm");if(!f)return;if(editing){f.dataset.edit="1";return}
+  f.dataset.wired="1";
+  let t;const later=()=>{clearTimeout(t);t=setTimeout(saveDraft,400)};
+  f.addEventListener("input",later);f.addEventListener("change",later);
+  const L=$("draftLoad"),D=$("draftDrop");
+  if(L)L.addEventListener("click",()=>{const d=readDraft();if(d)restoreDraft(d);$("draftNote").remove();toast("Brouillon repris.")});
+  if(D)D.addEventListener("click",()=>{clearDraft();$("draftNote").remove()});
+}
+
 function renderPhotos(){
   $("photoList").innerHTML=draftPhotos.map((ph,i)=>`<figure><img src="${esc(ph)}" alt="Photo ${i+1}"><button type="button" data-delphoto="${i}" aria-label="Supprimer la photo ${i+1}">×</button>${i===0?"<figcaption>Couverture</figcaption>":""}</figure>`).join("");
-  $("photoList").querySelectorAll("[data-delphoto]").forEach(b=>b.addEventListener("click",()=>{draftPhotos.splice(+b.dataset.delphoto,1);renderPhotos()}));
+  $("photoList").querySelectorAll("[data-delphoto]").forEach(b=>b.addEventListener("click",()=>{draftPhotos.splice(+b.dataset.delphoto,1);renderPhotos();saveDraft()}));
 }
 function compress(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(r.error);r.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error("image"));img.onload=()=>{const max=1200,s=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.8))};img.src=r.result};r.readAsDataURL(file)})}
 const dataUrlToBlob=d=>fetch(d).then(r=>r.blob());
@@ -5334,11 +5372,15 @@ async function submitListing(existing){
   sellPreviewOk=false;
   const btn=$("sellSubmit"),label=btn.textContent;btn.disabled=true;btn.textContent="Publication en cours…";$("sellErr").textContent="";
   try{
+    let hash=null;try{if(draftPhotos[0]&&draftPhotos[0].startsWith("data:")&&crypto.subtle){const buf=await (await dataUrlToBlob(draftPhotos[0])).arrayBuffer();hash=[...new Uint8Array(await crypto.subtle.digest("SHA-256",buf))].map(b=>b.toString(16).padStart(2,"0")).join("")}}catch(_){}
     const photos=await uploadPhotos(draftPhotos);
     const row={title:v("tTitle"),description:v("tDesc"),category:v("tCat"),brand:v("tBrand"),size:v("tSize"),condition:v("tCond"),style:v("tStyle")||null,price:Math.round(price*100)/100,photos};
+    if(hash)row.photo_hash=hash;
     const q=existing?sb.from("listings").update(row).eq("id",existing.id):sb.from("listings").insert({...row,seller_id:state.user.id});
-    const {error}=await q;
+    let {error}=await q;
+    if(error&&/photo_hash/.test(error.message||"")){delete row.photo_hash;({error}=await (existing?sb.from("listings").update(row).eq("id",existing.id):sb.from("listings").insert({...row,seller_id:state.user.id})))}
     if(error){await removePhotos(photos.filter(u=>!draftPhotos.includes(u)));throw error}
+    if(!existing){if($("sellForm"))$("sellForm").dataset.wired="0";clearDraft()}
     if(existing)await removePhotos(existing.photos.filter(u=>!photos.includes(u)));
     await loadListings();
     toast(existing?"Annonce modifiée.":"Annonce publiée ! Elle est visible par tous.");
