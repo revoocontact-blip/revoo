@@ -32,11 +32,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <script>try{var t=localStorage.getItem("revoo.theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
-<link rel="preload" href="fonts/plus-jakarta-sans-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32.png?v=15">
-<link rel="icon" type="image/png" sizes="64x64" href="logos/favicon-64.png?v=15">
-<link rel="apple-touch-icon" href="logos/apple-touch-icon.png?v=15">
+<link rel="preload" href="fonts/dm-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://htisbuqxnqdahtedgiiz.supabase.co" crossorigin>
+<link rel="preload" href="fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32.png?v=17">
+<link rel="icon" type="image/png" sizes="64x64" href="logos/favicon-64.png?v=17">
+<link rel="apple-touch-icon" href="logos/apple-touch-icon.png?v=17">
 <style>
 /* =========================================================
    ORLEOO — identité bleue
@@ -182,7 +183,7 @@ fieldset.filter-group:first-of-type{border-top-width:0}
 .image-frame{background:var(--pale);position:relative;overflow:hidden}
 .image-frame img{display:block;width:100%;height:100%;object-fit:cover}
 .image-frame.image-failed img{visibility:hidden}
-.image-frame.image-failed::before{content:"";position:absolute;inset:0;background:url("logos/orleoo-symbole-nuit.png?v=15") center/38% no-repeat;opacity:.25}
+.image-frame.image-failed::before{content:"";position:absolute;inset:0;background:url("logos/orleoo-symbole-nuit.png?v=17") center/38% no-repeat;opacity:.25}
 .image-frame.image-failed::after{content:"Photo indisponible";position:absolute;inset:auto 8px 8px 8px;padding:6px 8px;background:var(--glass);color:var(--navy);border-radius:8px;font-size:11px;font-weight:700;text-align:center}
 
 /* ---------- Tendances, vendeurs, communauté ---------- */
@@ -2568,7 +2569,7 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
 <a href="#main" class="skip" id="skipLink">Aller au contenu</a>
 <div class="maint" id="maintScreen" role="dialog" aria-modal="true" aria-labelledby="maintTitle" hidden>
   <div class="maint-card">
-    <img class="maint-logo" src="logos/orleoo-logo.png?v=16" alt="Orleoo" data-logo="bleu" width="480" height="122">
+    <img class="maint-logo" src="logos/orleoo-logo.png?v=17" alt="Orleoo" data-logo="bleu" width="480" height="122">
     <div class="maint-img" id="maintImg" hidden></div>
     <h1 id="maintTitle">On fait une petite pause</h1>
     <p id="maintMsg">Orleoo est en maintenance pour s’améliorer. Merci de ta patience !</p>
@@ -2582,7 +2583,7 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
 
 <header class="top">
   <div class="wrap head">
-    <a href="#/" class="logo" aria-label="Orleoo, retour à l’accueil"><img src="logos/orleoo-logo.png?v=16" data-logo="bleu" alt="Orleoo" width="480" height="122"></a>
+    <a href="#/" class="logo" aria-label="Orleoo, retour à l’accueil"><img src="logos/orleoo-logo.png?v=17" data-logo="bleu" alt="Orleoo" width="480" height="122"></a>
     <span class="mod-pill mod-only" id="modPill" aria-hidden="true">Console de modération</span>
     <form class="search" id="topSearch" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -2852,7 +2853,7 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <img src="logos/orleoo-logo.png?v=16" data-logo="bleu" alt="Orleoo" width="480" height="122" loading="lazy">
+        <img src="logos/orleoo-logo.png?v=17" data-logo="bleu" alt="Orleoo" width="480" height="122" loading="lazy">
         <p>Tes vêtements ont de l’avenir</p>
       </div>
       <nav aria-label="Orleoo"><h2>Orleoo</h2><ul><li><a href="#/a-propos">À propos d’Orleoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
@@ -2867,7 +2868,7 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
 <!-- ================= LOO ================= -->
 <section class="chat" id="chat" role="dialog" aria-modal="false" aria-labelledby="chatTitle">
   <div class="chat-head">
-    <span class="reboot-bubble"><img class="bub-l" src="logos/orleoo-bulle-jaune.png?v=15" alt="" width="36" height="36"><img class="bub-d" src="logos/orleoo-bulle-nuit.png?v=15" alt="" width="36" height="36"></span>
+    <span class="reboot-bubble"><img class="bub-l" src="logos/orleoo-bulle-jaune.png?v=17" alt="" width="36" height="36"><img class="bub-d" src="logos/orleoo-bulle-nuit.png?v=17" alt="" width="36" height="36"></span>
     <div><b id="chatTitle">Loo</b><small>Assistant Orleoo · réponses automatiques</small></div>
     <button type="button" id="closeChat" aria-label="Fermer Loo">×</button>
   </div>
@@ -2888,7 +2889,7 @@ body.vitrine #cartBtn,body.vitrine .tabbar [data-tab="panier"]{display:none!impo
   </form>
 </section>
 <button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat" aria-label="Loo, l’assistant Orleoo">
-  <span class="reboot-bubble"><img class="bub-l" src="logos/orleoo-bulle-jaune.png?v=15" alt="" width="36" height="36"><img class="bub-d" src="logos/orleoo-bulle-nuit.png?v=15" alt="" width="36" height="36"></span><span class="reboot-label">Loo</span>
+  <span class="reboot-bubble"><img class="bub-l" src="logos/orleoo-bulle-jaune.png?v=17" alt="" width="36" height="36"><img class="bub-d" src="logos/orleoo-bulle-nuit.png?v=17" alt="" width="36" height="36"></span><span class="reboot-label">Loo</span>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -2938,7 +2939,7 @@ const SELLERS = [
   {name:"Alex",emoji:"🪻",since:"Vendeur de démonstration"}
 ];
 const DAY = 86400000;
-const U = id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=600&q=80`;
+const U = id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=480&q=75`;
 
 /* Articles de démonstration (aucun n'est réellement en vente) */
 const DEMO_PRODUCTS = [
