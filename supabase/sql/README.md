@@ -40,11 +40,12 @@ Chaque script peut être relancé sans risque.
 | 28 | `supabase-hebdo.sql` | E-mail « Nouveautés de la semaine » (uniquement pour les membres qui l'acceptent) |
 | 29 | `supabase-offres-lots.sql` | « Faire une offre » (offre, contre-offre, 48 h) et réductions sur les lots |
 | 30 | `supabase-verrou-vitrine.sql` | Mode vitrine : le serveur refuse commandes, paiements et échanges tant que les achats ne sont pas ouverts |
-| 31 | `supabase-vendeurs-fondateurs.sql` | Badge « Vendeur fondateur » : les 100 premiers membres avec 5 annonces |
+| 31 | `supabase-vendeurs-fondateurs.sql` | Badge « Vendeur fondateur » (retiré depuis : voir le n° 36) |
 | 32 | `supabase-fidelite.sql` | Baisses de prix, « Mes tailles », blocage de membres, coup de pouce aux annonces, tableau de bord du lancement |
 | 33 | `supabase-lancement.sql` | Liens suivis (?src=), date d’ouverture et liste e-mail des visiteurs (e-mail le jour J) |
 | 34 | `supabase-notifications-push.sql` | Notifications sur téléphone : appareils abonnés et envoi (messages, ventes, baisses de prix, alertes) via la fonction `orleoo-push` |
 | 35 | `supabase-durcissement.sql` | Durcissement avant lancement : droits des fonctions, chemins de recherche, index (à lancer en dernier) |
+| 36 | `supabase-ajustements.sql` | Négociation libre, 10 offres/jour, paliers de lot réglables, badge fondateur retiré, baisse de prix ≥ 1 €, rappel la veille de l’ouverture, notifications en pause, tailles longues |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 
