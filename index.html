@@ -2922,6 +2922,39 @@ html[data-design="2"][data-theme="dark"] .auth-mark{background:#31363C;color:#E0
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .auth-mark{background:#31363C;color:#E07A55}}
 body.guest #view-compte .page-head .crumbs{display:none}
 #accountTitle:empty{display:none}
+
+/* ===== CASES À COCHER DE L'INSCRIPTION ===== */
+.consents{display:grid;gap:10px;margin:6px 0 16px}
+.consent{position:relative;display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line,#E6DCCF);border-radius:12px;background:var(--surface,#fff);cursor:pointer;font-size:.92rem;line-height:1.45;text-align:left;transition:border-color .15s,background .15s}
+.consent:hover{border-color:#B04E2E}
+.consent input{position:absolute;opacity:0;width:22px;height:22px;margin:0;left:14px;top:12px;cursor:pointer}
+.consent-box{flex:0 0 22px;height:22px;border:2px solid #9A8E82;border-radius:6px;background:#fff;display:grid;place-items:center;transition:background .15s,border-color .15s,transform .15s}
+.consent-box::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) scale(0);margin-top:-3px;transition:transform .15s}
+.consent input:checked+.consent-box{background:#B04E2E;border-color:#B04E2E}
+.consent input:checked+.consent-box::after{transform:rotate(45deg) scale(1)}
+.consent input:focus-visible+.consent-box{outline:3px solid #EBA488;outline-offset:2px}
+.consent:has(input:checked){border-color:#B04E2E;background:#FDF6F1}
+.consent-req{font-style:normal;color:#6B6259;font-size:.82rem}
+.consent.invalid{border-color:#B3261E;background:#FDF1F0}
+.consent.invalid .consent-box{border-color:#B3261E}
+#sCguErr:empty{display:none}
+#sCguErr{margin:-4px 0 0 4px}
+html[data-design="2"][data-theme="dark"] .consent{background:#2F3439;border-color:#49515A}
+html[data-design="2"][data-theme="dark"] .consent:has(input:checked){background:#3B302B;border-color:#E07A55}
+html[data-design="2"][data-theme="dark"] .consent-box{background:#272B30;border-color:#8A929B}
+html[data-design="2"][data-theme="dark"] .consent input:checked+.consent-box{background:#E07A55;border-color:#E07A55}
+html[data-design="2"][data-theme="dark"] .consent input:checked+.consent-box::after{border-color:#1F1A17}
+html[data-design="2"][data-theme="dark"] .consent-req{color:#B9B2AA}
+html[data-design="2"][data-theme="dark"] .consent.invalid{background:#3A2A2A;border-color:#F2867D}
+@media (prefers-color-scheme:dark){
+html[data-design="2"]:not([data-theme="light"]) .consent{background:#2F3439;border-color:#49515A}
+html[data-design="2"]:not([data-theme="light"]) .consent:has(input:checked){background:#3B302B;border-color:#E07A55}
+html[data-design="2"]:not([data-theme="light"]) .consent-box{background:#272B30;border-color:#8A929B}
+html[data-design="2"]:not([data-theme="light"]) .consent input:checked+.consent-box{background:#E07A55;border-color:#E07A55}
+html[data-design="2"]:not([data-theme="light"]) .consent input:checked+.consent-box::after{border-color:#1F1A17}
+html[data-design="2"]:not([data-theme="light"]) .consent-req{color:#B9B2AA}
+html[data-design="2"]:not([data-theme="light"]) .consent.invalid{background:#3A2A2A;border-color:#F2867D}
+}
 </style>
 </head>
 <body>
@@ -5788,7 +5821,11 @@ function renderAccount(tab){
       </div>
       <div class="field"><label for="sEmail">Adresse e-mail</label><input class="input" id="sEmail" type="email" autocomplete="email" required><span class="error" id="sEmailErr"></span></div>
       ${pwdField("sPwd","Mot de passe","new-password")}
-      <p class="muted small">En créant ton compte, tu acceptes les <a class="link" href="#/conditions" target="_blank" rel="noopener">conditions d’utilisation</a> et la <a class="link" href="#/confidentialite" target="_blank" rel="noopener">politique de confidentialité</a>.</p>
+      <div class="consents">
+        <label class="consent"><input type="checkbox" id="sCgu" required aria-describedby="sCguErr"><span class="consent-box" aria-hidden="true"></span><span>J’accepte les <a class="link" href="#/conditions" target="_blank" rel="noopener">conditions d’utilisation</a> et la <a class="link" href="#/confidentialite" target="_blank" rel="noopener">politique de confidentialité</a> <em class="consent-req">(obligatoire)</em></span></label>
+        <span class="error" id="sCguErr"></span>
+        <label class="consent"><input type="checkbox" id="sNews"><span class="consent-box" aria-hidden="true"></span><span>Je veux recevoir par e-mail les nouveautés et les actualités d’Orleoo <em class="consent-req">(facultatif, désactivable à tout moment dans Mon compte)</em></span></label>
+      </div>
       <button class="btn btn-primary" type="submit">Créer mon compte</button>
       <p class="error" id="signupErr" role="alert"></p><p class="note small" id="signupOk" hidden></p>
     </form>`}</div>`;
@@ -6792,16 +6829,17 @@ document.addEventListener("submit",async e=>{
     if(error){toast(frenchError(error));return}
     toast("Merci pour ton avis !");await loadListings();renderView();return}
   if(f.id==="signupForm"){e.preventDefault();
-    const name=$("sName").value.trim(),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();
+    const consentError=ok=>{const box=$("sCgu").closest(".consent");box.classList.toggle("invalid",!ok);$("sCgu").setAttribute("aria-invalid",ok?"false":"true");$("sCguErr").textContent=ok?"":"Coche cette case pour créer ton compte.";if(!ok)$("sCgu").focus();return ok?1:0};
+    const name=$("sName").value.trim(),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();const cgu=$("sCgu").checked,news=$("sNews").checked;
     let nameMsg=!USERNAME_RE.test(name)?"3 à 20 caractères : lettres sans accent, chiffres, point, tiret ou _ (pas d’espace).":"";
     if(!nameMsg){try{const r=await sb.rpc("username_available",{p_name:name});if(!r.error&&r.data===false)nameMsg="Cet identifiant est déjà pris. Essaie une variante (ex. "+name+"_75).";}catch(x){}}
-    const ok=fieldError("sName","sNameErr",nameMsg) & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"");
+    const ok=fieldError("sName","sNameErr",nameMsg) & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"") & consentError(cgu);
     if(!ok)return;
     if($("sWebsite").value){const okEl=$("signupOk");okEl.hidden=false;okEl.textContent="Compte créé ! Ouvre l’e-mail de confirmation, puis connecte-toi.";return}   // robot : on ne crée rien
     if(!window.__noTimeTrap&&Date.now()-(+f.dataset.t||0)<2500){$("signupErr").textContent="Un instant… Vérifie tes informations puis réessaie.";return}
     busy(f,true,"Création…");$("signupErr").textContent="";
     let cap;try{cap=await captchaToken()}catch(_){busy(f,false);$("signupErr").textContent=CAPTCHA_ERR;return}
-    const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city},emailRedirectTo:redirectUrl(),captchaToken:cap}});
+    const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city,cgu:true,news},emailRedirectTo:redirectUrl(),captchaToken:cap}});
     busy(f,false);
     if(error){$("signupErr").textContent=frenchError(error);return}
     if(data.session){toast(`Bienvenue ${name} !`);location.hash=state.returnTo||"#/";setTimeout(showWelcome,400)}
@@ -6951,6 +6989,7 @@ document.addEventListener("click",e=>{if(e.target.closest("#avatarRemove")){if(c
 /* Paramètres du profil */
 document.addEventListener("change",async e=>{
   const t=e.target;
+  if(t.id==="sCgu"&&t.checked){t.closest(".consent").classList.remove("invalid");t.setAttribute("aria-invalid","false");$("sCguErr").textContent="";return}
   if(t.name==="themeMode"){setTheme(t.value);toast(t.value==="auto"?"Thème automatique (selon ton appareil).":t.value==="dark"?"Mode sombre activé.":"Mode clair activé.");return}
   if(t.id==="digestSwitch"){const val=t.checked;t.disabled=true;const {error}=await sb.from("profiles").update({notify_digest:val}).eq("id",state.user.id);t.disabled=false;
     if(error){t.checked=!val;toast(frenchError(error));return}state.user.digest=val;toast(val?"Tu recevras les nouveautés chaque lundi.":"E-mail hebdomadaire désactivé.");return}
