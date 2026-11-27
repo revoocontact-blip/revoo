@@ -2960,6 +2960,22 @@ html[data-design="2"]:not([data-theme="light"]) .consent.invalid{background:#3A2
 html[data-design="2"] .auth-card .tabs[role="tablist"]{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:4px;overflow:visible;width:100%!important;max-width:none!important}
 html[data-design="2"] .auth-card .tabs[role="tablist"] [role=tab]{justify-content:center;text-align:center;width:auto!important;min-width:0!important;flex:none!important;white-space:nowrap}
 .auth-card #sName:focus::placeholder{color:transparent}
+
+/* fenêtre « Inscris-toi pour… » */
+.gate{max-width:420px;text-align:center;padding:30px 26px 24px;position:relative}
+.gate h2,.gate-page h1{font-size:1.35rem;margin:12px 0 8px;line-height:1.25}
+.gate .muted,.gate-page .muted{margin:0 0 20px}
+.gate-ic{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:#F8E9DF;color:#B04E2E}
+.gate-ic .icon{width:28px;height:28px}
+.gate-actions{display:grid;gap:10px}
+.gate-actions .btn{width:100%;justify-content:center}
+.gate-x{position:absolute;top:10px;right:12px;width:36px;height:36px;border:0;border-radius:50%;background:transparent;font-size:1.5rem;line-height:1;color:inherit;cursor:pointer}
+.gate-x:hover{background:rgba(0,0,0,.06)}
+.gate-page{max-width:460px;margin:40px auto!important;text-align:center;padding:34px 28px}
+#pageContent:has(.gate-page){max-width:none!important;width:100%;display:block}
+html[data-design="2"][data-theme="dark"] .gate-ic{background:#3B302B;color:#E07A55}
+html[data-design="2"][data-theme="dark"] .gate-x:hover{background:rgba(255,255,255,.08)}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .gate-ic{background:#3B302B;color:#E07A55}html[data-design="2"]:not([data-theme="light"]) .gate-x:hover{background:rgba(255,255,255,.08)}}
 </style>
 </head>
 <body>
@@ -3460,7 +3476,7 @@ const featured=list=>[...rotate(list.filter(isBoosted)),...rotate(list.filter(p=
    Doit rester identique à impact_kg_for() dans supabase-impact-visibilite.sql */
 const impact={ok:false,co2:0,items:0,shown:0,channel:null};
 function findProduct(id){return allProducts().find(p=>p.id===id)}
-const isFav = id => state.favorites.includes(id);
+const isFav = id => !!state.user && state.favorites.includes(id);
 const inCart = id => state.cart.includes(id);
 const likes = p => (p.likes||0) + (isFav(p.id)?1:0);
 function currentSeason(){const m=new Date().getMonth();return m>=2&&m<=4?"printemps":m>=5&&m<=7?"été":m>=8&&m<=10?"automne":"hiver"}
@@ -6363,6 +6379,44 @@ function installHtml(){
 document.addEventListener("click",async e=>{if(!e.target.closest("[data-install]")||!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch(_){}installEvt=null;if(location.hash.startsWith("#/compte"))renderView()});
 
 /* Guide de bienvenue (une seule fois, après l'inscription) */
+
+/* ===== Actions réservées aux membres : on propose d'abord de s'inscrire ===== */
+const GATED_ROUTES={vendre:"mettre tes articles en vente",favoris:"retrouver tes favoris",panier:"remplir ton panier et acheter",messages:"écrire aux membres et lire tes messages",paiement:"acheter cet article"};
+const GATED_ACTIONS=[
+  ["[data-fav]","garder tes coups de cœur dans tes favoris"],
+  ["[data-cart]","ajouter des articles à ton panier"],
+  ["[data-contact],#contactSeller","écrire au vendeur"],
+  ["[data-notify]","être prévenu(e) à l’ouverture des achats"],
+  ["#reportBtn","signaler une annonce"],
+  ["#saveAlert","créer une alerte et être prévenu(e) des nouvelles annonces"],
+  ["[data-subscribe],[data-sub],[data-boost],[data-pin]","choisir une formule"],
+  ["[data-offerform] button,[data-offer]","faire une offre au vendeur"]
+];
+const GATE_ICON='<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20a7 7 0 0 1 14 0M19 8v6M16 11h6"/></svg>';
+function gateBody(why,h){return `<span class="gate-ic">${GATE_ICON}</span><${h} id="gateT">Inscris-toi pour ${why}</${h}>
+  <p class="muted">Un compte Orleoo est gratuit et se crée en une minute. Tu reviendras ensuite exactement ici.</p>
+  <div class="gate-actions"><a class="btn btn-primary" href="#/compte" data-gate-go>Créer mon compte</a><a class="btn btn-outline" href="#/compte/login" data-gate-go>J’ai déjà un compte</a></div>`}
+function gatePage(why){return `<div class="gate-page panel">${gateBody(why,"h1")}</div>`}
+function askSignup(why){
+  $("gateBox")?.remove();
+  const last=document.activeElement;
+  document.body.insertAdjacentHTML("beforeend",`<div class="crop-backdrop gate-backdrop" id="gateBox" role="dialog" aria-modal="true" aria-labelledby="gateT"><div class="crop gate"><button type="button" class="gate-x" aria-label="Fermer" data-gate-close>×</button>${gateBody(why,"h2")}</div></div>`);
+  const box=$("gateBox");
+  const close=()=>{box.remove();document.removeEventListener("keydown",k);last?.focus?.()};
+  const k=e=>{if(e.key==="Escape")close()};
+  document.addEventListener("keydown",k);
+  box.addEventListener("click",e=>{if(e.target===box||e.target.closest("[data-gate-close]"))close();else if(e.target.closest("[data-gate-go]")){state.returnTo=location.hash||"#/";box.remove();document.removeEventListener("keydown",k)}});
+  box.querySelector("[data-gate-go]").focus();
+}
+document.addEventListener("click",e=>{
+  if(state.user||e.target.closest("#gateBox"))return;
+  let why=null;
+  for(const [sel,w] of GATED_ACTIONS){if(e.target.closest(sel)){why=w;break}}
+  if(!why){const a=e.target.closest("a[href]");const m=a&&/^#\/(vendre|favoris|panier|messages|paiement)(\/|$)/.exec(a.getAttribute("href"));if(m)why=GATED_ROUTES[m[1]]}
+  if(!why)return;
+  e.preventDefault();e.stopImmediatePropagation();askSignup(why);
+},true);
+document.addEventListener("submit",e=>{if(state.user||!e.target.closest("[data-offerform]"))return;e.preventDefault();e.stopImmediatePropagation();askSignup("faire une offre au vendeur")},true);
 function showWelcome(){
   try{if(localStorage.getItem("revoo.welcome"))return;localStorage.setItem("revoo.welcome","1")}catch(_){}
   const I=d=>`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -6737,7 +6791,8 @@ function renderView(){
   const mp=$("modPill");if(mp)mp.textContent=state.role==="fondateur"?"Espace fondateur":"Console de modération";
   if(isMod&&!["compte","article","vendeur"].includes(name)){if(["vendre","panier","paiement","favoris","messages"].includes(name))toast("Ce compte est réservé à la modération.");location.replace("#/compte/moderation");return}
   if(isMod&&name==="compte"&&arg!=="moderation"&&!(arg||"").startsWith("mod-")){location.replace("#/compte/moderation");return}
-  if(name==="catalogue"){view="catalogue";renderCatalogue()}
+  if(!state.user&&GATED_ROUTES[name]){view="page";$("pageContent").innerHTML=gatePage(GATED_ROUTES[name])}
+  else if(name==="catalogue"){view="catalogue";renderCatalogue()}
   else if(name==="univers"&&UNIVERS[arg]){view="univers";renderUnivers(arg)}
   else if(name==="article"){view="product";renderProduct(arg)}
   else if(name==="favoris"){view="favoris";renderFavorites()}
