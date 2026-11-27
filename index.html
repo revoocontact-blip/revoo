@@ -3138,6 +3138,91 @@ html[data-design="2"]:not([data-theme="light"]) .hr-foot{border-color:#49515A}
 .hr-rel{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;margin-top:12px;font-size:.88rem}
 .hr-rel span{font-weight:700;color:var(--muted,#5E636B)}
 .hr-rel .link{font-size:.88rem;text-align:left}
+/* ===== FILTRES REVUS ===== */
+html[data-design="2"] .filters{padding:0!important;border-radius:20px!important;border:1px solid var(--line,#E6DCCF)!important;background:var(--surface,#fff)!important;top:150px;max-height:calc(100vh - 170px);overflow:auto;scrollbar-width:thin}
+html[data-design="2"] .filters-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:16px 18px 12px;background:inherit;border-bottom:1px solid var(--line,#E6DCCF)}
+html[data-design="2"] .filters-head h2{margin:0;font-size:1.05rem;display:flex;align-items:center;gap:8px;flex:1}
+.f-nb:empty{display:none}
+.f-nb{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#B04E2E;color:#fff;font-size:.75rem;font-weight:800}
+.f-clear{border:0;background:none;padding:6px 4px;font:inherit;font-size:.88rem;font-weight:700;color:#963F22;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.f-clear:disabled{color:var(--muted,#8A8F96);text-decoration:none;cursor:default;opacity:.7}
+html[data-design="2"] #filterForm{padding:6px 18px 18px}
+.f-search{position:relative;margin:12px 0 6px}
+.f-search .icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted,#5E636B);pointer-events:none}
+.f-search .input{padding-left:42px!important;border-radius:12px!important;min-height:46px}
+.fsec{border-bottom:1px solid var(--line,#E6DCCF)}
+.fsec:last-of-type{border-bottom:0}
+.fsec>summary{list-style:none;display:flex;align-items:center;gap:8px;padding:15px 0;font-weight:700;cursor:pointer}
+.fsec>summary::-webkit-details-marker{display:none}
+.fsec>summary::after{content:"";width:8px;height:8px;margin-left:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s;opacity:.6}
+.fsec[open]>summary::after{transform:rotate(-135deg) translateY(-2px)}
+.fsec-v{margin-left:auto;font-weight:600;font-size:.82rem;color:#963F22;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fsec .filter-group{border:0;margin:0 0 14px;padding:0}
+.fsec .filter-group legend{float:none}
+.f-sub{margin:4px 0 8px;font-size:.74rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#5E636B)}
+.f-sub~.chips,.f-sub+.chips{margin-bottom:10px}
+#filters .chips{display:flex;flex-wrap:wrap;gap:7px}
+#filters .chip span{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 13px;border-radius:99px;border:1px solid var(--line,#E6DCCF);background:var(--surface,#fff);font-weight:600;font-size:.88rem;transition:background .15s,border-color .15s,color .15s}
+#filters .chip span em{font-style:normal;font-size:.75rem;font-weight:700;color:var(--muted,#5E636B)}
+#filters .chip:hover span{border-color:#B04E2E}
+#filters .chip input:checked+span{background:#B04E2E!important;border-color:#B04E2E!important;color:#fff!important}
+#filters .chip input:checked+span em{color:#F8E9DF}
+#filters .chip input:focus-visible+span{outline:3px solid #EBA488;outline-offset:2px}
+.f-presets{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.f-preset{min-height:38px;border-radius:10px;border:1px solid var(--line,#E6DCCF);background:var(--surface,#fff);font:inherit;font-size:.85rem;font-weight:600;color:inherit;cursor:pointer;transition:all .15s}
+.f-preset:hover{border-color:#B04E2E}
+.f-preset[aria-pressed="true"]{background:#F8E9DF;border-color:#B04E2E;color:#963F22}
+#filters .price-row{display:flex;align-items:center;gap:8px}
+.f-money{position:relative;flex:1}
+.f-money .input{padding-right:28px!important;width:100%}
+.f-money i{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--muted,#5E636B);pointer-events:none}
+html[data-design="2"] .filters-foot{display:none}
+@media (max-width:920px){
+  html[data-design="2"] .filters.open{position:fixed!important;inset:0!important;top:0!important;z-index:95;display:flex!important;flex-direction:column;max-height:none!important;height:100dvh;border-radius:0!important;border:0!important;padding:0!important;overflow:hidden!important;background:var(--bg,#FBF5EC)!important;animation:sheetIn .25s ease both}
+  html[data-design="2"] .filters.open .filters-head{padding:14px 16px;background:var(--surface,#fff)}
+  html[data-design="2"] .filters.open .filters-head h2{font-size:1.15rem}
+  html[data-design="2"] .filters.open #filterForm{flex:1;overflow-y:auto;padding:4px 16px 120px;display:block}
+  html[data-design="2"] .filters.open .filters-foot{display:grid!important;grid-template-columns:auto 1fr;gap:10px;position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--surface,#fff);border-top:1px solid var(--line,#E6DCCF);box-shadow:0 -8px 24px rgba(46,50,56,.08);z-index:3}
+  html[data-design="2"] .filters.open .filters-foot .btn{min-height:50px;width:100%;justify-content:center}
+  html[data-design="2"] .filters.open .f-clear{display:none}
+  .fsec>summary{padding:17px 0}
+}
+html[data-design="2"][data-theme="dark"] .filters{background:#2F3439!important;border-color:#49515A!important}
+html[data-design="2"][data-theme="dark"] :is(.filters-head,.fsec,.filters-foot){border-color:#49515A!important}
+html[data-design="2"][data-theme="dark"] #filters .chip span,html[data-design="2"][data-theme="dark"] .f-preset{background:#272B30;border-color:#49515A}
+html[data-design="2"][data-theme="dark"] #filters .chip input:checked+span{background:#E07A55!important;border-color:#E07A55!important;color:#1F1A17!important}
+html[data-design="2"][data-theme="dark"] #filters .chip input:checked+span em{color:#3B2A22}
+html[data-design="2"][data-theme="dark"] #filters .chip span em{color:#B9B2AA}
+html[data-design="2"][data-theme="dark"] .f-preset[aria-pressed="true"]{background:#3B302B;border-color:#E07A55;color:#EBA488}
+html[data-design="2"][data-theme="dark"] :is(.fsec-v,.f-clear){color:#EBA488}
+html[data-design="2"][data-theme="dark"] .f-nb{background:#E07A55;color:#1F1A17}
+@media (max-width:920px){html[data-design="2"][data-theme="dark"] .filters.open{background:#272B30!important}html[data-design="2"][data-theme="dark"] .filters.open :is(.filters-head,.filters-foot){background:#2F3439}}
+@media (prefers-color-scheme:dark){
+html[data-design="2"]:not([data-theme="light"]) .filters{background:#2F3439!important;border-color:#49515A!important}
+html[data-design="2"]:not([data-theme="light"]) :is(.filters-head,.fsec,.filters-foot){border-color:#49515A!important}
+html[data-design="2"]:not([data-theme="light"]) #filters .chip span,html[data-design="2"]:not([data-theme="light"]) .f-preset{background:#272B30;border-color:#49515A}
+html[data-design="2"]:not([data-theme="light"]) #filters .chip input:checked+span{background:#E07A55!important;border-color:#E07A55!important;color:#1F1A17!important}
+html[data-design="2"]:not([data-theme="light"]) #filters .chip input:checked+span em{color:#3B2A22}
+html[data-design="2"]:not([data-theme="light"]) #filters .chip span em{color:#B9B2AA}
+html[data-design="2"]:not([data-theme="light"]) .f-preset[aria-pressed="true"]{background:#3B302B;border-color:#E07A55;color:#EBA488}
+html[data-design="2"]:not([data-theme="light"]) :is(.fsec-v,.f-clear){color:#EBA488}
+html[data-design="2"]:not([data-theme="light"]) .f-nb{background:#E07A55;color:#1F1A17}
+}
+@media (max-width:920px) and (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .filters.open{background:#272B30!important}html[data-design="2"]:not([data-theme="light"]) .filters.open :is(.filters-head,.filters-foot){background:#2F3439}}
+body.sheet-open #view-catalogue{transform:none!important;animation:none!important}
+html[data-design="2"] #filters details.fsec{border:0!important;border-bottom:1px solid var(--line,#E6DCCF)!important;border-radius:0!important;padding:0!important;margin:0!important;box-shadow:none!important;background:transparent!important}
+html[data-design="2"] #filters details.fsec:last-of-type{border-bottom:0!important}
+html[data-design="2"] #filters details.fsec>summary{padding:15px 0!important;border-radius:0!important;background:none!important}
+html[data-design="2"][data-theme="dark"] #filters details.fsec{border-color:#49515A!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) #filters details.fsec{border-color:#49515A!important}}
+.f-preset{white-space:nowrap;font-size:.8rem;padding:0 6px}
+html[data-design="2"] .results-bar{justify-content:flex-start!important;gap:10px!important;padding:0 0 12px;margin-bottom:12px;border-bottom:1px solid var(--line,#E6DCCF)}
+html[data-design="2"] .results-bar #resultCount{font-weight:800;font-size:1.05rem;margin-right:6px}
+html[data-design="2"] .results-bar .sort{margin-left:auto}
+html[data-design="2"] .results-bar #saveAlert,html[data-design="2"] .results-bar #mySizesBtn{min-height:40px;padding:8px 14px;font-size:.88rem}
+html[data-design="2"][data-theme="dark"] .results-bar{border-color:#49515A}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .results-bar{border-color:#49515A}}
+@media (max-width:920px){html[data-design="2"] .results-bar .sort{margin-left:0}}
 </style>
 </head>
 <body>
@@ -3338,27 +3423,25 @@ html[data-design="2"]:not([data-theme="light"]) .hr-foot{border-color:#49515A}
   </div>
   <div class="catalogue">
     <aside class="filters" id="filters" aria-label="Filtres">
-      <div class="filters-head"><h2>Filtres</h2><button type="button" class="filters-close" id="filtersClose" aria-label="Fermer les filtres">×</button></div>
+      <div class="filters-head"><h2>Filtres <span class="f-nb" id="fHeadNb"></span></h2><button type="button" class="f-clear" id="resetFilters">Tout effacer</button><button type="button" class="filters-close" id="filtersClose" aria-label="Fermer les filtres">×</button></div>
       <form id="filterForm">
-        <div class="filter-group">
-          <label class="filter-label" for="fQuery">Recherche</label>
-          <input class="input" id="fQuery" type="search" placeholder="Nom, marque, style…">
-        </div>
-        <fieldset class="filter-group"><legend>Catégorie</legend><div class="chips" id="fCategory"></div></fieldset>
-        <fieldset class="filter-group"><legend>Taille</legend><div class="chips" id="fSize"></div></fieldset>
-        <fieldset class="filter-group"><legend>Prix (€)</legend>
+        <div class="f-search"><label class="sr-only" for="fQuery">Rechercher</label><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" id="fQuery" type="search" placeholder="Nom, marque, auteur…"></div>
+        <details class="fsec" open data-fsec="cat"><summary>Catégorie<span class="fsec-v" id="fsvCat"></span></summary><fieldset class="filter-group"><legend class="sr-only">Catégorie</legend><div class="chips" id="fCategory"></div></fieldset></details>
+        <details class="fsec" open data-fsec="size"><summary><span id="fSizeLabel">Taille</span><span class="fsec-v" id="fsvSize"></span></summary><fieldset class="filter-group"><legend class="sr-only">Taille ou format</legend><div id="fSize"></div></fieldset></details>
+        <details class="fsec" open data-fsec="price"><summary>Prix<span class="fsec-v" id="fsvPrice"></span></summary><fieldset class="filter-group"><legend class="sr-only">Prix en euros</legend>
+          <div class="f-presets" id="fPresets"></div>
           <div class="price-row">
-            <label class="sr-only" for="fMin">Prix minimum</label><input class="input" id="fMin" type="number" min="0" step="1" inputmode="numeric" placeholder="Min">
+            <label class="f-money"><span class="sr-only">Prix minimum</span><input class="input" id="fMin" type="number" min="0" step="1" inputmode="numeric" placeholder="Min"><i aria-hidden="true">€</i></label>
             <span aria-hidden="true">–</span>
-            <label class="sr-only" for="fMax">Prix maximum</label><input class="input" id="fMax" type="number" min="0" step="1" inputmode="numeric" placeholder="Max">
+            <label class="f-money"><span class="sr-only">Prix maximum</span><input class="input" id="fMax" type="number" min="0" step="1" inputmode="numeric" placeholder="Max"><i aria-hidden="true">€</i></label>
           </div>
           <p class="error" id="priceError" role="alert"></p>
-        </fieldset>
-        <fieldset class="filter-group"><legend>État</legend><div class="chips" id="fCondition"></div></fieldset>
-        <div class="filter-group"><label class="filter-label" for="fBrand">Marque ou auteur</label><select class="input" id="fBrand"></select></div>
-        <div class="filter-group"><label class="filter-label" for="fStyle">Style</label><select class="input" id="fStyle"></select></div>
-        <button type="button" class="btn btn-outline btn-block" id="resetFilters">Réinitialiser les filtres</button>
-        <div class="filters-foot"><button type="button" class="btn btn-primary btn-block" id="filtersApply">Voir les résultats</button></div>
+        </fieldset></details>
+        <details class="fsec" open data-fsec="cond"><summary>État<span class="fsec-v" id="fsvCond"></span></summary><fieldset class="filter-group"><legend class="sr-only">État</legend><div class="chips" id="fCondition"></div></fieldset></details>
+        <details class="fsec" data-fsec="more"><summary>Marque et style<span class="fsec-v" id="fsvMore"></span></summary>
+          <div class="filter-group"><label class="filter-label" for="fBrand">Marque ou auteur</label><select class="input" id="fBrand"></select></div>
+          <div class="filter-group"><label class="filter-label" for="fStyle">Style</label><select class="input" id="fStyle"></select></div></details>
+        <div class="filters-foot"><button type="button" class="btn btn-outline" id="resetFilters2">Tout effacer</button><button type="button" class="btn btn-primary" id="filtersApply">Voir les résultats</button></div>
       </form>
     </aside>
     <section aria-labelledby="catalogueTitle">
@@ -5723,17 +5806,33 @@ function filtered(){
   return out;
 }
 function chip(name,value,checked,type="checkbox"){return `<label class="chip"><input type="${type}" name="${name}" value="${esc(value)}" ${checked?"checked":""}><span>${esc(value||"Toutes")}</span></label>`}
+const PRICE_PRESETS=[["","10","Moins de 10 €"],["10","25","10 à 25 €"],["25","50","25 à 50 €"],["50","","50 € et plus"]];
+function fChip(name,value,label,checked,n,type="checkbox"){return `<label class="chip"><input type="${type}" name="${name}" value="${esc(value)}" ${checked?"checked":""}><span>${esc(label)}${n!=null?`<em>${n}</em>`:""}</span></label>`}
 function buildFilterControls(){
   const all=available();
-  $("fCategory").innerHTML=chip("cat","",!filters.category,"radio")+CATEGORIES.map(c=>chip("cat",c,filters.category===c,"radio")).join("");
-  const sizeSource=filters.category?all.filter(p=>p.category===filters.category):all;
-  const sizes=[...new Set(sizeSource.map(p=>p.size).concat(filters.sizes))].sort((a,b)=>SIZE_ORDER.indexOf(a)-SIZE_ORDER.indexOf(b));
-  $("fSize").innerHTML=sizes.map(s=>chip("size",s,filters.sizes.includes(s))).join("")||'<span class="muted small">Aucune taille</span>';
-  $("fCondition").innerHTML=CONDITIONS.map(c=>chip("cond",c,filters.conditions.includes(c))).join("");
-  const brands=[...new Set(all.map(p=>p.brand))].sort((a,b)=>a.localeCompare(b,"fr"));
-  $("fBrand").innerHTML=`<option value="">Toutes les marques</option>`+brands.map(b=>`<option ${filters.brand===b?"selected":""}>${esc(b)}</option>`).join("");
+  const base=filters.category?all.filter(p=>p.category===filters.category):all;
+  $("fCategory").innerHTML=fChip("cat","","Toutes",!filters.category,all.length,"radio")+CATEGORIES.map(c=>fChip("cat",c,c,filters.category===c,all.filter(p=>p.category===c).length,"radio")).join("");
+  const cnt=v=>base.filter(p=>p.size===v).length;
+  const order=(a,b)=>SIZE_ORDER.indexOf(a)-SIZE_ORDER.indexOf(b);
+  const clothes=[...new Set(base.filter(p=>!isBook(p)).map(p=>p.size).concat(filters.sizes.filter(z=>!base.some(p=>isBook(p)&&p.size===z))))].filter(Boolean).sort(order);
+  const books=[...new Set(base.filter(isBook).map(p=>p.size))].filter(Boolean).sort(order);
+  const grp=(t,arr)=>arr.length?`${t?`<p class="f-sub">${t}</p>`:""}<div class="chips">${arr.map(z=>fChip("size",z,z,filters.sizes.includes(z),cnt(z))).join("")}</div>`:"";
+  $("fSizeLabel").textContent=filters.category==="Livres"?"Format":books.length&&clothes.length?"Taille et format":"Taille";
+  $("fSize").innerHTML=(clothes.length&&books.length?grp("Vêtements",clothes)+grp("Livres",books):grp("",clothes.length?clothes:books))||'<span class="muted small">Aucune taille</span>';
+  $("fPresets").innerHTML=PRICE_PRESETS.map(([a,b,l])=>`<button type="button" class="f-preset" data-price="${a}|${b}" aria-pressed="${filters.min===a&&filters.max===b}">${l}</button>`).join("");
+  $("fCondition").innerHTML=CONDITIONS.map(c=>fChip("cond",c,c,filters.conditions.includes(c),base.filter(p=>p.condition===c).length)).join("");
+  const brands=[...new Set(all.map(p=>p.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
+  $("fBrand").innerHTML=`<option value="">Toutes les marques et auteurs</option>`+brands.map(b=>`<option ${filters.brand===b?"selected":""}>${esc(b)}</option>`).join("");
   $("fStyle").innerHTML=`<option value="">Tous les styles</option>`+STYLES.map(s=>`<option ${filters.style===s?"selected":""}>${s}</option>`).join("");
   $("fQuery").value=filters.q;$("fMin").value=filters.min;$("fMax").value=filters.max;$("sortSelect").value=filters.sort;
+}
+function filterSummaries(){
+  const set=(id,t)=>{const e=$(id);if(e)e.textContent=t||""};
+  set("fsvCat",filters.category);set("fsvSize",filters.sizes.length?filters.sizes.length>2?filters.sizes.length+" choisies":filters.sizes.join(", "):"");
+  set("fsvPrice",filters.min!==""||filters.max!==""?(filters.min!==""&&filters.max!==""?`${filters.min}–${filters.max} €`:filters.min!==""?`dès ${filters.min} €`:`jusqu’à ${filters.max} €`):"");
+  set("fsvCond",filters.conditions.length?filters.conditions.length+" choisi"+(filters.conditions.length>1?"s":""):"");
+  set("fsvMore",[filters.brand,filters.style].filter(Boolean).join(" · "));
+  document.querySelectorAll("#fPresets .f-preset").forEach(b=>{const [a,c]=b.dataset.price.split("|");b.setAttribute("aria-pressed",String(filters.min===a&&filters.max===c))});
 }
 function renderCatalogue(rebuild=true){
   if(rebuild)buildFilterControls();
@@ -5757,8 +5856,9 @@ function renderCatalogue(rebuild=true){
   if(filters.min!=="")act.push(["min","",`Min ${filters.min} €`]);
   if(filters.max!=="")act.push(["max","",`Max ${filters.max} €`]);
   $("activeFilters").innerHTML=act.map(([k,v,l])=>`<button type="button" data-unfilter="${k}" data-value="${esc(v)}" aria-label="Retirer le filtre ${esc(l)}">${esc(l)} <span aria-hidden="true">×</span></button>`).join("");
-  $("filterNb").textContent=act.length?`(${act.length})`:"";
-  grid($("catalogueProducts"),list.slice(0,catalogueLimit),`<p>Aucun vêtement ne correspond à cette recherche.</p><button type="button" class="btn btn-outline" id="resetResults">Voir tous les vêtements</button>`);
+  $("filterNb").textContent=act.length?`(${act.length})`:"";$("fHeadNb").textContent=act.length||"";filterSummaries();
+  document.querySelectorAll("#resetFilters,#resetFilters2").forEach(b=>b.disabled=!act.length);
+  grid($("catalogueProducts"),list.slice(0,catalogueLimit),`<p><b>Aucun article ne correspond à ces filtres.</b></p><p class="muted small">Retire un filtre ci-dessus, ou crée une alerte pour être prévenu(e) dès qu’un article correspond.</p><button type="button" class="btn btn-outline" id="resetResults">Tout effacer</button>`);
   const more=list.length-catalogueLimit;
   if(more>0)$("catalogueProducts").insertAdjacentHTML("beforeend",`<div class="more-wrap"><button type="button" class="btn btn-outline" id="showMore">Afficher plus <span class="muted">(${more} restant${more>1?"s":""})</span></button></div>`);
 }
@@ -7431,7 +7531,8 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("#profSizesSave")){const l=[...document.querySelectorAll('#profSizes input:checked')].map(i=>i.value);if(await saveMySizes(l))toast(l.length?"Tes tailles sont enregistrées : le catalogue te montre d’abord ce qui te va.":"Tailles effacées.");return}
 });
 $("mySizesBtn").addEventListener("dblclick",()=>{if(mySizes.length)openSizesBox()});
-$("resetFilters").addEventListener("click",()=>{resetFilters();$("searchInput").value="";renderCatalogue()});
+["resetFilters","resetFilters2"].forEach(id=>$(id).addEventListener("click",()=>{resetFilters();$("searchInput").value="";renderCatalogue()}));
+$("fPresets").addEventListener("click",e=>{const b=e.target.closest("[data-price]");if(!b)return;const [a,c]=b.dataset.price.split("|");const on=filters.min===a&&filters.max===c;filters.min=on?"":a;filters.max=on?"":c;$("fMin").value=filters.min;$("fMax").value=filters.max;renderCatalogue(false)});
 function setFiltersOpen(o){$("filters").classList.toggle("open",o);$("filtersToggle").setAttribute("aria-expanded",o);document.body.classList.toggle("sheet-open",o&&innerWidth<=920);if(o&&innerWidth<=920)setTimeout(()=>$("filtersClose").focus(),50);else if(!o)$("filtersToggle").focus()}
 $("filtersToggle").addEventListener("click",()=>setFiltersOpen(!$("filters").classList.contains("open")));
 $("filtersClose").addEventListener("click",()=>setFiltersOpen(false));
