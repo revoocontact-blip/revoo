@@ -2709,6 +2709,78 @@ html[data-design="2"][data-theme="dark"] .section-head h2::before{opacity:.9}
   html[data-design="2"]:not([data-theme="light"]) body .reboot .reboot-label{color:#ECEFF1!important}
   html[data-design="2"]:not([data-theme="light"]) .section-head h2::before{opacity:.9}
 }
+/* ===== LOO : logo dessiné dans la couleur du site, fenêtre cohérente ===== */
+.loo-mark{display:block;width:26px;height:26px;background:currentColor;-webkit-mask:url(logos/orleoo-symbole-gris.png?v=18) center/contain no-repeat;mask:url(logos/orleoo-symbole-gris.png?v=18) center/contain no-repeat}
+html[data-design="2"] body .reboot{padding:8px 18px 8px 10px!important;gap:8px!important;border-radius:999px!important;transition:transform .2s var(--w-ease),box-shadow .2s var(--w-ease)!important;animation:none!important}
+html[data-design="2"] body .reboot:hover{transform:translateY(-2px)}
+html[data-design="2"] body .reboot .reboot-bubble{width:30px!important;height:30px!important;background:none!important;overflow:visible!important}
+html[data-design="2"] .chat{border-radius:20px!important;overflow:hidden;box-shadow:0 24px 60px rgba(40,25,15,.22)!important}
+html[data-design="2"] .chat-head{padding:14px 16px!important;border-bottom:1px solid var(--line)}
+html[data-design="2"] .chat-head .reboot-bubble{width:38px!important;height:38px!important;border-radius:50%!important;display:grid!important;place-items:center!important}
+html[data-design="2"] .chat-head .loo-mark{width:24px;height:24px}
+html[data-design="2"] .chat-head b{font-size:16px}
+html[data-design="2"] .chat-log{padding:16px 14px!important;gap:10px}
+html[data-design="2"] .msg{border-radius:16px!important;line-height:1.5}
+html[data-design="2"] .msg.bot{border-bottom-left-radius:6px!important}
+html[data-design="2"] .msg.me,html[data-design="2"] .msg.user{border-bottom-right-radius:6px!important}
+html[data-design="2"] .chat-quick{padding:10px 12px!important;gap:8px!important;mask-image:linear-gradient(90deg,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+html[data-design="2"] .chat-input{padding:10px 12px 12px!important;gap:8px}
+html[data-design="2"] .chat-input input{border-radius:999px!important}
+/* accueil : l'encart d'ouverture devient une carte posée sur le fond */
+html[data-design="2"] .launch-box{background:transparent!important;border:0!important}
+html[data-design="2"] .launch-box .lb-in{background:var(--surface);border:1px solid var(--line);box-shadow:var(--w-sh);margin-top:18px;margin-bottom:4px;padding:16px 22px!important;border-radius:var(--w-r)!important}
+html[data-design="2"][data-theme="light"] body .reboot{background:#B04E2E!important;color:#FFFFFF!important;box-shadow:0 8px 22px rgba(176,78,46,.35)!important}
+html[data-design="2"][data-theme="light"] body .reboot .reboot-label,html[data-design="2"][data-theme="light"] body .reboot .loo-mark{color:#FFFFFF!important}
+html[data-design="2"][data-theme="light"] .chat-head{background:#FFFFFF!important;color:#2E3238!important}
+html[data-design="2"][data-theme="light"] .chat-head small{color:#6B6560!important;opacity:1!important}
+html[data-design="2"][data-theme="light"] .chat-head .reboot-bubble{background:#F8E9DF!important;color:#B04E2E!important}
+html[data-design="2"][data-theme="light"] .chat-head button{color:#2E3238!important}
+html[data-design="2"][data-theme="light"] .chat-head button:hover{background:#F4EEE9!important}
+html[data-design="2"][data-theme="light"] .chat-log{background:#FBF5EC!important}
+html[data-design="2"][data-theme="light"] #view-home{background:#FBF5EC}
+@media (prefers-color-scheme:light){
+  html[data-design="2"]:not([data-theme="dark"]) body .reboot{background:#B04E2E!important;color:#FFFFFF!important;box-shadow:0 8px 22px rgba(176,78,46,.35)!important}
+  html[data-design="2"]:not([data-theme="dark"]) body .reboot .reboot-label,html[data-design="2"]:not([data-theme="dark"]) body .reboot .loo-mark{color:#FFFFFF!important}
+  html[data-design="2"]:not([data-theme="dark"]) .chat-head{background:#FFFFFF!important;color:#2E3238!important}
+  html[data-design="2"]:not([data-theme="dark"]) .chat-head small{color:#6B6560!important;opacity:1!important}
+  html[data-design="2"]:not([data-theme="dark"]) .chat-head .reboot-bubble{background:#F8E9DF!important;color:#B04E2E!important}
+  html[data-design="2"]:not([data-theme="dark"]) .chat-head button{color:#2E3238!important}
+  html[data-design="2"]:not([data-theme="dark"]) .chat-head button:hover{background:#F4EEE9!important}
+  html[data-design="2"]:not([data-theme="dark"]) .chat-log{background:#FBF5EC!important}
+  html[data-design="2"]:not([data-theme="dark"]) #view-home{background:#FBF5EC}
+}
+html[data-design="2"][data-theme="dark"] body .reboot{background:#31363C!important;color:#ECEFF1!important;border:1px solid #49515A!important}
+html[data-design="2"][data-theme="dark"] body .reboot .loo-mark{color:#E07A55!important}
+html[data-design="2"][data-theme="dark"] body .reboot .reboot-label{color:#ECEFF1!important}
+html[data-design="2"][data-theme="dark"] .chat{background:#2F3439!important;border-color:#3B4148!important}
+html[data-design="2"][data-theme="dark"] .chat-head{background:#2F3439!important;color:#ECEFF1!important;border-bottom-color:#3B4148!important}
+html[data-design="2"][data-theme="dark"] .chat-head small{color:#B4BAC0!important;opacity:1!important}
+html[data-design="2"][data-theme="dark"] .chat-head .reboot-bubble{background:#3B4148!important;color:#E07A55!important}
+html[data-design="2"][data-theme="dark"] .chat-head button{color:#ECEFF1!important}
+html[data-design="2"][data-theme="dark"] .chat-head button:hover{background:#3B4148!important}
+html[data-design="2"][data-theme="dark"] .chat-log{background:#272B30!important}
+html[data-design="2"][data-theme="dark"] .msg.bot{background:#31363C!important;border-color:#3B4148!important}
+html[data-design="2"][data-theme="dark"] .chat-quick,html[data-design="2"][data-theme="dark"] .chat-input{background:#2F3439!important;border-color:#3B4148!important}
+html[data-design="2"][data-theme="dark"] #view-home{background:#272B30}
+@media (prefers-color-scheme:dark){
+  html[data-design="2"]:not([data-theme="light"]) body .reboot{background:#31363C!important;color:#ECEFF1!important;border:1px solid #49515A!important}
+  html[data-design="2"]:not([data-theme="light"]) body .reboot .loo-mark{color:#E07A55!important}
+  html[data-design="2"]:not([data-theme="light"]) body .reboot .reboot-label{color:#ECEFF1!important}
+  html[data-design="2"]:not([data-theme="light"]) .chat{background:#2F3439!important;border-color:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) .chat-head{background:#2F3439!important;color:#ECEFF1!important;border-bottom-color:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) .chat-head small{color:#B4BAC0!important;opacity:1!important}
+  html[data-design="2"]:not([data-theme="light"]) .chat-head .reboot-bubble{background:#3B4148!important;color:#E07A55!important}
+  html[data-design="2"]:not([data-theme="light"]) .chat-head button{color:#ECEFF1!important}
+  html[data-design="2"]:not([data-theme="light"]) .chat-head button:hover{background:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) .chat-log{background:#272B30!important}
+  html[data-design="2"]:not([data-theme="light"]) .msg.bot{background:#31363C!important;border-color:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) .chat-quick,html[data-design="2"]:not([data-theme="light"]) .chat-input{background:#2F3439!important;border-color:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) #view-home{background:#272B30}
+}
+html[data-design="2"][data-theme="dark"] body .reboot:hover,html[data-design="2"][data-theme="dark"] body .reboot[aria-expanded="true"]{background:#3B4148!important;border-color:#525A63!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) body .reboot:hover,html[data-design="2"]:not([data-theme="light"]) body .reboot[aria-expanded="true"]{background:#3B4148!important;border-color:#525A63!important}}
+html[data-design="2"][data-theme="light"] body .reboot:hover{background:#963F22!important}
+@media (prefers-color-scheme:light){html[data-design="2"]:not([data-theme="dark"]) body .reboot:hover{background:#963F22!important}}
 </style>
 </head>
 <body>
@@ -3021,7 +3093,7 @@ html[data-design="2"][data-theme="dark"] .section-head h2::before{opacity:.9}
 <!-- ================= LOO ================= -->
 <section class="chat" id="chat" role="dialog" aria-modal="false" aria-labelledby="chatTitle">
   <div class="chat-head">
-    <span class="reboot-bubble"><img class="bub-l" src="logos/orleoo-bulle-jaune.png?v=18" alt="" width="36" height="36"><img class="bub-d" src="logos/orleoo-bulle-nuit.png?v=18" alt="" width="36" height="36"></span>
+    <span class="reboot-bubble"><span class="loo-mark" aria-hidden="true"></span></span>
     <div><b id="chatTitle">Loo</b><small>Assistant Orleoo · réponses automatiques</small></div>
     <button type="button" id="closeChat" aria-label="Fermer Loo">×</button>
   </div>
@@ -3042,7 +3114,7 @@ html[data-design="2"][data-theme="dark"] .section-head h2::before{opacity:.9}
   </form>
 </section>
 <button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat" aria-label="Loo, l’assistant Orleoo">
-  <span class="reboot-bubble"><img class="bub-l" src="logos/orleoo-bulle-jaune.png?v=18" alt="" width="36" height="36"><img class="bub-d" src="logos/orleoo-bulle-nuit.png?v=18" alt="" width="36" height="36"></span><span class="reboot-label">Loo</span>
+  <span class="reboot-bubble"><span class="loo-mark" aria-hidden="true"></span></span><span class="reboot-label">Loo</span>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -6780,7 +6852,7 @@ function userSay(text){const d=document.createElement("div");d.className="msg us
 let chatStarted=false;
 function openChat(open){
   const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);
-  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Loo.</b></p><p>Je peux trouver un vêtement pour toi (essaie « pull taille M moins de 20 € »), t’expliquer le fonctionnement d’Orleoo, et regarder ton compte : où en est ta commande, ton code de remise, tes échanges, ton solde…</p>${state.user&&payOn()?ask("Où en est ma commande ?","Mon code de remise","Mes échanges"):ask("Comment ça marche ?","Trouver un vêtement","Vendre un article")}`)}setTimeout(()=>$("chatMessage").focus(),50)}
+  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Loo.</b></p><p>Je peux trouver un vêtement pour toi (essaie « pull taille M moins de 20 € »), t’expliquer le fonctionnement d’Orleoo, et regarder ton compte : où en est ta commande, ton code de remise, tes échanges, ton solde…</p>${state.user&&payOn()?ask("Où en est ma commande ?","Mon code de remise","Mes échanges"):""}`)}setTimeout(()=>$("chatMessage").focus(),50)}
   else $("rebootBtn").focus();
 }
 $("rebootBtn").addEventListener("click",()=>openChat(!$("chat").classList.contains("open")));
