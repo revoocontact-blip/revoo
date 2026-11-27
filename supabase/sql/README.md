@@ -46,6 +46,7 @@ Chaque script peut être relancé sans risque.
 | 34 | `supabase-notifications-push.sql` | Notifications sur téléphone : appareils abonnés et envoi (messages, ventes, baisses de prix, alertes) via la fonction `orleoo-push` |
 | 35 | `supabase-durcissement.sql` | Durcissement avant lancement : droits des fonctions, chemins de recherche, index (à lancer en dernier) |
 | 36 | `supabase-ajustements.sql` | Négociation libre, 10 offres/jour, paliers de lot réglables, badge fondateur retiré, baisse de prix ≥ 1 €, rappel la veille de l’ouverture, notifications en pause, tailles longues |
+| 37 | `supabase-ajustements-2.sql` | Échange ouvert à tous, réservation de 5 min au paiement, panier sans limite, identifiant (2 changements gratuits), 5 styles |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 

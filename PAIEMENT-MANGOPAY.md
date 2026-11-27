@@ -14,7 +14,7 @@ Tout est prêt côté site et base de données. Aujourd'hui le site est en **mod
 
   Le blocage se fait sur le site **et** sur le serveur : on ne peut pas le contourner.
 - **Paiement par carte prêt à activer.** Le parcours prévu :
-  1. Les articles sont réservés 30 minutes.
+  1. Les articles sont réservés 5 minutes.
   2. L'acheteur paie sur la page sécurisée Mangopay (3-D Secure).
   3. La commande n'est créée qu'après la confirmation de Mangopay.
   4. Si le paiement échoue ou est abandonné, les articles sont remis en vente.
