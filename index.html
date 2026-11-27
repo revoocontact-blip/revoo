@@ -2815,6 +2815,8 @@ html[data-design="2"][data-theme="light"] .subnav .nav-atouts button svg{color:#
 html[data-design="2"][data-theme="dark"] .nav-cats button{color:#D5DADE}html[data-design="2"][data-theme="dark"] .nav-cats button[aria-pressed="true"],html[data-design="2"][data-theme="dark"] .nav-cats button:hover{background:#31363C;color:#FFFFFF}
 html[data-design="2"][data-theme="dark"] .top .actions .action{color:#ECEFF1}html[data-design="2"][data-theme="dark"] .top .actions .action:hover,html[data-design="2"][data-theme="dark"] .subnav .nav-atouts button:hover,html[data-design="2"][data-theme="dark"] .subnav .nav-filtres:hover{background:#31363C!important}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .nav-cats button{color:#D5DADE}html[data-design="2"]:not([data-theme="light"]) .nav-cats button[aria-pressed="true"],html[data-design="2"]:not([data-theme="light"]) .nav-cats button:hover{background:#31363C;color:#FFFFFF}html[data-design="2"]:not([data-theme="light"]) .top .actions .action{color:#ECEFF1}html[data-design="2"]:not([data-theme="light"]) .top .actions .action:hover,html[data-design="2"]:not([data-theme="light"]) .subnav .nav-atouts button:hover,html[data-design="2"]:not([data-theme="light"]) .subnav .nav-filtres:hover{background:#31363C!important}}
+/* Visiteur non connecté : pas de messagerie ni de favoris dans les menus */
+html[data-design="2"] body.guest .top #messagesBtn,html[data-design="2"] body.guest .top #favoritesBtn,body.guest #messagesBtn,body.guest #favoritesBtn,body.guest .tabbar [data-tab="messages"]{display:none!important}
 </style>
 </head>
 <body>
@@ -3402,6 +3404,7 @@ async function syncFavorites(){
   if(localOnly.length)await sb.from("favorites").upsert(localOnly.map(listing_id=>({listing_id})),{onConflict:"user_id,listing_id",ignoreDuplicates:true});
   state.favorites=[...new Set([...state.favorites,...remoteIds])];save("favorites");
 }
+document.body.classList.add("guest");
 async function onSession(session,event){
   // Re-vérification du mot de passe (ex. suppression du compte) : même personne, rien à recharger
   if(event==="SIGNED_IN"&&session&&state.user&&session.user.id===state.user.id&&state.reauth)return;
@@ -3409,6 +3412,7 @@ async function onSession(session,event){
   if(session){await loadProfile(session);await loadSubs();await syncFavorites();await loadConversations();await loadAdmin();await loadOrders();startRealtime();await applyReferral();loadGrowth().then(()=>{if(location.hash.startsWith("#/compte"))renderView()})}
   else {growth.searches=[];growth.hits=[];growth.drops=[];growth.refs=null;growth.stats={};growth.loaded=false}
   if(session){loadBlocks();loadMySizes();checkPush().then(()=>{const sw=$("pushSwitch");if(sw)sw.checked=pushState.on})}else{blocks.list=[];pushState={on:false,checked:false}}
+  document.body.classList.toggle("guest",!session);   // messagerie et favoris : seulement une fois connecté
   if(!session){state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0}
   state.remote.forEach(p=>p.mine=!!state.user&&state.user.id===p.sellerId);
   renderView();
