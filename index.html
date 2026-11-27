@@ -65,7 +65,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:3px solid var(--navy);outline-offset:2px;border-radius:6px}
-.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.sr-only{position:absolute!important;left:0;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--brand);color:var(--on-brand);padding:10px 14px;border-radius:10px}
 .skip:focus{top:12px}
 .wrap{width:min(100% - 48px,1320px);margin-inline:auto}
@@ -2559,6 +2559,8 @@ html[data-theme="dark"] .founder-badge{color:#F1DCA6;background:#4A3F24;border-c
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .cap-box{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999}
 .cap-box:empty{display:none}
+html[data-design="2"][data-theme="dark"] .status{background:#343A40}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .status{background:#343A40}}
 </style>
 </head>
 <body>
@@ -3677,7 +3679,7 @@ function launchHtml(){
   const days=L.jours||[],t=L.totaux||{},span=team.launchDays||30;
   return `<div class="panel launch"><div class="launch-head"><h2>Lancement</h2><div class="segmented" role="radiogroup" aria-label="Période">${[[7,"7 jours"],[30,"30 jours"],[90,"90 jours"]].map(([v,l])=>`<label><input type="radio" name="launchDays" value="${v}" ${span===v?"checked":""}><span>${l}</span></label>`).join("")}</div></div>
     <div class="launch-grid">${LAUNCH_METRICS.map(([k,l,u])=>{const sum=days.reduce((a,d)=>a+(Number(d[k])||0),0);return `<div class="launch-tile"><span class="lt-label">${l}</span><b class="lt-total">${Number(t[k]||0)}</b><span class="lt-sub small">+${sum} sur ${span} jours</span>${sparkSvg(k,days)}<span class="lt-tip small" aria-live="polite" data-tip="${k}">&nbsp;</span></div>`}).join("")}</div>
-    <details class="launch-table"><summary>Voir le tableau jour par jour</summary><div class="table-scroll"><table class="legal-table"><thead><tr><th>Jour</th>${LAUNCH_METRICS.map(m=>`<th>${m[1]}</th>`).join("")}</tr></thead><tbody>${[...days].reverse().map(d=>`<tr><td>${fmtD2(d.jour)}</td>${LAUNCH_METRICS.map(m=>`<td>${Number(d[m[0]])||0}</td>`).join("")}</tr>`).join("")}</tbody></table></div></details>
+    <details class="launch-table"><summary>Voir le tableau jour par jour</summary><div class="table-scroll"><table tabindex="0" class="legal-table"><thead><tr><th>Jour</th>${LAUNCH_METRICS.map(m=>`<th>${m[1]}</th>`).join("")}</tr></thead><tbody>${[...days].reverse().map(d=>`<tr><td>${fmtD2(d.jour)}</td>${LAUNCH_METRICS.map(m=>`<td>${Number(d[m[0]])||0}</td>`).join("")}</tr>`).join("")}</tbody></table></div></details>
     <p class="muted small">Un pic le jour d’un post Instagram ? C’est qu’il a marché. Les totaux comptent depuis le début.</p></div>`;
 }
 function sparkShow(svg,i){
@@ -3704,7 +3706,7 @@ function founderHtml(){
     <div class="kpis"><div class="kpi"><b>${Number(w.membres)}</b><span>Membre${Number(w.membres)>1?"s":""} en attente</span><small>ont cliqué sur « Me prévenir »</small></div><div class="kpi"><b>${Number(w.demandes)}</b><span>Demande${Number(w.demandes)>1?"s":""} au total</span><small>une par annonce attendue</small></div></div>
     ${w.top&&w.top.length?`<h3 class="small-h">Annonces les plus attendues</h3><ol class="wait-top">${w.top.map(x=>`<li><a class="link" href="#/article/${encodeURIComponent(x.listing_id)}">${esc(x.titre)}</a> <span class="muted">· ${eur(Number(x.prix))} · ${Number(x.attentes)} personne${Number(x.attentes)>1?"s":""}</span></li>`).join("")}</ol>`:`<p class="muted small">Personne n’a encore cliqué sur « Me prévenir ».</p>`}</div>`:"";
   const rt=team.refTop;
-  const refBlock=rt?`<div class="panel wait-panel"><h2>Meilleurs parrains</h2>${rt.length?`<table class="legal-table"><thead><tr><th>Membre</th><th>Filleuls</th><th>Filleuls qui vendent</th><th></th></tr></thead><tbody>${rt.map(x=>`<tr><td><a class="link" href="#/vendeur/${x.user_id}">@${esc(x.identifiant)}</a></td><td>${Number(x.filleuls)}</td><td>${Number(x.filleuls_actifs)}</td><td><button type="button" class="btn btn-outline btn-sm" data-gift-ref="${x.user_id}" data-gift-name="${esc(x.identifiant)}">Offrir 1 mois Pro</button></td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Personne n’a encore parrainé de membre. Chaque membre trouve son lien d’invitation dans « Profil et paramètres ».</p>`}</div>`:"";
+  const refBlock=rt?`<div class="panel wait-panel"><h2>Meilleurs parrains</h2>${rt.length?`<table tabindex="0" class="legal-table"><thead><tr><th>Membre</th><th>Filleuls</th><th>Filleuls qui vendent</th><th></th></tr></thead><tbody>${rt.map(x=>`<tr><td><a class="link" href="#/vendeur/${x.user_id}">@${esc(x.identifiant)}</a></td><td>${Number(x.filleuls)}</td><td>${Number(x.filleuls_actifs)}</td><td><button type="button" class="btn btn-outline btn-sm" data-gift-ref="${x.user_id}" data-gift-name="${esc(x.identifiant)}">Offrir 1 mois Pro</button></td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Personne n’a encore parrainé de membre. Chaque membre trouve son lien d’invitation dans « Profil et paramètres ».</p>`}</div>`:"";
   return `${launchHtml()}${linksHtml()}${waitBlock}${refBlock}<div class="panel founder"><h2>Tes chiffres</h2>
     <div class="kpis">
       <div class="kpi"><b>${eur(Number(f.frais_mois))}</b><span>Frais encaissés ce mois-ci</span><small>${eur(Number(f.frais_encaisses))} depuis le début</small></div>
@@ -5713,7 +5715,7 @@ function linksHtml(){
   return `<div class="panel links-panel"><h2>Liens suivis</h2>
     <p class="muted small">Crée un lien par publication (post, story, affiche…). Chaque visite et chaque inscription arrivée par ce lien est comptée ici.</p>
     <form id="linkForm" class="link-form"><label class="sr-only" for="linkLabel">Nom du lien</label><input class="input" id="linkLabel" maxlength="80" placeholder="Ex. : Post Instagram du 3/12" required><button class="btn btn-primary" type="submit">Créer le lien</button></form>
-    ${L.length?`<div class="table-scroll"><table class="legal-table links-table"><thead><tr><th>Lien</th><th>Visites</th><th>Inscrits</th><th>Vendeurs</th><th>Fondateurs</th><th>E-mails</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>${L.map(r=>`<tr>
+    ${L.length?`<div class="table-scroll"><table tabindex="0" class="legal-table links-table"><thead><tr><th>Lien</th><th>Visites</th><th>Inscrits</th><th>Vendeurs</th><th>Fondateurs</th><th>E-mails</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>${L.map(r=>`<tr>
       <td><b>${esc(r.label)}</b><br><span class="muted small">?src=${esc(r.source)}</span></td><td>${num(r.visites)}</td><td>${num(r.inscrits)}</td><td>${num(r.vendeurs)}</td><td>${num(r.fondateurs)}</td><td>${num(r.emails)}</td>
       <td><div class="row-actions links-actions"><button type="button" class="btn btn-outline btn-sm" data-link-copy="${esc(r.source)}">Copier</button><button type="button" class="btn btn-outline btn-sm" data-link-qr="${esc(r.source)}">QR code</button><button type="button" class="btn btn-outline btn-sm" data-link-poster="${esc(r.source)}">Affiche A5</button>${r.cree_le?`<button type="button" class="btn btn-outline btn-sm" data-link-del="${esc(r.source)}" aria-label="Supprimer le lien ${esc(r.label)}">×</button>`:""}</div></td></tr>`).join("")}</tbody></table></div>`:`<p class="muted small">Aucun lien pour l’instant.</p>`}
     <p class="muted small">Les e-mails sont ceux laissés par des visiteurs sans compte pour être prévenus de l’ouverture${team.launchEmails!=null?` (${team.launchEmails} au total)`:""}.</p></div>`;
@@ -6109,7 +6111,7 @@ const LEGAL_PAGES={
 <p>Cette page explique quelles données Orleoo utilise, pourquoi, et quels sont tes droits, conformément au Règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
 <h2>1. Responsable du traitement</h2><p>${LEGAL.editeur} — ${mail}</p>
 <h2>2. Les données utilisées</h2>
-<table class="legal-table"><thead><tr><th>Données</th><th>Pourquoi</th><th>Base légale</th><th>Durée de conservation</th></tr></thead><tbody>
+<table tabindex="0" class="legal-table"><thead><tr><th>Données</th><th>Pourquoi</th><th>Base légale</th><th>Durée de conservation</th></tr></thead><tbody>
 <tr><td>Compte : adresse e-mail, mot de passe (chiffré, jamais visible par Orleoo)</td><td>Créer et sécuriser ton compte</td><td>Exécution du contrat (conditions d’utilisation)</td><td>Tant que ton compte existe</td></tr>
 <tr><td>Profil public : identifiant, photo de profil, bio, ville (seulement si tu choisis de l’afficher)</td><td>Te présenter aux autres membres</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr><tr><td>Informations privées : prénom, nom, ville</td><td>Préparer les envois et le paiement ; visibles par toi seul</td><td>Exécution du contrat</td><td>Tant que ton compte existe</td></tr>
 <tr><td>Annonces et photos</td><td>Les publier sur Orleoo (elles sont publiques)</td><td>Exécution du contrat</td><td>Jusqu’à leur suppression, ou celle de ton compte</td></tr>
@@ -6184,11 +6186,11 @@ const PAGES={
     <section class="ch"><h2>2. Textes</h2><p class="ch-h1" style="font-size:44px;line-height:1.1;font-weight:800;margin:0">Grand titre <em>accent</em></p><h2 style="margin:6px 0">Titre de section <em>accent</em></h2><p>Texte courant : les vêtements et les livres des autres ont encore plein d’histoires à raconter.</p><p class="muted small">Petit texte secondaire.</p></section>
     <section class="ch"><h2>3. Boutons</h2><div class="ch-row"><button type="button" class="btn btn-primary">3a · Principal</button><button type="button" class="btn btn-outline">3b · Secondaire</button><button type="button" class="viewall">3c · Tout voir →</button><button type="button" class="btn btn-danger">3d · Supprimer</button></div>
       <div class="ch-row home-tabs" style="margin-top:12px"><button type="button">3e · Raccourci</button><button type="button">Raccourci</button></div>
-      <div class="ch-row sel-tabs" style="margin-top:12px"><button type="button" aria-selected="true">3f · Onglet choisi</button><button type="button" aria-selected="false">Onglet</button></div>
+      <div class="ch-row sel-tabs" style="margin-top:12px" role="tablist" aria-label="Exemple d’onglets"><button type="button" role="tab" aria-selected="true">3f · Onglet choisi</button><button type="button" role="tab" aria-selected="false">Onglet</button></div>
       <div class="ch-row" style="margin-top:12px"><label class="chip"><input type="checkbox" checked><span>3g · Filtre coché</span></label><label class="chip"><input type="checkbox"><span>Filtre</span></label></div></section>
     <section class="ch"><h2>4. Tuiles de l’accueil</h2><div class="tags ch-tags"><a class="tag t1" href="#/catalogue"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><b>Acheter</b><small>Des pièces uniques, choisies par d’autres</small></a><a class="tag t2" href="#/fonctionnement"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><b>Échanger</b><small>Ton vêtement contre un autre, avec ou sans complément</small></a><a class="tag t3" href="#/catalogue" data-category="Livres"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg></span><b>Livres</b><small>Romans, BD, mangas : une 2e lecture</small></a><a class="tag t4" href="#/vendre"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><b>Vendre</b><small>Gratuit, en quelques minutes</small></a></div></section>
     <section class="ch"><h2>5. Cartes d’annonces</h2><div class="products ch-cards">${[P[0],P[12]||P[1],P[2]].map(card).join("")}</div></section>
-    <section class="ch"><h2>6. Champs de formulaire</h2><div class="ch-row"><input class="input" placeholder="6a · Champ texte" style="max-width:280px"><select class="input" style="max-width:220px"><option>6b · Liste</option></select></div></section>
+    <section class="ch"><h2>6. Champs de formulaire</h2><div class="ch-row"><input class="input" placeholder="6a · Champ texte" style="max-width:280px"><select class="input" style="max-width:220px" aria-label="Exemple de liste"><option>6b · Liste</option></select></div></section>
     <section class="ch"><h2>7. Étiquettes</h2><div class="ch-row"><span class="price-tag" style="position:static">7a · 24,00 €</span><span class="chip-mini">7b · M</span><span class="chip-mini">Très bon état</span><span class="status">7c · Statut</span><span class="hero2-kicker" style="margin:0">7d · Badge</span></div></section>`},
   "a-propos":()=>`<p class="crumbs"><a href="#/">Accueil</a> › À propos</p><h1>À propos d’Orleoo</h1>
     <p><b>Tes vêtements ont de l’avenir</b></p>
