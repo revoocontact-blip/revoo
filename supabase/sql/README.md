@@ -50,6 +50,7 @@ Chaque script peut être relancé sans risque.
 | 38 | `supabase-sms-limites.sql` | Code de remise en main propre envoyé par SMS (Brevo), numéro de mobile privé, limite d’achats en cours selon le membre |
 | 39 | `supabase-code-messagerie.sql` | Code de main propre affiché dans la messagerie (acheteur seulement) : SMS désactivé |
 | 40 | `supabase-consentements.sql` | Inscription : date d’acceptation des conditions (obligatoire) et choix des e-mails nouveautés (facultatif) |
+| 41 | `supabase-pret.sql` | Prêt entre membres : prix du prêt, caution et durées sur l’annonce ; demandes, réponses (paiement à l’ouverture) |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 
