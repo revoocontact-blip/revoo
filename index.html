@@ -2955,6 +2955,11 @@ html[data-design="2"]:not([data-theme="light"]) .consent input:checked+.consent-
 html[data-design="2"]:not([data-theme="light"]) .consent-req{color:#B9B2AA}
 html[data-design="2"]:not([data-theme="light"]) .consent.invalid{background:#3A2A2A;border-color:#F2867D}
 }
+
+/* onglets de connexion : deux moitiés égales */
+html[data-design="2"] .auth-card .tabs[role="tablist"]{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:4px;overflow:visible;width:100%!important;max-width:none!important}
+html[data-design="2"] .auth-card .tabs[role="tablist"] [role=tab]{justify-content:center;text-align:center;width:auto!important;min-width:0!important;flex:none!important;white-space:nowrap}
+.auth-card #sName:focus::placeholder{color:transparent}
 </style>
 </head>
 <body>
@@ -5816,7 +5821,7 @@ function renderAccount(tab){
     <form class="panel" id="signupForm" novalidate data-t="${Date.now()}">
       <div class="hp" aria-hidden="true"><label>Ne pas remplir ce champ <input id="sWebsite" tabindex="-1" autocomplete="off"></label></div>
       <div class="grid-2">
-        <div class="field"><label for="sName">Identifiant <span class="hint">(public)</span></label><div class="at-input"><span aria-hidden="true">@</span><input class="input" id="sName" autocomplete="username" required maxlength="20" placeholder="camille_75" autocapitalize="off" spellcheck="false"></div><span class="hint">3 à 20 caractères : lettres, chiffres, point, tiret ou _. Visible sur tes annonces.</span><span class="error" id="sNameErr"></span></div>
+        <div class="field"><label for="sName">Identifiant <span class="hint">(public)</span></label><input class="input" id="sName" autocomplete="username" required maxlength="21" placeholder="@camille_75" autocapitalize="off" spellcheck="false"><span class="hint">3 à 20 caractères : lettres, chiffres, point, tiret ou _. Visible sur tes annonces.</span><span class="error" id="sNameErr"></span></div>
         <div class="field"><label for="sCity">Ville <span class="hint">(facultatif, privée)</span></label><input class="input" id="sCity" autocomplete="address-level2" maxlength="40"></div>
       </div>
       <div class="field"><label for="sEmail">Adresse e-mail</label><input class="input" id="sEmail" type="email" autocomplete="email" required><span class="error" id="sEmailErr"></span></div>
@@ -6830,7 +6835,7 @@ document.addEventListener("submit",async e=>{
     toast("Merci pour ton avis !");await loadListings();renderView();return}
   if(f.id==="signupForm"){e.preventDefault();
     const consentError=ok=>{const box=$("sCgu").closest(".consent");box.classList.toggle("invalid",!ok);$("sCgu").setAttribute("aria-invalid",ok?"false":"true");$("sCguErr").textContent=ok?"":"Coche cette case pour créer ton compte.";if(!ok)$("sCgu").focus();return ok?1:0};
-    const name=$("sName").value.trim(),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();const cgu=$("sCgu").checked,news=$("sNews").checked;
+    const name=$("sName").value.trim().replace(/^@+/,""),email=$("sEmail").value.trim(),pwd=$("sPwd").value,city=$("sCity").value.trim();const cgu=$("sCgu").checked,news=$("sNews").checked;
     let nameMsg=!USERNAME_RE.test(name)?"3 à 20 caractères : lettres sans accent, chiffres, point, tiret ou _ (pas d’espace).":"";
     if(!nameMsg){try{const r=await sb.rpc("username_available",{p_name:name});if(!r.error&&r.data===false)nameMsg="Cet identifiant est déjà pris. Essaie une variante (ex. "+name+"_75).";}catch(x){}}
     const ok=fieldError("sName","sNameErr",nameMsg) & fieldError("sEmail","sEmailErr",!emailOk(email)?"Adresse e-mail invalide (exemple : prenom@mail.fr).":"") & fieldError("sPwd","sPwdErr",pwd.length<8?"Le mot de passe doit contenir au moins 8 caractères.":"") & consentError(cgu);
