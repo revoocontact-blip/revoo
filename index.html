@@ -3223,6 +3223,22 @@ html[data-design="2"] .results-bar #saveAlert,html[data-design="2"] .results-bar
 html[data-design="2"][data-theme="dark"] .results-bar{border-color:#49515A}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .results-bar{border-color:#49515A}}
 @media (max-width:920px){html[data-design="2"] .results-bar .sort{margin-left:0}}
+
+/* Bulles de Loo */
+.loo-tip{position:fixed;right:22px;bottom:96px;z-index:60;max-width:320px;animation:looTipIn .35s cubic-bezier(.2,.8,.2,1) both}
+.loo-tip.out{opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s}
+@keyframes looTipIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.loo-tip-msg{display:block;text-align:left;width:100%;padding:14px 34px 14px 16px;border:1px solid var(--line,#E6DCCF);border-radius:18px 18px 6px 18px;background:var(--surface,#fff);color:inherit;font:inherit;font-size:.92rem;line-height:1.45;box-shadow:0 12px 30px rgba(46,50,56,.16);cursor:pointer}
+.loo-tip-msg:hover{border-color:#B04E2E}
+.loo-tip-who{display:block;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#963F22;margin-bottom:3px}
+.loo-tip-x{position:absolute;top:6px;right:6px;width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:inherit;font-size:1.2rem;line-height:1;cursor:pointer;z-index:1}
+.loo-tip-x:hover{background:rgba(0,0,0,.06)}
+.rb-next-t{margin:12px 0 4px;font-size:.8rem;font-weight:700;color:var(--muted,#5E636B)}
+@media (max-width:680px){.loo-tip{right:12px;left:12px;bottom:150px;max-width:none}}
+@media (prefers-reduced-motion:reduce){.loo-tip{animation:none}}
+html[data-design="2"][data-theme="dark"] .loo-tip-msg{background:#2F3439;border-color:#49515A}
+html[data-design="2"][data-theme="dark"] .loo-tip-who{color:#EBA488}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .loo-tip-msg{background:#2F3439;border-color:#49515A}html[data-design="2"]:not([data-theme="light"]) .loo-tip-who{color:#EBA488}}
 </style>
 </head>
 <body>
@@ -6824,7 +6840,7 @@ function renderHelpResults(q){
 document.addEventListener("input",e=>{if(e.target.id!=="helpQ")return;clearTimeout(helpT);const v=e.target.value;helpT=setTimeout(()=>renderHelpResults(v),120)});
 document.addEventListener("click",e=>{
   const pp=e.target.closest("[data-help-pop]");if(pp){const i=$("helpQ");i.value=pp.dataset.helpPop;renderHelpResults(i.value);i.focus();return}
-  const lo=e.target.closest("[data-help-loo]");if(lo){openChat(true);const q=lo.dataset.helpLoo;setTimeout(()=>{userSay(q);setTimeout(()=>botSay(rebootReply(q)),250)},250);return}
+  const lo=e.target.closest("[data-help-loo]");if(lo){openChat(true);const q=lo.dataset.helpLoo;setTimeout(()=>{userSay(q);setTimeout(()=>looAnswer((q)),250)},250);return}
   const fb=e.target.closest("[data-help-fb]");if(fb){const foot=fb.closest(".hr-foot");
     if(fb.dataset.helpFb==="yes"){foot.innerHTML=`<span class="hr-ask">Merci ! 😊</span>`;return}
     foot.innerHTML=`<span class="hr-ask">Désolé. Loo va essayer de t’aider autrement.</span>`;openChat(true);
@@ -7547,10 +7563,86 @@ $("seasonBtn")?.addEventListener("click",seasonGo);$("discoverSeason").addEventL
 const chatLog=$("chatLog");
 function botSay(html){const d=document.createElement("div");d.className="msg bot";d.innerHTML=html;chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight}
 function userSay(text){const d=document.createElement("div");d.className="msg user";d.textContent=text;chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight}
+
+/* =========================================================
+   LOO ANTICIPE : accueil personnalisé, petites bulles au bon moment, questions suivantes
+   ========================================================= */
+function looHello(){const h=new Date().getHours();return h>=18||h<5?"Bonsoir":"Bonjour"}
+function looTodo(){
+  if(!state.user)return[];const t=[];
+  const um=typeof chat!=="undefined"?chat.unread||0:0;if(um)t.push([`<b>${um}</b> message${um>1?"s":""} non lu${um>1?"s":""}`,"#/messages","Voir mes messages"]);
+  let of=0;try{of=offerTodo()}catch(_){}if(of)t.push([`<b>${of}</b> offre${of>1?"s":""} qui attend${of>1?"ent":""} ta réponse`,"#/compte/offres","Voir mes offres"]);
+  const dr=(growth.drops||[]).filter(d=>!d.seen_at).length;if(dr)t.push([`<b>${dr}</b> baisse${dr>1?"s":""} de prix sur tes favoris`,"#/compte/alertes","Voir les baisses"]);
+  const hi=(growth.hits||[]).filter(d=>!d.seen_at).length;if(hi)t.push([`<b>${hi}</b> nouvelle${hi>1?"s":""} annonce${hi>1?"s":""} pour tes alertes`,"#/compte/alertes","Voir mes alertes"]);
+  try{const d=readDraft();if(d&&d.f&&Object.values(d.f).some(v=>String(v||"").trim()))t.push(["une annonce commencée que tu n’as pas publiée","#/vendre","La reprendre"])}catch(_){}
+  return t;
+}
+function looGreeting(){
+  const who=state.user?` ${esc(state.user.name)}`:"";const todo=looTodo();
+  if(todo.length)return`<p><b>${looHello()}${who} !</b> Petit point rapide : tu as ${todo.map(x=>x[0]).join(", ")}.</p><div class="reboot-next">${todo.slice(0,3).map(x=>go(x[1],x[2])).join("")}</div><p>Et sinon, je peux t’aider sur ce que tu veux :</p>${ask(...rbPageHints())}`;
+  return`<p><b>${looHello()}${who}, je suis Loo !</b></p><p>Je trouve des articles pour toi (essaie « pull taille M moins de 20 € »), je t’explique tout Orleoo, et je regarde ton compte : commande, code de remise, échanges, offres…</p>${state.user&&payOn()?ask("Où en est ma commande ?","Mon code de remise","Mes échanges"):ask(...rbPageHints())}`;
+}
+/* Après une réponse : les questions qu'on se pose souvent ensuite */
+const LOO_NEXT={
+  "Puis-je négocier le prix ?":["C’est quoi la réduction sur les lots ?","Combien coûtent les frais ?"],
+  "Comment marche la remise en main propre ?":["Où est mon code ?","Et si l’article ne me plaît pas au rendez-vous ?"],
+  "Quels modes de livraison sont proposés ?":["Que faire si je ne reçois rien ?","Combien coûtent les frais ?"],
+  "Combien coûtent les frais ?":["Quels modes de livraison sont proposés ?","Puis-je négocier le prix ?"],
+  "Comment mettre un article en vente ?":["Comment bien fixer mon prix ?","Comment rendre mes photos plus belles ?"],
+  "Comment bien fixer mon prix ?":["Comment répondre à une offre ?","Comment proposer une réduction sur les lots ?"],
+  "Comment fonctionne l’échange ?":["Qui peut échanger ?","Où suivre mes échanges ?"],
+  "Que faire si je ne reçois rien ?":["Comment signaler une annonce ?","Comment bloquer un membre ?"],
+  "Comment être prévenu quand un article qui me plaît est publié ?":["Comment savoir si un favori baisse de prix ?","Comment voir d’abord les articles à ma taille ?"]};
+function looFollow(q,r){
+  if(/data-ask=|data-reboot-filters|class="product|class="card/.test(r))return"";
+  const hs=helpSearch(q,6),top=hs[0];
+  const cur=LOO_NEXT[q]||(top&&top.score>=4&&LOO_NEXT[top.q]);
+  if(cur)return`<p class="rb-next-t">On me demande souvent ensuite :</p>${ask(...cur.filter(x=>!r.includes(esc(x))))}`;
+  const rel=hs.filter(x=>x.score>=2&&!r.includes(esc(x.q))).slice(1).sort((a,b)=>(b.sec===top.sec)-(a.sec===top.sec)).slice(0,2);
+  return rel.length?`<p class="rb-next-t">On me demande souvent ensuite :</p>${ask(...rel.map(x=>x.q))}`:"";
+}
+function looAnswer(q){const r=rebootReply(q);botSay(r+looFollow(q,r))}
+/* Petites bulles : Loo propose son aide au bon moment (3 au plus par visite, jamais pendant une fenêtre) */
+let looTipTimer=0;const looSeen=new Set();
+function looTipCount(){try{return +sessionStorage.getItem("orleoo.tips")||0}catch(_){return 9}}
+function looTipHide(){clearTimeout(looTipTimer);$("looTip")?.remove()}
+function looTip(key,delay,text,chips){
+  clearTimeout(looTipTimer);
+  if(looSeen.has(key)||looTipCount()>=3)return;
+  looTipTimer=setTimeout(()=>{
+    if($("chat").classList.contains("open")||document.querySelector("#gateBox,#welcome,.crop-backdrop")||document.body.classList.contains("sheet-open")||document.body.classList.contains("mod-mode"))return;
+    looSeen.add(key);try{sessionStorage.setItem("orleoo.tips",looTipCount()+1)}catch(_){}
+    $("looTip")?.remove();
+    document.body.insertAdjacentHTML("beforeend",`<div class="loo-tip" id="looTip" role="status"><button type="button" class="loo-tip-x" aria-label="Fermer" data-tip-x>×</button><button type="button" class="loo-tip-msg" data-tip-open><span class="loo-tip-who">Loo</span>${text}</button></div>`);
+    const el=$("looTip");el.dataset.chips=JSON.stringify(chips||[]);el.dataset.text=text;
+    setTimeout(()=>{if($("looTip")===el)el.classList.add("out");setTimeout(()=>el.remove(),400)},14000);
+  },delay);
+}
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-tip-x]")){looTipHide();return}
+  const o=e.target.closest("[data-tip-open]");if(!o)return;
+  const el=$("looTip");let chips=[];try{chips=JSON.parse(el.dataset.chips||"[]")}catch(_){}
+  const text=el.dataset.text;looTipHide();chatStarted=true;openChat(true);
+  botSay(`<p>${text}</p>${chips.length?ask(...chips):""}`);
+});
+function looWatch(){
+  looTipHide();
+  const r=(location.hash.replace(/^#\/?/,"").split("/")[0])||"";
+  const todo=looTodo();
+  if(todo.length&&!looSeen.has("todo"))return looTip("todo",3500,`Tu as ${todo.map(x=>x[0]).join(", ")}. Je te montre ?`,[]);
+  if(r==="article")return looTip("article",15000,"Une question sur cet article ? Je t’explique comment faire une offre, la main propre ou la livraison.",["Puis-je négocier le prix ?","Comment marche la remise en main propre ?","Quels modes de livraison sont proposés ?"]);
+  if(r==="catalogue"){setTimeout(()=>{if(location.hash.startsWith("#/catalogue")&&typeof filtered==="function"&&!filtered().length)looTip("vide",800,"Rien ne correspond pour l’instant. Je peux t’aider à élargir ta recherche, ou te prévenir dès qu’un article arrive.",["Comment être prévenu quand un article qui me plaît est publié ?","Comment voir d’abord les articles à ma taille ?"])},600);return}
+  if(r==="vendre")return looTip("vendre",25000,"Besoin d’un coup de main pour ton annonce ? J’ai des astuces pour le prix et les photos.",["Comment bien fixer mon prix ?","Comment rendre mes photos plus belles ?","Comment vendre un livre rapidement ?"]);
+  if(r==="panier"||r==="paiement")return looTip("panier",15000,"Une hésitation ? Je t’explique les frais et comment ton paiement est protégé.",["Combien coûtent les frais ?","Que faire si je ne reçois rien ?"]);
+  if(r==="echanger"||r==="main-propre")return looTip(r,20000,"Tu veux que je t’explique ça en deux mots ?",r==="echanger"?["Comment fonctionne l’échange ?","Qui peut échanger ?"]:["Comment marche la remise en main propre ?","Où est mon code ?"]);
+}
+addEventListener("hashchange",()=>setTimeout(looWatch,50));
+/* le filtre change sur le catalogue : si plus rien ne correspond, Loo le remarque */
+document.addEventListener("change",e=>{if(e.target.closest&&e.target.closest("#filterForm"))setTimeout(()=>{if(!filtered().length)looTip("vide",1200,"Rien ne correspond pour l’instant. Je peux t’aider à élargir ta recherche, ou te prévenir dès qu’un article arrive.",["Comment être prévenu quand un article qui me plaît est publié ?","Comment voir d’abord les articles à ma taille ?"])},100)});
 let chatStarted=false;
 function openChat(open){
   const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);
-  if(open){if(!chatStarted){chatStarted=true;botSay(`<p><b>Salut ! Je suis Loo.</b></p><p>Je peux trouver un vêtement pour toi (essaie « pull taille M moins de 20 € »), t’expliquer le fonctionnement d’Orleoo, et regarder ton compte : où en est ta commande, ton code de remise, tes échanges, ton solde…</p>${state.user&&payOn()?ask("Où en est ma commande ?","Mon code de remise","Mes échanges"):ask(...rbPageHints())}`)}setTimeout(()=>$("chatMessage").focus(),50)}
+  if(open){looTipHide();if(!chatStarted){chatStarted=true;botSay(looGreeting())}setTimeout(()=>$("chatMessage").focus(),50)}
   else $("rebootBtn").focus();
 }
 $("rebootBtn").addEventListener("click",()=>openChat(!$("chat").classList.contains("open")));
@@ -7906,10 +7998,10 @@ async function rbSubAction(kind){
   botSay(kind==="cancel"?`<p>C’est fait : ton abonnement est <b>résilié</b>. Tu gardes tes avantages jusqu’au <b>${end}</b>, puis plus rien ne sera prélevé.</p><div class="reboot-next"><button type="button" class="pill" data-rb-sub="resume">Annuler la résiliation</button></div>`:`<p>C’est fait : ton abonnement <b>continue</b> après le ${end}.</p>`);
   renderView();
 }
-document.querySelectorAll(".chatQuick").forEach(b=>b.addEventListener("click",()=>{userSay(b.textContent);setTimeout(()=>botSay(rebootReply(b.textContent)),200)}));
-$("chatForm").addEventListener("submit",e=>{e.preventDefault();const v=$("chatMessage").value.trim();if(!v)return;userSay(v);$("chatMessage").value="";setTimeout(()=>botSay(rebootReply(v)),250)});
+document.querySelectorAll(".chatQuick").forEach(b=>b.addEventListener("click",()=>{userSay(b.textContent);setTimeout(()=>looAnswer((b.textContent)),200)}));
+$("chatForm").addEventListener("submit",e=>{e.preventDefault();const v=$("chatMessage").value.trim();if(!v)return;userSay(v);$("chatMessage").value="";setTimeout(()=>looAnswer((v)),250)});
 chatLog.addEventListener("click",e=>{
-  const a=e.target.closest("[data-ask]");if(a){userSay(a.dataset.ask);setTimeout(()=>botSay(rebootReply(a.dataset.ask)),200);return}
+  const a=e.target.closest("[data-ask]");if(a){userSay(a.dataset.ask);setTimeout(()=>looAnswer((a.dataset.ask)),200);return}
   const rs=e.target.closest("[data-rb-sub]");if(rs){if(rs.disabled)return;rs.closest(".reboot-next")?.querySelectorAll("button").forEach(b=>b.disabled=true);userSay(rs.textContent);rbSubAction(rs.dataset.rbSub);return}
   const rf=e.target.closest("[data-reboot-filters]");if(rf){let f={};try{f=JSON.parse(rf.dataset.rebootFilters)}catch(x){}$("searchInput").value=f.q||"";openCatalogue({q:f.q||"",category:f.category||"",style:f.style||"",sizes:f.sizes||[],min:f.min||"",max:f.max||""});if(innerWidth<680)openChat(false);return}
   if(e.target.closest("[data-reboot-season]")){openCatalogue({season:currentSeason()});if(innerWidth<680)openChat(false);return}
@@ -7957,6 +8049,7 @@ watchImages();renderView();
   const [{data:{session}}]=await Promise.all([sb.auth.getSession(),loadListings(),loadSite()]);
   if(qs.has("code")||qs.has("error_description"))history.replaceState(null,"",location.pathname+location.hash);
   await onSession(session,"INITIAL_SESSION");
+  setTimeout(looWatch,1500);
   if(state.loadError)toast("Impossible de charger les annonces : "+state.loadError);
 })();
 </script>
