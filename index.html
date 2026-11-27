@@ -5660,6 +5660,17 @@ function renderPayCart(){
    ========================================================= */
 async function renderSellerProfile(id){
   const v=$("view-vendeur");
+  if(/^demo-/.test(id||"")){   // vendeur des annonces de démonstration : un profil simple avec ses articles
+    const name=decodeURIComponent(id.slice(5)),items=available().filter(p=>!p.sellerId&&p.seller===name).sort((a,b)=>b.addedAt-a.addedAt);
+    if(!items.length){v.innerHTML=`<div class="page-head"><h1 class="page-title">Profil introuvable</h1><a class="btn btn-primary" href="#/catalogue">Voir les articles</a></div>`;return}
+    v.innerHTML=`<p class="crumbs" style="padding-top:18px"><a href="#/">Accueil</a> › Profil</p>
+    <section class="pp"><div class="pp-cover"></div><div class="pp-body"><span class="avatar pp-avatar" aria-hidden="true">${avatarInner(name,null)}</span>
+      <div class="pp-id"><h1>@${esc(name)}</h1><div class="pp-chips"><span>Profil de démonstration</span></div></div></div>
+      <p class="pp-bio muted small">Ce profil présente les annonces d’exemple d’Orleoo : elles ne sont pas réellement en vente.</p>
+      <div class="pp-stats"><div><b>${items.length}</b><span>Article${items.length>1?"s":""} d’exemple</span></div><div><b>—</b><span>Avis</span></div><div><b>—</b><span>Note moyenne</span></div></div></section>
+    <div style="margin-top:22px"><div class="products" id="profileProducts"></div></div>`;
+    grid($("profileProducts"),items,"");document.title=`${name} — Orleoo`;return;
+  }
   if(!sb||!isUuid(id||"")){v.innerHTML=`<div class="page-head"><h1 class="page-title">Profil introuvable</h1><a class="btn btn-primary" href="#/catalogue">Voir les vêtements</a></div>`;return}
   v.innerHTML=`<div class="page-head"><p class="muted">Chargement du profil…</p></div>`;
   let {data:pr,error}=await sb.from("profiles").select("id,name,city,bio,created_at,avatar_url,banner_url").eq("id",id).maybeSingle();
@@ -5771,7 +5782,7 @@ function renderHome(){
   $("sellers").innerHTML=shops.map(sh=>{const items=av.filter(p=>sh.id?p.sellerId===sh.id:(p.seller===sh.name&&!p.sellerId)),n=items.length;
     const thumbs=items.slice(0,3).map(p=>`<span class="image-frame"><img data-safe-image src="${esc(p.img)}" alt="" loading="lazy" decoding="async"></span>`).join("");
     const inner=`<span class="dress-head"><span class="avatar" aria-hidden="true">${sh.emoji}</span><span class="shop-info"><b>${esc(sh.name)}${sh.id?planBadge(sh.id):""}</b><small>${n} article${n>1?"s":""} en vente</small></span><span class="shop-go" aria-hidden="true">›</span></span><span class="dress-thumbs" aria-hidden="true">${thumbs}</span>`;
-    return sh.id?`<a class="shop dress" href="#/vendeur/${sh.id}" aria-label="Dressing de ${esc(sh.name)}, ${n} article${n>1?"s":""}">${inner}</a>`:`<button type="button" class="shop dress" data-seller="${esc(sh.name)}" aria-label="Dressing de ${esc(sh.name)}">${inner}</button>`}).join("")
+    return sh.id?`<a class="shop dress" href="#/vendeur/${sh.id}" aria-label="Dressing de ${esc(sh.name)}, ${n} article${n>1?"s":""}">${inner}</a>`:`<a class="shop dress" href="#/vendeur/demo-${encodeURIComponent(sh.name)}" aria-label="Dressing de ${esc(sh.name)}">${inner}</a>`}).join("")
     + (state.user&&planOf(state.user.id)?"":`<a class="shop shop-join" href="#/abonnements"><span class="avatar" aria-hidden="true">+</span><span class="shop-info"><b>${shops.length?"Ton dressing ici ?":"Sois la première boutique à la une"}</b><small>Réservé aux abonnés Pro, Max et Ultra, à tour de rôle</small></span><span class="shop-go" aria-hidden="true">›</span></a>`);
   const STYLE_DESC={Vintage:"Pièces d’époque et belles matières",Streetwear:"Sweats, baskets et coupes larges",Chic:"Tailleurs, chemises et élégance",Casual:"Jeans, mailles et basiques du quotidien",Sport:"Joggings, leggings et tenues actives"};
   $("styleTiles").innerHTML=STYLES.map((st,i)=>{const n=av.filter(p=>p.style===st).length;return `<button type="button" class="style-tile st-${i}" data-style="${st}"><span class="st-name">${st}</span><span class="st-desc">${STYLE_DESC[st]||""}</span><span class="st-count">${n} pièce${n>1?"s":""} <span aria-hidden="true">→</span></span></button>`}).join("");
@@ -5977,7 +5988,7 @@ function renderProduct(id){
       ${actions}
       ${sold||p.mine?"":offerBlock(p)+lotHint(p)}
       ${sold?"":tradeBlock(p)}
-      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}${p.sellerId?`<div class="trust" data-badges="${p.sellerId}"></div>`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<button type="button" class="btn btn-outline" data-seller="${esc(p.seller)}">Ses articles</button>`}</div>
+      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}${p.sellerId?`<div class="trust" data-badges="${p.sellerId}"></div>`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<a class="btn btn-outline" href="#/vendeur/demo-${encodeURIComponent(p.seller)}">Voir le profil</a>`}</div>
       ${p.mine||sold?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
       ${p.demo?"":`<button type="button" class="link small" id="storyBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="16.8" cy="7.2" r=".6"/></svg> Story Instagram</button>`}
       <button type="button" class="link small" id="shareBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Partager</button>
