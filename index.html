@@ -3964,6 +3964,9 @@ html[data-design="2"][data-theme="dark"] .tags .tag:hover .tag-ic svg{stroke:#1F
 html[data-design="2"][data-theme="dark"] .tags .tag b::after{color:#EBA488}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .tags .tag:hover .tag-ic{background:#E07A55!important;border-color:#E07A55!important}html[data-design="2"]:not([data-theme="light"]) .tags .tag:hover .tag-ic svg{stroke:#1F1A17!important;color:#1F1A17!important}html[data-design="2"]:not([data-theme="light"]) .tags .tag b::after{color:#EBA488}}
 body{overflow-anchor:none}
+
+/* connecté : seulement la photo de profil en haut à droite (tout le reste est dans son menu) */
+body:not(.guest) .top .actions>:is(.action,.head-sell,#cartBtn){display:none!important}
 </style>
 </head>
 <body>
@@ -7615,7 +7618,6 @@ async function fillBadges(root){
     const id=el.dataset.badges;if(!isUuid(id))continue;
     if(!growth.badges[id]){const {data,error}=await sb.rpc("seller_badges",{p_user:id});if(error||!data)continue;growth.badges[id]=data}
     const b=growth.badges[id],out=[];
-    if(b.depuis)out.push(`<span class="tb">Membre depuis ${new Date(b.depuis).toLocaleDateString("fr-FR",{month:"long",year:"numeric"})}</span>`);
     if(b.ventes>0)out.push(`<span class="tb">${b.ventes} vente${b.ventes>1?"s":""} réussie${b.ventes>1?"s":""}</span>`);
     if(b.avis>=3&&b.note>=4.5)out.push(`<span class="tb tb-ok">Vendeur fiable</span>`);
     if(b.conversations>=3&&b.reponse_h!=null&&b.reponse_h<=2)out.push(`<span class="tb tb-ok">Répond vite</span>`);
