@@ -3166,7 +3166,7 @@ html[data-design="2"] #filterForm{padding:6px 18px 18px}
 #filters .chip span em{font-style:normal;font-size:.75rem;font-weight:700;color:var(--muted,#5E636B)}
 #filters .chip:hover span{border-color:#B04E2E}
 #filters .chip input:checked+span{background:#B04E2E!important;border-color:#B04E2E!important;color:#fff!important}
-#filters .chip input:checked+span em{color:#F8E9DF}
+#filters .chip input:checked+span em{color:#fff}
 #filters .chip input:focus-visible+span{outline:3px solid #EBA488;outline-offset:2px}
 .f-presets{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
 .f-preset{min-height:38px;border-radius:10px;border:1px solid var(--line,#E6DCCF);background:var(--surface,#fff);font:inherit;font-size:.85rem;font-weight:600;color:inherit;cursor:pointer;transition:all .15s}
@@ -3312,6 +3312,71 @@ html[data-design="2"][data-theme="dark"] .hbar span{background:#E07A55}
 html[data-design="2"][data-theme="dark"] .hstate.warn{background:#4A3A1C;color:#F3C77A}
 html[data-design="2"][data-theme="dark"] .hstate.ok{background:#21392B;color:#9BD3AE}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .hbar{background:#49515A}html[data-design="2"]:not([data-theme="light"]) .hbar span{background:#E07A55}html[data-design="2"]:not([data-theme="light"]) .hstate.warn{background:#4A3A1C;color:#F3C77A}html[data-design="2"]:not([data-theme="light"]) .hstate.ok{background:#21392B;color:#9BD3AE}}
+/* ===== TÉLÉPHONE : RÉVISION COMPLÈTE ===== */
+@media (max-width:680px){
+  /* bandeau du haut sur une ligne */
+  .db-long{display:none}
+  #demoBar{font-size:12.5px;padding:7px 12px;line-height:1.3}
+  /* accueil : le titre d'abord, l'inscription à l'ouverture ensuite */
+  #view-home:not([hidden]){display:flex;flex-direction:column}
+  #view-home>.hero2{order:1}
+  #view-home>.launch-box{order:2;margin-top:4px}
+  #view-home>.wrap{order:3}
+  html[data-design="2"] #heroTitle{font-size:clamp(2rem,9.4vw,2.7rem)!important;line-height:1.05;letter-spacing:-.02em;overflow-wrap:break-word}
+  html[data-design="2"] .hero2{padding-top:18px!important}
+  .hx-daily{display:none}
+  /* accueil plus court : 6 articles par bloc, « Tout voir » pour le reste */
+  #view-home .home-block .products>*:nth-child(n+7){display:none}
+  #view-home .home-block{padding-top:26px!important;padding-bottom:6px!important}
+  /* cartes plus compactes : 3 articles visibles par écran au lieu de 2 */
+  html[data-design="2"] .products{gap:10px!important}
+  html[data-design="2"] .card .card-body,html[data-design="2"] .card .info{padding:9px 10px 11px!important}
+  html[data-design="2"] .card h3,html[data-design="2"] .card .card-title{font-size:14px!important;margin:0 0 4px!important;line-height:1.25}
+  html[data-design="2"] .card .card-seller,html[data-design="2"] .card .seller-line{display:none!important}
+  html[data-design="2"] .card .tag,html[data-design="2"] .card .chip-mini{font-size:10.5px!important;padding:2px 7px!important}
+  html[data-design="2"] .card .card-meta{display:flex;flex-wrap:nowrap;gap:4px;overflow:hidden;margin:0!important}
+  html[data-design="2"] .card .chip-mini{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  html[data-design="2"] .card .chip-mini:first-child{flex:none}
+  /* catalogue : nombre + tri sur une ligne, actions sur la suivante */
+  html[data-design="2"] .results-bar{display:grid!important;grid-template-columns:auto auto 42px minmax(0,1fr);grid-template-areas:"count sort sort sort" "filt sizes alert .";min-width:0;gap:10px 8px!important;align-items:center}
+  html[data-design="2"] .results-bar #resultCount{grid-area:count;margin:0!important;font-size:1rem}
+  html[data-design="2"] .results-bar .sort{grid-area:sort;justify-self:end;margin:0!important}
+  html[data-design="2"] .results-bar #filtersToggle{grid-area:filt;min-height:40px;padding:8px 14px}
+  html[data-design="2"] .results-bar #mySizesBtn{grid-area:sizes;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  html[data-design="2"] .results-bar #saveAlert{grid-area:alert;margin:0!important;width:42px;padding:0!important;justify-content:center}
+  .sa-lbl,.sort-lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  html[data-design="2"] .results-bar .sort select{min-height:40px;font-size:15px;padding:6px 30px 6px 12px;border-radius:99px;max-width:100%}
+  html[data-design="2"] .results-bar .sort{max-width:100%;min-width:0}
+  .catalogue>section,.catalogue>*{min-width:0}
+  /* article : la photo laisse voir le titre et le prix */
+  html[data-design="2"] .gallery-main{aspect-ratio:auto!important;height:min(46vh,400px)!important;max-height:46vh}
+  html[data-design="2"] #view-product .crumbs{margin-bottom:8px}
+  /* Loo : plus petit, au-dessus de la barre du bas, se range pendant le défilement */
+  .reboot{width:52px;height:52px;min-height:52px!important;padding:0!important;justify-content:center;right:12px!important;bottom:calc(76px + env(safe-area-inset-bottom))!important;transition:transform .25s ease,opacity .25s ease}
+  .reboot .reboot-label{display:none}
+  body.scroll-down .reboot{transform:translateY(130px);opacity:0;pointer-events:none}
+  body.scroll-down .loo-tip{opacity:0;pointer-events:none}
+  /* zones tactiles d'au moins 44 px */
+  .crumbs a{display:inline-block;padding:10px 0}
+  .tabbar a{min-height:52px}
+  /* listes horizontales qui défilent proprement */
+  .home-tabs{scroll-snap-type:x proximity;scrollbar-width:none}
+  .home-tabs::-webkit-scrollbar{display:none}
+  .home-tabs>*{scroll-snap-align:start}
+  /* pages longues : moins d'espace perdu */
+  html[data-design="2"] .page-head{padding-top:12px!important}
+  html[data-design="2"] .xpage .x-hero{padding:18px 16px}
+  html[data-design="2"] .xpage .x-hero-ic{width:46px;height:46px;margin-bottom:10px}
+  html[data-design="2"] .x-steps li{padding:14px}
+}
+@media (max-width:380px){
+  html[data-design="2"] .results-bar #mySizesBtn{max-width:118px}
+  html[data-design="2"] #heroTitle{font-size:2rem!important}
+}
+
+.gallery-main{position:relative}
+.photo-count{position:absolute;right:12px;bottom:12px;padding:4px 10px;border-radius:99px;background:rgba(31,26,23,.72);color:#fff;font-size:12.5px;font-weight:700;letter-spacing:.02em;pointer-events:none}
+@media (min-width:681px){.photo-count{display:none}}
 </style>
 </head>
 <body>
@@ -3539,9 +3604,9 @@ html[data-design="2"][data-theme="dark"] .hstate.ok{background:#21392B;color:#9B
         <button type="button" class="btn btn-outline filters-toggle" id="filtersToggle" aria-expanded="false" aria-controls="filters">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg> Filtres <span id="filterNb"></span>
         </button>
-        <span class="count" id="resultCount" role="status"></span><button type="button" class="btn btn-outline btn-sm" id="saveAlert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg> Créer une alerte</button>
+        <span class="count" id="resultCount" role="status"></span><button type="button" class="btn btn-outline btn-sm" id="saveAlert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="sa-lbl"> Créer une alerte</span></button>
         <button type="button" class="btn btn-outline btn-sm" id="mySizesBtn" aria-pressed="false" aria-controls="mySizesBox">Mes tailles</button>
-        <label class="sort">Trier par
+        <label class="sort"><span class="sort-lbl">Trier par</span>
           <select id="sortSelect">
             <option value="selection">Sélection Orleoo</option>
             <option value="recent">Plus récents</option>
@@ -5654,7 +5719,7 @@ document.addEventListener("click",async e=>{
   b.textContent="On te prévient ✓";b.disabled=true;
   toast(ok?"C’est noté : on te prévient dès que les achats ouvrent.":"C’est noté sur cet appareil : on te prévient dès que les achats ouvrent.");
 });
-if(CONFIG.vitrine){document.body.classList.add("vitrine");const db=$("demoBar");if(db){db.classList.remove("paydemo");db.innerHTML=`<b>Les achats ouvrent bientôt</b> · inscris-toi et publie tes annonces dès maintenant · <a href="#/vendre">Vendre</a><span id="launchBar"></span>`}}
+if(CONFIG.vitrine){document.body.classList.add("vitrine");const db=$("demoBar");if(db){db.classList.remove("paydemo");db.innerHTML=`<b>Les achats ouvrent bientôt</b><span class="db-long"> · inscris-toi et publie tes annonces dès maintenant</span> · <a href="#/vendre">Vendre</a><span id="launchBar"></span>`}}
 
 /* Paiement et contacts en dehors d'Orleoo : interdits (même règle que le serveur) */
 function offPlatform(txt){
@@ -6138,7 +6203,7 @@ function renderProduct(id){
   <div class="page-head" style="padding-bottom:0"><p class="crumbs"><a href="#/">Accueil</a> › <a href="#/catalogue" data-category="${esc(p.category)}">${esc(p.category)}</a> › ${esc(p.name)}</p></div>
   <div class="product-page">
     <div>
-      <div class="image-frame gallery-main"><img data-safe-image id="mainPhoto" src="${esc(photos[0])}" alt="${esc(p.name)}"></div>
+      <div class="image-frame gallery-main"><img data-safe-image id="mainPhoto" src="${esc(photos[0])}" alt="${esc(p.name)}">${photos.length>1?`<span class="photo-count" id="photoCount" aria-hidden="true">1/${photos.length}</span>`:""}</div>
       ${photos.length>1?`<div class="thumbs" role="group" aria-label="Photos de l’article">${photos.map((ph,i)=>`<button type="button" data-photo="${i}" aria-current="${i===0}" aria-label="Photo ${i+1}"><img src="${esc(ph)}" alt=""></button>`).join("")}</div>`:""}
     </div>
     <div class="product-info">
@@ -7883,6 +7948,19 @@ function looWatch(){
 addEventListener("hashchange",()=>setTimeout(looWatch,50));
 /* le filtre change sur le catalogue : si plus rien ne correspond, Loo le remarque */
 document.addEventListener("change",e=>{if(e.target.closest&&e.target.closest("#filterForm"))setTimeout(()=>{if(!filtered().length)looTip("vide",1200,"Rien ne correspond pour l’instant. Je peux t’aider à élargir ta recherche, ou te prévenir dès qu’un article arrive.",["Comment être prévenu quand un article qui me plaît est publié ?","Comment voir d’abord les articles à ma taille ?"])},100)});
+
+/* Téléphone : Loo se range quand on fait défiler vers le bas, revient quand on remonte */
+(function(){let y=scrollY,t=0;addEventListener("scroll",()=>{if(innerWidth>680)return;const ny=scrollY;
+  if(Math.abs(ny-y)<8)return;document.body.classList.toggle("scroll-down",ny>y&&ny>200);y=ny;clearTimeout(t);t=setTimeout(()=>document.body.classList.remove("scroll-down"),1400)},{passive:true})})();
+
+/* Téléphone : glisser le doigt sur la photo pour passer à la suivante */
+(function(){let x0=null,y0=0;
+  document.addEventListener("touchstart",e=>{const g=e.target.closest(".gallery-main");if(!g||e.touches.length!==1){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+  document.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)<40||Math.abs(dx)<Math.abs(dy)*1.3)return;
+    const th=[...document.querySelectorAll(".thumbs [data-photo]")];if(th.length<2)return;const cur=th.findIndex(b=>b.getAttribute("aria-current")==="true");
+    const n=(cur+(dx<0?1:-1)+th.length)%th.length;th[n].click()},{passive:true});
+  document.addEventListener("click",e=>{const b=e.target.closest(".thumbs [data-photo]");if(!b)return;setTimeout(()=>{const c=$("photoCount");if(c)c.textContent=`${+b.dataset.photo+1}/${document.querySelectorAll(".thumbs [data-photo]").length}`},0)});
+})();
 let chatStarted=false;
 function openChat(open){
   const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);
