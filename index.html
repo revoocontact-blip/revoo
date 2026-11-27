@@ -3468,7 +3468,6 @@ html[data-design="2"][data-theme="dark"] .mm-out .mm-ic{background:#3A2A2A;color
   .menu-btn{display:grid;place-items:center;position:relative;width:44px;height:44px;border-radius:12px;border:1px solid var(--line,#E6DCCF);background:var(--surface,#fff);color:var(--ink,#2E3238);cursor:pointer;padding:0}
   .menu-lines{display:grid;gap:4px;width:20px}
   .menu-lines i{display:block;height:2px;border-radius:2px;background:currentColor}
-  .menu-lines i:nth-child(2){width:70%;justify-self:end}
   .menu-dot{position:absolute;top:7px;right:7px;width:9px;height:9px;border-radius:50%;background:#B04E2E;box-shadow:0 0 0 2px var(--surface,#fff)}
   html[data-design="2"][data-theme="dark"] .menu-btn{background:#2F3439;border-color:#49515A;color:#F1F2F3}
   /* barre sous la recherche : Filtres · Mode · Livres, sans l'icône isolée */
@@ -3654,6 +3653,34 @@ html[data-design="2"][data-theme="dark"] .m2-logo{filter:brightness(0) invert(1)
 
 .m2-profile .m2-av{background:rgba(255,255,255,.2)!important;color:#fff!important;font-weight:800}
 .m2-profile .m2-av img{border-radius:50%}
+
+/* ===== Loo : fenêtre en bas d'écran sur téléphone, fermeture en touchant à côté ===== */
+.chat-backdrop{display:none}
+@media (max-width:680px){
+  .chat-backdrop{position:fixed;inset:0;z-index:49;background:rgba(31,26,23,.38);opacity:0;pointer-events:none;transition:opacity .2s;display:block}
+  body.chat-open .chat-backdrop{opacity:1}
+  html[data-design="2"] .chat{left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;max-width:none!important;height:min(78dvh,620px)!important;border-radius:20px 20px 0 0!important;border-bottom:0!important;padding-bottom:env(safe-area-inset-bottom)}
+  html[data-design="2"] .chat .chat-head{padding:12px 14px!important;position:relative}
+  html[data-design="2"] .chat .chat-head::before{content:"";position:absolute;top:6px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:4px;background:var(--line,#E6DCCF)}
+  html[data-design="2"] .chat-input{gap:8px}
+  html[data-design="2"] .chat-input input{min-width:0;flex:1}
+  html[data-design="2"] .chat-input .btn{flex:none;padding:8px 14px!important}
+  body.chat-open .reboot{display:none!important}
+  body.chat-open .loo-tip{display:none}
+}
+
+/* petits téléphones : rien ne dépasse */
+@media (max-width:680px){
+  html[data-design="2"] #view-home .swap .swap-in{grid-template-columns:minmax(0,1fr)!important;padding-left:18px!important;padding-right:18px!important}
+  html[data-design="2"] #view-home .swap .swap-in>*{min-width:0;max-width:100%}
+  #view-home .btn{max-width:100%;white-space:normal}
+  img,svg,video{max-width:100%}
+}
+
+@media (max-width:680px){
+  .panel .btn,.settings-col .btn,.empty .btn,.note .btn{white-space:normal;max-width:100%;text-align:center;height:auto;min-height:44px;line-height:1.25}
+  .settings-col,.settings-col>*{min-width:0;max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -3735,6 +3762,7 @@ html[data-design="2"][data-theme="dark"] .m2-logo{filter:brightness(0) invert(1)
 </header>
 
 <div class="mm-backdrop" id="mmBackdrop" hidden></div>
+<div class="chat-backdrop" id="chatBackdrop" aria-hidden="true"></div>
 <aside class="mob-menu" id="mobMenu" role="dialog" aria-modal="true" aria-label="Menu" hidden><div class="mm-inner" id="mmInner"></div></aside>
 <main id="main" tabindex="-1">
 
@@ -8324,9 +8352,16 @@ document.addEventListener("keydown",e=>{if(!$("mobMenu")?.classList.contains("op
 addEventListener("hashchange",()=>{if($("mobMenu")?.classList.contains("open"))openMenu(false)});
 /* pastille sur le bouton menu quand quelque chose attend */
 setInterval(()=>{const d=$("menuDot");if(!d)return;let n=0;try{n=(state.user?(chat.unread||0)+(typeof loanTodo==="function"?loanTodo():0):0)}catch(_){}d.hidden=!n},2000);
+
+/* Loo : on ferme en touchant (ou cliquant) n'importe où en dehors de la fenêtre */
+document.addEventListener("pointerdown",e=>{
+  const c=$("chat");if(!c||!c.classList.contains("open"))return;
+  if(e.target.closest("#chat,#rebootBtn,[data-mm-loo],[data-help-loo],[data-tip-open],[data-open-chat],.loo-tip"))return;
+  c.classList.remove("open");$("rebootBtn").setAttribute("aria-expanded","false");document.body.classList.remove("chat-open");
+},true);
 let chatStarted=false;
 function openChat(open){
-  const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);
+  const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);document.body.classList.toggle("chat-open",!!open);
   if(open){looTipHide();if(!chatStarted){chatStarted=true;botSay(looGreeting())}setTimeout(()=>$("chatMessage").focus(),50)}
   else $("rebootBtn").focus();
 }
