@@ -3101,6 +3101,39 @@ html[data-design="2"]:not([data-theme="light"]) .help-theme span{background:#3B3
 html[data-design="2"]:not([data-theme="light"]) .help-theme small{color:#B9B2AA}
 }
 @media (min-width:901px){.help-themes{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Aide intelligente */
+.help-pop{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.help-pop .pill{font-size:.85rem}
+.help-results{margin:26px 0}
+.hr-count{font-weight:700;margin:0 0 12px}
+.hr-item{border:1px solid var(--line,#E6DCCF);border-radius:16px;background:var(--surface,#fff);margin:0 0 10px;transition:box-shadow .2s}
+.hr-item[open]{box-shadow:0 8px 22px rgba(46,50,56,.08);border-color:#EBA488}
+.hr-item summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;flex-direction:column;gap:3px}
+.hr-item summary::-webkit-details-marker{display:none}
+.hr-sec{font-size:.74rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#963F22}
+.hr-body{padding:0 18px 16px}
+.hr-body>p{margin:0 0 12px;line-height:1.6}
+.hr-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:12px;border-top:1px solid var(--line,#E6DCCF)}
+.hr-ask{font-size:.88rem;font-weight:600;margin-right:4px}
+.hr-foot .link{margin-left:auto}
+.help-results mark{background:#F8E9DF;color:inherit;border-radius:4px;padding:0 2px}
+.hr-empty{padding:26px;border-radius:18px;border:1px dashed #EBA488;background:var(--surface,#fff)}
+.hr-empty p{margin:6px 0 16px}
+.hr-more{margin:14px 0 0}
+.rb-from{font-size:.8rem;font-weight:800;color:#963F22;margin:0 0 4px}
+html[data-design="2"][data-theme="dark"] :is(.hr-item,.hr-empty){background:#2F3439;border-color:#49515A}
+html[data-design="2"][data-theme="dark"] .hr-item[open]{border-color:#E07A55}
+html[data-design="2"][data-theme="dark"] :is(.hr-sec,.rb-from){color:#EBA488}
+html[data-design="2"][data-theme="dark"] .help-results mark{background:#4A3A33}
+html[data-design="2"][data-theme="dark"] .hr-foot{border-color:#49515A}
+@media (prefers-color-scheme:dark){
+html[data-design="2"]:not([data-theme="light"]) :is(.hr-item,.hr-empty){background:#2F3439;border-color:#49515A}
+html[data-design="2"]:not([data-theme="light"]) .hr-item[open]{border-color:#E07A55}
+html[data-design="2"]:not([data-theme="light"]) :is(.hr-sec,.rb-from){color:#EBA488}
+html[data-design="2"]:not([data-theme="light"]) .help-results mark{background:#4A3A33}
+html[data-design="2"]:not([data-theme="light"]) .hr-foot{border-color:#49515A}
+}
 </style>
 </head>
 <body>
@@ -6595,11 +6628,111 @@ function wireDraft(editing){
 }
 
 /* Centre d'aide : recherche dans les questions */
-document.addEventListener("input",e=>{if(e.target.id!=="helpQ")return;
-  const n=x=>x.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");const q=n(e.target.value.trim());let any=0;
-  document.querySelectorAll(".help-sec details").forEach(d=>{const ok=!q||q.split(/\s+/).every(w=>n(d.textContent).includes(w));d.hidden=!ok;if(ok)any++;if(q&&ok)d.open=true});
-  document.querySelectorAll(".help-sec").forEach(sec=>{const ds=sec.querySelectorAll("details");if(ds.length)sec.hidden=[...ds].every(d=>d.hidden)});
-  $("helpNone").hidden=!!any});
+/* =========================================================
+   AIDE INTELLIGENTE : une seule base de réponses (centre d'aide + pages Échanger, Main propre, Prêt)
+   comprise malgré les fautes, les synonymes et les tournures. Utilisée par le centre d'aide ET par Loo.
+   ========================================================= */
+const HK_STOP=new Set("a ai au aux avec c ca ce ces cet cette d de des du elle en est et etre il ils j je l la le les leur lui m ma me mes moi mon n ne nous on ou par pas peut peux pour qu que quel quelle quels qui quoi s sa se ses si son sur t ta te tes toi ton tu un une vos votre vous y comment combien pourquoi quand faire fait faut veux voudrais aimerais besoin svp stp merci bonjour salut hello est-ce ce-que".split(" "));
+const HK_SYN=[
+  ["livraison","colis","envoi","envoyer","expedier","expedition","livrer","poste","relais","mondial","colissimo","chronopost","suivi","transporteur","perdu","arrive","arrivee"],
+  ["recevoir","recu","recue","recois","reception","rien"],
+  ["rembourse","remboursement","rembourser","recuperer","annule","annuler","annulation","litige","probleme","souci","defaut","abime","casse","faux"],
+  ["paiement","payer","paye","paie","carte","cb","virement","paypal","especes","liquide","lydia","wero","argent","bloque","verse","virer"],
+  ["frais","prix","cout","coute","couter","tarif","commission","cher","pourcentage","gratuit"],
+  ["compte","profil","inscription","inscrire","connexion","connecter","identifiant","pseudo","email","mail","adresse"],
+  ["motdepasse","mdp","password","passe"],
+  ["annonce","article","produit","objet","vetement","fringue","habit"],
+  ["supprimer","effacer","retirer","enlever","desactiver"],
+  ["echange","echanger","troc","troquer","swap","complement"],
+  ["mainpropre","main","propre","rdv","rendezvous","rendez","remise","code","rencontre","voir"],
+  ["favori","favoris","coeur","like","aime","sauvegarder","garder"],
+  ["signaler","signalement","arnaque","fraude","escroc","escroquerie","suspect","contrefacon","faux"],
+  ["bloquer","bloque","harcelement","harceler","insulte","relou"],
+  ["pret","preter","emprunter","emprunt","louer","location"],
+  ["photo","photos","image","picture","lumiere","ameliorer"],
+  ["vendre","vente","vendeur","vends","mettre","publier","poster"],
+  ["acheter","achat","acheteur","commande","commander","panier"],
+  ["alerte","alertes","notification","prevenir","prevenu","notif"],
+  ["taille","tailles","pointure","mesure"],
+  ["livre","livres","bouquin","roman","bd","manga","isbn","scanner","scan","bibliotheque"],
+  ["abonnement","formule","premium","pro","max","ultra","boost","booster"],
+  ["offre","negocier","negociation","marchander","baisser","proposer","contreoffre"],
+  ["lot","lots","reduction","promo","remise"],
+  ["delai","temps","jours","heures","attendre","combien"]];
+const HK_GROUP=new Map();
+function hkStem(w){for(const e of["ements","ement","ations","ation","euses","euse","eurs","eur","ees","ee","ons","ez","er","es","e","s","x"])if(w.length-e.length>=4&&w.endsWith(e))return w.slice(0,-e.length);return w}
+HK_SYN.forEach((g,i)=>g.forEach(w=>{HK_GROUP.set(w,"§"+i);if(!HK_GROUP.has(hkStem(w)))HK_GROUP.set(hkStem(w),"§"+i)}));
+function hkTokens(text){
+  return norm(text).replace(/[’'`´]/g," ").replace(/[^a-z0-9 ]+/g," ").split(/\s+/).filter(w=>w&&!HK_STOP.has(w)&&(w.length>1||/\d/.test(w)))
+    .map(w=>{const g=HK_GROUP.get(w)||HK_GROUP.get(hkStem(w));return g?[g,hkStem(w)]:[hkStem(w)]}).flat();
+}
+function hkLev(a,b,max){if(Math.abs(a.length-b.length)>max)return max+1;let prev=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){const cur=[i];let best=i;for(let j=1;j<=b.length;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));if(cur[j]<best)best=cur[j]}if(best>max)return max+1;prev=cur}return prev[b.length]}
+let HK=null;
+const HK_TAGS=[["Que faire si je ne reçois rien","colis jamais arrive perdu livraison vole"],["Je n’ai pas reçu d’e-mail","courrier spam indesirable confirmation"],["Comment fonctionne l’échange","troc troquer"],["Comment marche la remise en main propre","rdv rencontre code"],["Puis-je payer en espèces","liquide cash cheque"],["Comment bloquer un membre","harcelement insulte"],["Comment signaler une annonce","arnaque fraude contrefacon"],["C’est quoi le prêt entre membres","emprunter louer location preter"],["Comment changer mon mot de passe","oublie mdp reinitialiser"]];
+function helpKB(){
+  if(HK)return HK;
+  const box=document.createElement("div"),docs=[];
+  const add=(html,label,href)=>{box.innerHTML=html;box.querySelectorAll("details").forEach(d=>{const sum=d.querySelector("summary");if(!sum)return;
+    const sec=d.closest("section")?.querySelector("h2")?.textContent||label;const a=[...d.children].filter(x=>x!==sum).map(x=>x.innerHTML).join(" ");
+    const q=sum.textContent.trim();if(docs.some(x=>x.q===q))return;const tag=(HK_TAGS.find(([k])=>q.startsWith(k))||[])[1]||"";docs.push({q,a,tag,sec:label==="Centre d’aide"?sec:label,href,id:d.closest("section")?.id||""})})};
+  try{add(PAGES.aide(),"Centre d’aide","#/aide")}catch(_){}
+  try{add(pageEchanger(),"Échanger","#/echanger")}catch(_){}
+  try{add(pageMainPropre(),"Main propre","#/main-propre")}catch(_){}
+  try{add(pagePret(),"Prêt","#/pret")}catch(_){}
+  const df=new Map();
+  docs.forEach(d=>{d.tq=new Set(hkTokens(d.q+" "+d.sec+" "+d.tag));box.innerHTML=d.a;d.ta=new Set(hkTokens(box.textContent));d.text=box.textContent;new Set([...d.tq,...d.ta]).forEach(t=>df.set(t,(df.get(t)||0)+1))});
+  HK={docs,df,vocab:[...df.keys()].filter(t=>t[0]!=="§"&&t.length>=4)};
+  return HK;
+}
+/* Corrige les mots inconnus (fautes de frappe) d'après le vocabulaire de l'aide */
+function hkFix(tokens){const kb=helpKB();return tokens.map(t=>{if(t[0]==="§"||kb.df.has(t)||t.length<4)return t;let best=null,bd=9;const max=t.length>=8?2:1;
+  for(const v of kb.vocab){const d=hkLev(t,v,max);if(d<bd){bd=d;best=v;if(d===1&&max===1)break}}return bd<=max?(HK_GROUP.get(best)||best):t})}
+function helpSearch(query,limit=5){
+  const kb=helpKB();let qt=[...new Set(hkFix(hkTokens(query)))];if(!qt.length)return[];
+  const N=kb.docs.length,idf=t=>Math.log(1+N/((kb.df.get(t)||0)+.5));
+  const qn=norm(query).replace(/[^a-z0-9 ]+/g," ").trim();
+  return kb.docs.map(d=>{let sc=0,hit=0;for(const t of qt){const w=idf(t);if(d.tq.has(t)){sc+=3*w;hit++}else if(d.ta.has(t)){sc+=w;hit++}}
+      if(!hit)return null;sc*=0.4+0.6*hit/qt.length;if(qn.length>5&&norm(d.q).includes(qn))sc+=6;return{...d,score:sc,hit,cover:hit/qt.length}})
+    .filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,limit);
+}
+function hkMark(text,query){
+  const words=[...new Set(norm(query).replace(/[^a-z0-9 ]+/g," ").split(/\s+/).filter(w=>w.length>=3&&!HK_STOP.has(w)))];
+  let out=esc(text);if(!words.length)return out;
+  const plain=norm(out);const marks=[];
+  words.forEach(w=>{const st=hkStem(w);let k=0;while((k=plain.indexOf(st,k))>-1){marks.push([k,k+st.length]);k+=st.length}});
+  marks.sort((a,b)=>b[0]-a[0]);let last=Infinity;
+  for(const [a,b] of marks){if(b>last)continue;if(out.slice(a,b).includes("&")||out.slice(a,b).includes(";"))continue;out=out.slice(0,a)+"<mark>"+out.slice(a,b)+"</mark>"+out.slice(b);last=a}
+  return out;
+}
+const HELP_POPULAR=["Combien coûtent les frais ?","Comment marche la remise en main propre ?","Comment fonctionne l’échange ?","Que faire si je ne reçois rien ?","Comment mettre un article en vente ?","Puis-je négocier le prix ?"];
+let helpT=0;
+function renderHelpResults(q){
+  const box=$("helpResults");if(!box)return;const on=q.trim().length>=2;
+  document.querySelectorAll(".help-page .help-themes-sec,.help-page .help-list .help-sec").forEach(x=>x.hidden=on);
+  $("helpNone").hidden=true;box.hidden=!on;if(!on){box.innerHTML="";return}
+  const r=helpSearch(q,6),good=r.filter(x=>x.score>=1.2&&x.score>=r[0].score*0.35).slice(0,4);
+  if(!good.length){box.innerHTML=`<div class="hr-empty"><b>Pas de réponse toute prête pour « ${esc(q)} »</b><p class="muted">Loo peut sûrement t’aider : il comprend les questions écrites normalement.</p><button type="button" class="btn btn-primary" data-help-loo="${esc(q)}">Demander à Loo</button></div>`;return}
+  box.innerHTML=`<p class="hr-count">${good.length===1?"1 réponse":good.length+" réponses"} pour « ${esc(q)} »</p>`+good.map((x,i)=>`<details class="hr-item"${i===0?" open":""}><summary><span class="hr-sec">${esc(x.sec)}</span><b>${hkMark(x.q,q)}</b></summary><div class="hr-body"><p>${x.a}</p>
+    <div class="hr-foot"><span class="hr-ask">Cette réponse t’a aidé ?</span><button type="button" class="pill" data-help-fb="yes">Oui</button><button type="button" class="pill" data-help-fb="no" data-q="${esc(x.q)}">Non</button>${x.href!=="#/aide"?`<a class="link small" href="${x.href}">Voir la page ${esc(x.sec)}</a>`:""}</div></div></details>`).join("")+
+    `<p class="hr-more muted small">Ce n’est pas ça ? <button type="button" class="link" data-help-loo="${esc(q)}">Pose ta question à Loo</button></p>`;
+}
+document.addEventListener("input",e=>{if(e.target.id!=="helpQ")return;clearTimeout(helpT);const v=e.target.value;helpT=setTimeout(()=>renderHelpResults(v),120)});
+document.addEventListener("click",e=>{
+  const pp=e.target.closest("[data-help-pop]");if(pp){const i=$("helpQ");i.value=pp.dataset.helpPop;renderHelpResults(i.value);i.focus();return}
+  const lo=e.target.closest("[data-help-loo]");if(lo){openChat(true);const q=lo.dataset.helpLoo;setTimeout(()=>{userSay(q);setTimeout(()=>botSay(rebootReply(q)),250)},250);return}
+  const fb=e.target.closest("[data-help-fb]");if(fb){const foot=fb.closest(".hr-foot");
+    if(fb.dataset.helpFb==="yes"){foot.innerHTML=`<span class="hr-ask">Merci ! 😊</span>`;return}
+    foot.innerHTML=`<span class="hr-ask">Désolé. Loo va essayer de t’aider autrement.</span>`;openChat(true);
+    setTimeout(()=>botSay(`<p>Je vois que la réponse à « ${esc(fb.dataset.q)} » ne t’a pas suffi. Dis-moi avec tes mots ce qui coince, je regarde avec toi. Si besoin, l’équipe répond à <a class="link" href="mailto:orleoo.contact@gmail.com">orleoo.contact@gmail.com</a>.</p>`),300);return}
+});
+/* Loo : quand il ne reconnaît pas la question, il cherche dans toute l'aide */
+function rbHelpAnswer(raw,strict){
+  const r=helpSearch(raw,4);if(!r.length)return null;const top=r[0];
+  if(top.score<(strict?3:1.6)||top.cover<(strict?0.6:0.34))return null;
+  const more=r.slice(1).filter(x=>x.score>=top.score*0.5).slice(0,2).map(x=>x.q);
+  return`<p class="rb-from">${esc(top.q)}</p><p>${top.a}</p><div class="reboot-next">${top.href!=="#/aide"?go(top.href,"Voir la page "+esc(top.sec)):go("#/aide","Centre d’aide")}${more.map(q=>`<button type="button" class="pill" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>`;
+}
 
 const photoOrig=new Map();   // photo améliorée -> originale (pour annuler)
 function renderPhotos(){
@@ -6940,10 +7073,12 @@ const PAGES={
     
     <div class="buy-actions"><a class="btn btn-primary" href="#/vendre">Vendre un vêtement</a><a class="btn btn-outline" href="#/securite">Conseils de sécurité</a></div>`,
   "aide":()=>`<div class="xpage help-page"><p class="crumbs"><a href="#/">Accueil</a> › Centre d’aide</p>
-  <header class="x-hero"><div class="x-hero-main"><span class="x-hero-ic">${xSvg("chat")}</span><p class="x-kicker">Centre d’aide</p><h1>Comment pouvons-nous t’aider ?</h1><p class="x-lead">Toutes les réponses sur la vente, l’achat, l’échange, la main propre et ton compte. Tape un mot-clé ou choisis un thème.</p>
-    <div class="help-search"><label for="helpQ" class="sr-only">Chercher dans l’aide</label><input class="input" id="helpQ" type="search" placeholder="Ex. : frais, échange, code de remise, alerte…" autocomplete="off"></div></div>
+  <header class="x-hero"><div class="x-hero-main"><span class="x-hero-ic">${xSvg("chat")}</span><p class="x-kicker">Centre d’aide</p><h1>Comment pouvons-nous t’aider ?</h1><p class="x-lead">Toutes les réponses sur la vente, l’achat, l’échange, la main propre et ton compte. Pose ta question avec tes mots, même avec des fautes, ou choisis un thème.</p>
+    <div class="help-search"><label for="helpQ" class="sr-only">Chercher dans l’aide</label><input class="input" id="helpQ" type="search" placeholder="Pose ta question, ex. : je n’ai pas reçu mon colis" autocomplete="off"></div>
+    <div class="help-pop" aria-label="Questions fréquentes"><span class="muted small">Souvent demandé :</span>${HELP_POPULAR.slice(0,4).map(q=>`<button type="button" class="pill" data-help-pop="${esc(q)}">${esc(q)}</button>`).join("")}</div></div>
   <aside class="x-facts" aria-label="Besoin d’aide tout de suite ?"><p class="x-facts-t">Besoin d’une réponse ?</p><ul><li><span>${xSvg("chat")}</span>Loo te répond tout de suite</li><li><span>${xSvg("clock")}</span>Disponible à toute heure</li><li><span>${xSvg("check")}</span>Sinon, l’équipe par e-mail</li></ul><button type="button" class="btn btn-primary help-loo" data-open-chat>Discuter avec Loo</button></aside></header>
-  <section class="x-sec"><h2>Choisis un thème</h2><div class="help-themes"><button type="button" class="help-theme" data-jump="aide-start"><span>${xSvg("check")}</span><b>Bien démarrer</b><small>Compte, appli, premiers pas</small></button><button type="button" class="help-theme" data-jump="aide-vendre"><span>${xSvg("euro")}</span><b>Vendre</b><small>Annonces, prix, photos, offres</small></button><button type="button" class="help-theme" data-jump="aide-acheter"><span>${xSvg("heart")}</span><b>Acheter</b><small>Frais, offres, alertes, favoris</small></button><button type="button" class="help-theme" data-jump="aide-echanger"><span>${xSvg("swap")}</span><b>Échanger</b><small>Proposer, négocier, colis</small></button><button type="button" class="help-theme" data-jump="aide-securite"><span>${xSvg("shield")}</span><b>Paiement et sécurité</b><small>Main propre, litiges, blocage</small></button><button type="button" class="help-theme" data-jump="aide-compte"><span>${xSvg("lock")}</span><b>Compte</b><small>Mot de passe, e-mails, données</small></button><button type="button" class="help-theme" data-jump="aide-pret"><span>${xSvg("loop")}</span><b>Prêt</b><small>Bientôt disponible</small></button></div></section>
+  <div id="helpResults" class="help-results" aria-live="polite" hidden></div>
+  <section class="x-sec help-themes-sec"><h2>Choisis un thème</h2><div class="help-themes"><button type="button" class="help-theme" data-jump="aide-start"><span>${xSvg("check")}</span><b>Bien démarrer</b><small>Compte, appli, premiers pas</small></button><button type="button" class="help-theme" data-jump="aide-vendre"><span>${xSvg("euro")}</span><b>Vendre</b><small>Annonces, prix, photos, offres</small></button><button type="button" class="help-theme" data-jump="aide-acheter"><span>${xSvg("heart")}</span><b>Acheter</b><small>Frais, offres, alertes, favoris</small></button><button type="button" class="help-theme" data-jump="aide-echanger"><span>${xSvg("swap")}</span><b>Échanger</b><small>Proposer, négocier, colis</small></button><button type="button" class="help-theme" data-jump="aide-securite"><span>${xSvg("shield")}</span><b>Paiement et sécurité</b><small>Main propre, litiges, blocage</small></button><button type="button" class="help-theme" data-jump="aide-compte"><span>${xSvg("lock")}</span><b>Compte</b><small>Mot de passe, e-mails, données</small></button><button type="button" class="help-theme" data-jump="aide-pret"><span>${xSvg("loop")}</span><b>Prêt</b><small>Bientôt disponible</small></button></div></section>
   <div class="x-bottom"><div class="help-list"><section class="help-sec" id="aide-start"><h2>Bien démarrer</h2><details><summary>C’est quoi Orleoo ?</summary><p>Une friperie en ligne entre particuliers : tu achètes, vends ou échanges des vêtements et des livres de seconde main. Tout se fait sur le site, avec un paiement protégé.</p></details><details><summary>Je n’ai pas de compte : comment être prévenu de l’ouverture ?</summary><p>Sur l’accueil, laisse simplement ton e-mail dans l’encart « Ouverture des achats ». Tu recevras un e-mail la veille et un autre le jour de l’ouverture, avec un lien pour te désinscrire.</p></details><details><summary>Comment créer mon compte ?</summary><p>Clique sur « Se connecter », puis « Créer un compte » : choisis un identifiant public, ton e-mail et un mot de passe d’au moins 8 caractères. C’est gratuit.</p></details><details><summary>Les articles « Démo », c’est quoi ?</summary><p>Ce sont des exemples pour présenter le site : ils ne sont pas réellement en vente. L’équipe les retire quand il y a assez de vraies annonces.</p></details><details><summary>Puis-je installer Orleoo sur mon téléphone ?</summary><p>Oui. Dans Mon compte, clique sur « Installer l’appli » (Android, ordinateur). Sur iPhone : dans Safari, touche « Partager » puis « Sur l’écran d’accueil ».</p></details></section><section class="help-sec" id="aide-vendre"><h2>Vendre</h2><details><summary>Comment mettre un article en vente ?</summary><p>Clique sur « Vendre », ajoute 1 à 5 photos, un titre, une description, la catégorie, la marque, la taille, l’état et le prix. Un aperçu s’affiche avant la publication.</p></details><details><summary>Comment bien fixer mon prix ?</summary><p>Le formulaire te propose un prix conseillé, calculé d’après les annonces similaires en ligne. Tu restes libre de choisir.</p></details><details><summary>Mon annonce en cours a disparu ?</summary><p>Non : elle est gardée comme brouillon sur ton appareil. En revenant sur « Vendre », clique sur « La reprendre ».</p></details><details><summary>Combien ça me coûte de vendre ?</summary><p>Rien : la mise en ligne est gratuite et tu reçois le prix affiché. Les frais Orleoo sont payés par l’acheteur.</p></details><details><summary>Pourquoi mon annonce a-t-elle été refusée ?</summary><p>Elle contenait un mot interdit (contrefaçon, réplique…), un numéro, un e-mail ou un moyen de paiement extérieur à Orleoo. Le message d’erreur indique la raison : corrige puis réessaie.</p></details><details><summary>Comment répondre à une offre ?</summary><p>Tu reçois un message à chaque offre. Dans Mon compte › Offres, accepte, refuse ou propose ton prix : vous pouvez négocier autant que vous voulez, sans délai pour répondre.</p></details><details><summary>Comment proposer une réduction sur les lots ?</summary><p>Dans Mon compte › Profil et paramètres, rubrique « Réductions sur les lots » : choisis jusqu’à 3 paliers (par exemple −10 % dès 2 articles, −20 % dès 4 articles). Ton prix affiché ne change pas.</p></details><details><summary>J’ai beaucoup de livres à vendre</summary><p>Sur « Vendre », clique sur « Vide ta bibliothèque d’un coup » : scanne tes livres à la suite (jusqu’à 20), indique pour chacun le format, l’état et le prix, puis publie tout en une fois.</p></details><details><summary>Comment rendre mes photos plus belles ?</summary><p>Après avoir ajouté une photo, clique sur « Améliorer » : la lumière et les couleurs sont corrigées, et une photo prise en largeur est recadrée. Un clic sur « annuler » remet l’originale.</p></details><details><summary>Comment vendre un livre rapidement ?</summary><p>Sur « Vendre », clique sur « Scanner le code-barres » et prends en photo le code-barres au dos du livre (ou tape les 13 chiffres de l’ISBN). Le titre, l’auteur et la couverture se remplissent tout seuls : il reste l’état, le format et le prix.</p></details><details><summary>Comment partager mon annonce sur Instagram ?</summary><p>Ouvre ton annonce et clique sur « Story Instagram » : une image aux couleurs d’Orleoo est créée avec ta photo et ton prix. Le lien de l’annonce est copié : dans ta story, ajoute le sticker « Lien » et colle-le.</p></details><details><summary>Où voir les statistiques de mes annonces ?</summary><p>Dans Mon compte, onglet « Mes annonces » : nombre de vues, de favoris et de personnes en attente.</p></details></section><section class="help-sec" id="aide-acheter"><h2>Acheter</h2><details><summary>Comment acheter ?</summary><p>${CONFIG.vitrine?"Les achats ouvrent bientôt. En attendant, clique sur « Me prévenir » sur une annonce : tu seras averti(e) dès que tu pourras l’acheter avec le paiement protégé.":"Ajoute l’article au panier, choisis la livraison (colis ou main propre) et paie par carte sur Orleoo. Ton argent reste bloqué jusqu’à ce que tu confirmes la réception."}</p></details><details><summary>Combien coûtent les frais ?</summary><p>L’acheteur paie 5 % du prix + 0,70 € par article, pour le paiement protégé. Exemple : article à 10 € + 1,20 € de frais. La livraison est en plus.</p></details><details><summary>Comment être prévenu quand un article qui me plaît est publié ?</summary><p>Fais ta recherche ou choisis tes filtres dans le catalogue, puis clique sur « Créer une alerte ». Tu reçois un e-mail dès qu’une annonce correspond, et tu retrouves les résultats dans « Mes alertes ».</p></details><details><summary>Puis-je négocier le prix ?</summary><p>Oui : sur l’annonce, clique sur « Faire une offre » (au moins la moitié du prix affiché, 10 offres par jour au maximum). Le vendeur accepte, refuse ou te propose un autre prix, et vous pouvez négocier autant que vous voulez. Une fois le prix accepté, tu as 48 h pour payer (avant l’ouverture des achats : 48 h à partir de l’ouverture). Tout se suit dans Mon compte › Offres.</p></details><details><summary>C’est quoi la réduction sur les lots ?</summary><p>Certains vendeurs offrent une réduction si tu achètes plusieurs de leurs articles (par exemple −10 % dès 2 articles). Elle s’affiche sur leur profil et s’applique automatiquement dans ton panier.</p></details><details><summary>Comment savoir si un favori baisse de prix ?</summary><p>C’est automatique : quand un vendeur baisse le prix d’un article que tu as en favori, tu reçois un e-mail et la baisse apparaît dans Mon compte › Mes alertes.</p></details><details><summary>Comment voir d’abord les articles à ma taille ?</summary><p>Dans le catalogue, clique sur « Mes tailles » et coche tes tailles. Elles passent en premier, et un clic sur le bouton ne garde qu’elles. Tu peux aussi les régler dans Mon compte › Profil et paramètres.</p></details><details><summary>Comment retrouver mes coups de cœur ?</summary><p>Clique sur le cœur d’une annonce pour l’ajouter à tes favoris, puis ouvre « Mes favoris ».</p></details></section><section class="help-sec" id="aide-echanger"><h2>Échanger</h2><details><summary>Comment fonctionne l’échange ?</summary><p>Propose un de tes articles contre celui d’un autre membre, avec un complément d’argent si besoin. Une fois accepté, chacun envoie son colis avec suivi, puis vous avez 48 h pour vérifier.</p></details><details><summary>Qui peut échanger ?</summary><p>Tous les membres, dès l’inscription. Chaque colis doit avoir un numéro de suivi.</p></details></section><section class="help-sec" id="aide-securite"><h2>Paiement et sécurité</h2><details><summary>Puis-je payer en espèces, par virement ou PayPal ?</summary><p>Non : tout se paie sur Orleoo. Les paiements extérieurs ne sont pas protégés et sont interdits. Les messages qui contiennent un numéro, un e-mail ou un autre moyen de paiement sont bloqués.</p></details><details><summary>Comment marche la remise en main propre ?</summary><p>Tu paies sur Orleoo avant le rendez-vous. Ton code de remise s’affiche dans ta conversation avec le vendeur (visible par toi seul) et dans Mon compte › Mes achats. Sur place, tu vérifies l’article, puis tu donnes le code au vendeur : c’est lui qui débloque l’argent.</p></details><details><summary>Que faire si je ne reçois rien ?</summary><p>Ne confirme pas la réception et signale le problème depuis ta commande, dans Mon compte. L’argent reste bloqué et la modération tranche.</p></details><details><summary>Comment bloquer un membre ?</summary><p>Ouvre ta conversation avec lui et clique sur « Bloquer ». Vous ne pouvez plus vous écrire ni vous faire d’offre, et il n’est pas prévenu. Tu peux le débloquer dans Mon compte › Profil et paramètres.</p></details><details><summary>Comment signaler une annonce ?</summary><p>Ouvre l’annonce et clique sur « Signaler cette annonce ». C’est confidentiel. L’équipe reçoit aussi automatiquement les annonces qui semblent suspectes.</p></details></section><section class="help-sec" id="aide-compte"><h2>Compte</h2><details><summary>Comment inviter mes amis ?</summary><p>Dans Mon compte, « Invite tes amis » : copie ou partage ton lien. Chaque personne qui s’inscrit avec devient ton filleul.</p></details><details><summary>Je n’ai pas reçu d’e-mail</summary><p>Vérifie tes courriers indésirables. Les e-mails d’Orleoo viennent de orleoo.contact@gmail.com.</p></details><details><summary>Comment changer mon mot de passe ou supprimer mon compte ?</summary><p>Dans Mon compte, « Profil et paramètres », rubrique sécurité.</p></details><details><summary>Où sont enregistrées mes données ?</summary><p>Chez Supabase, dans l’Union européenne. Tous les détails sont dans la politique de confidentialité.</p></details></section><section class="help-sec" id="aide-pret"><h2>Prêt entre membres</h2><details><summary>C’est quoi le prêt entre membres ?</summary><p>Bientôt, tu pourras prêter tes vêtements, tes livres et d’autres articles à d’autres membres, et emprunter les leurs. Les règles (durée, envoi, protection) seront détaillées au lancement.</p></details></section>
     <p class="muted" id="helpNone" hidden>Aucune réponse trouvée. Pose ta question à Loo ou écris-nous.</p></div>
   <div class="x-cta"><b>Tu n’as pas trouvé ?</b><p>Pose ta question à Loo, ou écris à l’équipe : <a class="link" href="mailto:orleoo.contact@gmail.com">orleoo.contact@gmail.com</a>.</p><div class="x-cta-btns"><button type="button" class="btn btn-primary" data-open-chat>Discuter avec Loo</button><a class="btn btn-outline" href="#/securite">Paiement et sécurité</a></div></div></div>
@@ -7317,7 +7452,7 @@ const KB=[
   [/merci|super|parfait|top\b|genial/, ()=>`<p>Avec plaisir ! Je reste là si tu as besoin.</p>`],
   [/\b(ia|intelligence|chatgpt|robot|humain|qui es|loo|leo|reboot|ton nom|tu t.?appelles)\b/, ()=>`<p>Je suis Loo, l’assistant d’Orleoo. Je fonctionne avec des réponses préparées à l’avance : je ne suis connecté à aucune intelligence artificielle et je ne lis pas tes messages privés.</p>`],
   // Orleoo
-  [/comment (ca|ça) marche|fonctionne|c.?est quoi (?:revoo|orleoo)|qu.?est.?ce que (?:revoo|orleoo)|presentation/, ()=>`<p><b>Orleoo</b>, c’est une marketplace française de vêtements d’occasion entre particuliers. En 3 étapes :</p><p>1. <b>Trouve</b> une pièce (recherche, catégories, filtres).<br>2. <b>Échange</b> avec le vendeur dans la messagerie.<br>3. <b>Récupère</b>-la en main propre ou par colis.</p>${ask("Acheter un article","Vendre un article","Combien ça coûte ?")}`],
+  [/comment (ca|ça) marche|fonctionne|c.?est quoi (?:revoo|orleoo)|qu.?est.?ce que (?:revoo|orleoo)|presentation/, ()=>`<p><b>Orleoo</b>, c’est une marketplace française de vêtements et de livres d’occasion entre particuliers. En 3 étapes :</p><p>1. <b>Trouve</b> une pièce (recherche, catégories, filtres).<br>2. <b>Échange</b> avec le vendeur dans la messagerie.<br>3. <b>Récupère</b>-la en main propre ou par colis.</p>${ask("Acheter un article","Vendre un article","Combien ça coûte ?")}`],
   [/qui (est|sont) derriere|createur|fondateur|a propos/, ()=>`<p>Orleoo est un projet français, en cours de lancement. Son slogan : <b>« Tes vêtements ont de l’avenir »</b></p>${go("#/a-propos","À propos d’Orleoo")}`],
   // Frais / paiement
   [/(cout|prix|tarif|combien).*(livr|envoi|colis|port)|frais de port|frais d.envoi/, ()=>`<p>Le prix de l’envoi dépend du transporteur et du poids du colis : compare directement sur les sites de Colissimo, Mondial Relay, Relais Colis… Il se règle entre l’acheteur et le vendeur. La remise en main propre, elle, est gratuite.</p>${ask("Bien envoyer un colis","Rendez-vous en main propre")}`],
@@ -7490,7 +7625,7 @@ function rbOrderLine(o){
 }
 function rbPersonal(c){
   const mine=/\b(mon|ma|mes|j ai|je|moi|m a|m ont|me)\b/.test(c);
-  const needLogin=()=>`<p>Connecte-toi pour que je regarde ton compte.</p>${rbLinks(["#/compte","Me connecter"])}`;
+  const needLogin=()=>{const h=rbHelpAnswer(c,false);return (h?h+'<hr class="rb-sep">':"")+`<p>${h?"Pour que je regarde ta situation exacte, connecte-toi.":"Connecte-toi pour que je regarde ton compte."}</p>${rbLinks(["#/compte","Me connecter"])}`};
   // Suspension, avertissements
   if(/suspendu|suspension|banni|\bban\b|bloque|avertissement|sanction|message de l equipe|(peux|arrive) (pas|plus) (a )?(publier|vendre|ecrire|acheter|envoyer)/.test(c)){
     if(!state.user)return needLogin();
@@ -7589,6 +7724,7 @@ function rebootReply(raw){
   for(const c of clauses.length?clauses:[t]){
     let r=rbPersonal(c)||rbSubs(c);if(!r)for(const [re,fn] of RB_DAILY){if(re.test(c)){r=fn(c);if(r)break}}
     r=r||rbFollowUp(c)||rbIntent(c);
+    if(r&&r.includes("Je n’ai rien trouvé pour")&&!/\b(cherche|trouve|veux acheter|taille|moins de)\b/.test(c)){const h=rbHelpAnswer(c,false);if(h)r=h}
     if(r&&!answers.includes(r))answers.push(r);
     if(answers.length===2)break;
   }
@@ -7599,6 +7735,7 @@ function rebootReply(raw){
   }
   if(!answers.length){const r=rbIntent(t);if(r)answers.push(r)}
   if(answers.length)return answers.join('<hr class="rb-sep">');
+  const hk=rbHelpAnswer(raw,false);if(hk)return hk;
   return`<p>Je n’ai pas bien compris. Essaie avec d’autres mots, ou choisis un sujet :</p>${ask("Trouver un vêtement","Comment ça marche ?","Vendre un article","Paiement et sécurité","Livraison","Mon compte","Parler à quelqu’un")}`;
 }
 
