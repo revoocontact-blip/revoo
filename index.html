@@ -3556,6 +3556,104 @@ html[data-design="2"][data-theme="dark"] .subnav .nav-filtres,html[data-design="
   html[data-design="2"][data-theme="dark"] header.top .head .search{border:1px solid #49515A!important}
 }
 @media (max-width:680px) and (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme]) header.top .head .search{background:#2F3439!important;border:1px solid #49515A!important}}
+/* ===== MENU ☰ : intérieur, version 2 ===== */
+.mm-inner{padding:0 14px calc(28px + env(safe-area-inset-bottom))!important;background:var(--bg,#FBF5EC)}
+.m2-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;margin:0 -14px 12px;padding:12px 14px 10px;background:inherit;background:var(--bg,#FBF5EC);border-bottom:1px solid var(--line,#E6DCCF)}
+.m2-logo{height:24px;width:auto}
+.m2-close{width:40px;height:40px;border-radius:50%;border:1px solid var(--line,#E6DCCF);background:var(--surface,#fff);color:inherit;display:grid;place-items:center;cursor:pointer}
+.m2-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+/* profil */
+.m2-profile{display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px 18px 0 0;background:linear-gradient(135deg,#B04E2E,#7E3520);color:#fff;text-decoration:none}
+.m2-profile .m2-av{width:52px;height:52px;font-size:1.2rem;box-shadow:0 0 0 3px rgba(255,255,255,.35);flex:none}
+.m2-pid{flex:1;min-width:0}.m2-pid b{display:block;font-size:1.08rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.m2-pid small{opacity:.85}
+.m2-profile .m2-chev{stroke:#fff}
+.m2-stats{display:grid;grid-template-columns:repeat(3,1fr);border-radius:0 0 18px 18px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF);border-top:0;overflow:hidden}
+.m2-stats a{display:flex;flex-direction:column;align-items:center;padding:10px 4px;text-decoration:none;color:inherit}
+.m2-stats a+a{border-left:1px solid var(--line,#E6DCCF)}
+.m2-stats b{font-size:1.1rem}.m2-stats span{font-size:.75rem;color:var(--muted,#5E636B)}
+/* accueil visiteur */
+.m2-welcome{display:flex;flex-direction:column;align-items:flex-start;padding:18px;border-radius:18px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF)}
+.m2-wlogo{width:44px;height:44px;margin-bottom:10px}
+.m2-welcome b{font-size:1.12rem}.m2-welcome small{color:var(--muted,#5E636B);margin:4px 0 14px;line-height:1.45}
+.m2-wbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.m2-wbtns .btn{min-height:46px;justify-content:center;padding:0 10px}
+/* tuiles */
+.m2-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 4px}
+.m2-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 10px;border-radius:16px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF);text-decoration:none;color:inherit;font-size:.78rem;font-weight:700;text-align:center;line-height:1.15}
+.m2-tile-ic{position:relative;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#F8E9DF;color:#B04E2E}
+.m2-tile-ic .icon{width:21px;height:21px}
+.m2-tile.primary{background:#B04E2E;border-color:#B04E2E;color:#fff}
+.m2-tile.primary .m2-tile-ic{background:rgba(255,255,255,.18);color:#fff}
+.m2-tbadge{position:absolute;top:-6px;right:-8px;min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#B04E2E;color:#fff;font-size:.7rem;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px var(--surface,#fff)}
+/* groupes */
+.m2-group{margin-top:18px}
+.m2-group h3{margin:0 0 7px 6px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#5E636B)}
+.m2-card{border-radius:16px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF);overflow:hidden}
+.m2-row{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 12px;text-decoration:none;color:inherit;font-weight:600}
+.m2-row+.m2-row{border-top:1px solid var(--line,#EFE6DB)}
+.m2-row:active,.m2-row:hover{background:var(--bg,#FBF5EC)}
+.m2-row.on{background:#FDF6F1}
+.m2-row.on .m2-l{color:#963F22}
+.m2-ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:#F8E9DF;color:#B04E2E;flex:none}
+.m2-ic .icon{width:18px;height:18px}
+.m2-l{flex:1}
+.m2-badge{min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:#B04E2E;color:#fff;font-size:.75rem;font-weight:800;display:grid;place-items:center}
+.m2-chev{width:18px;height:18px;fill:none;stroke:var(--muted,#8A8F96);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* Loo */
+.m2-loo{display:flex;align-items:center;gap:12px;width:100%;margin-top:18px;padding:14px;border-radius:16px;border:1px dashed #EBA488;background:#FDF6F1;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.m2-loo-ic{width:42px;height:42px;flex:none}
+.m2-loo span:nth-child(2){flex:1}.m2-loo b{display:block}.m2-loo small{color:var(--muted,#5E636B)}
+/* apparence */
+.m2-theme{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:5px;border-radius:14px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF)}
+.m2-theme label{position:relative;cursor:pointer}
+.m2-theme input{position:absolute;opacity:0;width:1px;height:1px}
+.m2-theme span{display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;border-radius:10px;font-weight:700;font-size:.88rem;color:var(--muted,#5E636B)}
+.m2-theme .icon{width:17px;height:17px}
+.m2-theme input:checked+span{background:#2E3238;color:#fff}
+.m2-theme input:focus-visible+span{outline:3px solid #EBA488;outline-offset:2px}
+/* bas */
+.m2-out{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:20px;border-radius:14px;border:1px solid #E8C6BD;background:transparent;color:#A3341C;font:inherit;font-weight:700;cursor:pointer}
+.m2-out .icon{width:18px;height:18px}
+.m2-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:18px 0 0;font-size:.8rem}
+.m2-foot a{color:var(--muted,#5E636B);text-decoration:none}
+/* sombre */
+html[data-design="2"][data-theme="dark"] .mm-inner,html[data-design="2"][data-theme="dark"] .m2-top{background:#272B30}
+html[data-design="2"][data-theme="dark"] :is(.m2-top,.m2-stats,.m2-stats a+a,.m2-welcome,.m2-tile,.m2-card,.m2-theme,.m2-close){border-color:#49515A}
+html[data-design="2"][data-theme="dark"] :is(.m2-stats,.m2-welcome,.m2-tile,.m2-card,.m2-theme,.m2-close){background:#2F3439}
+html[data-design="2"][data-theme="dark"] .m2-row+.m2-row{border-color:#3B4148}
+html[data-design="2"][data-theme="dark"] :is(.m2-row:hover,.m2-row.on){background:#31363C}
+html[data-design="2"][data-theme="dark"] .m2-row.on .m2-l{color:#EBA488}
+html[data-design="2"][data-theme="dark"] :is(.m2-ic,.m2-tile-ic){background:#3B302B;color:#E07A55}
+html[data-design="2"][data-theme="dark"] .m2-tile.primary{background:#E07A55;border-color:#E07A55;color:#1F1A17}
+html[data-design="2"][data-theme="dark"] .m2-tile.primary .m2-tile-ic{background:rgba(31,26,23,.12);color:#1F1A17}
+html[data-design="2"][data-theme="dark"] :is(.m2-badge,.m2-tbadge){background:#E07A55;color:#1F1A17}
+html[data-design="2"][data-theme="dark"] .m2-tbadge{box-shadow:0 0 0 2px #2F3439}
+html[data-design="2"][data-theme="dark"] .m2-loo{background:#31363C;border-color:#7A4A3A}
+html[data-design="2"][data-theme="dark"] .m2-theme input:checked+span{background:#E07A55;color:#1F1A17}
+html[data-design="2"][data-theme="dark"] .m2-out{color:#F2867D;border-color:#6B3A36}
+html[data-design="2"][data-theme="dark"] .m2-profile{background:linear-gradient(135deg,#8E3F26,#4E2A1F)}
+@media (prefers-color-scheme:dark){
+html[data-design="2"]:not([data-theme="light"]) .mm-inner,html[data-design="2"]:not([data-theme="light"]) .m2-top{background:#272B30}
+html[data-design="2"]:not([data-theme="light"]) :is(.m2-top,.m2-stats,.m2-stats a+a,.m2-welcome,.m2-tile,.m2-card,.m2-theme,.m2-close){border-color:#49515A}
+html[data-design="2"]:not([data-theme="light"]) :is(.m2-stats,.m2-welcome,.m2-tile,.m2-card,.m2-theme,.m2-close){background:#2F3439}
+html[data-design="2"]:not([data-theme="light"]) .m2-row+.m2-row{border-color:#3B4148}
+html[data-design="2"]:not([data-theme="light"]) :is(.m2-row:hover,.m2-row.on){background:#31363C}
+html[data-design="2"]:not([data-theme="light"]) .m2-row.on .m2-l{color:#EBA488}
+html[data-design="2"]:not([data-theme="light"]) :is(.m2-ic,.m2-tile-ic){background:#3B302B;color:#E07A55}
+html[data-design="2"]:not([data-theme="light"]) .m2-tile.primary{background:#E07A55;border-color:#E07A55;color:#1F1A17}
+html[data-design="2"]:not([data-theme="light"]) .m2-tile.primary .m2-tile-ic{background:rgba(31,26,23,.12);color:#1F1A17}
+html[data-design="2"]:not([data-theme="light"]) :is(.m2-badge,.m2-tbadge){background:#E07A55;color:#1F1A17}
+html[data-design="2"]:not([data-theme="light"]) .m2-tbadge{box-shadow:0 0 0 2px #2F3439}
+html[data-design="2"]:not([data-theme="light"]) .m2-loo{background:#31363C;border-color:#7A4A3A}
+html[data-design="2"]:not([data-theme="light"]) .m2-theme input:checked+span{background:#E07A55;color:#1F1A17}
+html[data-design="2"]:not([data-theme="light"]) .m2-out{color:#F2867D;border-color:#6B3A36}
+html[data-design="2"]:not([data-theme="light"]) .m2-profile{background:linear-gradient(135deg,#8E3F26,#4E2A1F)}
+}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .m2-logo{filter:brightness(0) invert(1)}}
+html[data-design="2"][data-theme="dark"] .m2-logo{filter:brightness(0) invert(1)}
+
+.m2-profile .m2-av{background:rgba(255,255,255,.2)!important;color:#fff!important;font-weight:800}
+.m2-profile .m2-av img{border-radius:50%}
 </style>
 </head>
 <body>
@@ -8179,20 +8277,32 @@ function menuHtml(){
   const nMsg=typeof chat!=="undefined"?chat.unread||0:0,nFav=u?state.favorites.length:0,nCart=state.cart.length;
   const nAl=u?((growth.hits||[]).filter(h=>!h.seen_at).length+(growth.drops||[]).filter(d=>!d.seen_at).length+(growth.fhits||[]).filter(h=>!h.seen_at).length):0;
   let nLoan=0;try{nLoan=loanTodo()}catch(_){}
-  const it=(href,ic,label,badge,extra="")=>`<a class="mm-item${cur===href||(href!=="#/"&&cur.startsWith(href+"/"))?" on":""}" href="${href}" ${extra}><span class="mm-ic">${mIc(ic)}</span><span class="mm-l">${label}</span>${badge?`<span class="mm-badge">${badge}</span>`:""}</a>`;
-  const sec=(t,items)=>`<section class="mm-sec"><h3>${t}</h3>${items}</section>`;
-  const head=u?`<a class="mm-user" href="${mod?"#/compte/moderation":"#/vendeur/"+u.id}"><span class="avatar" aria-hidden="true">${avatarInner(u.name,u.avatar)}</span><span><b>@${esc(u.name)}</b><small>${mod?"Espace modération":"Voir mon profil public"}</small></span></a>`
-    :`<div class="mm-guest"><b>Bienvenue sur Orleoo</b><small>Achète, vends, échange et prête en seconde main.</small><div class="mm-guest-btns"><a class="btn btn-primary" href="#/compte">Créer un compte</a><a class="btn btn-outline" href="#/compte/login">Se connecter</a></div></div>`;
-  return `<div class="mm-top"><span class="mm-title">Menu</span><button type="button" class="mm-close" data-mm-close aria-label="Fermer le menu">×</button></div>
-  ${head}
-  ${mod?"":`<a class="btn btn-primary mm-sell" href="#/vendre">${mIc("plus")} Vendre un article</a>`}
-  ${sec("Découvrir",it("#/","home","Accueil")+`<a class="mm-item" href="#/catalogue" data-new="1"><span class="mm-ic">${mIc("search")}</span><span class="mm-l">Tous les articles</span></a>`+`<a class="mm-item" href="#/univers/mode"><span class="mm-ic">${mIc("shirt")}</span><span class="mm-l">Mode</span></a>`+`<a class="mm-item" href="#/univers/livres"><span class="mm-ic">${mIc("book")}</span><span class="mm-l">Livres</span></a>`)}
-  ${u&&!mod?sec("Mon espace",it("#/messages","msg","Messages",nMsg)+it("#/favoris","heart","Favoris",nFav)+(payOn()?it("#/panier","bag","Panier",nCart):"")+it("#/compte/annonces","list","Mes annonces")+it("#/compte/alertes","bell","Alertes et vendeurs suivis",nAl)+it("#/compte/prets","loop","Mes prêts",nLoan)+(offersOpen()?it("#/compte/offres","tag","Mes offres"):"")+it("#/compte/profil","gear","Profil et paramètres")):""}
-  ${mod?sec("Modération",it("#/compte/moderation","mod","Console de modération")):""}
-  ${sec("Orleoo",it("#/echanger","swap","Échanger")+it("#/main-propre","shield","Main propre")+it("#/pret","loop","Prêt entre membres")+(mod?"":it("#/abonnements","crown","Abonnements"))+it("#/aide","help","Centre d’aide")+`<button type="button" class="mm-item" data-mm-loo><span class="mm-ic loo-ic">${document.querySelector(".reboot-bubble")?.innerHTML||""}</span><span class="mm-l">Discuter avec Loo</span></button>`)}
-  <section class="mm-sec mm-theme"><h3>Apparence</h3><div class="segmented mm-seg" role="radiogroup" aria-label="Apparence">${[["auto","Auto"],["light","Clair"],["dark","Sombre"]].map(([v,l])=>`<label><input type="radio" name="themeMode" value="${v}" ${themeMode()===v?"checked":""}><span>${l}</span></label>`).join("")}</div></section>
-  ${u?`<button type="button" class="mm-item mm-out" data-mm-out><span class="mm-ic">${mIc("out")}</span><span class="mm-l">Se déconnecter</span></button>`:""}
-  <p class="mm-foot"><a href="#/conditions">Conditions</a> · <a href="#/confidentialite">Confidentialité</a> · <a href="#/mentions-legales">Mentions légales</a></p>`;
+  const nAds=u?state.remote.filter(p=>p.mine&&p.status==="active").length:0;
+  const on=h=>cur===h||(h!=="#/"&&cur.startsWith(h+"/"));
+  const chev='<svg class="m2-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+  const row=(href,ic,label,badge,attrs="")=>`<a class="m2-row${on(href)?" on":""}" href="${href}" ${attrs}${on(href)?' aria-current="page"':""}><span class="m2-ic">${mIc(ic)}</span><span class="m2-l">${label}</span>${badge?`<span class="m2-badge">${badge}</span>`:""}${chev}</a>`;
+  const group=(t,rows)=>`<section class="m2-group"><h3>${t}</h3><div class="m2-card">${rows}</div></section>`;
+  const tile=(href,ic,label,badge,primary,attrs="")=>`<a class="m2-tile${primary?" primary":""}" href="${href}" ${attrs}><span class="m2-tile-ic">${mIc(ic)}${badge?`<span class="m2-tbadge">${badge}</span>`:""}</span><span>${label}</span></a>`;
+  const since=u&&state.user.createdAt?new Date(state.user.createdAt).toLocaleDateString("fr-FR",{month:"long",year:"numeric"}):"";
+  const head=u?`<a class="m2-profile" href="${mod?"#/compte/moderation":"#/vendeur/"+u.id}">
+      <span class="avatar m2-av" aria-hidden="true">${avatarInner(u.name,u.avatar)}</span>
+      <span class="m2-pid"><b>@${esc(u.name)}</b><small>${mod?"Compte de l’équipe Orleoo":since?"Membre depuis "+since:"Membre Orleoo"}</small></span>${chev}</a>
+      ${mod?"":`<div class="m2-stats"><a href="#/compte/annonces"><b>${nAds}</b><span>annonce${nAds>1?"s":""}</span></a><a href="#/favoris"><b>${nFav}</b><span>favori${nFav>1?"s":""}</span></a><a href="#/messages"><b>${nMsg}</b><span>non lu${nMsg>1?"s":""}</span></a></div>`}`
+    :`<div class="m2-welcome"><span class="m2-wlogo">${document.querySelector(".reboot-bubble")?.innerHTML||""}</span><b>Bienvenue sur Orleoo</b><small>Achète, vends, échange et prête en seconde main. C’est gratuit.</small>
+      <div class="m2-wbtns"><a class="btn btn-primary" href="#/compte">Créer un compte</a><a class="btn btn-outline" href="#/compte/login">Se connecter</a></div></div>`;
+  const tiles=mod?"":u?`<div class="m2-tiles">${tile("#/vendre","plus","Vendre","",true)}${tile("#/messages","msg","Messages",nMsg)}${tile("#/favoris","heart","Favoris",nFav)}${tile("#/compte/annonces","list","Mes annonces")}</div>`
+    :`<div class="m2-tiles">${tile("#/vendre","plus","Vendre","",true)}${tile("#/catalogue","search","Explorer","",false,'data-new="1"')}${tile("#/echanger","swap","Échanger")}${tile("#/aide","help","Aide")}</div>`;
+  return `<div class="m2-top"><img class="m2-logo" src="logos/orleoo-logo.png?v=18" alt="Orleoo" width="480" height="122"><button type="button" class="m2-close" data-mm-close aria-label="Fermer le menu">${'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'}</button></div>
+  ${head}${tiles}
+  ${u&&!mod?group("Mon espace",row("#/compte/alertes","bell","Alertes et vendeurs suivis",nAl)+row("#/compte/prets","loop","Mes prêts",nLoan)+(offersOpen()?row("#/compte/offres","tag","Mes offres"):"")+(payOn()?row("#/panier","bag","Panier",nCart):"")+row("#/compte/profil","gear","Profil et paramètres")):""}
+  ${mod?group("Modération",row("#/compte/moderation","mod","Console de modération")):""}
+  ${group("Découvrir",row("#/","home","Accueil")+row("#/catalogue","search","Tous les articles","",'data-new="1"')+row("#/univers/mode","shirt","Mode")+row("#/univers/livres","book","Livres"))}
+  ${group("Les services Orleoo",row("#/echanger","swap","Échanger")+row("#/main-propre","shield","Main propre")+row("#/pret","loop","Prêt entre membres")+(mod?"":row("#/abonnements","crown","Abonnements")))}
+  <button type="button" class="m2-loo" data-mm-loo><span class="m2-loo-ic">${document.querySelector(".reboot-bubble")?.innerHTML||""}</span><span><b>Une question ?</b><small>Loo te répond tout de suite, à toute heure.</small></span>${chev}</button>
+  ${group("Aide",row("#/aide","help","Centre d’aide")+row("#/securite","shield","Paiement et sécurité"))}
+  <section class="m2-group"><h3>Apparence</h3><div class="m2-theme" role="radiogroup" aria-label="Apparence">${[["auto","Auto",'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'],["light","Clair",'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],["dark","Sombre",'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>']].map(([v,l,ic])=>`<label><input type="radio" name="themeMode" value="${v}" ${themeMode()===v?"checked":""}><span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ic}</svg>${l}</span></label>`).join("")}</div></section>
+  ${u?`<button type="button" class="m2-out" data-mm-out>${mIc("out")} Se déconnecter</button>`:""}
+  <p class="m2-foot"><a href="#/a-propos">À propos</a><a href="#/conditions">Conditions</a><a href="#/confidentialite">Confidentialité</a><a href="#/mentions-legales">Mentions légales</a></p>`;
 }
 let mmLast=null;
 function openMenu(o){
