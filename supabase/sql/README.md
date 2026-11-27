@@ -52,6 +52,7 @@ Chaque script peut être relancé sans risque.
 | 40 | `supabase-consentements.sql` | Inscription : date d’acceptation des conditions (obligatoire) et choix des e-mails nouveautés (facultatif) |
 | 41 | `supabase-pret.sql` | Prêt entre membres : prix du prêt, caution et durées sur l’annonce ; demandes, réponses (paiement à l’ouverture) |
 | 42 | `supabase-suivis-tableau.sql` | Suivre un vendeur (nouveautés sur le site, e-mail si accepté) + tableau « Santé du site » pour l’équipe |
+| 43 | `supabase-moderation-plus.sql` | Modération : signaler un membre, file « Membres signalés », statistiques de modération, motif « Ni un vêtement ni un livre » |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 

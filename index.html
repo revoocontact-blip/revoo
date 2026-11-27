@@ -3840,9 +3840,9 @@ html[data-design="2"]:not([data-theme="light"]) .menu-btn.is-user{background:#2F
   html[data-design="2"] #view-product .seller-box{margin-top:18px}
 }
 html[data-design="2"][data-theme="dark"] #view-product .product-info{background:#2F3439!important;border-color:#49515A!important}
-html[data-design="2"][data-theme="dark"] #view-product .product-price{color:#F1F2F3!important}
+@media (min-width:901px){html[data-design="2"][data-theme="dark"] #view-product .product-price{color:#F1F2F3!important}}
 html[data-design="2"][data-theme="dark"] #view-product :is(.specs,.specs>div){border-color:#49515A!important}
-@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) #view-product .product-info{background:#2F3439!important;border-color:#49515A!important}html[data-design="2"]:not([data-theme="light"]) #view-product .product-price{color:#F1F2F3!important}html[data-design="2"]:not([data-theme="light"]) #view-product :is(.specs,.specs>div){border-color:#49515A!important}}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) #view-product .product-info{background:#2F3439!important;border-color:#49515A!important}}@media (prefers-color-scheme:dark) and (min-width:901px){html[data-design="2"]:not([data-theme="light"]) #view-product .product-price{color:#F1F2F3!important}html[data-design="2"]:not([data-theme="light"]) #view-product :is(.specs,.specs>div){border-color:#49515A!important}}
 @media (min-width:901px){
   html[data-design="2"] #view-product .buy-actions{display:flex!important;flex-wrap:wrap}
   html[data-design="2"] #view-product .buy-actions>.btn{flex:1 1 200px}
@@ -3879,6 +3879,67 @@ html[data-design="2"][data-theme="dark"] .acct-menu .acct-v3 .m3-sell{color:#1F1
 html[data-design="2"][data-theme="dark"] .acct-menu .acct-v3 .m3-out{color:#F2867D!important;border-color:#49515A!important}
 html[data-design="2"][data-theme="dark"] .acct-menu .acct-v3 .m3-row+.m3-row{border-top-color:#3B4148!important}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .acct-menu .acct-v3 .m3-sell{color:#1F1A17!important}html[data-design="2"]:not([data-theme="light"]) .acct-menu .acct-v3 .m3-out{color:#F2867D!important;border-color:#49515A!important}html[data-design="2"]:not([data-theme="light"]) .acct-menu .acct-v3 .m3-row+.m3-row{border-top-color:#3B4148!important}}
+
+/* ===== CONSOLE DE MODÉRATION V2 ===== */
+#view-compte:has(.mod2) .page-head,#view-compte:has(.mod2) .acc-profile{display:none}
+.mod2{margin-top:6px}
+.mod2-head{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF);margin-bottom:16px;flex-wrap:wrap}
+.mod2-title{flex:1;min-width:220px}.mod2-title h2{margin:0;font-size:1.2rem;display:flex;align-items:center;gap:8px}.mod2-title p{margin:2px 0 0}
+.mod2-wait{color:#963F22}
+.mod2-search{position:relative;flex:0 1 420px;min-width:240px}
+.mod2-search .icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted,#5E636B);pointer-events:none}
+.mod2-search .input{padding-left:42px!important;border-radius:99px!important;min-height:44px;width:100%}
+.mod2-body{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start}
+.mod2-nav{position:sticky;top:92px;padding:10px;border-radius:18px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF)}
+.mod2-grp+.mod2-grp{margin-top:8px;padding-top:8px;border-top:1px solid var(--line,#EFE6DB)}
+.mod2-grp p{margin:6px 10px 4px;font-size:.7rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted,#5E636B)}
+.mod2-nav button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:40px;padding:6px 10px;border:0;border-radius:10px;background:none;color:inherit;font:inherit;font-weight:600;font-size:.92rem;text-align:left;cursor:pointer}
+.mod2-nav button:hover{background:var(--bg,#FBF5EC)}
+.mod2-nav button[aria-current="page"]{background:#FDF3EE;color:#963F22;font-weight:800;box-shadow:inset 3px 0 0 #B04E2E}
+.mod2-nav em{font-style:normal;min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:var(--bg,#F5EFE7);font-size:.75rem;font-weight:800;display:grid;place-items:center}
+.mod2-nav em.hot{background:#B04E2E;color:#fff}
+.mod2-main{min-width:0}
+.mod2-main>.panel,.mod2-main>.empty{max-width:none}
+.mod-tools{display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px}
+.mod-h2{font-size:1.05rem;margin:18px 0 10px}
+.mod-results h2{font-size:1.05rem;margin:0 0 8px}.mod-results h3{font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#5E636B);margin:12px 0 6px}
+.mod-res{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#E6DCCF);background:var(--surface,#fff);color:inherit;font:inherit;font-weight:600;text-decoration:none;margin-bottom:6px;cursor:pointer}
+.mod-res:hover{border-color:#B04E2E}
+.mr-row{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;padding:14px 4px;flex-wrap:wrap}
+.mr-row+.mr-row{border-top:1px solid var(--line,#EFE6DB)}
+.mr-main{flex:1;min-width:240px}.mr-main p{margin:4px 0 0}
+.status.hot{background:#FBE9E5;color:#A3341C}.status.warn{background:#FBEBD5;color:#7A4A06}
+.mr-form{margin:12px 0}.mr-form h3{margin:0 0 4px}
+.seg-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.seg-filter button{min-height:36px;padding:0 14px;border-radius:99px;border:1px solid var(--line,#E6DCCF);background:var(--surface,#fff);color:inherit;font:inherit;font-weight:600;font-size:.88rem;cursor:pointer}
+.seg-filter button[aria-pressed="true"]{background:#2E3238;border-color:#2E3238;color:#fff}
+.mod-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.bar-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.bar-list li{display:grid;grid-template-columns:minmax(0,1.4fr) 1fr auto;gap:10px;align-items:center;font-size:.9rem}
+.bar-list li .hbar{width:100%;margin:0}
+@media (max-width:900px){.mod2-body{grid-template-columns:1fr}.mod2-nav{position:static;display:flex;gap:6px;overflow-x:auto;padding:8px;scrollbar-width:none}.mod2-nav::-webkit-scrollbar{display:none}.mod2-grp{display:contents}.mod2-grp p{display:none}.mod2-nav button{flex:none;width:auto;white-space:nowrap}.mod-cols{grid-template-columns:1fr}.mod2-search{flex:1 1 100%}}
+html[data-design="2"][data-theme="dark"] :is(.mod2-head,.mod2-nav,.mod-res,.seg-filter button){background:#2F3439;border-color:#49515A}
+html[data-design="2"][data-theme="dark"] .mod2-nav button:hover{background:#31363C}
+html[data-design="2"][data-theme="dark"] .mod2-nav button[aria-current="page"]{background:#3B302B;color:#EBA488;box-shadow:inset 3px 0 0 #E07A55}
+html[data-design="2"][data-theme="dark"] .mod2-nav em{background:#3B4148}
+html[data-design="2"][data-theme="dark"] .mod2-nav em.hot{background:#E07A55;color:#1F1A17}
+html[data-design="2"][data-theme="dark"] .mod2-wait{color:#EBA488}
+html[data-design="2"][data-theme="dark"] .seg-filter button[aria-pressed="true"]{background:#E07A55;border-color:#E07A55;color:#1F1A17}
+html[data-design="2"][data-theme="dark"] .status.hot{background:#3A2A2A;color:#F2867D}
+html[data-design="2"][data-theme="dark"] .status.warn{background:#4A3A1C;color:#F3C77A}
+@media (prefers-color-scheme:dark){
+html[data-design="2"]:not([data-theme="light"]) :is(.mod2-head,.mod2-nav,.mod-res,.seg-filter button){background:#2F3439;border-color:#49515A}
+html[data-design="2"]:not([data-theme="light"]) .mod2-nav button:hover{background:#31363C}
+html[data-design="2"]:not([data-theme="light"]) .mod2-nav button[aria-current="page"]{background:#3B302B;color:#EBA488;box-shadow:inset 3px 0 0 #E07A55}
+html[data-design="2"]:not([data-theme="light"]) .mod2-nav em{background:#3B4148}
+html[data-design="2"]:not([data-theme="light"]) .mod2-nav em.hot{background:#E07A55;color:#1F1A17}
+html[data-design="2"]:not([data-theme="light"]) .mod2-wait{color:#EBA488}
+html[data-design="2"]:not([data-theme="light"]) .seg-filter button[aria-pressed="true"]{background:#E07A55;border-color:#E07A55;color:#1F1A17}
+html[data-design="2"]:not([data-theme="light"]) .status.hot{background:#3A2A2A;color:#F2867D}
+html[data-design="2"]:not([data-theme="light"]) .status.warn{background:#4A3A1C;color:#F3C77A}
+}
+
+#accountContent:has(.mod2){max-width:none!important;width:100%}
 </style>
 </head>
 <body>
@@ -4626,7 +4687,7 @@ async function openThread(id){
     </form>`}
     <p class="error" id="threadErr" role="alert"></p>
     <p class="muted small">Pour ta sécurité, tout se paie sur Orleoo. Les messages qui contiennent un numéro, un e-mail, un IBAN ou un autre moyen de paiement sont bloqués. <a class="link" href="#/securite">En savoir plus</a></p>
-    ${c.gone||!c.otherId||iBlocked(c.otherId)?"":`<p class="small"><button type="button" class="link block-link" data-block="${c.otherId}" data-name="${esc(c.other)}" data-on="1">Bloquer @${esc(c.other)}</button></p>`}`;
+    ${c.gone||!c.otherId?"":`<div id="mrBox"></div>`}${c.gone||!c.otherId||iBlocked(c.otherId)?"":`<p class="small"><button type="button" class="link block-link" data-mreport="${c.otherId}" data-name="${esc(c.other)}" data-conv="${c.id}" style="margin-right:16px">Signaler @${esc(c.other)}</button><button type="button" class="link block-link" data-block="${c.otherId}" data-name="${esc(c.other)}" data-on="1">Bloquer @${esc(c.other)}</button></p>`}`;
   if(!c.gone&&c.otherId&&!iBlocked(c.otherId))sb.rpc("blocked_me",{p_other:c.otherId}).then(r=>{if(r.data===true&&chat.current===c){const f=$("threadForm"),n=$("blockedMe");if(f)f.hidden=true;if(n)n.hidden=false}}).catch(()=>{});
   watchImages(el);
   const {data,error}=await sb.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at").eq("conversation_id",id).order("created_at",{ascending:true}).limit(500);
@@ -4660,8 +4721,8 @@ function renderThreadLog(){
 /* =========================================================
    SIGNALEMENTS & MODÉRATION
    ========================================================= */
-const REPORT_REASONS=["Article interdit ou dangereux","Contrefaçon","Arnaque ou fraude","Annonce trompeuse","Contenu choquant ou inapproprié","Ce n’est pas un vêtement","Autre"];
-const mod={reports:[],loaded:false};
+const REPORT_REASONS=["Article interdit ou dangereux","Contrefaçon","Arnaque ou fraude","Annonce trompeuse","Contenu choquant ou inapproprié","Ni un vêtement ni un livre","Autre"];
+const mod={reports:[],loaded:false,members:[],membersDone:[],loans:[],stats:null,statsDays:30,q:""};
 async function loadAdmin(){
   state.isAdmin=false;state.role="";team.notices=[];team.ban=null;
   if(!sb||!state.user)return;
@@ -4670,7 +4731,7 @@ async function loadAdmin(){
     if(r.error)r=await sb.from("admins").select("user_id,role").eq("user_id",state.user.id).maybeSingle();
     if(r.error)r=await sb.from("admins").select("user_id").eq("user_id",state.user.id).maybeSingle();
     state.isAdmin=!r.error&&!!r.data;state.role=state.isAdmin?(r.data.role||"admin"):"";state.perms=state.isAdmin?(r.data.perms||PERMS.map(x=>x[0]).slice(0,9)):[];
-    if(state.isAdmin){await loadReports();loadTeamData()}else loadNotices();
+    if(state.isAdmin){await loadReports();loadTeamData();loadModExtra()}else loadNotices();
   }catch(e){console.warn(e);state.isAdmin=false}
 }
 async function loadReports(){
@@ -4746,36 +4807,122 @@ function modRow(r){const l=r.listings;const img=(l?.photos||[])[0]||"";
       ${l&&l.status==="removed"?`<button type="button" class="btn btn-outline" data-mod="restore" data-report="${r.id}" data-listing="${r.listing_id}">Remettre en ligne</button>`:""}
       ${r.status==="nouveau"?`<button type="button" class="btn btn-outline" data-mod="reject" data-report="${r.id}" data-listing="${r.listing_id}">Rien à signaler</button>`:""}
     </div></div>`}
+
+/* =========================================================
+   SIGNALER UN MEMBRE (messagerie) + MODÉRATION COMPLÈTE
+   ========================================================= */
+const MEMBER_REASONS=["Arnaque ou tentative de fraude","Paiement en dehors d’Orleoo","Insultes ou harcèlement","Faux profil ou usurpation","Spam","Autre"];
+document.addEventListener("click",e=>{const b=e.target.closest("[data-mreport]");if(!b)return;const box=$("mrBox");if(!box)return;
+  box.innerHTML=`<form class="panel mr-form" data-mrform="${esc(b.dataset.mreport)}" data-conv="${esc(b.dataset.conv||"")}" novalidate><h3>Signaler @${esc(b.dataset.name)}</h3><p class="small muted">C’est confidentiel : @${esc(b.dataset.name)} ne saura pas que c’est toi. L’équipe pourra lire cette conversation pour vérifier.</p>
+    <div class="field"><label for="mrReason">Motif</label><select class="input" id="mrReason">${MEMBER_REASONS.map(r=>`<option>${esc(r)}</option>`).join("")}</select></div>
+    <div class="field"><label for="mrDetails">Ce qui s’est passé <span class="hint">(facultatif)</span></label><textarea class="input" id="mrDetails" maxlength="1000"></textarea></div>
+    <p class="error" id="mrErr" role="alert"></p><div class="buy-actions"><button class="btn btn-primary" type="submit">Envoyer le signalement</button><button type="button" class="btn btn-outline" data-mrcancel>Annuler</button></div></form>`;
+  box.scrollIntoView({behavior:"smooth",block:"center"});$("mrReason").focus()});
+document.addEventListener("click",e=>{if(e.target.closest("[data-mrcancel]")){const b=$("mrBox");if(b)b.innerHTML=""}});
+document.addEventListener("submit",async e=>{const f=e.target.closest("[data-mrform]");if(!f)return;e.preventDefault();busy(f,true,"Envoi…");
+  const {error}=await sb.rpc("report_member",{p_member:f.dataset.mrform,p_reason:$("mrReason").value,p_details:$("mrDetails").value.trim()||null,p_conversation:f.dataset.conv||null});busy(f,false);
+  if(error){$("mrErr").textContent=frenchError(error);return}
+  $("mrBox").innerHTML=`<p class="note small">Merci, ton signalement est envoyé à l’équipe Orleoo. Si tu te sens en danger ou harcelé(e), tu peux aussi bloquer ce membre.</p>`;});
+
+async function loadModExtra(){
+  if(!sb||!state.isAdmin)return;
+  const jobs=[];
+  if(can("signalements"))jobs.push(sb.rpc("member_reports_list",{p_status:"nouveau"}).then(r=>{mod.members=r.error?[]:(r.data||[])}),sb.rpc("member_reports_list",{p_status:"traites"}).then(r=>{mod.membersDone=r.error?[]:(r.data||[])}));
+  if(can("litiges"))jobs.push(sb.from("loans").select("*,listings(title,photos,price),borrower:profiles!loans_borrower_id_fkey(name),lender:profiles!loans_lender_id_fkey(name)").order("created_at",{ascending:false}).limit(300).then(r=>{mod.loans=r.error?[]:(r.data||[])}));
+  jobs.push(sb.rpc("mod_stats",{p_days:mod.statsDays}).then(r=>{mod.stats=r.error?null:r.data}));
+  await Promise.all(jobs);if(location.hash.startsWith("#/compte/moderation")&&typeof renderView==="function")renderView();
+}
+function memberReportsHtml(list,done){
+  if(!list.length)return`<div class="empty"><p>${done?"Aucun signalement de membre traité pour le moment.":"Aucun membre signalé. Tout est calme."}</p></div>`;
+  return`<div class="panel">${list.map(r=>`<div class="mr-row"><div class="mr-main"><b>@${esc(r.reported_name||"membre supprimé")}</b> <span class="status ${r.status==="nouveau"?"hot":""}">${esc(r.reason)}</span>${r.previous?` <span class="status warn">${r.previous} autre${r.previous>1?"s":""} signalement${r.previous>1?"s":""}</span>`:""}
+      <p class="small muted">Signalé par @${esc(r.reporter_name||"membre supprimé")} · ${fmtDH(r.created_at)}${r.handled_at?` · ${r.status} par @${esc(r.handled_by_name||"?")} le ${fmtDH(r.handled_at)}`:""}</p>${r.details?`<p class="small">« ${esc(r.details)} »</p>`:""}</div>
+      <div class="row-actions">${can("membres")?`<button type="button" class="btn btn-outline btn-sm" data-team="fiche" data-id="${r.reported_id}">Fiche du membre</button>`:""}${r.conversation_id&&can("conversations")?`<button type="button" class="btn btn-outline btn-sm" data-team="conv" data-id="${r.conversation_id}" data-label="avec @${esc(r.reported_name||"")}">Lire la conversation</button>`:""}
+      ${r.status==="nouveau"?`<button type="button" class="btn btn-primary btn-sm" data-mrdo="traité" data-id="${r.id}">Traité</button><button type="button" class="btn btn-outline btn-sm" data-mrdo="rejeté" data-id="${r.id}">Sans suite</button>`:""}</div></div>`).join("")}</div>${team.conv?convViewHtml():""}`;
+}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-mrdo]");if(!b)return;b.disabled=true;
+  const {error}=await sb.rpc("handle_member_report",{p_report:b.dataset.id,p_status:b.dataset.mrdo});if(error){toast(frenchError(error));b.disabled=false;return}
+  toast(b.dataset.mrdo==="traité"?"Signalement marqué comme traité.":"Signalement classé sans suite.");await loadModExtra();});
+function loansModHtml(){
+  const f=mod.loanF||"tous",L=mod.loans.filter(o=>f==="tous"||(f==="attente"?["demandee","acceptee"].includes(o.status):f==="cours"?["en_cours","litige"].includes(o.status):["refusee","annulee","rendu","terminee"].includes(o.status)));
+  return`<div class="seg-filter" role="group" aria-label="Filtrer les prêts">${[["tous","Tous"],["attente","En attente"],["cours","En cours ou litige"],["finis","Terminés"]].map(([k,l])=>`<button type="button" data-loanf="${k}" aria-pressed="${f===k}">${l}</button>`).join("")}</div>
+  ${L.length?`<div class="panel">${L.map(o=>`<div class="mr-row"><div class="mr-main"><b><a class="link" href="#/article/${o.listing_id}">${esc(o.listings?.title||"Article")}</a></b> <span class="status">${LOAN_ST[o.status]||o.status}</span>
+    <p class="small muted">@${esc(o.lender?.name||"?")} prête à @${esc(o.borrower?.name||"?")} · ${o.days} jours · ${o.delivery==="colis"?"colis":"main propre"} · prêt ${eur(+o.price)} · caution ${eur(+o.deposit)} · ${fmtDH(o.created_at)}</p></div>
+    <div class="row-actions">${can("membres")?`<button type="button" class="btn btn-outline btn-sm" data-team="fiche" data-id="${o.lender_id}">Prêteur</button><button type="button" class="btn btn-outline btn-sm" data-team="fiche" data-id="${o.borrower_id}">Emprunteur</button>`:""}</div></div>`).join("")}</div>`:`<div class="empty"><p>Aucun prêt dans cette catégorie.</p></div>`}`;
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-loanf]");if(!b)return;mod.loanF=b.dataset.loanf;renderView()});
+function modStatsHtml(){
+  const m=mod.stats;if(!m)return"";const n=v=>v==null?"—":String(v).replace(".",",");
+  const tile=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
+  return`<div class="panel health"><div class="launch-head"><h2>Modération</h2><div class="segmented" role="radiogroup" aria-label="Période">${[[7,"7 jours"],[30,"30 jours"],[90,"90 jours"]].map(([v,l])=>`<label><input type="radio" name="modDays" value="${v}" ${+m.jours===v?"checked":""}><span>${l}</span></label>`).join("")}</div></div>
+    <div class="kpis health-kpis">${tile(n(m.annonces_attente+m.membres_attente),"En attente",m.plus_ancien_h!=null?`le plus ancien : ${n(m.plus_ancien_h)} h`:"rien en attente")}
+    ${tile(n(m.annonces_recus),"Annonces signalées",`délai moyen : ${n(m.annonces_delai_h)} h`)}${tile(n(m.membres_recus),"Membres signalés",`délai moyen : ${n(m.membres_delai_h)} h`)}
+    ${tile(n(m.avertissements),"Avertissements",`${n(m.suspensions)} suspension${m.suspensions>1?"s":""} · ${n(m.retraits)} retrait${m.retraits>1?"s":""}`)}</div>
+    <div class="mod-cols"><div><h3 class="health-sub">Motifs les plus fréquents</h3>${(m.motifs||[]).length?`<ul class="bar-list">${m.motifs.map(x=>`<li><span>${esc(x.motif)}</span><span class="hbar"><span style="width:${Math.round(x.n*100/m.motifs[0].n)}%"></span></span><b>${x.n}</b></li>`).join("")}</ul>`:`<p class="muted small">Aucun signalement sur la période.</p>`}</div>
+    <div><h3 class="health-sub">Décisions de l’équipe</h3>${(m.equipe||[]).length?`<ul class="bar-list">${m.equipe.map(x=>`<li><span>@${esc(x.nom)}</span><span class="hbar"><span style="width:${Math.round(x.n*100/m.equipe[0].n)}%"></span></span><b>${x.n}</b></li>`).join("")}</ul>`:`<p class="muted small">Aucune décision sur la période.</p>`}</div></div></div>`;
+}
+document.addEventListener("change",async e=>{if(e.target.name!=="modDays")return;mod.statsDays=+e.target.value;const r=await sb.rpc("mod_stats",{p_days:mod.statsDays});if(!r.error){mod.stats=r.data;renderView()}});
+/* Export CSV (Excel, Numbers, Google Sheets) */
+function modCsv(name,rows){const c=v=>{const t=String(v==null?"":v);return /[;"\n]/.test(t)?`"${t.replace(/"/g,'""')}"`:t};
+  const blob=new Blob(["﻿"+rows.map(r=>r.map(c).join(";")).join("\n")],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("Fichier téléchargé.")}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-csv]");if(!b)return;const k=b.dataset.csv,d=new Date().toISOString().slice(0,10);
+  if(k==="journal")modCsv(`orleoo-journal-${d}.csv`,[["Date","Action","Membre concerné","Détails"],...team.log.map(l=>[fmtDH(l.created_at),l.action,l.target_user?nm(l.target_user):"",l.details||""])]);
+  if(k==="membres")modCsv(`orleoo-membres-${d}.csv`,[["Identifiant","Membre depuis","En ligne","Ventes","Signalements","Avertissements"],...team.members.map(m=>[m.name,fmtD(m.created_at),m.annonces??m.listings??"",m.ventes??m.sales??"",m.signalements??m.reports??"",m.avertissements??m.warnings??""])]);
+  if(k==="prets")modCsv(`orleoo-prets-${d}.csv`,[["Date","Article","Prêteur","Emprunteur","Jours","Remise","Prix","Caution","Statut"],...mod.loans.map(o=>[fmtDH(o.created_at),o.listings?.title||"",o.lender?.name||"",o.borrower?.name||"",o.days,o.delivery,o.price,o.deposit,LOAN_ST[o.status]||o.status])]);
+  if(k==="signalements")modCsv(`orleoo-signalements-${d}.csv`,[["Date","Type","Cible","Motif","Détails","Statut"],...mod.reports.map(r=>[fmtDH(r.created_at),"Annonce",r.listings?.title||"",r.reason,r.details||"",r.status]),...[...mod.members,...mod.membersDone].map(r=>[fmtDH(r.created_at),"Membre","@"+(r.reported_name||""),r.reason,r.details||"",r.status])]);
+});
+/* Recherche globale de la console */
+function modSearchHtml(){
+  const q=rbNorm2(mod.q||"");if(q.length<2)return"";
+  const L=state.remote.filter(p=>rbNorm2(`${p.name} ${p.brand||""} ${p.seller||""}`).includes(q)).slice(0,8);
+  const M=(team.members||[]).filter(m=>rbNorm2(m.name||"").includes(q)).slice(0,8);
+  const R=mod.reports.filter(r=>rbNorm2(`${r.listings?.title||""} ${r.reason} ${r.details||""}`).includes(q)).slice(0,5);
+  const O=(typeof orders!=="undefined"?orders.all:[]).filter(o=>rbNorm2(`${o.id} ${o.title||""}`).includes(q)).slice(0,5);
+  return`<div class="panel mod-results"><h2>Résultats pour « ${esc(mod.q)} »</h2>
+    ${M.length?`<h3>Membres</h3>${M.map(m=>`<button type="button" class="mod-res" data-team="fiche" data-id="${m.id}">@${esc(m.name)}</button>`).join("")}`:""}
+    ${L.length?`<h3>Annonces</h3>${L.map(p=>`<a class="mod-res" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)} · ${eur(p.price)} · @${esc(p.seller)}</a>`).join("")}`:""}
+    ${R.length?`<h3>Signalements</h3>${R.map(r=>`<button type="button" class="mod-res" data-modtab="atraiter">${esc(r.listings?.title||"Annonce")} · ${esc(r.reason)}</button>`).join("")}`:""}
+    ${O.length?`<h3>Commandes</h3>${O.map(o=>`<button type="button" class="mod-res" data-modtab="affaires">N° ${esc(String(o.id).slice(0,8))} · ${esc(o.title||"")}</button>`).join("")}`:""}
+    ${!M.length&&!L.length&&!R.length&&!O.length?`<p class="muted">Rien trouvé. Pour un membre, essaie son identifiant exact dans « Membres ».</p>`:""}</div>`;
+}
 function renderModeration(el){
   const founder=state.role==="fondateur";
   $("accountTitle").textContent=founder?"Espace fondateur":"Espace modération";
   const todo=mod.reports.filter(r=>r.status==="nouveau"), done=mod.reports.filter(r=>r.status!=="nouveau");
   const removed=state.remote.filter(p=>p.status==="removed"), disputes=[...(typeof orders!=="undefined"?orders.all:[]).filter(o=>o.status==="problem"),...(typeof trades!=="undefined"?trades.list:[]).filter(t=>t.status==="problem")];
   const online=state.remote.filter(p=>p.status!=="removed");
-  const tabs=[["bord","Tableau de bord","",""],["atraiter","À traiter",todo.length,"signalements"],["membres","Membres","","membres"],["affaires","Commandes et échanges","","litiges"],["enligne","Annonces en ligne",online.length,"signalements"],["retirees","Annonces retirées",removed.length,"signalements"],...(payOn()?[["litiges","Litiges",disputes.length,"litiges"]]:[]),["historique","Historique",done.length,"signalements"],["equipe","Équipe","",""],["journal","Journal","","journal"],["reglages","Réglages","",""]].filter(t=>!t[3]||can(t[3]));
+  const tabs=[["bord","Tableau de bord","",""],["atraiter","À traiter",todo.length,"signalements"],["membres","Membres","","membres"],["affaires","Commandes et échanges","","litiges"],["enligne","Annonces en ligne",online.length,"signalements"],["retirees","Annonces retirées",removed.length,"signalements"],...(payOn()?[["litiges","Litiges",disputes.length,"litiges"]]:[]),["membresig","Membres signalés",mod.members.length,"signalements"],["prets","Prêts",mod.loans.filter(o=>["demandee","acceptee","en_cours","litige"].includes(o.status)).length,"litiges"],["historique","Historique",done.length+mod.membersDone.length,"signalements"],["equipe","Équipe","",""],["journal","Journal","","journal"],["reglages","Réglages","",""]].filter(t=>!t[3]||can(t[3]));
   if(!tabs.some(t=>t[0]===modTab))modTab="bord";
   let body="";
   if(!mod.loaded)body=`<p class="muted">Chargement…</p>`;
   else if(modTab==="atraiter")body=todo.length?`<div class="panel">${todo.map(modRow).join("")}</div>`:`<div class="empty"><p>Aucun signalement à traiter. Tout est en ordre.</p></div>`;
-  else if(modTab==="historique")body=done.length?`<div class="panel">${done.map(modRow).join("")}</div>`:`<div class="empty"><p>Aucun signalement traité pour le moment.</p></div>`;
+  else if(modTab==="historique")body=`<div class="mod-tools"><button type="button" class="btn btn-outline btn-sm" data-csv="signalements">Exporter tous les signalements en CSV</button></div><h2 class="mod-h2">Annonces</h2>`+(done.length?`<div class="panel">${done.map(modRow).join("")}</div>`:`<div class="empty"><p>Aucun signalement d’annonce traité pour le moment.</p></div>`)+`<h2 class="mod-h2">Membres</h2>`+memberReportsHtml(mod.membersDone,true);
   else if(modTab==="retirees")body=removed.length?`<div class="panel">${removed.map(p=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><h3>${esc(p.name)}</h3><p>${eur(p.price)} · vendeur : @${esc(p.seller)}</p><p><span class="status">Retirée par la modération</span></p></div><div class="row-actions"><button type="button" class="btn btn-outline" data-mod="restore" data-listing="${p.id}">Remettre en ligne</button></div></div>`).join("")}</div>`:`<div class="empty"><p>Aucune annonce retirée.</p></div>`;
   else if(modTab==="litiges")body=disputesHtml();
-  else if(modTab==="bord")body=teamDashboardHtml();
-  else if(modTab==="membres")body=team.detail?ficheHtml():membersHtml();
+  else if(modTab==="membresig")body=memberReportsHtml(mod.members,false);
+  else if(modTab==="prets")body=`<div class="mod-tools"><button type="button" class="btn btn-outline btn-sm" data-csv="prets">Exporter en CSV</button></div>`+loansModHtml();
+  else if(modTab==="bord")body=modStatsHtml()+teamDashboardHtml();
+  else if(modTab==="membres")body=team.detail?ficheHtml():`<div class="mod-tools"><button type="button" class="btn btn-outline btn-sm" data-csv="membres">Exporter la liste en CSV</button></div>`+membersHtml();
   else if(modTab==="affaires")body=dealsHtml();
   else if(modTab==="equipe")body=teamHtml();
-  else if(modTab==="journal")body=journalHtml();
+  else if(modTab==="journal")body=`<div class="mod-tools"><button type="button" class="btn btn-outline btn-sm" data-csv="journal">Exporter le journal en CSV</button></div>`+journalHtml();
   else if(modTab==="reglages")body=settingsTeamHtml();
   else if(modTab==="enligne"){const q=rbNorm2(modQuery),list=online.filter(p=>!q||rbNorm2(`${p.name} ${p.brand||""} ${p.seller||""}`).includes(q));
     body=`<div class="mod-search"><label for="modQ" class="sr-only">Rechercher une annonce, une marque ou un vendeur</label><input class="input" id="modQ" type="search" placeholder="Rechercher une annonce, une marque ou un vendeur" value="${esc(modQuery)}"></div>`+
     (list.length?`<div class="panel">${list.slice(0,100).map(p=>`<div class="listing-row"><a class="image-frame" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div><h3>${esc(p.name)}</h3><p>${eur(p.price)} · vendeur : <a href="#/vendeur/${esc(p.sellerId)}">@${esc(p.seller)}</a></p></div><div class="row-actions"><a class="btn btn-outline" href="#/article/${encodeURIComponent(p.id)}">Voir</a><button type="button" class="btn btn-danger" data-mod="remove" data-listing="${p.id}">Retirer</button></div></div>`).join("")}</div>`:`<div class="empty"><p>Aucune annonce trouvée.</p></div>`)}
-  el.innerHTML=`<div class="mod-head">
-      <span class="mod-badge">${founder?CROWN_SVG:MOD_SHIELD}</span>
-      <div><h2>${founder?"Console du fondateur":"Console de modération"} <span class="role-pill">${founder?"Fondateur":"Admin"}</span></h2><p class="small">${founder?"Tu gères l’équipe, les réglages du site et toute la modération.":"Ce compte sert uniquement à la modération d’Orleoo. Il n’a ni profil public, ni annonces, ni achats, ni messages."}</p></div>
-    </div>
-    <div class="mod-tabs" role="toolbar" aria-label="Rubriques">${tabs.map(([k,l,n])=>`<button type="button" data-modtab="${k}" aria-pressed="${modTab===k}"><span>${l}</span>${n!==""?`<em class="${n&&["atraiter","litiges"].includes(k)?"hot":""}">${n}</em>`:""}</button>`).join("")}</div>
-    <div style="margin-top:18px">${body}</div>
+  const groups=[["Pilotage",["bord"]],["À traiter",["atraiter","membresig","litiges"]],["Annonces",["enligne","retirees"]],["Membres et échanges",["membres","affaires","prets"]],["Équipe",["equipe","journal","historique"]],["Site",["reglages"]]];
+  const T=Object.fromEntries(tabs.map(t=>[t[0],t]));
+  const waiting=todo.length+mod.members.length+(payOn()?disputes.length:0);
+  el.innerHTML=`<div class="mod2">
+    <header class="mod2-head"><span class="mod-badge">${founder?CROWN_SVG:MOD_SHIELD}</span>
+      <div class="mod2-title"><h2>${founder?"Console du fondateur":"Console de modération"} <span class="role-pill">${founder?"Fondateur":"Admin"}</span></h2><p class="small muted">${waiting?`<b class="mod2-wait">${waiting} élément${waiting>1?"s":""} en attente</b> · `:"Tout est à jour · "}${founder?"équipe, réglages et toute la modération":"signalements, litiges et membres"}</p></div>
+      <div class="mod2-search"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><label for="modGlobalQ" class="sr-only">Rechercher dans la console</label><input id="modGlobalQ" class="input" type="search" placeholder="Rechercher un membre, une annonce, une commande…" value="${esc(mod.q||"")}" autocomplete="off"></div>
+    </header>
+    <div class="mod2-body">
+      <nav class="mod2-nav" aria-label="Rubriques de la console">${groups.map(([g,ks])=>{const it=ks.filter(k=>T[k]);return it.length?`<div class="mod2-grp"><p>${g}</p>${it.map(k=>{const [,l,n]=T[k];const hot=n&&["atraiter","membresig","litiges"].includes(k);return`<button type="button" data-modtab="${k}" aria-current="${modTab===k?"page":"false"}"><span>${l}</span>${n!==""&&n!==0?`<em class="${hot?"hot":""}">${n}</em>`:""}</button>`}).join("")}</div>`:""}).join("")}</nav>
+      <main class="mod2-main">${modSearchHtml()}${body}</main>
+    </div></div>
 `;
+  const gq=$("modGlobalQ");if(gq)gq.addEventListener("input",()=>{mod.q=gq.value;clearTimeout(gq._t);gq._t=setTimeout(()=>{if(mod.q.length>=2&&!team.membersLoaded&&can("membres")){searchMembers("").then(()=>renderModeration(el))}renderModeration(el);const n=$("modGlobalQ");n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)});
   el.querySelectorAll("[data-modtab]").forEach(b=>b.addEventListener("click",()=>{modTab=b.dataset.modtab;if(modTab==="membres")team.detail=null;if(["bord","membres","equipe","journal","reglages","affaires"].includes(modTab))loadTeamData(modTab);renderModeration(el)}));
   bindTeam(el);
   const mq=$("modQ");if(mq)mq.addEventListener("input",()=>{modQuery=mq.value;clearTimeout(mq._t);mq._t=setTimeout(()=>{renderModeration(el);const n=$("modQ");n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)});
