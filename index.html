@@ -3772,6 +3772,43 @@ html[data-design="2"]:not([data-theme="light"]) .menu-btn.is-user{background:#2F
   html[data-design="2"][data-theme="dark"] .menu-btn.is-guest{background:#E07A55!important;border-color:#E07A55!important;color:#1F1A17!important}
 }
 @media (max-width:680px) and (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .menu-btn.is-guest{background:#E07A55!important;border-color:#E07A55!important;color:#1F1A17!important}}
+
+/* ===== ORDINATEUR ===== */
+@media (min-width:681px){
+  /* 1. Loo : un rond discret, le nom apparaît au survol ; il se range pendant le défilement */
+  html[data-design="2"] body .reboot{width:56px;height:56px;min-height:56px!important;padding:0!important;justify-content:center!important;border-radius:999px!important;right:24px!important;bottom:24px!important;transition:width .2s ease,padding .2s ease,transform .25s ease,opacity .25s ease!important;overflow:hidden}
+  html[data-design="2"] body .reboot .reboot-label{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;transition:max-width .2s ease,opacity .2s ease}
+  html[data-design="2"] body .reboot:hover,html[data-design="2"] body .reboot:focus-visible{width:auto;padding:0 18px 0 9px!important}
+  html[data-design="2"] body .reboot:hover .reboot-label,html[data-design="2"] body .reboot:focus-visible .reboot-label{max-width:60px;opacity:1}
+  body.scroll-down .reboot{transform:translateY(110px);opacity:0;pointer-events:none}
+  /* 4. accueil : le titre d'abord, « les achats ouvrent bientôt » juste dessous */
+  #view-home:not([hidden]){display:flex;flex-direction:column}
+  #view-home>.hero2{order:1}
+  #view-home>.launch-box{order:2;margin-top:0}
+  #view-home>.wrap{order:3}
+  /* 5. en-tête compact */
+  html[data-design="2"] .top{transition:box-shadow .2s}
+  html[data-design="2"] .top .subnav{transition:max-height .25s ease,opacity .2s ease,padding .25s ease;max-height:80px}
+  body.hdr-compact .top{box-shadow:0 6px 20px rgba(46,50,56,.08)}
+  body.hdr-compact:not(.hdr-peek) .top .subnav{max-height:0!important;opacity:0;padding-top:0!important;padding-bottom:0!important;overflow:hidden;border:0!important}
+  body.hdr-compact #demoBar{display:none}
+  body.hdr-compact .top .head{padding-top:10px!important;padding-bottom:10px!important}
+  /* 6. 2e photo au survol */
+  .card-img{position:relative}
+  .card-img .card-img2{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
+  .card:hover .card-img .card-img2{opacity:1}
+}
+@media (min-width:1400px){
+  .catalogue .products.cols-4,.products.cols-4{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .catalogue{grid-template-columns:250px 1fr}
+}
+
+@media (min-width:1400px){html[data-design="2"] .catalogue .products.cols-4{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
+@media (min-width:681px){
+  body.hdr-compact:not(.hdr-peek) .top .subnav{display:none!important}
+  html[data-design="2"][data-theme="light"] body .reboot:hover,html[data-design="2"]:not([data-theme]) body .reboot:hover{background:#FFFFFF!important;border-color:#EBA488!important}
+}
+@media (min-width:681px) and (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme]) body .reboot:hover{background:#3B4148!important;border-color:#525A63!important}}
 </style>
 </head>
 <body>
@@ -6360,7 +6397,7 @@ function card(p){
     : `<button type="button" class="btn ${c?"btn-primary":"btn-outline"}" data-cart="${esc(p.id)}" aria-pressed="${c}">${c?"Dans le panier ✓":"Ajouter au panier"}</button>`;
   return `<article class="card">
     <a class="card-link" href="#/article/${encodeURIComponent(p.id)}">
-      <div class="image-frame card-img"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><span class="card-price price-tag">${(()=>{const o=typeof acceptedOffer==="function"&&!p.mine?acceptedOffer(p.id):null;return o?`<s>${eur(p.price)}</s> ${eur(Math.min(+o.amount,p.price))}`:eur(p.price)})()}</span></div>
+      <div class="image-frame card-img"><img data-safe-image src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" decoding="async">${p.photos&&p.photos[1]?`<img class="card-img2" src="${esc(p.photos[1])}" alt="" aria-hidden="true" loading="lazy" decoding="async">`:""}<span class="card-price price-tag">${(()=>{const o=typeof acceptedOffer==="function"&&!p.mine?acceptedOffer(p.id):null;return o?`<s>${eur(p.price)}</s> ${eur(Math.min(+o.amount,p.price))}`:eur(p.price)})()}</span></div>
       <div class="card-body">
         <h3 class="card-title">${esc(p.name)}</h3>
         <p class="card-meta"><span class="chip-mini">${esc(p.size)}</span><span class="chip-mini">${esc(p.condition)}</span></p>
@@ -8369,7 +8406,7 @@ addEventListener("hashchange",()=>setTimeout(looWatch,50));
 document.addEventListener("change",e=>{if(e.target.closest&&e.target.closest("#filterForm"))setTimeout(()=>{if(!filtered().length)looTip("vide",1200,"Rien ne correspond pour l’instant. Je peux t’aider à élargir ta recherche, ou te prévenir dès qu’un article arrive.",["Comment être prévenu quand un article qui me plaît est publié ?","Comment voir d’abord les articles à ma taille ?"])},100)});
 
 /* Téléphone : Loo se range quand on fait défiler vers le bas, revient quand on remonte */
-(function(){let y=scrollY,t=0;addEventListener("scroll",()=>{if(innerWidth>680)return;const ny=scrollY;
+(function(){let y=scrollY,t=0;addEventListener("scroll",()=>{const ny=scrollY;
   if(Math.abs(ny-y)<8)return;document.body.classList.toggle("scroll-down",ny>y&&ny>200);y=ny;clearTimeout(t);t=setTimeout(()=>document.body.classList.remove("scroll-down"),1400)},{passive:true})})();
 
 /* Téléphone : glisser le doigt sur la photo pour passer à la suivante */
@@ -8451,6 +8488,11 @@ document.addEventListener("pointerdown",e=>{
   if(e.target.closest("#chat,#rebootBtn,[data-mm-loo],[data-help-loo],[data-tip-open],[data-open-chat],.loo-tip"))return;
   c.classList.remove("open");$("rebootBtn").setAttribute("aria-expanded","false");document.body.classList.remove("chat-open");
 },true);
+
+/* Ordinateur : l'en-tête se resserre sur une ligne dès qu'on descend, la 2e ligne revient quand on remonte */
+(function(){let y=scrollY;addEventListener("scroll",()=>{if(innerWidth<=680){document.body.classList.remove("hdr-compact","hdr-peek");return}
+  const ny=scrollY,B=document.body.classList;B.toggle("hdr-compact",ny>140);if(ny<=140){B.remove("hdr-peek");y=ny;return}
+  if(ny<y-30){B.add("hdr-peek");y=ny}else if(ny>y+30){B.remove("hdr-peek");y=ny}},{passive:true})})();
 let chatStarted=false;
 function openChat(open){
   const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);document.body.classList.toggle("chat-open",!!open);
