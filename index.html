@@ -2894,6 +2894,34 @@ html[data-design="2"][data-theme="light"] .soon-pill{background:#F8E9DF;color:#9
 html[data-design="2"][data-theme="dark"] .soon-pill{background:#3B4148;color:#EBA488}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .soon-pill{background:#3B4148;color:#EBA488}}
 @media (max-width:1439px){html[data-design="2"] .subnav .nav-atouts .soon-pill{display:none}html[data-design="2"] .nav-cats button{padding:7px 9px!important}html[data-design="2"] .subnav .nav-atouts button,html[data-design="2"] .subnav .nav-filtres{padding:7px 8px!important}html[data-design="2"] .subnav{gap:12px!important}}
+/* ===== EN-TÊTE : Mode / Livres dans la recherche, Filtres à gauche ===== */
+.search-scope{display:none}
+@media (min-width:901px){
+  html[data-design="2"] .top .search-scope{display:flex;gap:2px;flex:none;margin-right:6px;padding:3px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+  html[data-design="2"] .top .search-scope button{border:0;background:none;font:inherit;font-size:13.5px;font-weight:600;padding:6px 12px;border-radius:999px;color:var(--muted);cursor:pointer;transition:background-color .2s,color .2s}
+  html[data-design="2"] .top .search-scope button:hover{color:var(--ink)}
+  html[data-design="2"] .top .search-scope button[aria-pressed="true"]{background:#B04E2E;color:#FFFFFF}
+  html[data-design="2"] .subnav .nav-univers{display:none!important}
+  html[data-design="2"] .subnav #navFiltres{margin:0!important;padding:0 12px 0 0!important;border-right:1px solid var(--line);border-left:0!important;flex:none}
+  html[data-design="2"] .nav-cats{border-left:0!important;padding-left:0!important}
+}
+html[data-design="2"][data-theme="dark"] .top .search-scope{background:#31363C;border-color:#3B4148}
+html[data-design="2"][data-theme="dark"] .top .search-scope button[aria-pressed="true"]{background:#E07A55;color:#1F1A17}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .top .search-scope{background:#31363C;border-color:#3B4148}html[data-design="2"]:not([data-theme="light"]) .top .search-scope button[aria-pressed="true"]{background:#E07A55;color:#1F1A17}}
+/* ===== CONNEXION / INSCRIPTION : carte centrée ===== */
+.auth-card{max-width:500px;margin:0 auto}
+.auth-head{text-align:center;margin:4px 0 18px}
+.auth-head h2{font-size:26px;margin:10px 0 6px}
+.auth-head p{margin:0}
+.auth-mark{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:18px;background:var(--pale);color:#B04E2E}
+.auth-mark .loo-mark{width:32px;height:32px}
+.auth-card .tabs[role="tablist"] button{flex:1}
+.auth-card .panel{padding:22px!important}
+.auth-card .panel .btn-primary{width:100%;justify-content:center;height:48px}
+html[data-design="2"][data-theme="dark"] .auth-mark{background:#31363C;color:#E07A55}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .auth-mark{background:#31363C;color:#E07A55}}
+body.guest #view-compte .page-head .crumbs{display:none}
+#accountTitle:empty{display:none}
 </style>
 </head>
 <body>
@@ -2918,6 +2946,7 @@ html[data-design="2"][data-theme="dark"] .soon-pill{background:#3B4148;color:#EB
     <span class="mod-pill mod-only" id="modPill" aria-hidden="true">Console de modération</span>
     <form class="search" id="topSearch" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <div class="search-scope" role="group" aria-label="Univers"><button type="button" data-univers="mode">Mode</button><button type="button" data-univers="livres">Livres</button></div>
       <label for="searchInput" class="sr-only">Rechercher des vêtements</label>
       <input id="searchInput" type="search" placeholder="Un vêtement, un livre, une marque…" autocomplete="off">
       <button class="btn btn-primary search-go" type="submit" aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="search-go-label">Rechercher</span></button>
@@ -2960,11 +2989,11 @@ html[data-design="2"][data-theme="dark"] .soon-pill{background:#3B4148;color:#EB
     </div>
   </div>
   <nav class="wrap subnav" aria-label="Navigation">
+    <div class="nav-pill nav-pill-f" id="navFiltres"></div>
     <div class="nav-univers" role="group" aria-label="Univers"><button type="button" data-univers="mode"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a2 2 0 1 1 2-2"/><path d="M12 7v2L3 16h18l-9-7"/></svg><span>Mode</span></button><button type="button" data-univers="livres"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg><span>Livres</span></button></div>
     <div class="nav-cats" id="navCats" role="group" aria-label="Catégories"></div>
     <div class="nav-right">
-    <div class="nav-pill nav-pill-f" id="navFiltres"></div>
-    <div class="nav-atouts" role="group" aria-label="Exclusivités Orleoo"><span class="nav-atouts-l" aria-hidden="true">Exclusif</span><button type="button" data-go="#/fonctionnement"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Échanger</span></button><button type="button" data-go="#/securite" title="Remise en main propre sécurisée"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Main propre</span></button><button type="button" data-soon="pret" title="Prêt de livres entre membres : bientôt disponible"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M12 13.2c1.5-1 3-2.1 3-3.5 0-1.6-2-2.1-3-.7-1-1.4-3-.9-3 .7 0 1.4 1.5 2.5 3 3.5Z"/></svg><span>Prêter</span><span class="soon-pill">Bientôt</span></button><button type="button" data-go="#/aide"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17h.01"/></svg><span>Aide</span></button></div>
+    <div class="nav-atouts" role="group" aria-label="Exclusivités Orleoo"><span class="nav-atouts-l" aria-hidden="true">Exclusif</span><button type="button" data-go="#/fonctionnement"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Échanger</span></button><button type="button" data-go="#/securite" title="Remise en main propre sécurisée"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Main propre</span></button><button type="button" data-soon="pret" title="Prêt de livres entre membres : bientôt disponible"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M12 13.2c1.5-1 3-2.1 3-3.5 0-1.6-2-2.1-3-.7-1-1.4-3-.9-3 .7 0 1.4 1.5 2.5 3 3.5Z"/></svg><span>Prêt</span><span class="soon-pill">Bientôt</span></button><button type="button" data-go="#/aide"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17h.01"/></svg><span>Aide</span></button></div>
     <button type="button" class="sell" data-go="#/vendre"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Vendre</span></button>
     </div>
   </nav>
@@ -2983,7 +3012,7 @@ html[data-design="2"][data-theme="dark"] .soon-pill{background:#3B4148;color:#EB
         <p class="lead">Les vêtements et les livres des autres ont encore plein d’histoires à raconter. Achète, vends ou échange entre particuliers, en toute sécurité.</p>
         <p class="hx-daily"><span class="hx-daily-l">Phrase du jour</span><span id="dailyQuote">Chaque vêtement mérite une nouvelle histoire.</span></p>
       </div>
-      <div class="tags" aria-label="Que veux-tu faire ?"><a class="tag t1" href="#/catalogue"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><b>Acheter</b><small>Des pièces uniques, choisies par d’autres</small></a><a class="tag t2" href="#/fonctionnement"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><b>Échanger</b><small>Ton vêtement contre un autre, avec ou sans complément</small></a><a class="tag t3" href="#/" data-soon="pret"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M12 13.2c1.5-1 3-2.1 3-3.5 0-1.6-2-2.1-3-.7-1-1.4-3-.9-3 .7 0 1.4 1.5 2.5 3 3.5Z"/></svg></span><b>Prêter <span class="soon-pill">Bientôt</span></b><small>Prête tes livres entre membres</small></a><a class="tag t4" href="#/vendre"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><b>Vendre</b><small>Gratuit, en quelques minutes</small></a></div>
+      <div class="tags" aria-label="Que veux-tu faire ?"><a class="tag t1" href="#/catalogue"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><b>Acheter</b><small>Des pièces uniques, choisies par d’autres</small></a><a class="tag t2" href="#/fonctionnement"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><b>Échanger</b><small>Ton vêtement contre un autre, avec ou sans complément</small></a><a class="tag t3" href="#/" data-soon="pret"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M12 13.2c1.5-1 3-2.1 3-3.5 0-1.6-2-2.1-3-.7-1-1.4-3-.9-3 .7 0 1.4 1.5 2.5 3 3.5Z"/></svg></span><b>Prêt <span class="soon-pill">Bientôt</span></b><small>Prête tes livres entre membres</small></a><a class="tag t4" href="#/vendre"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><b>Vendre</b><small>Gratuit, en quelques minutes</small></a></div>
     </div>
   </section>
 
@@ -5731,9 +5760,9 @@ function renderAccount(tab){
     el.innerHTML=`<form class="panel" id="newPwdForm" novalidate><p class="muted">Choisis ton nouveau mot de passe.</p>${pwdField("npPwd","Nouveau mot de passe","new-password")}<button class="btn btn-primary" type="submit">Enregistrer</button><p class="error" id="npErr" role="alert"></p></form>`;return;
   }
   if(!state.user){
-    $("accountTitle").textContent="Connexion";
+    $("accountTitle").textContent="";
     const t=["login","forgot"].includes(accountTab)?accountTab:"signup";
-    el.innerHTML=`
+    el.innerHTML=`<div class="auth-card"><div class="auth-head"><span class="auth-mark" aria-hidden="true"><span class="loo-mark"></span></span><h2>${t==="signup"?"Rejoins Orleoo":t==="login"?"Content de te revoir":"Mot de passe oublié"}</h2><p class="muted">${t==="signup"?"Achète, vends et échange en seconde main. C’est gratuit.":t==="login"?"Connecte-toi pour retrouver tes annonces, tes messages et tes favoris.":"On t’envoie un lien pour en choisir un nouveau."}</p></div>
     <div class="tabs" role="tablist">
       <button type="button" role="tab" aria-selected="${t==="signup"}" data-acc="signup">Créer un compte</button>
       <button type="button" role="tab" aria-selected="${t!=="signup"}" data-acc="login">Se connecter</button>
@@ -5762,7 +5791,7 @@ function renderAccount(tab){
       <p class="muted small">En créant ton compte, tu acceptes les <a class="link" href="#/conditions" target="_blank" rel="noopener">conditions d’utilisation</a> et la <a class="link" href="#/confidentialite" target="_blank" rel="noopener">politique de confidentialité</a>.</p>
       <button class="btn btn-primary" type="submit">Créer mon compte</button>
       <p class="error" id="signupErr" role="alert"></p><p class="note small" id="signupOk" hidden></p>
-    </form>`}${appearanceHtml()}`;
+    </form>`}</div>`;
     return;
   }
   $("accountTitle").textContent=`Bonjour ${state.user.name}`;
@@ -6591,7 +6620,7 @@ const PAGES={
       <div class="ch-row home-tabs" style="margin-top:12px"><button type="button">3e · Raccourci</button><button type="button">Raccourci</button></div>
       <div class="ch-row sel-tabs" style="margin-top:12px" role="tablist" aria-label="Exemple d’onglets"><button type="button" role="tab" aria-selected="true">3f · Onglet choisi</button><button type="button" role="tab" aria-selected="false">Onglet</button></div>
       <div class="ch-row" style="margin-top:12px"><label class="chip"><input type="checkbox" checked><span>3g · Filtre coché</span></label><label class="chip"><input type="checkbox"><span>Filtre</span></label></div></section>
-    <section class="ch"><h2>4. Tuiles de l’accueil</h2><div class="tags ch-tags"><a class="tag t1" href="#/catalogue"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><b>Acheter</b><small>Des pièces uniques, choisies par d’autres</small></a><a class="tag t2" href="#/fonctionnement"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><b>Échanger</b><small>Ton vêtement contre un autre, avec ou sans complément</small></a><a class="tag t3" href="#/" data-soon="pret"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M12 13.2c1.5-1 3-2.1 3-3.5 0-1.6-2-2.1-3-.7-1-1.4-3-.9-3 .7 0 1.4 1.5 2.5 3 3.5Z"/></svg></span><b>Prêter <span class="soon-pill">Bientôt</span></b><small>Prête tes livres entre membres</small></a><a class="tag t4" href="#/vendre"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><b>Vendre</b><small>Gratuit, en quelques minutes</small></a></div></section>
+    <section class="ch"><h2>4. Tuiles de l’accueil</h2><div class="tags ch-tags"><a class="tag t1" href="#/catalogue"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><b>Acheter</b><small>Des pièces uniques, choisies par d’autres</small></a><a class="tag t2" href="#/fonctionnement"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><b>Échanger</b><small>Ton vêtement contre un autre, avec ou sans complément</small></a><a class="tag t3" href="#/" data-soon="pret"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M12 13.2c1.5-1 3-2.1 3-3.5 0-1.6-2-2.1-3-.7-1-1.4-3-.9-3 .7 0 1.4 1.5 2.5 3 3.5Z"/></svg></span><b>Prêt <span class="soon-pill">Bientôt</span></b><small>Prête tes livres entre membres</small></a><a class="tag t4" href="#/vendre"><span class="tag-hole" aria-hidden="true"></span><span class="tag-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><b>Vendre</b><small>Gratuit, en quelques minutes</small></a></div></section>
     <section class="ch"><h2>5. Cartes d’annonces</h2><div class="products ch-cards">${[P[0],P[12]||P[1],P[2]].map(card).join("")}</div></section>
     <section class="ch"><h2>6. Champs de formulaire</h2><div class="ch-row"><input class="input" placeholder="6a · Champ texte" style="max-width:280px"><select class="input" style="max-width:220px" aria-label="Exemple de liste"><option>6b · Liste</option></select></div></section>
     <section class="ch"><h2>7. Étiquettes</h2><div class="ch-row"><span class="price-tag" style="position:static">7a · 24,00 €</span><span class="chip-mini">7b · M</span><span class="chip-mini">Très bon état</span><span class="status">7c · Statut</span><span class="hero2-kicker" style="margin:0">7d · Badge</span></div></section>`},
@@ -6654,6 +6683,7 @@ function updateCounts(){
 }
 function renderView(){
   const [name="",arg]=location.hash.replace(/^#\/?/,"").split("/").map(decodeURIComponent);
+  if(name!=="compte"&&name!=="desinscription")state.returnTo=location.hash||"#/";   // page où revenir après connexion
   if(typeof site!=="undefined")renderMaintenance();
   document.querySelectorAll(".view").forEach(v=>v.hidden=true);
   if(name!=="messages")chat.current=null;
@@ -6774,7 +6804,7 @@ document.addEventListener("submit",async e=>{
     const {data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{name,city},emailRedirectTo:redirectUrl(),captchaToken:cap}});
     busy(f,false);
     if(error){$("signupErr").textContent=frenchError(error);return}
-    if(data.session){toast(`Bienvenue ${name} !`);location.hash="#/compte/profil";setTimeout(showWelcome,400)}
+    if(data.session){toast(`Bienvenue ${name} !`);location.hash=state.returnTo||"#/";setTimeout(showWelcome,400)}
     else{const okEl=$("signupOk");okEl.hidden=false;okEl.innerHTML=`Compte créé ! Ouvre l’e-mail envoyé à <b>${esc(email)}</b> pour confirmer ton adresse, puis connecte-toi.`}
   }
   if(f.id==="loginForm"){e.preventDefault();
@@ -6786,7 +6816,7 @@ document.addEventListener("submit",async e=>{
     const {error}=await sb.auth.signInWithPassword({email,password:pwd,options:{captchaToken:cap}});
     busy(f,false);
     if(error){$("loginErr").textContent=frenchError(error);return}
-    toast("Content de te revoir !");location.hash="#/compte/profil";
+    toast("Content de te revoir !");location.hash=state.returnTo||"#/";
   }
   if(f.id==="forgotForm"){e.preventDefault();
     const email=$("fEmail").value.trim();
