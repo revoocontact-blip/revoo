@@ -3377,6 +3377,126 @@ html[data-design="2"][data-theme="dark"] .hstate.ok{background:#21392B;color:#9B
 .gallery-main{position:relative}
 .photo-count{position:absolute;right:12px;bottom:12px;padding:4px 10px;border-radius:99px;background:rgba(31,26,23,.72);color:#fff;font-size:12.5px;font-weight:700;letter-spacing:.02em;pointer-events:none}
 @media (min-width:681px){.photo-count{display:none}}
+/* ===== LOGO DE LOO ===== */
+.loo-logo{width:100%;height:100%;display:block;overflow:visible}
+.loo-logo .ll-bubble{fill:#B04E2E}
+.loo-logo .ll-ring{fill:none;stroke:#FBF5EC;stroke-width:3.2}
+.loo-logo .ll-spark{fill:#EBA488}
+.reboot .reboot-bubble,.chat-head .reboot-bubble{background:none!important;border-radius:0!important;overflow:visible!important}
+html[data-design="2"] .reboot{background:var(--surface,#fff)!important;color:var(--ink,#2E3238)!important;border:1px solid var(--line,#E6DCCF)!important;box-shadow:0 10px 28px rgba(46,50,56,.18)!important;padding:7px 18px 7px 8px!important;gap:8px}
+html[data-design="2"] .reboot .reboot-bubble{width:38px;height:38px}
+html[data-design="2"] .reboot .reboot-label{color:var(--ink,#2E3238)!important;font-weight:800}
+html[data-design="2"] .reboot:hover{transform:translateY(-2px)}
+html[data-design="2"][data-theme="dark"] .reboot{background:#2F3439!important;border-color:#49515A!important}
+html[data-design="2"][data-theme="dark"] .reboot .reboot-label{color:#F1F2F3!important}
+html[data-design="2"][data-theme="dark"] .loo-logo .ll-bubble{fill:#E07A55}
+html[data-design="2"][data-theme="dark"] .loo-logo .ll-ring{stroke:#2F3439}
+@media (prefers-color-scheme:dark){
+ html[data-design="2"]:not([data-theme="light"]) .reboot{background:#2F3439!important;border-color:#49515A!important}
+ html[data-design="2"]:not([data-theme="light"]) .reboot .reboot-label{color:#F1F2F3!important}
+ html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-bubble{fill:#E07A55}
+ html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-ring{stroke:#2F3439}
+}
+/* ===== MENU ===== */
+.menu-btn{display:none}
+.mob-menu{position:fixed;top:0;right:0;bottom:0;z-index:120;width:min(88vw,380px);background:var(--bg,#FBF5EC);box-shadow:-18px 0 40px rgba(31,26,23,.18);transform:translateX(102%);transition:transform .25s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.mob-menu.open{transform:none}
+.mm-backdrop{position:fixed;inset:0;z-index:119;background:rgba(31,26,23,.42);opacity:0;transition:opacity .25s}
+.mm-backdrop.open{opacity:1}
+body.menu-open{overflow:hidden}
+.mm-inner{flex:1;overflow-y:auto;padding:10px 16px calc(24px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+.mm-top{display:flex;align-items:center;justify-content:space-between;padding:6px 0 10px}
+.mm-title{font-weight:800;font-size:1.15rem}
+.mm-close{width:44px;height:44px;border:0;border-radius:50%;background:var(--surface,#fff);color:inherit;font-size:1.6rem;line-height:1;cursor:pointer;box-shadow:0 0 0 1px var(--line,#E6DCCF) inset}
+.mm-user{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF);text-decoration:none;color:inherit}
+.mm-user .avatar{width:44px;height:44px;flex:none}
+.mm-user b{display:block;font-size:1rem}
+.mm-user small{color:var(--muted,#5E636B)}
+.mm-guest{padding:16px;border-radius:16px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF)}
+.mm-guest b{display:block;font-size:1.05rem}.mm-guest small{display:block;color:var(--muted,#5E636B);margin:4px 0 12px}
+.mm-guest-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mm-guest-btns .btn,.mm-sell{justify-content:center;min-height:46px}
+.mm-sell{display:flex;align-items:center;gap:8px;width:100%;margin:12px 0 4px}
+.mm-sell .icon{width:18px;height:18px}
+.mm-sec{margin-top:16px}
+.mm-sec h3{margin:0 0 6px 4px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#5E636B)}
+.mm-item{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:6px 10px;border:0;border-radius:12px;background:none;color:inherit;font:inherit;font-weight:600;font-size:1rem;text-decoration:none;text-align:left;cursor:pointer}
+.mm-item:hover,.mm-item:focus-visible{background:var(--surface,#fff)}
+.mm-item.on{background:var(--surface,#fff);box-shadow:inset 3px 0 0 #B04E2E}
+.mm-ic{width:34px;height:34px;border-radius:10px;background:#F8E9DF;color:#B04E2E;display:grid;place-items:center;flex:none}
+.mm-ic .icon{width:19px;height:19px}
+.mm-ic.loo-ic{background:none;padding:2px}
+.mm-l{flex:1}
+.mm-badge{min-width:24px;height:24px;padding:0 7px;border-radius:99px;background:#B04E2E;color:#fff;font-size:.78rem;font-weight:800;display:grid;place-items:center}
+.mm-theme .mm-seg{display:grid;grid-template-columns:repeat(3,1fr)}
+.mm-out{margin-top:14px;color:#A3341C}
+.mm-out .mm-ic{background:#FBE9E5;color:#A3341C}
+.mm-foot{margin:18px 4px 0;font-size:.8rem;color:var(--muted,#5E636B)}
+.mm-foot a{color:inherit}
+html[data-design="2"][data-theme="dark"] .mob-menu{background:#272B30}
+html[data-design="2"][data-theme="dark"] :is(.mm-user,.mm-guest,.mm-close){background:#2F3439;border-color:#49515A}
+html[data-design="2"][data-theme="dark"] :is(.mm-item:hover,.mm-item.on){background:#31363C}
+html[data-design="2"][data-theme="dark"] .mm-ic{background:#3B302B;color:#E07A55}
+html[data-design="2"][data-theme="dark"] .mm-badge{background:#E07A55;color:#1F1A17}
+html[data-design="2"][data-theme="dark"] .mm-out{color:#F2867D}
+html[data-design="2"][data-theme="dark"] .mm-out .mm-ic{background:#3A2A2A;color:#F2867D}
+@media (prefers-color-scheme:dark){
+ html[data-design="2"]:not([data-theme="light"]) .mob-menu{background:#272B30}
+ html[data-design="2"]:not([data-theme="light"]) :is(.mm-user,.mm-guest,.mm-close){background:#2F3439;border-color:#49515A}
+ html[data-design="2"]:not([data-theme="light"]) :is(.mm-item:hover,.mm-item.on){background:#31363C}
+ html[data-design="2"]:not([data-theme="light"]) .mm-ic{background:#3B302B;color:#E07A55}
+ html[data-design="2"]:not([data-theme="light"]) .mm-badge{background:#E07A55;color:#1F1A17}
+ html[data-design="2"]:not([data-theme="light"]) .mm-out{color:#F2867D}
+ html[data-design="2"]:not([data-theme="light"]) .mm-out .mm-ic{background:#3A2A2A;color:#F2867D}
+}
+/* ===== TÉLÉPHONE : plus de barre du bas, en-tête revu ===== */
+@media (max-width:680px){
+  .tabbar{display:none!important}
+  body{padding-bottom:env(safe-area-inset-bottom)!important}
+  .buy-sticky{bottom:0!important}
+  .toast{bottom:calc(20px + env(safe-area-inset-bottom))!important}
+  .chat{bottom:calc(84px + env(safe-area-inset-bottom))!important}
+  /* en-tête : logo à gauche, Vendre + menu à droite, recherche dessous */
+  html[data-design="2"] .top .head{display:grid!important;grid-template-columns:1fr auto;grid-template-areas:"logo actions" "search search";gap:10px 8px!important;padding-top:10px!important;padding-bottom:8px!important;align-items:center}
+  html[data-design="2"] .top .logo{grid-area:logo}
+  html[data-design="2"] .top .logo img{height:30px!important;width:auto}
+  html[data-design="2"] .top .search{grid-area:search;margin:0!important}
+  html[data-design="2"] .top .actions{grid-area:actions;display:flex!important;gap:8px;margin:0!important}
+  html[data-design="2"] .top .actions>.action,html[data-design="2"] .top .actions>#loginBtn,html[data-design="2"] .top .actions>.acct{display:none!important}
+  html[data-design="2"] .top .actions>.head-sell{display:inline-flex!important;min-height:40px;padding:0 14px!important;font-size:.9rem;gap:6px}
+  html[data-design="2"] .top .actions>.head-sell .icon{width:16px;height:16px}
+  .menu-btn{display:grid;place-items:center;position:relative;width:44px;height:44px;border-radius:12px;border:1px solid var(--line,#E6DCCF);background:var(--surface,#fff);color:var(--ink,#2E3238);cursor:pointer;padding:0}
+  .menu-lines{display:grid;gap:4px;width:20px}
+  .menu-lines i{display:block;height:2px;border-radius:2px;background:currentColor}
+  .menu-lines i:nth-child(2){width:70%;justify-self:end}
+  .menu-dot{position:absolute;top:7px;right:7px;width:9px;height:9px;border-radius:50%;background:#B04E2E;box-shadow:0 0 0 2px var(--surface,#fff)}
+  html[data-design="2"][data-theme="dark"] .menu-btn{background:#2F3439;border-color:#49515A;color:#F1F2F3}
+  /* barre sous la recherche : Filtres · Mode · Livres, sans l'icône isolée */
+  html[data-design="2"] .subnav .nav-right{display:none!important}
+  html[data-design="2"] .subnav{gap:4px!important}
+  /* Loo : son logo seul, rond, bien placé en bas à droite */
+  html[data-design="2"] .reboot{width:58px!important;height:58px!important;min-height:58px!important;padding:0!important;border-radius:50%!important;right:16px!important;bottom:calc(18px + env(safe-area-inset-bottom))!important;justify-content:center}
+  html[data-design="2"] .reboot .reboot-bubble{width:36px;height:36px}
+  html[data-design="2"] .reboot .reboot-label{display:none}
+  body[data-view="product"] .reboot{bottom:calc(96px + env(safe-area-inset-bottom))!important}
+  body.menu-open .reboot,body.sheet-open .reboot{display:none}
+  .loo-tip{bottom:calc(88px + env(safe-area-inset-bottom))!important}
+  body[data-view="product"] .loo-tip{bottom:calc(166px + env(safe-area-inset-bottom))!important}
+}
+@media (max-width:680px) and (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .menu-btn{background:#2F3439;border-color:#49515A;color:#F1F2F3}}
+
+/* Loo : bouton clair avec son logo (remplace l'ancien rond orange) */
+html[data-design="2"][data-theme="light"] body .reboot,html[data-design="2"]:not([data-theme]) body .reboot{background:#FFFFFF!important;color:#2E3238!important;border:1px solid #E6DCCF!important;box-shadow:0 10px 28px rgba(46,50,56,.18)!important}
+html[data-design="2"][data-theme="light"] body .reboot .reboot-label,html[data-design="2"]:not([data-theme]) body .reboot .reboot-label{color:#2E3238!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme]) body .reboot{background:#31363C!important;color:#ECEFF1!important;border:1px solid #49515A!important}html[data-design="2"]:not([data-theme]) body .reboot .reboot-label{color:#F1F2F3!important}}
+html[data-design="2"] body .reboot .reboot-bubble{width:40px!important;height:40px!important}
+@media (max-width:680px){html[data-design="2"] body .reboot{padding:0!important;border-radius:50%!important}html[data-design="2"] body .reboot .reboot-bubble{width:38px!important;height:38px!important}
+  body[data-view="product"] .toast{bottom:calc(100px + env(safe-area-inset-bottom))!important}}
+.mm-user>span:last-child{flex:1;text-align:left;min-width:0}
+.mm-user>span:last-child b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+html[data-design="2"][data-theme="dark"] .subnav .nav-filtres,html[data-design="2"][data-theme="dark"] .subnav .nav-filtres>span{color:#D5DADE!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .subnav .nav-filtres,html[data-design="2"]:not([data-theme="light"]) .subnav .nav-filtres>span{color:#D5DADE!important}}
 </style>
 </head>
 <body>
@@ -3424,6 +3544,7 @@ html[data-design="2"][data-theme="dark"] .hstate.ok{background:#21392B;color:#9B
         <span class="label" id="loginLabel">Se connecter</span>
       </a>
       <a class="btn btn-primary head-sell" href="#/vendre"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Vendre</span></a>
+      <button type="button" class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobMenu"><span class="menu-lines" aria-hidden="true"><i></i><i></i><i></i></span><span class="menu-dot" id="menuDot" hidden></span></button>
       <div class="acct" id="acctWrap" hidden>
         <button type="button" class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false" aria-controls="acctMenu">
           <span class="avatar acct-av" id="acctAv" aria-hidden="true"></span><span class="acct-name" id="acctName"></span><svg class="icon acct-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
@@ -3454,6 +3575,8 @@ html[data-design="2"][data-theme="dark"] .hstate.ok{background:#21392B;color:#9B
   </nav>
 </header>
 
+<div class="mm-backdrop" id="mmBackdrop" hidden></div>
+<aside class="mob-menu" id="mobMenu" role="dialog" aria-modal="true" aria-label="Menu" hidden><div class="mm-inner" id="mmInner"></div></aside>
 <main id="main" tabindex="-1">
 
 <!-- ================= ACCUEIL ================= -->
@@ -3691,7 +3814,7 @@ html[data-design="2"][data-theme="dark"] .hstate.ok{background:#21392B;color:#9B
 <!-- ================= LOO ================= -->
 <section class="chat" id="chat" role="dialog" aria-modal="false" aria-labelledby="chatTitle">
   <div class="chat-head">
-    <span class="reboot-bubble"><span class="loo-mark" aria-hidden="true"></span></span>
+    <span class="reboot-bubble"><svg class="loo-logo" viewBox="0 0 48 48" aria-hidden="true"><path class="ll-bubble" d="M24 4c11 0 20 7.6 20 17.5S35 39 24 39c-1.9 0-3.7-.2-5.4-.7L10 43.5c-.9.5-1.9-.3-1.6-1.3l2-6.6C6.7 32.4 4 27.2 4 21.5 4 11.6 13 4 24 4Z"/><circle class="ll-ring" cx="19.5" cy="21" r="6.2"/><circle class="ll-ring" cx="28.5" cy="21" r="6.2"/><path class="ll-spark" d="M37.5 8.5l1 2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1z"/></svg></span>
     <div><b id="chatTitle">Loo</b><small>Assistant Orleoo · réponses automatiques</small></div>
     <button type="button" id="closeChat" aria-label="Fermer Loo">×</button>
   </div>
@@ -3712,7 +3835,7 @@ html[data-design="2"][data-theme="dark"] .hstate.ok{background:#21392B;color:#9B
   </form>
 </section>
 <button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat" aria-label="Loo, l’assistant Orleoo">
-  <span class="reboot-bubble"><span class="loo-mark" aria-hidden="true"></span></span><span class="reboot-label">Loo</span>
+  <span class="reboot-bubble"><svg class="loo-logo" viewBox="0 0 48 48" aria-hidden="true"><path class="ll-bubble" d="M24 4c11 0 20 7.6 20 17.5S35 39 24 39c-1.9 0-3.7-.2-5.4-.7L10 43.5c-.9.5-1.9-.3-1.6-1.3l2-6.6C6.7 32.4 4 27.2 4 21.5 4 11.6 13 4 24 4Z"/><circle class="ll-ring" cx="19.5" cy="21" r="6.2"/><circle class="ll-ring" cx="28.5" cy="21" r="6.2"/><path class="ll-spark" d="M37.5 8.5l1 2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1z"/></svg></span><span class="reboot-label">Loo</span>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -7575,7 +7698,7 @@ function renderView(){
   else if(name==="desinscription"){view="page";renderUnsubscribe(arg)}
   else if(PAGES[name]){view="page";$("pageContent").innerHTML=PAGES[name]()}
   else renderHome();
-  $("view-"+view).hidden=false;
+  $("view-"+view).hidden=false;document.body.dataset.view=view;
   document.querySelectorAll(".tabbar [data-tab]").forEach(a=>{const on=a.dataset.tab===(view==="home"?"home":view==="product"?"catalogue":view);a.toggleAttribute("aria-current",on);if(on)a.setAttribute("aria-current","page")});
   renderNav(view);
   updateCounts();fillSuggestions();
@@ -7961,6 +8084,58 @@ document.addEventListener("change",e=>{if(e.target.closest&&e.target.closest("#f
     const n=(cur+(dx<0?1:-1)+th.length)%th.length;th[n].click()},{passive:true});
   document.addEventListener("click",e=>{const b=e.target.closest(".thumbs [data-photo]");if(!b)return;setTimeout(()=>{const c=$("photoCount");if(c)c.textContent=`${+b.dataset.photo+1}/${document.querySelectorAll(".thumbs [data-photo]").length}`},0)});
 })();
+
+/* =========================================================
+   MENU (téléphone) : tout ce qui était dans la barre du bas, et plus, rangé par thème
+   ========================================================= */
+const MI={home:'<path d="M4 11 12 4l8 7v9h-5v-6H9v6H4v-9Z"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',shirt:'<path d="M8 3 4 6l2 4 2-1v12h8V9l2 1 2-4-4-3a4 4 0 0 1-8 0Z"/>',
+  book:'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',msg:'<path d="M4 5h16v11H9l-5 4V5Z"/>',heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
+  bag:'<path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/>',list:'<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/>',
+  loop:'<path d="M20 11a8 8 0 0 0-14.6-4.5L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L20 16"/><path d="M20 21v-5h-5"/>',tag:'<path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
+  swap:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>',shield:'<path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/>',crown:'<path d="m3 8 4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8Z"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17h.01"/>',out:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',plus:'<path d="M12 5v14M5 12h14"/>',mod:'<path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/>'};
+const mIc=k=>`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${MI[k]}</svg>`;
+function menuHtml(){
+  const u=state.user,mod=!!(u&&state.isAdmin),cur=location.hash||"#/";
+  const nMsg=typeof chat!=="undefined"?chat.unread||0:0,nFav=u?state.favorites.length:0,nCart=state.cart.length;
+  const nAl=u?((growth.hits||[]).filter(h=>!h.seen_at).length+(growth.drops||[]).filter(d=>!d.seen_at).length+(growth.fhits||[]).filter(h=>!h.seen_at).length):0;
+  let nLoan=0;try{nLoan=loanTodo()}catch(_){}
+  const it=(href,ic,label,badge,extra="")=>`<a class="mm-item${cur===href||(href!=="#/"&&cur.startsWith(href+"/"))?" on":""}" href="${href}" ${extra}><span class="mm-ic">${mIc(ic)}</span><span class="mm-l">${label}</span>${badge?`<span class="mm-badge">${badge}</span>`:""}</a>`;
+  const sec=(t,items)=>`<section class="mm-sec"><h3>${t}</h3>${items}</section>`;
+  const head=u?`<a class="mm-user" href="${mod?"#/compte/moderation":"#/vendeur/"+u.id}"><span class="avatar" aria-hidden="true">${avatarInner(u.name,u.avatar)}</span><span><b>@${esc(u.name)}</b><small>${mod?"Espace modération":"Voir mon profil public"}</small></span></a>`
+    :`<div class="mm-guest"><b>Bienvenue sur Orleoo</b><small>Achète, vends, échange et prête en seconde main.</small><div class="mm-guest-btns"><a class="btn btn-primary" href="#/compte">Créer un compte</a><a class="btn btn-outline" href="#/compte/login">Se connecter</a></div></div>`;
+  return `<div class="mm-top"><span class="mm-title">Menu</span><button type="button" class="mm-close" data-mm-close aria-label="Fermer le menu">×</button></div>
+  ${head}
+  ${mod?"":`<a class="btn btn-primary mm-sell" href="#/vendre">${mIc("plus")} Vendre un article</a>`}
+  ${sec("Découvrir",it("#/","home","Accueil")+`<a class="mm-item" href="#/catalogue" data-new="1"><span class="mm-ic">${mIc("search")}</span><span class="mm-l">Tous les articles</span></a>`+`<a class="mm-item" href="#/univers/mode"><span class="mm-ic">${mIc("shirt")}</span><span class="mm-l">Mode</span></a>`+`<a class="mm-item" href="#/univers/livres"><span class="mm-ic">${mIc("book")}</span><span class="mm-l">Livres</span></a>`)}
+  ${u&&!mod?sec("Mon espace",it("#/messages","msg","Messages",nMsg)+it("#/favoris","heart","Favoris",nFav)+(payOn()?it("#/panier","bag","Panier",nCart):"")+it("#/compte/annonces","list","Mes annonces")+it("#/compte/alertes","bell","Alertes et vendeurs suivis",nAl)+it("#/compte/prets","loop","Mes prêts",nLoan)+(offersOpen()?it("#/compte/offres","tag","Mes offres"):"")+it("#/compte/profil","gear","Profil et paramètres")):""}
+  ${mod?sec("Modération",it("#/compte/moderation","mod","Console de modération")):""}
+  ${sec("Orleoo",it("#/echanger","swap","Échanger")+it("#/main-propre","shield","Main propre")+it("#/pret","loop","Prêt entre membres")+(mod?"":it("#/abonnements","crown","Abonnements"))+it("#/aide","help","Centre d’aide")+`<button type="button" class="mm-item" data-mm-loo><span class="mm-ic loo-ic">${document.querySelector(".reboot-bubble")?.innerHTML||""}</span><span class="mm-l">Discuter avec Loo</span></button>`)}
+  <section class="mm-sec mm-theme"><h3>Apparence</h3><div class="segmented mm-seg" role="radiogroup" aria-label="Apparence">${[["auto","Auto"],["light","Clair"],["dark","Sombre"]].map(([v,l])=>`<label><input type="radio" name="themeMode" value="${v}" ${themeMode()===v?"checked":""}><span>${l}</span></label>`).join("")}</div></section>
+  ${u?`<button type="button" class="mm-item mm-out" data-mm-out><span class="mm-ic">${mIc("out")}</span><span class="mm-l">Se déconnecter</span></button>`:""}
+  <p class="mm-foot"><a href="#/conditions">Conditions</a> · <a href="#/confidentialite">Confidentialité</a> · <a href="#/mentions-legales">Mentions légales</a></p>`;
+}
+let mmLast=null;
+function openMenu(o){
+  const m=$("mobMenu"),bd=$("mmBackdrop"),b=$("menuBtn");if(!m)return;
+  if(o){mmLast=document.activeElement;$("mmInner").innerHTML=menuHtml();m.hidden=false;bd.hidden=false;requestAnimationFrame(()=>{m.classList.add("open");bd.classList.add("open")});document.body.classList.add("menu-open");b.setAttribute("aria-expanded","true");setTimeout(()=>m.querySelector(".mm-close")?.focus(),60)}
+  else{m.classList.remove("open");bd.classList.remove("open");document.body.classList.remove("menu-open");b.setAttribute("aria-expanded","false");setTimeout(()=>{m.hidden=true;bd.hidden=true},250);if(mmLast&&mmLast.focus)mmLast.focus()}
+}
+$("menuBtn").addEventListener("click",()=>openMenu(!$("mobMenu").classList.contains("open")));
+$("mmBackdrop").addEventListener("click",()=>openMenu(false));
+$("mobMenu").addEventListener("click",async e=>{
+  if(e.target.closest("[data-mm-close]")){openMenu(false);return}
+  if(e.target.closest("[data-mm-loo]")){openMenu(false);setTimeout(()=>openChat(true),260);return}
+  if(e.target.closest("[data-mm-out]")){openMenu(false);await sb.auth.signOut();toast("Tu es déconnecté(e). À bientôt !");location.hash="#/";return}
+  if(e.target.closest("a"))setTimeout(()=>openMenu(false),30);
+});
+document.addEventListener("keydown",e=>{if(!$("mobMenu")?.classList.contains("open"))return;
+  if(e.key==="Escape"){openMenu(false);return}
+  if(e.key==="Tab"){const f=[...$("mobMenu").querySelectorAll("a,button,input")].filter(x=>x.offsetParent);if(!f.length)return;const a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}});
+addEventListener("hashchange",()=>{if($("mobMenu")?.classList.contains("open"))openMenu(false)});
+/* pastille sur le bouton menu quand quelque chose attend */
+setInterval(()=>{const d=$("menuDot");if(!d)return;let n=0;try{n=(state.user?(chat.unread||0)+(typeof loanTodo==="function"?loanTodo():0):0)}catch(_){}d.hidden=!n},2000);
 let chatStarted=false;
 function openChat(open){
   const c=$("chat");c.classList.toggle("open",open);$("rebootBtn").setAttribute("aria-expanded",open);
