@@ -3281,6 +3281,37 @@ html[data-design="2"]:not([data-theme="light"]) :is(.loan-nums span,.loan-nums s
 html[data-design="2"][data-theme="dark"] :is(.loan-form,.lend-set) .chip span{background:#272B30!important;border-color:#49515A!important;color:#E6E8EA!important}
 html[data-design="2"][data-theme="dark"] :is(.loan-form,.lend-set) .chip input:checked+span{background:#E07A55!important;border-color:#E07A55!important;color:#1F1A17!important}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) :is(.loan-form,.lend-set) .chip span{background:#272B30!important;border-color:#49515A!important;color:#E6E8EA!important}html[data-design="2"]:not([data-theme="light"]) :is(.loan-form,.lend-set) .chip input:checked+span{background:#E07A55!important;border-color:#E07A55!important;color:#1F1A17!important}}
+
+/* Suivre */
+.follow-btn{min-width:108px;justify-content:center}
+.seller-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.follow-list{display:flex;flex-wrap:wrap;gap:8px}
+.follow-chip{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line,#E6DCCF);border-radius:99px;background:var(--surface,#fff);padding:3px 4px 3px 3px}
+.follow-chip a{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:inherit;font-weight:600;font-size:.88rem;padding-right:4px}
+.follow-chip .avatar{width:28px;height:28px;font-size:.75rem}
+.follow-x{width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:inherit;font-size:1.1rem;cursor:pointer}
+.follow-x:hover{background:rgba(0,0,0,.06)}
+.follow-sub{font-size:1rem;margin:18px 0 10px}
+html[data-design="2"][data-theme="dark"] .follow-chip{background:#2F3439;border-color:#49515A}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .follow-chip{background:#2F3439;border-color:#49515A}}
+
+/* Santé du site */
+.health .health-kpis{margin:14px 0 6px}
+.health-sub{font-size:1rem;margin:22px 0 10px}
+.health-table td,.health-table th{vertical-align:middle}
+.hbar{display:inline-block;width:90px;height:8px;border-radius:4px;background:var(--line,#E6DCCF);margin-right:10px;vertical-align:middle;overflow:hidden}
+.hbar span{display:block;height:100%;border-radius:4px;background:#B04E2E}
+.hstate{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:.82rem;padding:3px 10px;border-radius:99px}
+.hstate.warn{background:#FBEBD5;color:#7A4A06}
+.hstate.ok{background:#E3F0E6;color:#24553A}
+.health-q{display:flex;flex-wrap:wrap;gap:8px}
+.pill-static{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:99px;border:1px solid var(--line,#E6DCCF);font-size:.88rem;font-weight:600}
+.pill-static em{font-style:normal;color:var(--muted,#5E636B);font-weight:700}
+html[data-design="2"][data-theme="dark"] .hbar{background:#49515A}
+html[data-design="2"][data-theme="dark"] .hbar span{background:#E07A55}
+html[data-design="2"][data-theme="dark"] .hstate.warn{background:#4A3A1C;color:#F3C77A}
+html[data-design="2"][data-theme="dark"] .hstate.ok{background:#21392B;color:#9BD3AE}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .hbar{background:#49515A}html[data-design="2"]:not([data-theme="light"]) .hbar span{background:#E07A55}html[data-design="2"]:not([data-theme="light"]) .hstate.warn{background:#4A3A1C;color:#F3C77A}html[data-design="2"]:not([data-theme="light"]) .hstate.ok{background:#21392B;color:#9BD3AE}}
 </style>
 </head>
 <body>
@@ -4188,6 +4219,7 @@ async function loadTeamData(which){
   if(!sb||!state.isAdmin)return;
   const jobs=[];
   if(!which||which==="bord")jobs.push(loadSite());
+  if(!which||which==="bord")jobs.push(sb.rpc("site_health",{p_days:team.healthDays||30}).then(r=>{team.health=r.error?null:r.data}));
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(sb.rpc("founder_stats").then(r=>{if(!r.error)team.fstats=r.data}));
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(Promise.all([sb.rpc("waitlist_stats"),sb.rpc("waitlist_top",{p_limit:5})]).then(([a,t])=>{team.wait=a.error?null:{...((a.data||[])[0]||{membres:0,demandes:0}),top:t.error?[]:(t.data||[])}}).catch(()=>{team.wait=null}));
   if((!which||which==="bord")&&state.role==="fondateur")jobs.push(sb.rpc("referral_top",{p_limit:10}).then(r=>{team.refTop=r.error?null:(r.data||[])}));
@@ -4225,6 +4257,7 @@ function teamDashboardHtml(){
     ${tile(s.retirees,"Annonces retirées","","retirees")}
     ${tile(s.suspendus,"Comptes suspendus","","membres")}
   </div>
+  ${healthHtml()}
   ${state.role==="fondateur"?founderHtml():""}
   <div class="panel guide"><h2>Que faire quand… ?</h2>
     <details><summary>Une annonce est signalée</summary><p>Onglet « À traiter » : ouvre l’annonce. Si elle enfreint les règles, « Retirer l’annonce ». Sinon, « Rien à signaler ». Si le vendeur recommence, avertis-le depuis « Membres ».</p></details>
@@ -4423,6 +4456,37 @@ function sparkSvg(key,days){
   return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" tabindex="0" data-spark="${key}" aria-label="Évolution jour par jour, maximum ${mx} par jour. Flèches gauche et droite pour lire chaque jour.">
     <line class="sp-base" x1="${P}" y1="${H-P}" x2="${W-P}" y2="${H-P}"/><polyline class="sp-line" points="${pts}"/><line class="sp-cross" x1="0" y1="${P}" x2="0" y2="${H-P}" hidden/><circle class="sp-dot" r="4" cx="0" cy="0" hidden/></svg>`;
 }
+
+/* ---------- Santé du site (toute l'équipe) ---------- */
+function healthHtml(){
+  const h=team.health;if(!h)return "";
+  const pct=(a,b)=>b?Math.round(a*100/b):0,n=v=>Number(v||0).toLocaleString("fr-FR");
+  const tile=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
+  const cats=(h.categories||[]).map(c=>({...c,demande:(+c.favoris||0)+3*(+c.alertes||0)}));
+  const maxO=Math.max(1,...cats.map(c=>+c.offre||0));
+  const need=c=>(+c.offre<5&&c.demande>0)||(c.demande>=2*Math.max(1,+c.offre));
+  const push=cats.filter(need).map(c=>c.cat);
+  const rate=pct(h.repondues,h.conversations);
+  return `<div class="panel health"><div class="launch-head"><h2>Santé du site</h2><div class="segmented" role="radiogroup" aria-label="Période">${[[7,"7 jours"],[30,"30 jours"],[90,"90 jours"]].map(([v,l])=>`<label><input type="radio" name="healthDays" value="${v}" ${+h.jours===v?"checked":""}><span>${l}</span></label>`).join("")}</div></div>
+    <div class="kpis health-kpis">
+      ${tile(n(h.actifs_7j),"Membres actifs (7 j)",`${pct(h.actifs_7j,h.membres)} % des ${n(h.membres)} membres`)}
+      ${tile(n(h.actifs_30j),"Membres actifs (30 j)","annonce, message, offre, favori…")}
+      ${tile(h.conversations?rate+" %":"—","Conversations répondues",h.conversations?`${pct(h.repondues_24h,h.conversations)} % en moins de 24 h · ${n(h.conversations)} conversations`:"aucune conversation sur la période")}
+      ${tile(h.delai_median_h==null?"—":(h.delai_median_h<1?"< 1 h":String(h.delai_median_h).replace(".",",")+" h"),"Délai médian de réponse","entre le 1er message et la réponse du vendeur")}
+      ${tile(n(h.offres),"Offres faites",h.offres?`${pct(h.offres_ok,h.offres)} % acceptées`:"")}
+      ${tile(n(h.echanges),"Échanges proposés",h.echanges?`${pct(h.echanges_ok,h.echanges)} % acceptés`:"")}
+      ${tile(n(h.prets),"Demandes de prêt",h.prets?`${pct(h.prets_ok,h.prets)} % acceptées`:"")}
+      ${tile(n(h.suivis),"Vendeurs suivis",`+${n(h.suivis_new)} sur la période`)}
+    </div>
+    <h3 class="health-sub">Offre et demande par catégorie</h3>
+    <div class="table-scroll"><table class="legal-table health-table" tabindex="0"><thead><tr><th scope="col">Catégorie</th><th scope="col">Articles en ligne</th><th scope="col">Favoris (${h.jours} j)</th><th scope="col">Alertes</th><th scope="col">État</th></tr></thead><tbody>
+      ${cats.map(c=>`<tr><th scope="row">${esc(c.cat)}</th><td><span class="hbar"><span style="width:${Math.max(2,Math.round(c.offre*100/maxO))}%" title="${n(c.offre)} articles en ligne"></span></span><b>${n(c.offre)}</b></td><td>${n(c.favoris)}</td><td>${n(c.alertes)}</td><td>${need(c)?`<span class="hstate warn"><span aria-hidden="true">▲</span> Manque d’articles</span>`:`<span class="hstate ok"><span aria-hidden="true">●</span> Équilibré</span>`}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="muted small">${push.length?`À pousser en priorité : <b>${push.join(", ")}</b>. Un post « on cherche des vendeurs » ciblé sur ${push.length>1?"ces catégories":"cette catégorie"} peut suffire.`:"Aucune catégorie ne manque d’articles par rapport à la demande."} La demande compte les favoris de la période et, plus fort, les alertes enregistrées.</p>
+    ${(h.recherches||[]).length?`<h3 class="health-sub">Ce que les membres attendent (alertes)</h3><div class="health-q">${h.recherches.map(r=>`<span class="pill-static">« ${esc(r.q)} » <em>${n(r.n)}</em></span>`).join("")}</div>`:""}
+  </div>`;
+}
+document.addEventListener("change",async e=>{if(e.target.name!=="healthDays")return;team.healthDays=+e.target.value;const r=await sb.rpc("site_health",{p_days:team.healthDays});if(!r.error){team.health=r.data;renderView()}});
 function launchHtml(){
   const L=team.launch;if(!L)return "";
   const days=L.jours||[],t=L.totaux||{},span=team.launchDays||30;
@@ -5796,9 +5860,9 @@ async function renderSellerProfile(id){
         <span class="avatar pp-avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
         <div class="pp-id">
           <h1>@${esc(pr.name)}${planBadge(id)}${vac?' <span class="vac-badge">En vacances</span>':""}</h1><div class="trust" data-badges="${id}"></div>
-          <div class="pp-chips">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span>${lotTxt(id)?`<span class="pp-lot">Lots : ${lotTxt(id)}</span>`:""}</div>
+          <div class="pp-chips">${pr.city?`<span>${esc(pr.city)}</span>`:""}<span>Membre depuis ${since}</span><span id="ppFollowers" data-n="0">… abonnés</span>${lotTxt(id)?`<span class="pp-lot">Lots : ${lotTxt(id)}</span>`:""}</div>
         </div>
-        <div class="pp-actions">${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}<button type="button" class="btn btn-outline" id="shareProfile">Partager</button></div>
+        <div class="pp-actions">${me?`<a class="btn btn-outline" href="#/compte/profil">Modifier mon profil</a>`:""}${me?"":followBtn(id,pr.name)}<button type="button" class="btn btn-outline" id="shareProfile">Partager</button></div>
       </div>
       ${pr.bio?`<p class="pp-bio">${esc(pr.bio)}</p>`:me?`<p class="pp-bio muted small">Ajoute une bio depuis « Modifier mon profil » : les acheteurs aiment savoir à qui ils achètent.</p>`:""}
       <div class="pp-stats" role="tablist" aria-label="Contenu du profil">
@@ -5814,7 +5878,7 @@ async function renderSellerProfile(id){
   v.querySelectorAll("[data-pptab]").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.pptab;v.querySelectorAll("[data-pptab]").forEach(x=>x.setAttribute("aria-selected",x===b));$("ppArticles").hidden=t!=="articles";$("ppAvis").hidden=t!=="avis"}));
   $("shareProfile").addEventListener("click",async()=>{const url=location.origin+location.pathname+"#/vendeur/"+id;try{if(navigator.share){await navigator.share({title:"@"+pr.name+" sur Orleoo",url});return}await navigator.clipboard.writeText(url);toast("Lien du profil copié !")}catch(e){if(e&&e.name==="AbortError")return;prompt("Copie ce lien :",url)}});
   document.title=`${pr.name} — Orleoo`;
-  fillBadges(v);
+  fillBadges(v);fillFollowers(id);if(state.user&&!growth.loaded)loadGrowth().then(()=>{v.querySelectorAll(".follow-btn").forEach(x=>{const o=isFollowing(id);x.setAttribute("aria-pressed",o);x.textContent=o?"✓ Suivi":"+ Suivre";x.classList.toggle("btn-outline",o);x.classList.toggle("btn-primary",!o)})});
 }
 
 /* =========================================================
@@ -6095,7 +6159,7 @@ function renderProduct(id){
       ${sold||p.mine?"":offerBlock(p)+lotHint(p)}
       ${sold?"":tradeBlock(p)}
       ${sold?"":loanBlock(p)}
-      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}${p.sellerId?`<div class="trust" data-badges="${p.sellerId}"></div>`:""}</div>${p.sellerId?`<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a>`:`<a class="btn btn-outline" href="#/vendeur/demo-${encodeURIComponent(p.seller)}">Voir le profil</a>`}</div>
+      <div class="seller-box"><span class="avatar" aria-hidden="true">${s.emoji}</span><div><b>${esc(p.seller)}</b>${planBadge(p.sellerId)}<br><span class="muted small">${esc(s.since||"Membre Orleoo")}</span>${p.sellerId&&ratingOf(p.sellerId)?`<br>${ratingHtml(p.sellerId,true)}`:""}${p.sellerId?`<div class="trust" data-badges="${p.sellerId}"></div>`:""}</div>${p.sellerId?`<div class="seller-btns">${p.mine?"":followBtn(p.sellerId,p.seller,true)}<a class="btn btn-outline" href="#/vendeur/${p.sellerId}">Voir le profil</a></div>`:`<a class="btn btn-outline" href="#/vendeur/demo-${encodeURIComponent(p.seller)}">Voir le profil</a>`}</div>
       ${p.mine||sold?"":`<button type="button" class="btn btn-outline btn-block" id="contactSeller" style="margin-top:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg> Contacter ${esc(p.seller)}</button><div id="contactNote"></div>`}
       ${p.demo?"":`<button type="button" class="link small" id="storyBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="16.8" cy="7.2" r=".6"/></svg> Story Instagram</button>`}
       <button type="button" class="link small" id="shareBtn" style="margin:8px 16px 0 0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Partager</button>
@@ -6254,7 +6318,7 @@ function renderAccount(tab){
   if(state.isAdmin){renderModeration(el);return}
   const tabs=[["profil","Profil et paramètres"],["annonces",`Mes annonces (${mine.length})`],["commandes",`Mes commandes (${myOrders.length})`]];
   if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["echanges",`Échanges (${trades.list.filter(t=>["proposed","accepted","problem"].includes(t.status)).length})`],["portemonnaie","Porte-monnaie"]);if(offersOpen()){const n=offerTodo();tabs.splice(4,0,["offres",`Offres${n?` (${n} à traiter)`:""}`])}}
-  {const nw=(growth.hits||[]).filter(h=>!h.seen_at).length+latestDrops().filter(d=>!d.seen_at).length;tabs.push(["alertes",`Mes alertes${nw?` (${nw} nouvelle${nw>1?"s":""})`:""}`])}
+  {const nw=(growth.hits||[]).filter(h=>!h.seen_at).length+latestDrops().filter(d=>!d.seen_at).length+(growth.fhits||[]).filter(h=>!h.seen_at).length;tabs.push(["alertes",`Mes alertes${nw?` (${nw} nouvelle${nw>1?"s":""})`:""}`])}
   if(!loans.loaded&&!state._loansAsk){state._loansAsk=true;loadLoans().then(()=>{if(location.hash.startsWith("#/compte/prets"))renderView()})}
   tabs.push(["prets",`Mes prêts${loanTodo()?` (${loanTodo()} à traiter)`:""}`]);
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
@@ -6515,7 +6579,35 @@ function showSellPreview(existing){
 /* =========================================================
    CROISSANCE : alertes, parrainage, statistiques, badges
    ========================================================= */
-const growth={searches:[],hits:[],drops:[],refs:null,stats:{},badges:{},loaded:false};
+const growth={searches:[],hits:[],drops:[],refs:null,stats:{},badges:{},follows:[],fhits:[],loaded:false};
+
+/* ---------- Suivre un vendeur ---------- */
+const isFollowing=id=>!!state.user&&(growth.follows||[]).some(f=>f.seller_id===id);
+function followBtn(id,name,small){if(!id||(state.user&&state.user.id===id))return "";const on=isFollowing(id);
+  return `<button type="button" class="btn ${on?"btn-outline":"btn-primary"}${small?" btn-sm":""} follow-btn" data-follow="${esc(id)}" data-name="${esc(name||"")}" aria-pressed="${on}">${on?"✓ Suivi":"+ Suivre"}</button>`}
+function followsHtml(){
+  const fl=growth.follows||[];
+  const hits=(growth.fhits||[]).map(h=>({h,p:state.remote.find(x=>x.id===h.listing_id)})).filter(x=>x.p&&x.p.status==="active").slice(0,8);
+  const nw=(growth.fhits||[]).filter(h=>!h.seen_at).length;
+  if(nw)setTimeout(()=>{sb.rpc("mark_follow_hits_seen");growth.fhits.forEach(h=>h.seen_at=h.seen_at||new Date().toISOString())},1500);
+  if(!fl.length)return `<div class="panel follow-panel"><h2>Vendeurs suivis</h2><p class="muted small">Tu ne suis encore personne. Sur le profil d’un vendeur, clique sur « + Suivre » : ses nouveaux articles apparaîtront ici${state.user&&state.user.digest?", et tu seras prévenu(e) par e-mail":""}.</p></div>`;
+  return `<div class="panel follow-panel"><h2>Vendeurs suivis <span class="muted small">(${fl.length})</span>${nw?` <span class="status">${nw} nouveauté${nw>1?"s":""}</span>`:""}</h2>
+    <div class="follow-list">${fl.map(f=>`<span class="follow-chip"><a href="#/vendeur/${f.seller_id}"><span class="avatar" aria-hidden="true">${avatarInner(f.seller?.name||"?",f.seller?.avatar_url)}</span>@${esc(f.seller?.name||"membre")}</a><button type="button" class="follow-x" data-follow="${f.seller_id}" data-name="${esc(f.seller?.name||"")}" aria-pressed="true" aria-label="Ne plus suivre @${esc(f.seller?.name||"membre")}">×</button></span>`).join("")}</div>
+    ${hits.length?`<h3 class="follow-sub">Leurs derniers articles</h3><div class="products alert-items">${hits.map(x=>card(x.p)).join("")}</div>`:`<p class="muted small" style="margin-top:12px">Pas encore de nouvel article chez les vendeurs que tu suis.</p>`}
+    ${state.user&&!state.user.digest?`<p class="muted small" style="margin-top:12px">Pour être prévenu(e) aussi par e-mail, active « Nouveautés de la semaine » dans Profil et paramètres.</p>`:""}</div>`;
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-follow]");if(!b||!state.user)return;
+  const id=b.dataset.follow,name=b.dataset.name,on=isFollowing(id);b.disabled=true;
+  const r=on?await sb.from("follows").delete().eq("seller_id",id).eq("follower_id",state.user.id):await sb.from("follows").insert({follower_id:state.user.id,seller_id:id});
+  b.disabled=false;if(r.error){toast(frenchError(r.error));return}
+  if(on)growth.follows=growth.follows.filter(f=>f.seller_id!==id);else growth.follows.unshift({seller_id:id,created_at:new Date().toISOString(),seller:{name}});
+  toast(on?`Tu ne suis plus @${name}.`:`Tu suis @${name} : ses nouveaux articles arriveront dans Mon compte › Mes alertes.`);
+  const c=$("ppFollowers");if(c){const n=Math.max(0,(+c.dataset.n||0)+(on?-1:1));c.dataset.n=n;c.textContent=`${n} abonné${n>1?"s":""}`}
+  document.querySelectorAll(`[data-follow="${CSS.escape(id)}"].follow-btn`).forEach(x=>{const o=!on;x.setAttribute("aria-pressed",o);x.textContent=o?"✓ Suivi":"+ Suivre";x.classList.toggle("btn-outline",o);x.classList.toggle("btn-primary",!o)});
+  if(location.hash.startsWith("#/compte/alertes"))renderView();
+});
+async function fillFollowers(id){const el=$("ppFollowers");if(!el||!sb)return;try{const r=await sb.rpc("follower_count",{p_seller:id});if(!r.error&&$("ppFollowers")===el){el.dataset.n=r.data||0;el.textContent=`${r.data||0} abonné${r.data>1?"s":""}`}}catch(_){}}
 async function loadGrowth(){
   if(!sb||!state.user)return;
   const [a,b,c,d]=await Promise.all([
@@ -6525,6 +6617,9 @@ async function loadGrowth(){
   growth.searches=a.error?[]:(a.data||[]);growth.hits=b.error?[]:(b.data||[]);growth.refs=c.error?null:c.data;
   growth.stats={};if(!d.error)(d.data||[]).forEach(x=>growth.stats[x.listing_id]=x);
   try{const r=await sb.from("price_drops").select("id,listing_id,old_price,new_price,created_at,seen_at").order("created_at",{ascending:false}).limit(60);growth.drops=r.error?[]:(r.data||[])}catch(e){growth.drops=[]}
+  try{const [f,h]=await Promise.all([sb.from("follows").select("seller_id,created_at,seller:profiles!follows_seller_id_fkey(name,avatar_url)").order("created_at",{ascending:false}),
+    sb.from("follow_hits").select("id,seller_id,listing_id,created_at,seen_at").order("created_at",{ascending:false}).limit(60)]);
+    growth.follows=f.error?[]:(f.data||[]);growth.fhits=h.error?[]:(h.data||[])}catch(e){growth.follows=[];growth.fhits=[]}
   growth.loaded=true;
 }
 const alertLabel=f=>[f.q&&`« ${f.q} »`,f.category,f.sizes.length&&`Taille ${f.sizes.join(", ")}`,f.conditions.length&&f.conditions.join(", "),f.brand,f.min!==""&&`dès ${f.min} €`,f.max!==""&&`jusqu’à ${f.max} €`].filter(Boolean).join(" · ");
@@ -6539,7 +6634,7 @@ $("saveAlert").addEventListener("click",async()=>{
 });
 function alertsHtml(){
   if(!growth.loaded){loadGrowth().then(()=>{if(accountTab==="alertes")renderView()});return `<div class="panel"><p class="muted">Chargement de tes alertes…</p></div>`}
-  return dropsHtml()+alertsListHtml();
+  return followsHtml()+dropsHtml()+alertsListHtml();
 }
 function alertsListHtml(){
   if(growth.hits.some(h=>!h.seen_at))setTimeout(()=>{sb.rpc("mark_alerts_seen");growth.hits.forEach(h=>h.seen_at=h.seen_at||new Date().toISOString())},1500);
@@ -6798,7 +6893,8 @@ const GATED_ACTIONS=[
   ["#saveAlert","créer une alerte et être prévenu(e) des nouvelles annonces"],
   ["[data-subscribe],[data-sub],[data-boost],[data-pin]","choisir une formule"],
   ["[data-offerform] button,[data-offer]","faire une offre au vendeur"],
-  ["[data-loan-open]","emprunter cet article"]
+  ["[data-loan-open]","emprunter cet article"],
+  ["[data-follow]","suivre ce vendeur et voir ses nouveaux articles"]
 ];
 const GATE_ICON='<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20a7 7 0 0 1 14 0M19 8v6M16 11h6"/></svg>';
 function gateBody(why,h){return `<span class="gate-ic">${GATE_ICON}</span><${h} id="gateT">Inscris-toi pour ${why}</${h}>
@@ -7720,6 +7816,7 @@ function looTodo(){
   let of=0;try{of=offerTodo()}catch(_){}if(of)t.push([`<b>${of}</b> offre${of>1?"s":""} qui attend${of>1?"ent":""} ta réponse`,"#/compte/offres","Voir mes offres"]);
   let lt=0;try{lt=loanTodo()}catch(_){}if(lt)t.push([`<b>${lt}</b> demande${lt>1?"s":""} de prêt à traiter`,"#/compte/prets","Voir mes prêts"]);
   const dr=(growth.drops||[]).filter(d=>!d.seen_at).length;if(dr)t.push([`<b>${dr}</b> baisse${dr>1?"s":""} de prix sur tes favoris`,"#/compte/alertes","Voir les baisses"]);
+  const fh=(growth.fhits||[]).filter(d=>!d.seen_at).length;if(fh)t.push([`<b>${fh}</b> nouvel${fh>1?"s":""} article${fh>1?"s":""} chez les vendeurs que tu suis`,"#/compte/alertes","Les voir"]);
   const hi=(growth.hits||[]).filter(d=>!d.seen_at).length;if(hi)t.push([`<b>${hi}</b> nouvelle${hi>1?"s":""} annonce${hi>1?"s":""} pour tes alertes`,"#/compte/alertes","Voir mes alertes"]);
   try{const d=readDraft();if(d&&d.f&&Object.values(d.f).some(v=>String(v||"").trim()))t.push(["une annonce commencée que tu n’as pas publiée","#/vendre","La reprendre"])}catch(_){}
   return t;
