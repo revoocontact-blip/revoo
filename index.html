@@ -3853,6 +3853,32 @@ html[data-design="2"][data-theme="dark"] #view-product :is(.specs,.specs>div){bo
   html[data-design="2"] #view-product .seller-box .seller-btns .btn{width:100%;justify-content:center;min-height:44px}
 }
 /* ===== fin FICHE ARTICLE V2 ===== */
+
+/* ===== MENU DU COMPTE (ordinateur) : même contenu que le menu téléphone ===== */
+html[data-design="2"] .acct-menu{width:380px!important;max-height:calc(100vh - 96px);overflow-y:auto;padding:14px 14px 10px!important;background:var(--bg,#FBF5EC)!important;scrollbar-width:thin}
+.acct-v3 .m3-top{display:none}
+.acct-v3 .m3-me{margin-top:0}
+.acct-v3 .m3-group{margin-top:16px}
+.acct-v3 .m3-row{min-height:46px;font-size:.95rem}
+.acct-v3 .m2-foot{margin-top:12px}
+.acct-v3 .m3-row:hover{background:#FDF3EE}
+html[data-design="2"][data-theme="dark"] .acct-menu{background:#272B30!important;border-color:#49515A!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .acct-menu{background:#272B30!important;border-color:#49515A!important}}
+
+/* le nouveau contenu du menu compte ne prend pas les anciens styles */
+.acct-menu .acct-v3 :is(a,button){border-top:0;margin-top:0;border-radius:0!important}
+.acct-menu .acct-v3 .m3-row{display:flex!important;width:100%;padding:8px 14px!important;color:inherit!important;font-size:.95rem!important;font-weight:600}
+.acct-menu .acct-v3 .m3-row+.m3-row{border-top:1px solid var(--line,#EFE6DB)!important}
+.acct-menu .acct-v3 .m3-badge{display:grid!important;width:auto;flex:none}
+.acct-menu .acct-v3 .m3-me{display:flex!important;padding:12px 14px!important;border-radius:16px!important}
+.acct-menu .acct-v3 .m3-sell{display:flex!important;justify-content:center;align-items:center;color:#fff!important;border-radius:99px!important;padding:0 16px!important;text-align:center}
+.acct-menu .acct-v3 .m3-out{display:block!important;text-align:center!important;border-radius:16px!important;border:1px solid var(--line,#E6DCCF)!important;margin-top:16px!important;color:#A3341C!important}
+.acct-menu .acct-v3 .m2-foot a{display:inline!important;width:auto!important;padding:0!important;font-size:.8rem!important;font-weight:500!important;color:var(--muted,#5E636B)!important}
+.acct-menu .acct-v3 .m3-themerow{display:flex!important}
+html[data-design="2"][data-theme="dark"] .acct-menu .acct-v3 .m3-sell{color:#1F1A17!important}
+html[data-design="2"][data-theme="dark"] .acct-menu .acct-v3 .m3-out{color:#F2867D!important;border-color:#49515A!important}
+html[data-design="2"][data-theme="dark"] .acct-menu .acct-v3 .m3-row+.m3-row{border-top-color:#3B4148!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .acct-menu .acct-v3 .m3-sell{color:#1F1A17!important}html[data-design="2"]:not([data-theme="light"]) .acct-menu .acct-v3 .m3-out{color:#F2867D!important;border-color:#49515A!important}html[data-design="2"]:not([data-theme="light"]) .acct-menu .acct-v3 .m3-row+.m3-row{border-top-color:#3B4148!important}}
 </style>
 </head>
 <body>
@@ -8034,16 +8060,16 @@ function updateCounts(){
   $("favoritesBtn").setAttribute("aria-label",`Favoris (${f})`);$("cartBtn").setAttribute("aria-label",`Panier (${state.cart.length} article${state.cart.length>1?"s":""})`);
   const tbC=document.querySelector('.tabbar [data-tab="compte"] span:last-child');if(tbC)tbC.textContent=state.user&&state.isAdmin?"Modération":"Compte";
   $("tabMsg").textContent=chat.unread;$("tabMsg").hidden=!chat.unread;
-  $("acctBtn").classList.toggle("has-unread",chat.unread>0);$("menuMsg").textContent=chat.unread;$("menuMsg").hidden=!chat.unread;
+  $("acctBtn").classList.toggle("has-unread",chat.unread>0);{const mm=$("menuMsg");if(mm){mm.textContent=chat.unread;mm.hidden=!chat.unread}}
   $("msgCount").textContent=chat.unread;$("msgCount").classList.toggle("has",chat.unread>0);
   $("messagesBtn").setAttribute("aria-label",`Messages (${chat.unread} non lu${chat.unread>1?"s":""})`);
   $("loginLabel").textContent="Se connecter";$("loginBtn").setAttribute("aria-label","Se connecter");
   $("loginBtn").hidden=!!state.user;$("acctWrap").hidden=!state.user;
   if(state.user&&state.isAdmin){$("acctName").textContent="Modération";$("acctAv").innerHTML=MOD_SHIELD;$("acctAv").classList.add("mod-av");$("acctBtn").setAttribute("aria-label","Compte modérateur")}
-  else if(state.user){const n=state.user.name;$("acctName").textContent=n;$("acctName2").textContent="@"+n;$("acctAv").classList.remove("mod-av");
-    $("acctAv").innerHTML=avatarInner(n,state.user.avatar);$("acctAv2").innerHTML=avatarInner(n,state.user.avatar);
+  else if(state.user){const n=state.user.name;$("acctName").textContent=n;if($("acctName2"))$("acctName2").textContent="@"+n;$("acctAv").classList.remove("mod-av");
+    $("acctAv").innerHTML=avatarInner(n,state.user.avatar);if($("acctAv2"))$("acctAv2").innerHTML=avatarInner(n,state.user.avatar);
     $("acctBtn").setAttribute("aria-label",`Mon compte (@${n})`);
-    document.querySelector(".acct-menu-head").onclick=()=>{location.hash="#/vendeur/"+state.user.id;setAcctMenu(false)}}
+    {const h=document.querySelector(".acct-menu-head");if(h)h.onclick=()=>{location.hash="#/vendeur/"+state.user.id;setAcctMenu(false)}}}
 }
 function renderView(){
   const [name="",arg]=location.hash.replace(/^#\/?/,"").split("/").map(decodeURIComponent);
@@ -8238,12 +8264,12 @@ document.addEventListener("submit",async e=>{
 });
 
 /* Menu du compte (en-tête) */
-function setAcctMenu(o){$("acctMenu").hidden=!o;$("acctBtn").setAttribute("aria-expanded",o)}
+function setAcctMenu(o){const m=$("acctMenu");if(o&&state.user){try{m.innerHTML=`<div class="acct-v3">${menuHtml().replace('id="mmLogout"','id="acctLogout"')}</div>`}catch(e){console.warn(e)}}m.hidden=!o;$("acctBtn").setAttribute("aria-expanded",o)}
 $("acctBtn").addEventListener("click",e=>{e.stopPropagation();setAcctMenu($("acctMenu").hidden)});
-$("acctMenu").addEventListener("click",e=>{if(e.target.closest("a"))setAcctMenu(false)});
+$("acctMenu").addEventListener("click",async e=>{if(e.target.closest("[data-mm-close]")){setAcctMenu(false);return}if(e.target.closest("[data-mm-loo]")){setAcctMenu(false);openChat(true);return}if(e.target.closest("[data-mm-out],#acctLogout")){setAcctMenu(false);await sb.auth.signOut();state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0;toast("Tu es déconnecté(e). À bientôt !");location.hash="#/";renderView();return}if(e.target.closest("a"))setAcctMenu(false)});
 document.addEventListener("click",e=>{if(!e.target.closest("#acctWrap"))setAcctMenu(false)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("acctMenu").hidden){setAcctMenu(false);$("acctBtn").focus()}});
-$("acctLogout").addEventListener("click",async()=>{setAcctMenu(false);await sb.auth.signOut();state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0;toast("Tu es déconnecté.");location.hash="#/";renderView()});
+
 
 /* Photo de profil */
 /* Recadrage : déplacer l'image et ajuster le zoom avant l'envoi */
@@ -8494,7 +8520,7 @@ function menuHtml(){
   ${group("Explorer",row("#/","home","Accueil")+row("#/catalogue","search","Tous les articles","",'data-new="1"')+row("#/univers/mode","shirt","Mode")+row("#/univers/livres","book","Livres"))}
   ${group("Services Orleoo",row("#/echanger","swap","Échanger")+row("#/main-propre","shield","Main propre")+row("#/pret","loop","Prêt entre membres")+(mod?"":row("#/abonnements","crown","Abonnements")))}
   ${group("Aide et réglages",btnRow("data-mm-loo",looIc,"Poser une question à Loo")+row("#/aide","help","Centre d’aide")+(u&&!mod?row("#/compte/profil","gear","Profil et paramètres"):"")+`<div class="m3-row m3-themerow"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg><span class="m3-l">Apparence</span>${theme}</div>`)}
-  ${u?`<button type="button" class="m3-out" data-mm-out>Se déconnecter</button>`:""}
+  ${u?`<button type="button" class="m3-out" data-mm-out id="mmLogout">Se déconnecter</button>`:""}
   <p class="m2-foot"><a href="#/a-propos">À propos</a><a href="#/conditions">Conditions</a><a href="#/confidentialite">Confidentialité</a><a href="#/mentions-legales">Mentions légales</a></p>`;
 }
 /* Bouton du menu : photo de profil quand on est connecté, « Se connecter » sinon */
