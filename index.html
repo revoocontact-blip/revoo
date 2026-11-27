@@ -2817,6 +2817,76 @@ html[data-design="2"][data-theme="dark"] .top .actions .action{color:#ECEFF1}htm
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .nav-cats button{color:#D5DADE}html[data-design="2"]:not([data-theme="light"]) .nav-cats button[aria-pressed="true"],html[data-design="2"]:not([data-theme="light"]) .nav-cats button:hover{background:#31363C;color:#FFFFFF}html[data-design="2"]:not([data-theme="light"]) .top .actions .action{color:#ECEFF1}html[data-design="2"]:not([data-theme="light"]) .top .actions .action:hover,html[data-design="2"]:not([data-theme="light"]) .subnav .nav-atouts button:hover,html[data-design="2"]:not([data-theme="light"]) .subnav .nav-filtres:hover{background:#31363C!important}}
 /* Visiteur non connecté : pas de messagerie ni de favoris dans les menus */
 html[data-design="2"] body.guest .top #messagesBtn,html[data-design="2"] body.guest .top #favoritesBtn,body.guest #messagesBtn,body.guest #favoritesBtn,body.guest .tabbar [data-tab="messages"]{display:none!important}
+/* ===== FINITIONS PRO : pages secondaires, fenêtres, console ===== */
+/* pages de texte centrées, largeur de lecture confortable */
+html[data-design="2"] #pageContent:not(:has(.ch-sws)){max-width:860px;margin-left:auto;margin-right:auto}
+html[data-design="2"] #pageContent h2{margin-top:1.6em}
+html[data-design="2"] #pageContent p,html[data-design="2"] #pageContent li{line-height:1.7}
+/* centre d'aide : cartes sans flèche */
+html[data-design="2"] .help-search .input{width:100%;max-width:none;height:50px;border-radius:999px!important;padding-left:20px}
+html[data-design="2"] .help-sec h2{font-size:19px;margin:28px 0 10px}
+html[data-design="2"] .help-sec details{border:1px solid var(--line)!important;border-radius:14px;background:var(--surface);padding:0!important;margin:8px 0;transition:box-shadow .25s var(--w-ease),border-color .2s}
+html[data-design="2"] .help-sec details:hover{border-color:var(--o-line,var(--line))}
+html[data-design="2"] .help-sec details[open]{box-shadow:var(--w-sh)}
+html[data-design="2"] .help-sec summary{list-style:none;display:block;padding:15px 20px;font-weight:600;cursor:pointer;border-radius:14px}
+html[data-design="2"] .help-sec summary::-webkit-details-marker{display:none}
+html[data-design="2"] .help-sec summary::marker{content:""}
+html[data-design="2"] .help-sec summary::before,html[data-design="2"] .help-sec summary::after{content:none!important}
+html[data-design="2"] .help-sec details p{margin:0!important;padding:0 20px 16px;color:var(--muted)}
+/* onglets du compte et de la console : une seule ligne de pastilles */
+html[data-design="2"] .tabs[role="tablist"],html[data-design="2"] .mod-tabs{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;gap:4px!important;padding:5px!important;margin:16px 0 20px;background:var(--surface);border:1px solid var(--line)!important;border-radius:999px!important;scrollbar-width:none;grid-template-columns:none!important}
+html[data-design="2"] .tabs[role="tablist"]::-webkit-scrollbar,html[data-design="2"] .mod-tabs::-webkit-scrollbar{display:none}
+html[data-design="2"] .tabs[role="tablist"] button,html[data-design="2"] .mod-tabs button{flex:none;white-space:nowrap;border:0!important;border-radius:999px!important;padding:9px 16px!important;font-weight:600;background:transparent!important;box-shadow:none!important;transition:background-color .2s,color .2s}
+html[data-design="2"] .tabs[role="tablist"] button:hover,html[data-design="2"] .mod-tabs button:hover{background:var(--pale)!important}
+/* console : carte d'en-tête claire en mode clair */
+html[data-design="2"] .mod-head{border-radius:var(--w-r)!important}
+/* menu du compte */
+html[data-design="2"] .acct-menu{border-radius:16px!important;box-shadow:var(--w-sh-h)!important;padding:8px!important;animation:w-tag-in .2s var(--w-ease)}
+html[data-design="2"] .acct-menu a,html[data-design="2"] .acct-menu button{border-radius:10px!important;transition:background-color .15s}
+/* titres des panneaux */
+html[data-design="2"] .panel>h2:first-child{font-size:18px;margin-bottom:10px}
+html[data-design="2"][data-theme="light"] .tabs[role="tablist"] button[aria-selected="true"],html[data-design="2"][data-theme="light"] .mod-tabs button[aria-pressed="true"],html[data-design="2"][data-theme="light"] .mod-tabs button[aria-current="page"]{background:#B04E2E!important;color:#FFFFFF!important}
+html[data-design="2"][data-theme="light"] .tabs[role="tablist"] button[aria-selected="true"] *,html[data-design="2"][data-theme="light"] .mod-tabs button[aria-pressed="true"] *{color:#FFFFFF!important}
+html[data-design="2"][data-theme="light"] .tabs[role="tablist"] button,html[data-design="2"][data-theme="light"] .mod-tabs button{color:#2E3238!important}
+html[data-design="2"][data-theme="light"] .help-sec details[open] summary{color:#963F22}
+html[data-design="2"][data-theme="light"] .mod-mode .mod-head,html[data-design="2"][data-theme="light"] .mod-head{background:#FFFFFF!important;color:#2E3238!important;border:1px solid #EADFD1;box-shadow:var(--w-sh)!important}
+html[data-design="2"][data-theme="light"] .mod-mode .mod-head small,html[data-design="2"][data-theme="light"] .mod-mode .mod-head p{color:#6B6560!important}
+html[data-design="2"][data-theme="light"] .acct-menu a:hover,html[data-design="2"][data-theme="light"] .acct-menu button:hover{background:#F8E9DF!important}
+@media (prefers-color-scheme:light){
+  html[data-design="2"]:not([data-theme="dark"]) .tabs[role="tablist"] button[aria-selected="true"],html[data-design="2"]:not([data-theme="dark"]) .mod-tabs button[aria-pressed="true"],html[data-design="2"]:not([data-theme="dark"]) .mod-tabs button[aria-current="page"]{background:#B04E2E!important;color:#FFFFFF!important}
+  html[data-design="2"]:not([data-theme="dark"]) .tabs[role="tablist"] button[aria-selected="true"] *,html[data-design="2"]:not([data-theme="dark"]) .mod-tabs button[aria-pressed="true"] *{color:#FFFFFF!important}
+  html[data-design="2"]:not([data-theme="dark"]) .tabs[role="tablist"] button,html[data-design="2"]:not([data-theme="dark"]) .mod-tabs button{color:#2E3238!important}
+  html[data-design="2"]:not([data-theme="dark"]) .help-sec details[open] summary{color:#963F22}
+  html[data-design="2"]:not([data-theme="dark"]) .mod-mode .mod-head,html[data-design="2"]:not([data-theme="dark"]) .mod-head{background:#FFFFFF!important;color:#2E3238!important;border:1px solid #EADFD1;box-shadow:var(--w-sh)!important}
+  html[data-design="2"]:not([data-theme="dark"]) .mod-mode .mod-head small,html[data-design="2"]:not([data-theme="dark"]) .mod-mode .mod-head p{color:#6B6560!important}
+  html[data-design="2"]:not([data-theme="dark"]) .acct-menu a:hover,html[data-design="2"]:not([data-theme="dark"]) .acct-menu button:hover{background:#F8E9DF!important}
+}
+html[data-design="2"][data-theme="dark"] .tabs[role="tablist"],html[data-design="2"][data-theme="dark"] .mod-tabs{background:#2F3439!important;border-color:#3B4148!important}
+html[data-design="2"][data-theme="dark"] .tabs[role="tablist"] button,html[data-design="2"][data-theme="dark"] .mod-tabs button{color:#D5DADE!important}
+html[data-design="2"][data-theme="dark"] .tabs[role="tablist"] button:hover,html[data-design="2"][data-theme="dark"] .mod-tabs button:hover{background:#3B4148!important}
+html[data-design="2"][data-theme="dark"] .tabs[role="tablist"] button[aria-selected="true"],html[data-design="2"][data-theme="dark"] .mod-tabs button[aria-pressed="true"]{background:#E07A55!important;color:#1F1A17!important}
+html[data-design="2"][data-theme="dark"] .tabs[role="tablist"] button[aria-selected="true"] *,html[data-design="2"][data-theme="dark"] .mod-tabs button[aria-pressed="true"] *{color:#1F1A17!important}
+html[data-design="2"][data-theme="dark"] .help-sec details{background:#2F3439!important;border-color:#3B4148!important}
+html[data-design="2"][data-theme="dark"] .help-sec details[open] summary{color:#EBA488}
+html[data-design="2"][data-theme="dark"] .help-sec details p{color:#C9CED3}
+html[data-design="2"][data-theme="dark"] .mod-mode .mod-head,html[data-design="2"][data-theme="dark"] .mod-head{background:#2F3439!important;color:#ECEFF1!important;border:1px solid #3B4148}
+html[data-design="2"][data-theme="dark"] .acct-menu{background:#2F3439!important;border-color:#3B4148!important}
+html[data-design="2"][data-theme="dark"] .acct-menu a:hover,html[data-design="2"][data-theme="dark"] .acct-menu button:hover{background:#3B4148!important}
+@media (prefers-color-scheme:dark){
+  html[data-design="2"]:not([data-theme="light"]) .tabs[role="tablist"],html[data-design="2"]:not([data-theme="light"]) .mod-tabs{background:#2F3439!important;border-color:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) .tabs[role="tablist"] button,html[data-design="2"]:not([data-theme="light"]) .mod-tabs button{color:#D5DADE!important}
+  html[data-design="2"]:not([data-theme="light"]) .tabs[role="tablist"] button:hover,html[data-design="2"]:not([data-theme="light"]) .mod-tabs button:hover{background:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) .tabs[role="tablist"] button[aria-selected="true"],html[data-design="2"]:not([data-theme="light"]) .mod-tabs button[aria-pressed="true"]{background:#E07A55!important;color:#1F1A17!important}
+  html[data-design="2"]:not([data-theme="light"]) .tabs[role="tablist"] button[aria-selected="true"] *,html[data-design="2"]:not([data-theme="light"]) .mod-tabs button[aria-pressed="true"] *{color:#1F1A17!important}
+  html[data-design="2"]:not([data-theme="light"]) .help-sec details{background:#2F3439!important;border-color:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) .help-sec details[open] summary{color:#EBA488}
+  html[data-design="2"]:not([data-theme="light"]) .help-sec details p{color:#C9CED3}
+  html[data-design="2"]:not([data-theme="light"]) .mod-mode .mod-head,html[data-design="2"]:not([data-theme="light"]) .mod-head{background:#2F3439!important;color:#ECEFF1!important;border:1px solid #3B4148}
+  html[data-design="2"]:not([data-theme="light"]) .acct-menu{background:#2F3439!important;border-color:#3B4148!important}
+  html[data-design="2"]:not([data-theme="light"]) .acct-menu a:hover,html[data-design="2"]:not([data-theme="light"]) .acct-menu button:hover{background:#3B4148!important}
+}
+html[data-design="2"][data-theme="light"] .mod-mode .mod-head b,html[data-design="2"][data-theme="light"] .mod-mode .mod-head strong,html[data-design="2"][data-theme="light"] .mod-mode .mod-head h1,html[data-design="2"][data-theme="light"] .mod-mode .mod-head h2,html[data-design="2"][data-theme="light"] .mod-head b,html[data-design="2"][data-theme="light"] .mod-head h2{color:#2E3238!important}
+@media (prefers-color-scheme:light){html[data-design="2"]:not([data-theme="dark"]) .mod-mode .mod-head b,html[data-design="2"]:not([data-theme="dark"]) .mod-mode .mod-head strong,html[data-design="2"]:not([data-theme="dark"]) .mod-mode .mod-head h1,html[data-design="2"]:not([data-theme="dark"]) .mod-mode .mod-head h2,html[data-design="2"]:not([data-theme="dark"]) .mod-head b,html[data-design="2"]:not([data-theme="dark"]) .mod-head h2{color:#2E3238!important}}
 </style>
 </head>
 <body>
@@ -6506,7 +6576,7 @@ const PAGES={
   "charte":()=>{const sw=(n,l,d)=>`<div class="ch-sw"><span style="background:${l}"></span><span style="background:${d}"></span><b>${n}</b><small>clair ${l} · sombre ${d}</small></div>`;
     const P=DEMO_PRODUCTS;return `<p class="crumbs"><a href="#/">Accueil</a> › Charte graphique</p><h1>Charte graphique Orleoo</h1>
     <p class="muted">Page de référence (non visible dans les menus). Chaque élément a un numéro : pour demander un changement, cite le numéro. Passe en mode sombre pour voir l’autre version.</p>
-    <section class="ch"><h2>1. Couleurs</h2><div class="ch-sws">${sw("Fond","#FBF5EC","#272B30")}${sw("Surface (cartes)","#FFFFFF","#31363C")}${sw("Texte","#2E3238","#F4EEE9")}${sw("Action (boutons principaux)","#B04E2E","#B04E2E")}${sw("Accent sauge","#B85635","#EBA488")}${sw("Bordures","#EADFD1","#49515A")}</div></section>
+    <section class="ch"><h2>1. Couleurs</h2><div class="ch-sws">${sw("Fond","#FBF5EC","#272B30")}${sw("Surface (cartes)","#FFFFFF","#31363C")}${sw("Texte","#2E3238","#F4EEE9")}${sw("Action (boutons principaux)","#B04E2E","#B04E2E")}${sw("Accent terracotta","#B85635","#EBA488")}${sw("Bordures","#EADFD1","#49515A")}</div></section>
     <section class="ch"><h2>2. Textes</h2><p class="ch-h1" style="font-size:44px;line-height:1.1;font-weight:800;margin:0">Grand titre <em>accent</em></p><h2 style="margin:6px 0">Titre de section <em>accent</em></h2><p>Texte courant : les vêtements et les livres des autres ont encore plein d’histoires à raconter.</p><p class="muted small">Petit texte secondaire.</p></section>
     <section class="ch"><h2>3. Boutons</h2><div class="ch-row"><button type="button" class="btn btn-primary">3a · Principal</button><button type="button" class="btn btn-outline">3b · Secondaire</button><button type="button" class="viewall">3c · Tout voir →</button><button type="button" class="btn btn-danger">3d · Supprimer</button></div>
       <div class="ch-row home-tabs" style="margin-top:12px"><button type="button">3e · Raccourci</button><button type="button">Raccourci</button></div>
