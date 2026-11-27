@@ -8422,7 +8422,7 @@ function paintMenuBtn(){
   b.classList.toggle("is-user",!!u);b.classList.toggle("is-guest",!u);
   b.innerHTML=u?`<span class="avatar mb-av" aria-hidden="true">${avatarInner(u.name,u.avatar)}</span><span class="menu-dot" id="menuDot" hidden></span>`
     :`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="mb-l">Se connecter</span>`;
-  b.setAttribute("aria-label",u?`Mon compte (@${u.name}) : ouvrir le menu`:"Se connecter ou ouvrir le menu");
+  b.setAttribute("aria-label",u?`Mon compte (@${u.name}) : ouvrir le menu`:"Se connecter");if(!u)b.removeAttribute("aria-expanded");else b.setAttribute("aria-expanded",$("mobMenu")?.classList.contains("open")?"true":"false");
 }
 let mmLast=null;
 function openMenu(o){
@@ -8430,7 +8430,7 @@ function openMenu(o){
   if(o){mmLast=document.activeElement;$("mmInner").innerHTML=menuHtml();m.hidden=false;bd.hidden=false;requestAnimationFrame(()=>{m.classList.add("open");bd.classList.add("open")});document.body.classList.add("menu-open");b.setAttribute("aria-expanded","true");setTimeout(()=>m.querySelector(".mm-close")?.focus(),60)}
   else{m.classList.remove("open");bd.classList.remove("open");document.body.classList.remove("menu-open");b.setAttribute("aria-expanded","false");setTimeout(()=>{m.hidden=true;bd.hidden=true},250);if(mmLast&&mmLast.focus)mmLast.focus()}
 }
-$("menuBtn").addEventListener("click",()=>openMenu(!$("mobMenu").classList.contains("open")));
+$("menuBtn").addEventListener("click",()=>{if(!state.user){location.hash="#/compte/login";return}openMenu(!$("mobMenu").classList.contains("open"))});
 $("mmBackdrop").addEventListener("click",()=>openMenu(false));
 $("mobMenu").addEventListener("click",async e=>{
   if(e.target.closest("[data-mm-close]")){openMenu(false);return}
