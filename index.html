@@ -2781,6 +2781,40 @@ html[data-design="2"][data-theme="dark"] body .reboot:hover,html[data-design="2"
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) body .reboot:hover,html[data-design="2"]:not([data-theme="light"]) body .reboot[aria-expanded="true"]{background:#3B4148!important;border-color:#525A63!important}}
 html[data-design="2"][data-theme="light"] body .reboot:hover{background:#963F22!important}
 @media (prefers-color-scheme:light){html[data-design="2"]:not([data-theme="dark"]) body .reboot:hover{background:#963F22!important}}
+/* ===== EN-TÊTE REVU : icônes favoris/messages, Vendre en haut, catégories ===== */
+@media (min-width:901px){
+  html[data-design="2"] .top .actions{display:flex;align-items:center;gap:6px}
+  html[data-design="2"] body .top #messagesBtn,html[data-design="2"] body .top #favoritesBtn{display:inline-flex!important}
+  html[data-design="2"] .top .actions .action{position:relative;width:44px;height:44px;border-radius:50%;justify-content:center;align-items:center;color:var(--ink);background:transparent;border:0;padding:0;transition:background-color .2s,transform .2s var(--w-spring)}
+  html[data-design="2"] .top .actions .action:hover{background:var(--pale);transform:translateY(-1px)}
+  html[data-design="2"] .top .actions .action .icon{width:22px;height:22px}
+  html[data-design="2"] .top .actions .action .label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  html[data-design="2"] .top .actions .action .badge{position:absolute;top:4px;right:2px;min-width:18px;height:18px;font-size:11px;padding:0 5px;border-radius:99px}
+  html[data-design="2"] .top .actions .action .badge:not(.has){display:none}
+  html[data-design="2"] .top .head-sell{order:20;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 20px;font-weight:700;white-space:nowrap}
+  html[data-design="2"] .top .head-sell .icon{width:18px;height:18px}
+  html[data-design="2"] .subnav .sell,html[data-design="2"] .subnav button.sell{display:none!important}
+  html[data-design="2"] .subnav{display:flex!important;align-items:center;gap:18px;min-height:54px}
+  html[data-design="2"] .subnav .nav-univers{flex:none}
+  html[data-design="2"] .nav-cats{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden;padding-left:14px;border-left:1px solid var(--line)}
+  html[data-design="2"] .nav-cats button{background:none;border:0;padding:7px 12px;border-radius:999px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;transition:background-color .2s,color .2s}
+  html[data-design="2"] .nav-cats button:hover{background:var(--pale)}
+  html[data-design="2"] .nav-cats button[aria-pressed="true"]{background:var(--pale);color:var(--accent-text,#963F22)}
+  html[data-design="2"] .nav-cats [data-navnew]{color:var(--muted)}
+  html[data-design="2"] .subnav .nav-right{margin-left:auto;display:flex;align-items:center;gap:4px;flex:none}
+  html[data-design="2"] .subnav .nav-atouts-l{display:none!important}
+  html[data-design="2"] .subnav .nav-atouts{display:flex;gap:2px;background:transparent!important;padding:0!important;border:0!important}
+  html[data-design="2"] .subnav .nav-atouts button,html[data-design="2"] .subnav .nav-filtres{display:inline-flex;align-items:center;gap:6px;background:none!important;border:0!important;padding:7px 11px!important;border-radius:999px!important;font-size:14.5px;font-weight:600;box-shadow:none!important}
+  html[data-design="2"] .subnav .nav-atouts button:hover,html[data-design="2"] .subnav .nav-filtres:hover{background:var(--pale)!important}
+  html[data-design="2"] .subnav #navFiltres{margin-right:6px;padding-right:10px;border-right:1px solid var(--line)}
+}
+@media (max-width:900px){html[data-design="2"] .top .head-sell,html[data-design="2"] .nav-cats{display:none!important}}
+html[data-design="2"][data-theme="light"] .subnav .nav-atouts button,html[data-design="2"][data-theme="light"] .subnav .nav-atouts button span,html[data-design="2"][data-theme="light"] .subnav .nav-filtres{color:#2E3238!important}
+html[data-design="2"][data-theme="light"] .subnav .nav-atouts button svg{color:#B04E2E!important;stroke:#B04E2E!important}
+@media (prefers-color-scheme:light){html[data-design="2"]:not([data-theme="dark"]) .subnav .nav-atouts button,html[data-design="2"]:not([data-theme="dark"]) .subnav .nav-atouts button span,html[data-design="2"]:not([data-theme="dark"]) .subnav .nav-filtres{color:#2E3238!important}html[data-design="2"]:not([data-theme="dark"]) .subnav .nav-atouts button svg{color:#B04E2E!important;stroke:#B04E2E!important}}
+html[data-design="2"][data-theme="dark"] .nav-cats button{color:#D5DADE}html[data-design="2"][data-theme="dark"] .nav-cats button[aria-pressed="true"],html[data-design="2"][data-theme="dark"] .nav-cats button:hover{background:#31363C;color:#FFFFFF}
+html[data-design="2"][data-theme="dark"] .top .actions .action{color:#ECEFF1}html[data-design="2"][data-theme="dark"] .top .actions .action:hover,html[data-design="2"][data-theme="dark"] .subnav .nav-atouts button:hover,html[data-design="2"][data-theme="dark"] .subnav .nav-filtres:hover{background:#31363C!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .nav-cats button{color:#D5DADE}html[data-design="2"]:not([data-theme="light"]) .nav-cats button[aria-pressed="true"],html[data-design="2"]:not([data-theme="light"]) .nav-cats button:hover{background:#31363C;color:#FFFFFF}html[data-design="2"]:not([data-theme="light"]) .top .actions .action{color:#ECEFF1}html[data-design="2"]:not([data-theme="light"]) .top .actions .action:hover,html[data-design="2"]:not([data-theme="light"]) .subnav .nav-atouts button:hover,html[data-design="2"]:not([data-theme="light"]) .subnav .nav-filtres:hover{background:#31363C!important}}
 </style>
 </head>
 <body>
@@ -2826,6 +2860,7 @@ html[data-design="2"][data-theme="light"] body .reboot:hover{background:#963F22!
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
         <span class="label" id="loginLabel">Se connecter</span>
       </a>
+      <a class="btn btn-primary head-sell" href="#/vendre"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Vendre</span></a>
       <div class="acct" id="acctWrap" hidden>
         <button type="button" class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false" aria-controls="acctMenu">
           <span class="avatar acct-av" id="acctAv" aria-hidden="true"></span><span class="acct-name" id="acctName"></span><svg class="icon acct-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
@@ -2846,10 +2881,11 @@ html[data-design="2"][data-theme="light"] body .reboot:hover{background:#963F22!
     </div>
   </div>
   <nav class="wrap subnav" aria-label="Navigation">
-    <div class="nav-pill nav-pill-f" id="navFiltres"></div>
     <div class="nav-univers" role="group" aria-label="Univers"><button type="button" data-univers="mode"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a2 2 0 1 1 2-2"/><path d="M12 7v2L3 16h18l-9-7"/></svg><span>Mode</span></button><button type="button" data-univers="livres"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg><span>Livres</span></button></div>
+    <div class="nav-cats" id="navCats" role="group" aria-label="Catégories"></div>
     <div class="nav-right">
-    <div class="nav-atouts" role="group" aria-label="Exclusivités Orleoo"><span class="nav-atouts-l" aria-hidden="true">Exclusif</span><button type="button" data-go="#/fonctionnement"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Échanger</span></button><button type="button" data-go="#/securite" title="Remise en main propre sécurisée"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Main propre</span></button></div>
+    <div class="nav-pill nav-pill-f" id="navFiltres"></div>
+    <div class="nav-atouts" role="group" aria-label="Exclusivités Orleoo"><span class="nav-atouts-l" aria-hidden="true">Exclusif</span><button type="button" data-go="#/fonctionnement"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Échanger</span></button><button type="button" data-go="#/securite" title="Remise en main propre sécurisée"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Main propre</span></button><button type="button" data-go="#/aide"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17h.01"/></svg><span>Aide</span></button></div>
     <button type="button" class="sell" data-go="#/vendre"><svg class="icon nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Vendre</span></button>
     </div>
   </nav>
@@ -5433,11 +5469,14 @@ function renderNav(view){
   const onCat=view==="catalogue";
   if(onCat)navUniv=filters.univers==="livres"||filters.category==="Livres"?"livres":filters.univers==="mode"||(filters.category&&filters.category!=="Livres")?"mode":navUniv;
   const nb=onCat?[filters.q,filters.category&&filters.category!=="Livres",filters.brand,filters.style,filters.seller,filters.season,filters.min,filters.max].filter(Boolean).length+filters.sizes.length+filters.conditions.length+(filters.sort!=="selection"?1:0):0;
+  const cats=$("navCats");if(cats){const fm=onCat&&filters.category,fs=onCat&&filters.sizes.length===1&&filters.sizes[0];
+    cats.innerHTML=navUniv==="livres"?["Poche","BD","Manga","Beau livre"].map(x=>`<button type="button" data-navfmt="${x}" aria-pressed="${fs===x}">${x}</button>`).join("")+`<button type="button" data-navnew="1">Nouveautés</button>`
+      :["Femme","Homme","Enfant","Unisexe"].map(x=>`<button type="button" data-navcat="${x}" aria-pressed="${fm===x}">${x}</button>`).join("")+`<button type="button" data-navnew="1">Nouveautés</button>`}
   box.innerHTML=`<button type="button" class="nav-filtres" data-navfiltres="1" aria-current="${onCat}">${navIc('<path d="M4 6h16M7 12h10M10 18h4"/>')}<span>Filtres</span>${nb?`<b class="nav-nb" aria-label="${nb} filtre${nb>1?"s":""} actif${nb>1?"s":""}">${nb}</b>`:""}</button>`;
   document.querySelectorAll("[data-univers]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.univers===navUniv));b.toggleAttribute("aria-current",view==="univers"&&b.dataset.univers===navUniv);if(view==="univers"&&b.dataset.univers===navUniv)b.setAttribute("aria-current","page")});
 }
 document.addEventListener("click",e=>{
-  const u=e.target.closest("[data-univers]");if(u){navUniv=u.dataset.univers;location.hash="#/univers/"+navUniv;return}
+  const u=e.target.closest("[data-univers]");if(u){navUniv=u.dataset.univers;renderNav("univers");location.hash="#/univers/"+navUniv;return}
   if(e.target.closest("[data-navfiltres]")){
     const open=()=>{if(innerWidth<=920)setFiltersOpen(true);else{$("filters").scrollIntoView({behavior:"smooth",block:"start"});$("fQuery")?.focus({preventScroll:true})}};
     if(location.hash==="#/catalogue")open();else{openCatalogue(navUniv==="livres"?{univers:"livres",category:"Livres"}:{univers:"mode"});setTimeout(open,80)}
