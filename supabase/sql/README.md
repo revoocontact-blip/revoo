@@ -47,6 +47,7 @@ Chaque script peut être relancé sans risque.
 | 35 | `supabase-durcissement.sql` | Durcissement avant lancement : droits des fonctions, chemins de recherche, index (à lancer en dernier) |
 | 36 | `supabase-ajustements.sql` | Négociation libre, 10 offres/jour, paliers de lot réglables, badge fondateur retiré, baisse de prix ≥ 1 €, rappel la veille de l’ouverture, notifications en pause, tailles longues |
 | 37 | `supabase-ajustements-2.sql` | Échange ouvert à tous, réservation de 5 min au paiement, panier sans limite, identifiant (2 changements gratuits), 5 styles |
+| 38 | `supabase-sms-limites.sql` | Code de remise en main propre envoyé par SMS (Brevo), numéro de mobile privé, limite d’achats en cours selon le membre |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 
