@@ -6195,7 +6195,7 @@ function renderAccount(tab){
           ${state.user.avatar?`<button type="button" class="link small" id="avatarRemove">Retirer la photo</button>`:""}
           <p class="hint" style="margin:6px 0 0">Une photo carrée et nette rend ton profil plus rassurant.</p><span class="error" id="avatarErr"></span></div>
         </div>`:""}
-        <div class="field"><label for="pName">Identifiant</label><div class="at-input"><span aria-hidden="true">@</span><input class="input" id="pName" value="${esc(state.user.name)}" required maxlength="20" autocapitalize="off" spellcheck="false" ${usernameRule().can?"":"disabled"}></div><span class="hint">${usernameRule().msg}</span><span class="error" id="pNameErr"></span></div>
+        <div class="field"><label for="pName">Identifiant</label><input class="input" id="pName" value="${esc(state.user.name)}" required maxlength="21" placeholder="@camille_75" autocapitalize="off" spellcheck="false" ${usernameRule().can?"":"disabled"}><span class="hint">${usernameRule().msg}</span><span class="error" id="pNameErr"></span></div>
         <div class="field"><label for="pBio">Bio <span class="hint">(facultatif)</span></label><textarea class="input" id="pBio" maxlength="300" placeholder="Quelques mots sur toi et ton style…">${esc(state.user.bio||"")}</textarea></div>
         ${state.user.v2?`<div class="set-row"><div><b>Afficher ma ville sur mon profil</b><small>${state.user.city?`Ta ville : ${esc(state.user.city)}.`:"Ajoute ta ville dans tes informations privées ci-dessous."}</small></div><label class="switch"><input type="checkbox" id="pCityPublic" ${state.user.cityPublic?"checked":""}><span aria-hidden="true"></span><span class="sr-only">Afficher ma ville sur mon profil</span></label></div>`:""}
         <h2 style="margin-top:22px">Informations privées</h2>
@@ -7421,7 +7421,7 @@ document.addEventListener("submit",async e=>{
     if(error){fieldError("pw1","pw1Err",frenchError(error));return}
     f.reset();toast("Mot de passe modifié.");return}
   if(f.id==="profileForm"){e.preventDefault();
-    const name=$("pName").value.trim(),bio=$("pBio").value.trim()||null,city=$("pCity").value.trim()||null;
+    const name=$("pName").value.trim().replace(/^@+/,""),bio=$("pBio").value.trim()||null,city=$("pCity").value.trim()||null;
     if(!fieldError("pName","pNameErr",!USERNAME_RE.test(name)?"3 à 20 caractères : lettres sans accent, chiffres, point, tiret ou _ (pas d’espace).":""))return;
     const nameChanged=name!==state.user.name;
     if(nameChanged&&state.user.uChanges!==null){const left=2-state.user.uChanges;if(!confirm(`Changer ton identifiant en @${name} ?\n\n${left===1?"C’est ton dernier changement gratuit : les suivants seront payants.":"Tu pourras le changer une dernière fois gratuitement dans 30 jours."}`))return}
