@@ -3764,6 +3764,14 @@ html[data-design="2"]:not([data-theme="light"]) .menu-btn.is-user{background:#2F
 }
 
 @media (max-width:680px){.products-row{scroll-padding-inline:14px}}
+
+/* « Se connecter » en haut à droite : même couleur que l'ancien bouton Vendre */
+@media (max-width:680px){
+  html[data-design="2"] .menu-btn.is-guest{background:#B04E2E!important;border-color:#B04E2E!important;color:#fff!important}
+  html[data-design="2"] .menu-btn.is-guest:hover{background:#963F22!important;border-color:#963F22!important}
+  html[data-design="2"][data-theme="dark"] .menu-btn.is-guest{background:#E07A55!important;border-color:#E07A55!important;color:#1F1A17!important}
+}
+@media (max-width:680px) and (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .menu-btn.is-guest{background:#E07A55!important;border-color:#E07A55!important;color:#1F1A17!important}}
 </style>
 </head>
 <body>
