@@ -2978,7 +2978,7 @@ html[data-design="2"][data-theme="dark"] .gate-x:hover{background:rgba(255,255,2
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .gate-ic{background:#3B302B;color:#E07A55}html[data-design="2"]:not([data-theme="light"]) .gate-x:hover{background:rgba(255,255,255,.08)}}
 /* ===== Pages Échanger / Main propre / Prêt ===== */
 #pageContent:has(.xpage){max-width:none!important;width:100%}
-.xpage{max-width:880px;margin:0!important;text-align:left}
+.xpage{max-width:1100px;margin:0 auto!important;text-align:left}
 .x-hero{display:flex;gap:20px;align-items:flex-start;margin:8px 0 22px}
 .x-hero-ic{flex:none;display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:#F8E9DF;color:#B04E2E}
 .x-hero-ic .icon{width:32px;height:32px}
@@ -3046,6 +3046,38 @@ html[data-design="2"][data-theme="dark"] .xpage .x-kicker{color:#E07A55!importan
 .xpage .x-faq summary{padding:15px 0}
 html[data-design="2"][data-theme="dark"] .xpage .x-faq details{background:#2F3439}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .xpage .x-faq details{background:#2F3439}}
+
+/* Pages Exclusif : mise en page pro */
+.xpage .x-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:center;margin:10px 0 8px;padding:34px 36px;border-radius:24px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF)}
+.xpage .x-hero-ic{margin-bottom:16px}
+.xpage .x-hero .x-note{margin:18px 0 0}
+.x-facts{padding:22px 22px 18px;border-radius:18px;background:#F8E9DF}
+.x-facts-t{margin:0 0 12px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#963F22}
+.x-facts ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.x-facts li{display:flex;align-items:center;gap:12px;font-weight:600;line-height:1.35}
+.x-facts li span{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#fff;color:#B04E2E}
+.x-facts .icon{width:18px;height:18px}
+.x-bottom{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start;margin:30px 0 18px}
+.x-bottom .x-sec{margin:0}
+.x-bottom .x-cta{display:block;margin:0;position:sticky;top:90px;padding:24px}
+.x-bottom .x-cta p{margin:6px 0 16px}
+.x-bottom .x-cta-btns{display:grid;gap:10px}
+.x-bottom .x-cta-btns .btn{width:100%;justify-content:center}
+@media (max-width:900px){.xpage .x-hero{grid-template-columns:1fr;gap:22px;padding:24px 20px}.x-bottom{grid-template-columns:1fr}.x-bottom .x-cta{position:static}}
+@media (max-width:600px){.xpage .x-hero{padding:20px 16px;border-radius:18px}}
+html[data-design="2"][data-theme="dark"] .xpage .x-hero{background:#2F3439;border-color:#49515A}
+html[data-design="2"][data-theme="dark"] .x-facts{background:#31363C}
+html[data-design="2"][data-theme="dark"] .x-facts-t{color:#E07A55}
+html[data-design="2"][data-theme="dark"] .x-facts li span{background:#3B302B;color:#E07A55}
+@media (prefers-color-scheme:dark){
+html[data-design="2"]:not([data-theme="light"]) .xpage .x-hero{background:#2F3439;border-color:#49515A}
+html[data-design="2"]:not([data-theme="light"]) .x-facts{background:#31363C}
+html[data-design="2"]:not([data-theme="light"]) .x-facts-t{color:#E07A55}
+html[data-design="2"]:not([data-theme="light"]) .x-facts li span{background:#3B302B;color:#E07A55}
+}
+@media (min-width:701px){.xpage .x-rules{grid-template-columns:repeat(2,minmax(0,1fr))}}
+html[data-design="2"][data-theme="dark"] .xpage :is(.x-kicker,.x-facts-t){color:#EBA488!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .xpage :is(.x-kicker,.x-facts-t){color:#EBA488!important}}
 </style>
 </head>
 <body>
@@ -6790,16 +6822,16 @@ const xIc={
 const xSvg=k=>`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${xIc[k]}</svg>`;
 function xPage(o){
   return `<div class="xpage"><p class="crumbs"><a href="#/">Accueil</a> › ${o.crumb}</p>
-  <header class="x-hero"><span class="x-hero-ic">${xSvg(o.ic)}</span><div><p class="x-kicker">${o.kicker}${o.soon?' <span class="soon-pill">Bientôt</span>':""}</p><h1>${o.title}</h1><p class="x-lead">${o.lead}</p></div></header>
-  ${o.note?`<p class="note x-note">${o.note}</p>`:""}
+  <header class="x-hero"><div class="x-hero-main"><span class="x-hero-ic">${xSvg(o.ic)}</span><p class="x-kicker">${o.kicker}${o.soon?' <span class="soon-pill">Bientôt</span>':""}</p><h1>${o.title}</h1><p class="x-lead">${o.lead}</p>${o.note?`<p class="note x-note">${o.note}</p>`:""}</div>
+  <aside class="x-facts" aria-label="En bref"><p class="x-facts-t">En bref</p><ul>${o.facts.map(([ic,t])=>`<li><span>${xSvg(ic)}</span>${t}</li>`).join("")}</ul></aside></header>
   <section class="x-sec"><h2>${o.stepsTitle||"Comment ça marche"}</h2><ol class="x-steps">${o.steps.map(([ic,t,d],i)=>`<li><span class="x-step-n" aria-hidden="true">${i+1}</span><span class="x-step-ic">${xSvg(ic)}</span><b>${t}</b><p>${d}</p></li>`).join("")}</ol></section>
   ${o.rules?`<section class="x-sec"><h2>${o.rulesTitle||"Les règles"}</h2><ul class="x-rules">${o.rules.map(([ic,t,d])=>`<li><span class="x-rule-ic">${xSvg(ic)}</span><div><b>${t}</b><p>${d}</p></div></li>`).join("")}</ul></section>`:""}
-  ${o.faq?`<section class="x-sec"><h2>Questions fréquentes</h2><div class="x-faq">${o.faq.map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</div></section>`:""}
-  <div class="x-cta"><div><b>${o.ctaTitle}</b><p>${o.ctaText}</p></div><div class="x-cta-btns">${o.cta.map(([l,h],i)=>`<a class="btn ${i?"btn-outline":"btn-primary"}" href="${h}">${l}</a>`).join("")}</div></div>
+  <div class="x-bottom"><section class="x-sec x-faq-sec"><h2>Questions fréquentes</h2><div class="x-faq">${o.faq.map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</div></section>
+  <div class="x-cta"><b>${o.ctaTitle}</b><p>${o.ctaText}</p><div class="x-cta-btns">${o.cta.map(([l,h],i)=>`<a class="btn ${i?"btn-outline":"btn-primary"}" href="${h}">${l}</a>`).join("")}</div></div></div>
   <nav class="x-more" aria-label="Les autres façons d’utiliser Orleoo">${[["#/echanger","swap","Échanger"],["#/main-propre","shield","Main propre"],["#/pret","book","Prêt de livres"],["#/aide","chat","Centre d’aide"]].filter(x=>x[0]!==o.self).map(([h,ic,l])=>`<a href="${h}">${xSvg(ic)}<span>${l}</span></a>`).join("")}</nav></div>`;
 }
 function pageEchanger(){
-  return xPage({self:"#/echanger",crumb:"Échanger",ic:"swap",kicker:"Exclusif Orleoo",title:"Échange tes articles avec d’autres membres",
+  return xPage({self:"#/echanger",crumb:"Échanger",ic:"swap",facts:[["check","Ouvert à tous les membres"],["euro","Complément jusqu’à 500 €"],["box","Colis avec suivi obligatoire"],["clock","48 h pour vérifier"]],kicker:"Exclusif Orleoo",title:"Échange tes articles avec d’autres membres",
     lead:"Ton pull contre sa veste, ton roman contre sa BD. Sur Orleoo, tu peux proposer un de tes articles contre celui d’un autre membre, avec un peu d’argent en plus si les deux n’ont pas la même valeur.",
     note:CONFIG.vitrine?"Les échanges démarrent avec l’ouverture des achats. Tu peux déjà mettre en ligne les articles que tu voudrais échanger.":"",
     steps:[["heart","Choisis un article","Ouvre l’annonce qui te plaît et clique sur « ⇄ Proposer un échange »."],
@@ -6815,7 +6847,7 @@ function pageEchanger(){
     ctaTitle:"Prêt(e) à échanger ?",ctaText:"Trouve l’article qui te plaît, ou mets d’abord en ligne celui que tu veux échanger.",cta:[["Trouver un article","#/catalogue"],["Mettre un article en ligne","#/vendre"]]});
 }
 function pageMainPropre(){
-  return xPage({self:"#/main-propre",crumb:"Main propre",ic:"shield",kicker:"Exclusif Orleoo",title:"La remise en main propre, sans espèces ni risque",
+  return xPage({self:"#/main-propre",crumb:"Main propre",ic:"shield",facts:[["lock","Argent bloqué jusqu’au code"],["shield","Code visible par toi seul"],["clock","Rendez-vous sous "+FREE_PERKS.handoff+" jours"],["euro","Aucun paiement en espèces"]],kicker:"Exclusif Orleoo",title:"La remise en main propre, sans espèces ni risque",
     lead:"Tu préfères voir l’article avant de le prendre ? Choisis la remise en main propre : tu paies sur Orleoo, vous vous retrouvez, et c’est ton code de remise qui débloque l’argent du vendeur, seulement quand tout te va.",
     note:CONFIG.vitrine?"La remise en main propre sera disponible dès l’ouverture des achats.":"",
     steps:[["lock","Paie sur Orleoo","Au moment de l’achat, choisis « Main propre » et paie par carte. L’argent est bloqué : le vendeur ne le reçoit pas encore."],
@@ -6831,7 +6863,7 @@ function pageMainPropre(){
     ctaTitle:"Envie de voir avant d’acheter ?",ctaText:"La remise en main propre est proposée sur les annonces dont le vendeur l’accepte.",cta:[["Voir les articles","#/catalogue"],["Paiement et sécurité","#/securite"]]});
 }
 function pagePret(){
-  return xPage({self:"#/pret",crumb:"Prêt de livres",ic:"book",kicker:"Bientôt sur Orleoo",soon:true,title:"Le prêt de livres entre membres",
+  return xPage({self:"#/pret",crumb:"Prêt de livres",ic:"book",facts:[["book","Des livres, entre membres"],["swap","Tu prêtes, puis on te le rend"],["clock","En préparation"],["check","Règles détaillées au lancement"]],kicker:"Bientôt sur Orleoo",soon:true,title:"Le prêt de livres entre membres",
     lead:"Un livre se lit souvent une seule fois. Bientôt, tu pourras prêter les tiens à d’autres membres et emprunter les leurs, au lieu de les laisser dormir sur une étagère.",
     note:"Cette fonctionnalité est en préparation. Les règles précises (durée du prêt, envoi, protection) seront détaillées ici à son lancement.",
     stepsTitle:"L’idée",
