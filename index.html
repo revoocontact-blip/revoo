@@ -3809,6 +3809,50 @@ html[data-design="2"]:not([data-theme="light"]) .menu-btn.is-user{background:#2F
   html[data-design="2"][data-theme="light"] body .reboot:hover,html[data-design="2"]:not([data-theme]) body .reboot:hover{background:#FFFFFF!important;border-color:#EBA488!important}
 }
 @media (min-width:681px) and (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme]) body .reboot:hover{background:#3B4148!important;border-color:#525A63!important}}
+
+/* ===== FICHE ARTICLE V2 (ordinateur) — supprimer ce bloc pour revenir à l'ancienne ===== */
+.pdesc-t{font-size:.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#5E636B);margin:18px 0 6px}
+.pdesc p{margin:0;line-height:1.6}
+@media (min-width:901px){
+  html[data-design="2"] #view-product .product-page{grid-template-columns:minmax(0,1.2fr) minmax(380px,1fr)!important;gap:44px!important;align-items:start}
+  /* galerie : miniatures en colonne à gauche, photo collante */
+  html[data-design="2"] #view-product .pgal{position:sticky;top:92px;display:grid;grid-template-columns:1fr;gap:12px}
+  html[data-design="2"] #view-product .pgal.has-thumbs{grid-template-columns:72px minmax(0,1fr)}
+  html[data-design="2"] #view-product .pgal .gallery-main{grid-column:-2;grid-row:1;aspect-ratio:4/5!important;max-height:calc(100vh - 130px);width:100%;border-radius:18px!important}
+  html[data-design="2"] #view-product .pgal .thumbs{grid-column:1;grid-row:1;flex-direction:column;flex-wrap:nowrap;margin:0;gap:10px;max-height:calc(100vh - 130px);overflow-y:auto;scrollbar-width:thin}
+  html[data-design="2"] #view-product .pgal .thumbs button{width:72px;height:90px;flex:none;border-radius:12px;overflow:hidden;padding:0;border:2px solid transparent;opacity:.75;transition:opacity .15s,border-color .15s}
+  html[data-design="2"] #view-product .pgal .thumbs button[aria-current="true"]{border-color:#B04E2E;opacity:1}
+  html[data-design="2"] #view-product .pgal .thumbs button:hover{opacity:1}
+  html[data-design="2"] #view-product .pgal .thumbs img{width:100%;height:100%;object-fit:cover}
+  /* colonne d'infos : une carte claire */
+  html[data-design="2"] #view-product .product-info{padding:28px 28px 24px!important;border-radius:22px!important;background:var(--surface,#fff)!important;border:1px solid var(--line,#E6DCCF)!important;box-shadow:0 10px 30px rgba(46,50,56,.06)!important}
+  html[data-design="2"] #view-product .product-info h1{font-size:clamp(1.6rem,2.2vw,2.1rem);line-height:1.15;margin:6px 0 10px}
+  html[data-design="2"] #view-product .product-price{display:block!important;background:none!important;color:var(--ink,#2E3238)!important;padding:0!important;font-size:2.1rem!important;font-weight:800;letter-spacing:-.02em;margin:0 0 18px!important;box-shadow:none!important}
+  html[data-design="2"] #view-product .specs{display:grid!important;grid-template-columns:1fr 1fr;gap:0!important;margin:0 0 4px!important;border-top:1px solid var(--line,#E6DCCF)}
+  html[data-design="2"] #view-product .specs>div{background:none!important;border:0!important;border-bottom:1px solid var(--line,#E6DCCF)!important;border-radius:0!important;padding:10px 0!important;box-shadow:none!important}
+  html[data-design="2"] #view-product .specs>div:nth-child(odd){padding-right:14px!important}
+  html[data-design="2"] #view-product .specs dt{font-size:.76rem;color:var(--muted,#5E636B)}
+  html[data-design="2"] #view-product .specs dd{font-weight:700;margin:2px 0 0}
+  html[data-design="2"] #view-product .buy-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  html[data-design="2"] #view-product .buy-actions .btn{min-height:52px;justify-content:center;font-size:1rem}
+  html[data-design="2"] #view-product .buy-actions .btn-primary{grid-column:1/-1}
+  html[data-design="2"] #view-product .fee-box{margin-top:16px}
+  html[data-design="2"] #view-product .seller-box{margin-top:18px}
+}
+html[data-design="2"][data-theme="dark"] #view-product .product-info{background:#2F3439!important;border-color:#49515A!important}
+html[data-design="2"][data-theme="dark"] #view-product .product-price{color:#F1F2F3!important}
+html[data-design="2"][data-theme="dark"] #view-product :is(.specs,.specs>div){border-color:#49515A!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) #view-product .product-info{background:#2F3439!important;border-color:#49515A!important}html[data-design="2"]:not([data-theme="light"]) #view-product .product-price{color:#F1F2F3!important}html[data-design="2"]:not([data-theme="light"]) #view-product :is(.specs,.specs>div){border-color:#49515A!important}}
+@media (min-width:901px){
+  html[data-design="2"] #view-product .buy-actions{display:flex!important;flex-wrap:wrap}
+  html[data-design="2"] #view-product .buy-actions>.btn{flex:1 1 200px}
+  html[data-design="2"] #view-product .buy-actions>.btn-primary{flex-basis:100%}
+  html[data-design="2"] #view-product .seller-box{display:grid!important;grid-template-columns:auto minmax(0,1fr);gap:12px 14px;align-items:start;padding:16px!important}
+  html[data-design="2"] #view-product .seller-box>.avatar{width:48px;height:48px}
+  html[data-design="2"] #view-product .seller-box .seller-btns{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  html[data-design="2"] #view-product .seller-box .seller-btns .btn{width:100%;justify-content:center;min-height:44px}
+}
+/* ===== fin FICHE ARTICLE V2 ===== */
 </style>
 </head>
 <body>
@@ -6658,7 +6702,7 @@ function renderProduct(id){
   v.innerHTML=`
   <div class="page-head" style="padding-bottom:0"><p class="crumbs"><a href="#/">Accueil</a> › <a href="#/catalogue" data-category="${esc(p.category)}">${esc(p.category)}</a> › ${esc(p.name)}</p></div>
   <div class="product-page">
-    <div>
+    <div class="pgal${photos.length>1?" has-thumbs":""}">
       <div class="image-frame gallery-main"><img data-safe-image id="mainPhoto" src="${esc(photos[0])}" alt="${esc(p.name)}">${photos.length>1?`<span class="photo-count" id="photoCount" aria-hidden="true">1/${photos.length}</span>`:""}</div>
       ${photos.length>1?`<div class="thumbs" role="group" aria-label="Photos de l’article">${photos.map((ph,i)=>`<button type="button" data-photo="${i}" aria-current="${i===0}" aria-label="Photo ${i+1}"><img src="${esc(ph)}" alt=""></button>`).join("")}</div>`:""}
     </div>
@@ -6674,7 +6718,7 @@ function renderProduct(id){
         ${p.style?`<div><dt>Style</dt><dd>${esc(p.style)}</dd></div>`:""}
         <div><dt>Ajouté</dt><dd>${ago(p.addedAt)}</dd></div>
       </dl>
-      ${p.description?`<p style="white-space:pre-line">${esc(p.description)}</p>`:""}
+      ${p.description?`<div class="pdesc"><h2 class="pdesc-t">Description</h2><p style="white-space:pre-line">${esc(p.description)}</p></div>`:""}
       ${sold||p.mine?"":payOn()&&!p.demo?`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article${op?" (ton offre)":""}</span><span>${eur(pp)}</span></div><div><span>Frais Orleoo Pay</span><span>${eur(feeOf(pp))}</span></div><div class="total"><span>Total</span><span>${eur(pp+feeOf(pp))}</span></div><p class="small muted" style="margin:6px 0 0">Ton argent reste bloqué jusqu’à la réception de l’article.</p></div>`:`<div class="fee-box" aria-label="Détail du prix"><div><span>Prix de l’article</span><span>${eur(p.price)}</span></div><div><span>Frais Orleoo (${FEE_TXT()})</span><span>${eur(feeOf(p.price))}</span></div><div class="total"><span>Total hors livraison</span><span>${eur(p.price+feeOf(p.price))}</span></div></div>`}
       ${actions}
       ${sold||p.mine?"":offerBlock(p)+lotHint(p)}
