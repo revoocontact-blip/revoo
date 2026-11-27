@@ -3755,6 +3755,15 @@ html[data-design="2"]:not([data-theme="light"]) .menu-btn.is-user{background:#2F
 .m3-themerow{flex-wrap:wrap;row-gap:10px;padding-top:12px;padding-bottom:12px}
 .m3-themerow .m3-theme{flex:1 1 100%;display:grid;grid-template-columns:repeat(3,1fr)}
 .m3-themerow .m3-theme span{text-align:center;padding:8px 6px;font-size:.88rem}
+
+/* téléphone : pastilles qui commencent bien au bord gauche, sans « Vendre » dans l'en-tête */
+@media (max-width:680px){
+  html[data-design="2"] .top .actions>.head-sell{display:none!important}
+  .mcats-row{scroll-padding-inline:16px;scroll-snap-type:none!important}
+  .home-tabs{scroll-padding-inline:16px}
+}
+
+@media (max-width:680px){.products-row{scroll-padding-inline:14px}}
 </style>
 </head>
 <body>
