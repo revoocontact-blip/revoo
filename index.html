@@ -3940,6 +3940,30 @@ html[data-design="2"]:not([data-theme="light"]) .status.warn{background:#4A3A1C;
 }
 
 #accountContent:has(.mod2){max-width:none!important;width:100%}
+
+/* ===== MOUVEMENT AU SURVOL DES ÉTIQUETTES ===== */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  html[data-design="2"] .tags .tag{overflow:hidden;isolation:isolate;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .25s ease!important}
+  html[data-design="2"] .tags .tag::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 30%,rgba(235,164,136,.28) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s ease}
+  html[data-design="2"] .tags .tag:hover{transform:translateY(-6px) rotate(-1deg) scale(1.02)!important;border-color:#EBA488!important;box-shadow:0 18px 34px rgba(176,78,46,.16)!important}
+  html[data-design="2"] .tags .tag:nth-child(even):hover{transform:translateY(-6px) rotate(1deg) scale(1.02)!important}
+  html[data-design="2"] .tags .tag:hover::before{transform:translateX(120%)}
+  html[data-design="2"] .tags .tag .tag-ic{transition:background .25s ease,color .25s ease,transform .3s ease}
+  html[data-design="2"] .tags .tag:hover .tag-ic{background:#B04E2E!important;border-color:#B04E2E!important;animation:tagWiggle .6s ease}
+  html[data-design="2"] .tags .tag:hover .tag-ic svg{stroke:#fff!important;color:#fff!important}
+  html[data-design="2"] .tags .tag b::after{content:"→";display:inline-block;margin-left:8px;opacity:0;transform:translateX(-8px);transition:opacity .25s ease,transform .25s ease;color:#B04E2E}
+  html[data-design="2"] .tags .tag:hover b::after{opacity:1;transform:none}
+  @keyframes tagWiggle{0%{transform:rotate(0) scale(1)}30%{transform:rotate(-12deg) scale(1.12)}60%{transform:rotate(8deg) scale(1.08)}100%{transform:rotate(0) scale(1.06)}}
+  /* petites pastilles : léger saut */
+  html[data-design="2"] :is(.home-tabs button,.sel-tabs button,.mcats-row button,.pill,.x-more a,.help-theme,.f-preset,.seg-filter button){transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
+  html[data-design="2"] :is(.home-tabs button,.sel-tabs button,.mcats-row button,.pill,.x-more a,.f-preset,.seg-filter button):hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(46,50,56,.10)}
+  html[data-design="2"] .card .chip-mini{transition:transform .2s ease}
+  html[data-design="2"] .card:hover .chip-mini{transform:translateY(-1px)}
+}
+html[data-design="2"][data-theme="dark"] .tags .tag:hover .tag-ic{background:#E07A55!important;border-color:#E07A55!important}
+html[data-design="2"][data-theme="dark"] .tags .tag:hover .tag-ic svg{stroke:#1F1A17!important;color:#1F1A17!important}
+html[data-design="2"][data-theme="dark"] .tags .tag b::after{color:#EBA488}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .tags .tag:hover .tag-ic{background:#E07A55!important;border-color:#E07A55!important}html[data-design="2"]:not([data-theme="light"]) .tags .tag:hover .tag-ic svg{stroke:#1F1A17!important;color:#1F1A17!important}html[data-design="2"]:not([data-theme="light"]) .tags .tag b::after{color:#EBA488}}
 </style>
 </head>
 <body>
