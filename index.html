@@ -4368,6 +4368,20 @@ html[data-design="2"][data-theme="dark"] .thread-tools .link{color:#F2867D}
  html[data-design="2"]:not([data-theme="light"]) :is(.conv-del,.msg-del):hover{background:#4A2723;color:#F2A399}
  html[data-design="2"]:not([data-theme="light"]) .thread-tools .link{color:#F2867D}
 }
+
+/* ===== PAGES D'ACTIVITÉ V2 : en-tête comme les pages services, pleine largeur ===== */
+html[data-design] body .ap-xpage{max-width:none;margin:0 0 18px!important}
+.ap-xpage .ap-crumbs{margin:6px 0 14px}
+.ap-hero h1{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ap-hero .x-lead{margin-bottom:0}
+.ap-hero-btns{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+@media (max-width:600px){.ap-hero-btns .btn{width:100%;justify-content:center}}
+html[data-design] body .ap-list.conv-list{border:0!important;background:none!important;overflow:visible!important;border-radius:0!important}
+@media (min-width:1000px){
+ .ap-body .ap-list,.ap-offers,#cartContent .ap-list{grid-template-columns:repeat(auto-fit,minmax(440px,1fr))!important}
+ #view-messages.ap-mode .ap-list{grid-template-columns:1fr!important}
+}
+@media (min-width:1500px){.ap-body .ap-list{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))!important}}
 </style>
 </head>
 <body>
@@ -5080,7 +5094,7 @@ function renderMessages(id){
   $("msgTitle").textContent="Messages";
   const unread=chat.convs.filter(c=>c.unread).length,buy=chat.convs.filter(c=>c.buyer_id===state.user.id).length,sell=chat.convs.length-buy;
   const f=apF.msg,list=chat.convs.filter(c=>f==="unread"?c.unread:f==="buy"?c.buyer_id===state.user.id:f==="sell"?c.seller_id===state.user.id:true);
-  el.innerHTML=apHead("messages",chat.unread)
+  el.innerHTML=apHead("messages",chat.unread,[["chat",plur(chat.convs.length,"conversation","conversations")],["msg",unread?plur(unread,"conversation non lue","conversations non lues"):"Tout est lu"],["lock","Numéros, e-mails et IBAN bloqués"],["shield","Tout se paie sur Orleoo"]])
     +(chat.convs.length?apChips("msg",[["all","Toutes",chat.convs.length],["unread","Non lues",unread],buy?["buy","J’achète",buy]:null,sell?["sell","Je vends",sell]:null]):"")
     +(list.length?`<div class="conv-list ap-list">${list.map(c=>`<div class="conv-wrap"><a class="conv ap-conv${c.unread?" unread":""}" href="#/messages/${c.id}">
       <span class="image-frame conv-img">${c.img?`<img data-safe-image src="${esc(c.img)}" alt="">`:""}</span>
@@ -6944,7 +6958,7 @@ function renderCheckout(id){
 /* Panier Orleoo Pay : articles regroupés par vendeur, un seul paiement */
 const cartDelivery={};   // vendeur -> "main_propre" | "colis"
 function renderPayCart(){
-  cleanCart();$("cartHead").innerHTML=apHead("panier",state.cart.length);
+  cleanCart();$("cartHead").innerHTML=apHead("panier",state.cart.length,cartFacts());
   const el=$("cartContent");
   const items=state.cart.map(findProduct).filter(p=>p&&!p.demo);
   const demoCount=state.cart.map(findProduct).filter(p=>p&&p.demo).length;
@@ -7406,8 +7420,12 @@ const AP_PAGES={
   alertes:{ic:"bell",t:"Alertes",s:"Tes recherches enregistrées, les vendeurs que tu suis et les baisses de prix.",a:["Créer une alerte","#/catalogue","search"]},
   offres:{ic:"tag",t:"Offres",s:"Les prix proposés sur tes articles, et ceux que tu as proposés."},
   panier:{ic:"bag",t:"Panier",s:"Les articles que tu as mis de côté pour les acheter."}};
-function apHead(k,count){const c=AP_PAGES[k];
-  return `<header class="ap-head"><p class="crumbs"><a href="#/">Accueil</a> › ${c.t}</p><div class="ap-row"><span class="ap-ic" aria-hidden="true">${mIc(c.ic)}</span><div class="ap-txt"><h1 class="ap-title">${c.t}${count?` <span class="ap-count">${count}</span>`:""}</h1><p class="ap-sub">${c.s}</p></div>${c.a?`<a class="btn btn-primary ap-act" href="${c.a[1]}">${mIc(c.a[2])}<span>${c.a[0]}</span></a>`:""}</div></header>`}
+const apIc=k=>xIc[k]?xSvg(k):mIc(k);
+const plur=(n,one,many)=>`${n} ${n>1?many:one}`;
+function apHead(k,count,facts){const c=AP_PAGES[k];
+  return `<div class="xpage ap-xpage"><p class="crumbs ap-crumbs"><a href="#/">Accueil</a> › ${c.t}</p>
+  <header class="x-hero ap-hero"><div class="x-hero-main"><span class="x-hero-ic">${apIc(c.ic)}</span><p class="x-kicker">Mon activité</p><h1>${c.t}${count?` <span class="ap-count">${count}</span>`:""}</h1><p class="x-lead">${c.s}</p>${c.a?`<div class="ap-hero-btns"><a class="btn btn-primary ap-act" href="${c.a[1]}">${mIc(c.a[2])}<span>${c.a[0]}</span></a></div>`:""}</div>
+  ${facts&&facts.length?`<aside class="x-facts" aria-label="En bref"><p class="x-facts-t">En bref</p><ul>${facts.map(([ic,t])=>`<li><span>${apIc(ic)}</span>${t}</li>`).join("")}</ul></aside>`:""}</header></div>`}
 function apEmpty(ic,t,txt,cta){return `<div class="ap-empty"><span class="ap-empty-ic" aria-hidden="true">${mIc(ic)}</span><b>${t}</b><p>${txt}</p>${cta&&cta.length?`<div class="ap-empty-btns">${cta.map(([l,h],i)=>`<a class="btn ${i?"btn-outline":"btn-primary"}" href="${h}">${l}</a>`).join("")}</div>`:""}</div>`}
 const apF={msg:"all",ann:"all",off:"recues",fav:"recent"};
 const apChips=(name,opts)=>`<div class="ap-chips" role="group" aria-label="Filtrer">${opts.filter(Boolean).map(([v,l,n])=>`<button type="button" class="ap-chip" data-apf="${name}" data-v="${v}" aria-pressed="${apF[name]===v}">${l}${n!=null?`<span class="ap-chip-n">${n}</span>`:""}</button>`).join("")}</div>`;
@@ -7420,23 +7438,24 @@ function renderFavorites(){
   if(apF.fav==="prix")list.sort((x,y)=>x.price-y.price);
   else if(apF.fav==="baisse")list=list.filter(p=>dropIds.has(p.id));
   else list.reverse();
-  $("favHead").innerHTML=apHead("favoris",all.length)
+  $("favHead").innerHTML=apHead("favoris",all.length,[["heart",plur(all.length,"article gardé","articles gardés")],["tag",dropIds.size?plur(dropIds.size,"favori en baisse de prix","favoris en baisse de prix"):"Prévenu(e) si un prix baisse"],["euro",all.length?"Valeur : "+eur(all.reduce((t,p)=>t+p.price,0)):"Gratuit et illimité"],["bell","Vendeurs à suivre depuis leur profil"]])
     +(dropIds.size?`<p class="note small ap-note" id="favDrops"><b>${dropIds.size} de tes favoris ${dropIds.size>1?"ont":"a"} baissé de prix.</b> <a class="link" href="#/compte/alertes">Voir les baisses</a></p>`:"")
     +(state.user?"":`<p class="note small ap-note">Enregistrés sur cet appareil. <a class="link" href="#/compte/login">Connecte-toi</a> pour les retrouver sur tous tes appareils.</p>`)
     +(all.length>1||dropIds.size?apChips("fav",[["recent","Plus récents"],["prix","Prix croissant"],dropIds.size?["baisse","Prix en baisse",dropIds.size]:null]):"");
   grid($("favoriteProducts"),list,apF.fav==="baisse"?apEmpty("tag","Aucune baisse de prix","On te prévient dès qu’un de tes favoris baisse de prix."):apEmpty("heart","Aucun favori pour l’instant","Appuie sur le cœur d’un article pour le garder ici et être prévenu(e) s’il baisse de prix.",[["Découvrir les articles","#/catalogue"]]));
 }
 function cleanCart(){if(state.loading)return;const before=state.cart.length;state.cart=state.cart.filter(id=>{const p=findProduct(id);return p&&!p.mine&&p.status==="active"&&!state.sold.includes(id)});if(state.cart.length!==before)save("cart")}
+function cartFacts(){const it=state.cart.map(findProduct).filter(Boolean);return [["bag",plur(it.length,"article","articles")],["euro",it.length?"Articles : "+eur(it.reduce((t,p)=>t+p.price,0)):"Ajoute des articles depuis leur page"],["lock","Paiement protégé jusqu’à la réception"],["box","Colis ou main propre"]]}
 function renderSoonCart(){
   cleanCart();const items=state.cart.map(findProduct).filter(Boolean);
-  $("cartHead").innerHTML=apHead("panier",items.length);
+  $("cartHead").innerHTML=apHead("panier",items.length,cartFacts());
   $("cartContent").innerHTML=`<div class="ap-soon"><span class="ap-soon-ic" aria-hidden="true">${mIc("lock")}</span><div><b>Les achats ouvrent bientôt</b><p>Orleoo prépare son paiement protégé. Les articles de ton panier restent gardés ici : tu pourras les acheter dès l’ouverture.</p></div></div>`
     +(items.length?`<div class="ap-list">${items.map(p=>`<div class="ap-item"><a class="image-frame ap-thumb" href="#/article/${encodeURIComponent(p.id)}"><img data-safe-image src="${esc(p.img)}" alt=""></a><div class="ap-item-main"><a class="ap-item-t" href="#/article/${encodeURIComponent(p.id)}">${esc(p.name)}</a><span class="ap-item-m">${[p.size,p.condition,p.seller&&"@"+p.seller].filter(Boolean).map(esc).join(" · ")}</span></div><div class="ap-item-end"><b class="ap-price">${eur(p.price)}</b><button type="button" class="link small" data-remove="${esc(p.id)}" aria-label="Retirer ${esc(p.name)} du panier">Retirer</button></div></div>`).join("")}</div>`
       :apEmpty("bag","Ton panier est vide","En attendant l’ouverture, garde les articles qui te plaisent en favoris ou dans ton panier.",[["Découvrir les articles","#/catalogue"],["Vendre un article","#/vendre"]]));
   watchImages($("cartContent"));
 }
 function renderCart(){
-  cleanCart();$("cartHead").innerHTML=apHead("panier",state.cart.length);
+  cleanCart();$("cartHead").innerHTML=apHead("panier",state.cart.length,cartFacts());
   const items=state.cart.map(findProduct).filter(Boolean), el=$("cartContent");
   if(!items.length){el.innerHTML=state.loading?`<div class="empty"><p>Chargement…</p></div>`:`${apEmpty("bag","Ton panier est vide","Ajoute des articles à ton panier depuis leur page pour les acheter en une seule fois.",[["Découvrir les articles","#/catalogue"]])}`;return}
   const subtotal=items.reduce((t,p)=>t+p.price,0), fees=feesFor(items), total=subtotal+fees;
@@ -7692,7 +7711,11 @@ function renderAccount(tab){
   if(["annonces","alertes","offres"].includes(accountTab)){
     $("view-compte").classList.add("ap-mode");
     const cnt=accountTab==="annonces"?mine.filter(l=>l.status==="active").length:accountTab==="offres"?(()=>{try{return offerTodo()}catch(_){return 0}})():(growth.hits||[]).filter(h=>!h.seen_at).length+latestDrops().filter(d=>!d.seen_at).length+(growth.fhits||[]).filter(h=>!h.seen_at).length;
-    el.innerHTML=apHead(accountTab,cnt)+noticesHtml()+`<div class="ap-body">${body}</div>`;
+    let facts=[];
+    if(accountTab==="annonces"){const on=mine.filter(l=>l.status==="active"),sold=mine.filter(l=>l.status!=="active"&&l.status!=="removed").length;facts=[["list",plur(on.length,"annonce en ligne","annonces en ligne")],["check",plur(sold,"vendue","vendues")],["euro","En vente : "+eur(on.reduce((t,l)=>t+l.price,0))],["heart","Mise en ligne gratuite"]]}
+    else if(accountTab==="alertes"){const nf=(growth.follows||[]).length,nd=latestDrops().length,nw=cnt;facts=[["search",`${(growth.searches||[]).length}/10 recherches enregistrées`],["user",plur(nf,"vendeur suivi","vendeurs suivis")],["tag",plur(nd,"baisse de prix","baisses de prix")],["bell",nw?plur(nw,"nouveauté","nouveautés"):"Aucune nouveauté"]]}
+    else {const me=state.user.id,rec=(offers.list||[]).filter(o=>o.seller_id===me).length,sent=(offers.list||[]).filter(o=>o.buyer_id===me).length;facts=[["tag",plur(rec,"offre reçue","offres reçues")],["chat",plur(sent,"offre envoyée","offres envoyées")],["clock","48 h pour payer après accord"],["euro","Jamais sous la moitié du prix"]]}
+    el.innerHTML=apHead(accountTab,cnt,facts)+noticesHtml()+`<div class="ap-body">${body}</div>`;
     const nr=$("noticesRead");if(nr)nr.addEventListener("click",async()=>{await sb.rpc("mark_notices_read");team.notices.forEach(n=>n.read_at=n.read_at||new Date().toISOString());renderView()});
     watchImages(el);return;
   }
