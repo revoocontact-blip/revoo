@@ -4010,6 +4010,9 @@ html[data-design="2"] .top .acct-btn .acct-chev,html[data-design="2"] .top .acct
 
 html[data-design="2"][data-theme="dark"] #activeFilters button{background:#3B302B!important;color:#F6D3C4!important;border-color:#7A4A3A!important}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) #activeFilters button{background:#3B302B!important;color:#F6D3C4!important;border-color:#7A4A3A!important}}
+
+/* ordinateur : la ligne Femme · Homme · Enfant… fait doublon avec la barre de filtres → retirée */
+@media (min-width:681px){html[data-design="2"] .top .subnav .nav-cats{display:none!important}}
 </style>
 </head>
 <body>
