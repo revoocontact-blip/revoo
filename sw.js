@@ -2,7 +2,7 @@
    - Pages : réseau d'abord, copie en mémoire si pas de connexion.
    - Polices, logos, icônes, bibliothèque : mémoire d'abord (rapide).
    - Base de données et paiements : jamais mis en mémoire. */
-const VERSION = "orleoo-v5";
+const VERSION = "orleoo-v6";
 const STATIC = ["./", "./index.html", "./manifest.webmanifest", "./vendor/supabase-js-2.117.3.js",
   "./fonts/dm-sans-latin-400-normal.woff2", "./fonts/dm-sans-latin-600-normal.woff2", "./fonts/dm-sans-latin-700-normal.woff2",
   "./logos/orleoo-logo.png", "./logos/orleoo-icone-192.png", "./logos/favicon-32.png"];

@@ -4196,13 +4196,25 @@ html[data-design="2"][data-theme="dark"] .nav-atouts .nav-soon{background:#4A3E2
 #chat .loo-soon{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:#FFF4D6;color:#5C3F00}
 html[data-design="2"][data-theme="dark"] #chat .loo-soon{background:#4A3E22;color:#FFE3A8}
 @media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) #chat .loo-soon{background:#4A3E22;color:#FFE3A8}}
+
+/* ===== MARQUE : nom « Orleoo » en Fraunces doux, « oo » terracotta ===== */
+svg.wm{display:block;width:auto;overflow:visible}
+.logo svg.wm{height:30px}
+.foot-brand svg.wm{height:30px;margin-bottom:12px}
+svg.wm.maint-logo{height:34px;margin:0 auto 18px}
+@media (max-width:680px){.logo svg.wm,html[data-design="2"] .top .logo svg.wm{height:26px}}
+html[data-theme="dark"] svg.wm{--wm-ink:#F3EEE8;--wm-oo:#E98A64}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) svg.wm{--wm-ink:#F3EEE8;--wm-oo:#E98A64}}
+footer svg.wm,html footer svg.wm{--wm-ink:#F3EEE8;--wm-oo:#EBA488}
+.mod-mode .top svg.wm{--wm-ink:#FFFFFF;--wm-oo:#EBA488}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="wmOrleoo" viewBox="47 -1491 5556 1512"><path fill="var(--wm-ink,#2E3238)" d="M716 -1419Q874 -1419 1002 -1368Q1130 -1316 1222 -1222Q1314 -1127 1363 -997Q1412 -866 1412 -709Q1412 -546 1364 -412Q1316 -278 1227 -181Q1138 -84 1015 -31Q891 21 742 21Q585 21 457 -30Q329 -81 237 -176Q146 -271 96 -404Q47 -536 47 -700Q47 -858 96 -990Q145 -1122 235 -1218Q324 -1314 447 -1367Q569 -1419 716 -1419ZM1074 -554Q1074 -650 1057 -748Q1040 -846 1006 -936Q973 -1026 926 -1097Q878 -1168 817 -1209Q756 -1250 684 -1250Q596 -1250 528 -1201Q461 -1151 423 -1060Q385 -968 385 -841Q385 -746 403 -648Q420 -550 453 -461Q486 -371 534 -301Q582 -230 643 -189Q704 -148 776 -148Q865 -148 932 -197Q999 -246 1037 -338Q1074 -429 1074 -554Z M1835 -487Q1835 -630 1869 -722Q1904 -813 1963 -858Q2021 -902 2094 -902Q2177 -902 2223 -849Q2268 -796 2268 -692Q2268 -599 2233 -555Q2197 -510 2141 -510Q2080 -510 2050 -540Q2020 -569 2020 -622V-657Q2020 -685 2008 -698Q1997 -711 1975 -711Q1946 -711 1923 -688Q1899 -664 1885 -618Q1871 -571 1871 -502ZM1855 -821 1871 -628V-217Q1871 -180 1882 -160Q1893 -141 1920 -136L1982 -127Q2010 -123 2024 -105Q2037 -87 2037 -62Q2037 -34 2019 -17Q2002 0 1968 0H1564Q1532 0 1515 -16Q1497 -33 1497 -62Q1497 -85 1507 -100Q1517 -115 1535 -127L1558 -136Q1575 -145 1582 -160Q1589 -176 1589 -217V-610Q1589 -644 1582 -658Q1574 -672 1556 -680L1524 -684Q1502 -695 1493 -708Q1484 -721 1484 -741Q1484 -764 1498 -781Q1512 -797 1547 -811L1707 -873Q1742 -887 1765 -892Q1788 -898 1803 -898Q1825 -898 1837 -882Q1850 -866 1855 -821Z M2668 -1422V-217Q2668 -176 2675 -160Q2682 -144 2699 -136L2722 -127Q2741 -115 2750 -100Q2760 -85 2760 -62Q2760 -33 2743 -16Q2725 0 2694 0H2360Q2329 0 2312 -16Q2294 -33 2294 -62Q2294 -85 2304 -100Q2313 -115 2332 -127L2355 -136Q2372 -144 2379 -160Q2386 -176 2386 -217V-1202Q2386 -1236 2378 -1251Q2371 -1265 2352 -1272L2321 -1276Q2299 -1288 2290 -1301Q2281 -1314 2281 -1334Q2281 -1356 2295 -1373Q2309 -1389 2344 -1403L2497 -1463Q2539 -1479 2563 -1485Q2586 -1491 2606 -1491Q2637 -1491 2652 -1472Q2668 -1453 2668 -1422Z M3632 -566Q3632 -496 3595 -459Q3558 -421 3490 -421H2982V-527H3287Q3344 -527 3344 -585Q3344 -669 3306 -713Q3269 -758 3212 -758Q3166 -758 3129 -731Q3093 -704 3071 -651Q3050 -598 3050 -519Q3050 -354 3124 -270Q3198 -186 3319 -186Q3390 -186 3448 -217Q3505 -248 3541 -295Q3559 -313 3572 -320Q3585 -326 3596 -326Q3612 -326 3621 -314Q3631 -302 3631 -276Q3627 -199 3579 -132Q3531 -64 3444 -22Q3358 20 3240 20Q3104 20 3004 -37Q2903 -93 2848 -196Q2793 -298 2793 -433Q2793 -567 2846 -673Q2899 -780 3002 -841Q3105 -902 3251 -902Q3368 -902 3453 -858Q3538 -813 3585 -737Q3632 -661 3632 -566Z"/><path fill="var(--wm-oo,#B04E2E)" d="M4156 -902Q4295 -902 4398 -843Q4501 -784 4559 -680Q4617 -576 4617 -439Q4617 -311 4557 -208Q4498 -104 4392 -43Q4286 18 4146 18Q4008 18 3905 -41Q3801 -100 3743 -205Q3685 -309 3685 -445Q3685 -574 3745 -677Q3804 -780 3910 -841Q4016 -902 4156 -902ZM4224 -129Q4271 -139 4299 -183Q4328 -228 4333 -302Q4339 -376 4316 -477Q4293 -584 4256 -649Q4219 -713 4174 -740Q4128 -766 4078 -755Q4031 -745 4003 -701Q3974 -657 3969 -583Q3964 -508 3986 -407Q4010 -301 4046 -236Q4083 -171 4129 -145Q4175 -119 4224 -129Z M5143 -902Q5282 -902 5385 -843Q5488 -784 5546 -680Q5604 -576 5604 -439Q5604 -311 5544 -208Q5485 -104 5379 -43Q5273 18 5133 18Q4995 18 4892 -41Q4788 -100 4730 -205Q4672 -309 4672 -445Q4672 -574 4732 -677Q4791 -780 4897 -841Q5003 -902 5143 -902ZM5211 -129Q5258 -139 5286 -183Q5315 -228 5320 -302Q5326 -376 5303 -477Q5280 -584 5243 -649Q5206 -713 5161 -740Q5115 -766 5065 -755Q5018 -745 4990 -701Q4961 -657 4956 -583Q4951 -508 4973 -407Q4997 -301 5033 -236Q5070 -171 5116 -145Q5162 -119 5211 -129Z"/></symbol></svg>
 <a href="#main" class="skip" id="skipLink">Aller au contenu</a>
 <div class="maint" id="maintScreen" role="dialog" aria-modal="true" aria-labelledby="maintTitle" hidden>
   <div class="maint-card">
-    <img class="maint-logo" src="logos/orleoo-logo.png?v=18" alt="Orleoo" data-logo="bleu" width="480" height="122">
+    <svg class="wm maint-logo" viewBox="0 0 5556 1512" role="img" aria-label="Orleoo"><use href="#wmOrleoo"/></svg>
     <div class="maint-img" id="maintImg" hidden></div>
     <h1 id="maintTitle">On fait une petite pause</h1>
     <p id="maintMsg">Orleoo est en maintenance pour s’améliorer. Merci de ta patience !</p>
@@ -4216,7 +4228,7 @@ html[data-design="2"][data-theme="dark"] #chat .loo-soon{background:#4A3E22;colo
 
 <header class="top">
   <div class="wrap head">
-    <a href="#/" class="logo" aria-label="Orleoo, retour à l’accueil"><img src="logos/orleoo-logo.png?v=18" data-logo="bleu" alt="Orleoo" width="480" height="122"></a>
+    <a href="#/" class="logo" aria-label="Orleoo, retour à l’accueil"><svg class="wm " viewBox="0 0 5556 1512" role="img" aria-label="Orleoo"><use href="#wmOrleoo"/></svg></a>
     <span class="mod-pill mod-only" id="modPill" aria-hidden="true">Console de modération</span>
     <form class="search" id="topSearch" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -4501,7 +4513,7 @@ html[data-design="2"][data-theme="dark"] #chat .loo-soon{background:#4A3E22;colo
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <img src="logos/orleoo-logo.png?v=18" data-logo="bleu" alt="Orleoo" width="480" height="122" loading="lazy">
+        <svg class="wm " viewBox="0 0 5556 1512" role="img" aria-label="Orleoo"><use href="#wmOrleoo"/></svg>
         <p>Tes vêtements ont de l’avenir</p>
       </div>
       <nav aria-label="Orleoo"><h2>Orleoo</h2><ul><li><a href="#/a-propos">À propos d’Orleoo</a></li><li><a href="#/fonctionnement">Fonctionnement</a></li></ul></nav>
