@@ -4467,6 +4467,8 @@ function save(k){return store.set(k,state[k])}
    ========================================================= */
 const $ = id => document.getElementById(id);
 const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+// Adresse d'image sûre : seulement https, blob ou data:image (jamais javascript:)
+const safeUrl = u => {u=String(u??"").trim();return /^(https:\/\/|blob:|data:image\/|\.?\/)/i.test(u)?u:""};
 const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 const fmt = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 const eur = n => fmt.format(n);
@@ -4492,7 +4494,7 @@ function frenchError(err){
 
 /* Vendeurs */
 const USERNAME_RE=/^[A-Za-z0-9._-]{3,20}$/;
-const avatarInner=(name,url)=>url?`<img src="${esc(url)}" alt="" loading="lazy" decoding="async">`:esc((name||"?").trim()[0]?.toUpperCase()||"?");
+const avatarInner=(name,url)=>(url=safeUrl(url))?`<img src="${esc(url)}" alt="" loading="lazy" decoding="async">`:esc((name||"?").trim()[0]?.toUpperCase()||"?");
 function sellerInfo(p){
   if(typeof p==="string")p={seller:p};
   const demo=SELLERS.find(s=>s.name===p.seller&&!p.sellerId);
@@ -4529,8 +4531,8 @@ const SEASON_UI = {printemps:{emoji:"🌸",text:"Des pièces légères et intemp
    ========================================================= */
 function mapListing(r){
   return {id:r.id,name:r.title,description:r.description,category:r.category,brand:r.brand,size:r.size,condition:r.condition,style:r.style||"",
-    price:Number(r.price),photos:r.photos||[],img:(r.photos||[])[0]||"",status:r.status,addedAt:Date.parse(r.created_at),
-    seller:r.profiles?.name||"Membre",sellerId:r.seller_id,sellerSince:r.profiles?.created_at,sellerVacation:!!r.profiles?.vacation,sellerAvatar:r.profiles?.avatar_url||"",likes:0,seasons:ALL_SEASONS,
+    price:Number(r.price),photos:(r.photos||[]).map(safeUrl).filter(Boolean),img:safeUrl((r.photos||[])[0]),status:r.status,addedAt:Date.parse(r.created_at),
+    seller:r.profiles?.name||"Membre",sellerId:r.seller_id,sellerSince:r.profiles?.created_at,sellerVacation:!!r.profiles?.vacation,sellerAvatar:safeUrl(r.profiles?.avatar_url),likes:0,seasons:ALL_SEASONS,
     real:true,mine:!!state.user&&state.user.id===r.seller_id,boostedUntil:r.boosted_until?Date.parse(r.boosted_until):0,pinned:!!r.pinned,staffPick:!!r.staff_pick,lendOn:!!r.lend_on,lendPrice:r.lend_price==null?null:Number(r.lend_price),lendDeposit:r.lend_deposit==null?null:Number(r.lend_deposit),lendDays:(r.lend_days||[]).map(Number)};
 }
 async function loadListings(){
@@ -4565,7 +4567,6 @@ const subs={map:{},mine:null};
 async function loadSubs(){
   subs.map={};subs.mine=null;if(!sb)return;
   try{
-    if(state.user){try{await sb.rpc("settle_subscriptions")}catch(e){}}
     const {data,error}=await sb.from("subscriptions").select("user_id,plan,current_period_end,cancel_at_period_end,boosts_used,demo");
     if(error)return;
     (data||[]).filter(x=>Date.parse(x.current_period_end)>Date.now()).forEach(x=>{subs.map[x.user_id]=x.plan;if(state.user&&x.user_id===state.user.id)subs.mine=x});
@@ -5187,7 +5188,7 @@ function ficheHtml(){
     <button type="button" class="btn btn-outline back-btn" data-team="ficheback">← Retour aux membres</button>
     ${team.conv?convViewHtml():""}
     <div class="fiche-head${ban?" banned":""}">
-      <span class="avatar fiche-av" aria-hidden="true">${p.avatar_url?`<img src="${esc(p.avatar_url)}" alt="">`:esc((p.name||"?")[0].toUpperCase())}</span>
+      <span class="avatar fiche-av" aria-hidden="true">${safeUrl(p.avatar_url)?`<img src="${esc(safeUrl(p.avatar_url))}" alt="">`:esc((p.name||"?")[0].toUpperCase())}</span>
       <div class="fiche-id"><h2>@${esc(p.name)}</h2>
         <p class="small">${ban?`<span class="status danger">Suspendu${ban.jusqu_au?" jusqu’au "+fmtDH(ban.jusqu_au):" définitivement"}</span> `:""}${sub?`<span class="status">Abonné ${esc((PLANS[sub.plan]||{}).name||sub.plan)}</span> `:""}${p.vacation?`<span class="status">En vacances</span> `:""}${risky?`<span class="status danger">${risky} signal${risky>1?"s":""} d’alerte</span>`:`<span class="status">Aucun signal d’alerte</span>`}</p>
         ${ban?`<p class="small">Motif : ${esc(ban.motif)}</p>`:""}</div>
@@ -5535,7 +5536,6 @@ async function loadOrders(){
   orders.mine=[];orders.all=[];orders.loaded=false;
   if(!sb||!state.user||!payOn())return;
   try{
-    try{await sb.rpc("settle_orders")}catch(e){}
     const {data,error}=await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(300);
     if(error){console.warn(error);return}
     orders.all=data||[];
@@ -6164,7 +6164,6 @@ async function loadTrades(){
   trades.list=[];trades.addr=[];trades.loaded=false;
   if(!sb||!state.user||!payOn())return;
   try{
-    try{await sb.rpc("settle_trades")}catch(e){}
     const {data,error}=await sb.from("trades").select("*").order("created_at",{ascending:false}).limit(200);
     if(error){console.warn(error);return}
     trades.list=data||[];
@@ -6648,7 +6647,7 @@ async function renderSellerProfile(id){
   v.innerHTML=`
     <p class="crumbs" style="padding-top:18px"><a href="#/">Accueil</a> › Profil</p>
     <section class="pp">
-      <div class="pp-cover${accent?" accent-"+accent:""}" ${pr.banner_url?`style="background-image:url('${esc(pr.banner_url)}')"`:""}>${me&&state.user.hasBanner?`<label for="bannerInput2" class="pp-cover-edit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> ${pr.banner_url?"Changer la bannière":"Ajouter une bannière"}</label><input id="bannerInput2" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">`:""}</div>
+      <div class="pp-cover${accent?" accent-"+accent:""}" ${safeUrl(pr.banner_url)?`style="background-image:url('${esc(safeUrl(pr.banner_url).replace(/['"()\\\s]/g,encodeURIComponent))}')"`:""}>${me&&state.user.hasBanner?`<label for="bannerInput2" class="pp-cover-edit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> ${pr.banner_url?"Changer la bannière":"Ajouter une bannière"}</label><input id="bannerInput2" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">`:""}</div>
       <div class="pp-body">
         <span class="avatar pp-avatar" aria-hidden="true">${avatarInner(pr.name,pr.avatar_url)}</span>
         <div class="pp-id">
