@@ -4467,6 +4467,13 @@ function save(k){return store.set(k,state[k])}
    ========================================================= */
 const $ = id => document.getElementById(id);
 const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+// Connexion instantanée : au rechargement, on affiche tout de suite le compte mémorisé
+// (photo, pseudo) le temps que Supabase confirme la session. Rien de secret : juste l'affichage.
+var BOOT_KEY="orleoo.me";
+var bootMe=(()=>{try{if(!Object.keys(localStorage).some(k=>/^sb-.*-auth-token$/.test(k)))return null;const m=JSON.parse(localStorage.getItem(BOOT_KEY)||"null");return m&&m.id&&m.name?m:null}catch(e){return null}})();
+var authPending=true;
+function hdrUser(){return state.user||(authPending?bootMe:null)}
+function hdrAdmin(){if(state.user)return state._adminKnown?state.isAdmin:!!(bootMe&&bootMe.admin&&bootMe.id===state.user.id);return !!(authPending&&bootMe&&bootMe.admin)}
 // Adresse d'image sûre : seulement https, blob ou data:image (jamais javascript:)
 const safeUrl = u => {u=String(u??"").trim();return /^(https:\/\/|blob:|data:image\/|\.?\/)/i.test(u)?u:""};
 const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
@@ -4615,11 +4622,12 @@ async function onSession(session,event){
   // Re-vérification du mot de passe (ex. suppression du compte) : même personne, rien à recharger
   if(event==="SIGNED_IN"&&session&&state.user&&session.user.id===state.user.id&&state.reauth)return;
   if(event==="PASSWORD_RECOVERY"){state.recovery=true}
-  if(session){await loadProfile(session);await loadSubs();await syncFavorites();await loadConversations();await loadAdmin();await loadOrders();loadLoans();startRealtime();await applyReferral();loadGrowth().then(()=>{if(location.hash.startsWith("#/compte"))renderView()})}
+  if(session){await loadProfile(session);try{updateCounts();paintMenuBtn()}catch(e){}await loadSubs();await syncFavorites();await loadConversations();await loadAdmin();state._adminKnown=true;await loadOrders();loadLoans();startRealtime();await applyReferral();loadGrowth().then(()=>{if(location.hash.startsWith("#/compte"))renderView()})}
   else {growth.searches=[];growth.hits=[];growth.drops=[];growth.refs=null;growth.stats={};growth.loaded=false}
   if(session){loadBlocks();loadMySizes();checkPush().then(()=>{const sw=$("pushSwitch");if(sw)sw.checked=pushState.on})}else{blocks.list=[];pushState={on:false,checked:false}}
   document.body.classList.toggle("guest",!session);   // messagerie et favoris : seulement une fois connecté
-  if(!session){state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0;loans.list=[];state._loansAsk=false}
+  if(event==="INITIAL_SESSION"||event==="SIGNED_OUT"){authPending=false}
+  if(!session){try{localStorage.removeItem(BOOT_KEY)}catch(e){}state.user=null;state.isAdmin=false;state._adminKnown=false;stopRealtime();chat.convs=[];chat.unread=0;loans.list=[];state._loansAsk=false}
   state.remote.forEach(p=>p.mine=!!state.user&&state.user.id===p.sellerId);
   renderView();
   if(event==="PASSWORD_RECOVERY")location.hash="#/compte";
@@ -8282,12 +8290,14 @@ function updateCounts(){
   $("msgCount").textContent=chat.unread;$("msgCount").classList.toggle("has",chat.unread>0);
   $("messagesBtn").setAttribute("aria-label",`Messages (${chat.unread} non lu${chat.unread>1?"s":""})`);
   $("loginLabel").textContent="Se connecter";$("loginBtn").setAttribute("aria-label","Se connecter");
-  $("loginBtn").hidden=!!state.user;$("acctWrap").hidden=!state.user;
-  if(state.user&&state.isAdmin){$("acctName").textContent="Modération";$("acctAv").innerHTML=MOD_SHIELD;$("acctAv").classList.add("mod-av");$("acctBtn").setAttribute("aria-label","Compte modérateur")}
-  else if(state.user){const n=state.user.name;$("acctName").textContent=n;if($("acctName2"))$("acctName2").textContent="@"+n;$("acctAv").classList.remove("mod-av");
-    $("acctAv").innerHTML=avatarInner(n,state.user.avatar);if($("acctAv2"))$("acctAv2").innerHTML=avatarInner(n,state.user.avatar);
+  const hu=hdrUser();
+  if(state.user&&state._adminKnown){try{localStorage.setItem(BOOT_KEY,JSON.stringify({id:state.user.id,name:state.user.name,avatar:state.user.avatar||"",admin:!!state.isAdmin}))}catch(e){}}
+  $("loginBtn").hidden=!!hu;$("acctWrap").hidden=!hu;
+  if(hu&&hdrAdmin()){$("acctName").textContent="Modération";$("acctAv").innerHTML=MOD_SHIELD;$("acctAv").classList.add("mod-av");$("acctBtn").setAttribute("aria-label","Compte modérateur")}
+  else if(hu){const n=hu.name;$("acctName").textContent=n;if($("acctName2"))$("acctName2").textContent="@"+n;$("acctAv").classList.remove("mod-av");
+    $("acctAv").innerHTML=avatarInner(n,hu.avatar);if($("acctAv2"))$("acctAv2").innerHTML=avatarInner(n,hu.avatar);
     $("acctBtn").setAttribute("aria-label",`Mon compte (@${n})`);
-    {const h=document.querySelector(".acct-menu-head");if(h)h.onclick=()=>{location.hash="#/vendeur/"+state.user.id;setAcctMenu(false)}}}
+    {const h=document.querySelector(".acct-menu-head");if(h)h.onclick=()=>{location.hash="#/vendeur/"+hu.id;setAcctMenu(false)}}}
 }
 function renderView(){
   const [name="",arg]=location.hash.replace(/^#\/?/,"").split("/").map(decodeURIComponent);
@@ -8483,7 +8493,7 @@ document.addEventListener("submit",async e=>{
 
 /* Menu du compte (en-tête) */
 function setAcctMenu(o){const m=$("acctMenu");if(o&&state.user){try{m.innerHTML=`<div class="acct-v3">${menuHtml().replace('id="mmLogout"','id="acctLogout"')}</div>`}catch(e){console.warn(e)}}m.hidden=!o;$("acctBtn").setAttribute("aria-expanded",o)}
-$("acctBtn").addEventListener("click",e=>{e.stopPropagation();setAcctMenu($("acctMenu").hidden)});
+$("acctBtn").addEventListener("click",e=>{e.stopPropagation();if(!state.user)return;setAcctMenu($("acctMenu").hidden)});
 $("acctMenu").addEventListener("click",async e=>{if(e.target.closest("[data-mm-close]")){setAcctMenu(false);return}if(e.target.closest("[data-mm-loo]")){setAcctMenu(false);openChat(true);return}if(e.target.closest("[data-mm-out],#acctLogout")){setAcctMenu(false);await sb.auth.signOut();state.user=null;state.isAdmin=false;stopRealtime();chat.convs=[];chat.unread=0;toast("Tu es déconnecté(e). À bientôt !");location.hash="#/";renderView();return}if(e.target.closest("a"))setAcctMenu(false)});
 document.addEventListener("click",e=>{if(!e.target.closest("#acctWrap"))setAcctMenu(false)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("acctMenu").hidden){setAcctMenu(false);$("acctBtn").focus()}});
@@ -8743,7 +8753,7 @@ function menuHtml(){
 }
 /* Bouton du menu : photo de profil quand on est connecté, « Se connecter » sinon */
 function paintMenuBtn(){
-  const b=$("menuBtn");if(!b)return;const u=state.user;const key=u?"u:"+u.id+":"+(u.avatar||"")+":"+u.name:"g";if(b.dataset.k===key)return;b.dataset.k=key;
+  const b=$("menuBtn");if(!b)return;const u=hdrUser();const key=u?"u:"+u.id+":"+(u.avatar||"")+":"+u.name:"g";if(b.dataset.k===key)return;b.dataset.k=key;
   b.classList.toggle("is-user",!!u);b.classList.toggle("is-guest",!u);
   b.innerHTML=u?`<span class="avatar mb-av" aria-hidden="true">${avatarInner(u.name,u.avatar)}</span><span class="menu-dot" id="menuDot" hidden></span>`
     :`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="mb-l">Se connecter</span>`;
@@ -8755,7 +8765,7 @@ function openMenu(o){
   if(o){mmLast=document.activeElement;$("mmInner").innerHTML=menuHtml();m.hidden=false;bd.hidden=false;requestAnimationFrame(()=>{m.classList.add("open");bd.classList.add("open")});document.body.classList.add("menu-open");b.setAttribute("aria-expanded","true");setTimeout(()=>m.querySelector(".mm-close")?.focus(),60)}
   else{m.classList.remove("open");bd.classList.remove("open");document.body.classList.remove("menu-open");b.setAttribute("aria-expanded","false");setTimeout(()=>{m.hidden=true;bd.hidden=true},250);if(mmLast&&mmLast.focus)mmLast.focus()}
 }
-$("menuBtn").addEventListener("click",()=>{if(!state.user){location.hash="#/compte/login";return}openMenu(!$("mobMenu").classList.contains("open"))});
+$("menuBtn").addEventListener("click",()=>{if(!state.user){if(authPending&&bootMe)return;location.hash="#/compte/login";return}openMenu(!$("mobMenu").classList.contains("open"))});
 $("mmBackdrop").addEventListener("click",()=>openMenu(false));
 $("mobMenu").addEventListener("click",async e=>{
   if(e.target.closest("[data-mm-close]")){openMenu(false);return}
@@ -9213,7 +9223,10 @@ watchImages();renderView();
     if(event==="INITIAL_SESSION")return;            // géré juste en dessous
     setTimeout(()=>onSession(session,event),0);     // ne pas appeler Supabase directement dans ce rappel
   });
-  const [{data:{session}}]=await Promise.all([sb.auth.getSession(),loadListings(),loadSite()]);
+  const listP=Promise.all([loadListings(),loadSite()]);
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){authPending=false;bootMe=null;try{localStorage.removeItem(BOOT_KEY)}catch(e){}try{updateCounts();paintMenuBtn()}catch(e){}}
+  await listP;
   if(qs.has("code")||qs.has("error_description"))history.replaceState(null,"",location.pathname+location.hash);
   await onSession(session,"INITIAL_SESSION");
   setTimeout(looWatch,1500);
