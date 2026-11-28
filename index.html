@@ -4134,6 +4134,64 @@ html[data-design="2"][data-theme="dark"] body .loo-logo .ll-ant{stroke:#B85C3A!i
 }
 html[data-design] body .reboot .reboot-bubble{width:42px!important;height:42px!important}
 html[data-design] body .reboot:hover .loo-logo{transform:translateY(-1px) rotate(-4deg)}
+
+/* ===== MENU V4 : tuiles d'activité, sous-titres, « Bientôt » ===== */
+html[data-design] body :is(#mobMenu,.acct-v3) .m3-row{display:flex!important;align-items:center!important;gap:14px!important;width:100%!important;min-height:58px!important;padding:9px 14px!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:none;color:inherit!important;font:inherit;font-size:.98rem!important;font-weight:700!important;text-align:left;text-decoration:none!important;line-height:1.25}
+html[data-design] body :is(#mobMenu,.acct-v3) .m3-row+.m3-row{border-top:1px solid var(--line,#EFE6DB)!important}
+html[data-design] body :is(#mobMenu,.acct-v3) .m3-row:hover{background:var(--bg,#FBF5EC)}
+html[data-design] body :is(#mobMenu,.acct-v3) .m3-row.on{background:#FDF3EE}
+:is(#mobMenu,.acct-v3) .m3-ic{width:36px;height:36px;flex:none;border-radius:11px;display:grid;place-items:center;background:#F8E9DF;color:#B04E2E}
+:is(#mobMenu,.acct-v3) .m3-ic .icon{width:19px;height:19px;margin:0}
+:is(#mobMenu,.acct-v3) .m3-loo{background:none}
+:is(#mobMenu,.acct-v3) .m3-loo svg{width:32px;height:32px}
+:is(#mobMenu,.acct-v3) .m3-l{flex:1;min-width:0}
+:is(#mobMenu,.acct-v3) .m3-l small{display:block;margin-top:2px;font-size:.8rem;font-weight:500;color:var(--muted,#6B6560)}
+:is(#mobMenu,.acct-v3) .m3-soon{flex:none;padding:3px 9px;border-radius:99px;background:#FFF4D6;color:#7A5300;font-size:.72rem;font-weight:800;letter-spacing:.02em}
+:is(#mobMenu,.acct-v3) .m3-me{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 12px}
+:is(#mobMenu,.acct-v3) .m3-me-link{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-decoration:none;color:inherit;padding:4px 0}
+:is(#mobMenu,.acct-v3) .m3-meid{min-width:0}:is(#mobMenu,.acct-v3) .m3-meid b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:is(#mobMenu,.acct-v3) .m3-gear{width:44px;height:44px;flex:none;border-radius:12px;display:grid;place-items:center;color:var(--muted,#5E636B);text-decoration:none}
+:is(#mobMenu,.acct-v3) .m3-gear:hover{background:var(--bg,#FBF5EC);color:#B04E2E}
+:is(#mobMenu,.acct-v3) .m3-gear .icon{width:22px;height:22px;margin:0}
+:is(#mobMenu,.acct-v3) .m3-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+html[data-design] body :is(#mobMenu,.acct-v3) .m3-tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:14px;border-radius:16px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF);text-decoration:none;color:inherit;min-height:104px;transition:border-color .15s,transform .15s}
+html[data-design] body :is(#mobMenu,.acct-v3) .m3-tile:hover{border-color:#B04E2E}
+html[data-design] body :is(#mobMenu,.acct-v3) .m3-tile.on{border-color:#B04E2E;background:#FDF3EE}
+:is(#mobMenu,.acct-v3) .m3-tic{position:relative;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#F8E9DF;color:#B04E2E;margin-bottom:8px}
+:is(#mobMenu,.acct-v3) .m3-tic .icon{width:20px;height:20px;margin:0}
+:is(#mobMenu,.acct-v3) .m3-tbadge{position:absolute;top:-6px;right:-8px;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#B04E2E;color:#fff;font-size:.7rem;font-weight:800;display:grid;place-items:center;border:2px solid var(--surface,#fff)}
+:is(#mobMenu,.acct-v3) .m3-tile b{font-size:.98rem}
+:is(#mobMenu,.acct-v3) .m3-tile small{font-size:.8rem;color:var(--muted,#6B6560);font-weight:500}
+html[data-design] body :is(#mobMenu,.acct-v3) .m3-out{display:flex;align-items:center;justify-content:center;gap:8px}
+:is(#mobMenu,.acct-v3) .m3-out .icon{width:18px;height:18px}
+.acct-v3 .m3-tiles{grid-template-columns:1fr 1fr}
+html[data-design="2"][data-theme="dark"] :is(#mobMenu,.acct-v3) :is(.m3-ic,.m3-tic){background:#3B3430;color:#EBA488}
+html[data-design="2"][data-theme="dark"] :is(#mobMenu,.acct-v3) .m3-loo{background:none}
+html[data-design="2"][data-theme="dark"] body :is(#mobMenu,.acct-v3) .m3-tile{background:#2F3439;border-color:#49515A}
+html[data-design="2"][data-theme="dark"] body :is(#mobMenu,.acct-v3) .m3-tile:hover,html[data-design="2"][data-theme="dark"] body :is(#mobMenu,.acct-v3) .m3-tile.on{border-color:#E07A55;background:#31363C}
+html[data-design="2"][data-theme="dark"] :is(#mobMenu,.acct-v3) .m3-tbadge{background:#E07A55;color:#1F1A17;border-color:#2F3439}
+html[data-design="2"][data-theme="dark"] :is(#mobMenu,.acct-v3) :is(.m3-l small,.m3-tile small){color:#B4BAC0}
+html[data-design="2"][data-theme="dark"] :is(#mobMenu,.acct-v3) .m3-soon{background:#4A3E22;color:#FFD98A}
+html[data-design="2"][data-theme="dark"] body :is(#mobMenu,.acct-v3) .m3-row+.m3-row{border-color:#3B4148!important}
+html[data-design="2"][data-theme="dark"] body :is(#mobMenu,.acct-v3) .m3-row:hover,html[data-design="2"][data-theme="dark"] body :is(#mobMenu,.acct-v3) .m3-row.on{background:#31363C}
+html[data-design="2"][data-theme="dark"] :is(#mobMenu,.acct-v3) .m3-gear{color:#B4BAC0}
+html[data-design="2"][data-theme="dark"] :is(#mobMenu,.acct-v3) .m3-gear:hover{background:#31363C;color:#EBA488}
+@media (prefers-color-scheme:dark){
+ html[data-design="2"]:not([data-theme="light"]) :is(#mobMenu,.acct-v3) :is(.m3-ic,.m3-tic){background:#3B3430;color:#EBA488}
+ html[data-design="2"]:not([data-theme="light"]) :is(#mobMenu,.acct-v3) .m3-loo{background:none}
+ html[data-design="2"]:not([data-theme="light"]) body :is(#mobMenu,.acct-v3) .m3-tile{background:#2F3439;border-color:#49515A}
+ html[data-design="2"]:not([data-theme="light"]) body :is(#mobMenu,.acct-v3) .m3-tile:hover,html[data-design="2"]:not([data-theme="light"]) body :is(#mobMenu,.acct-v3) .m3-tile.on{border-color:#E07A55;background:#31363C}
+ html[data-design="2"]:not([data-theme="light"]) :is(#mobMenu,.acct-v3) .m3-tbadge{background:#E07A55;color:#1F1A17;border-color:#2F3439}
+ html[data-design="2"]:not([data-theme="light"]) :is(#mobMenu,.acct-v3) :is(.m3-l small,.m3-tile small){color:#B4BAC0}
+ html[data-design="2"]:not([data-theme="light"]) :is(#mobMenu,.acct-v3) .m3-soon{background:#4A3E22;color:#FFD98A}
+ html[data-design="2"]:not([data-theme="light"]) body :is(#mobMenu,.acct-v3) .m3-row+.m3-row{border-color:#3B4148!important}
+ html[data-design="2"]:not([data-theme="light"]) body :is(#mobMenu,.acct-v3) .m3-row:hover,html[data-design="2"]:not([data-theme="light"]) body :is(#mobMenu,.acct-v3) .m3-row.on{background:#31363C}
+ html[data-design="2"]:not([data-theme="light"]) :is(#mobMenu,.acct-v3) .m3-gear{color:#B4BAC0}
+ html[data-design="2"]:not([data-theme="light"]) :is(#mobMenu,.acct-v3) .m3-gear:hover{background:#31363C;color:#EBA488}
+}
+.nav-atouts .nav-soon{margin-left:6px;padding:1px 7px;border-radius:99px;background:#FFF4D6;color:#7A5300;font-size:.68rem;font-weight:800;line-height:1.5}
+html[data-design="2"][data-theme="dark"] .nav-atouts .nav-soon{background:#4A3E22;color:#FFD98A}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .nav-atouts .nav-soon{background:#4A3E22;color:#FFD98A}}
 </style>
 </head>
 <body>
@@ -4355,7 +4413,7 @@ html[data-design] body .reboot:hover .loo-logo{transform:translateY(-1px) rotate
           <p class="error" id="priceError" role="alert"></p>
         </fieldset></div></details>
         <details class="fsec" open data-fsec="cond"><summary>État<span class="fsec-v" id="fsvCond"></span></summary><div class="fsec-body"><fieldset class="filter-group"><legend class="sr-only">État</legend><div class="chips" id="fCondition"></div></fieldset></div></details>
-        <details class="fsec" open data-fsec="lend"><summary>Prêt<span class="fsec-v" id="fsvLend"></span></summary><div class="fsec-body"><fieldset class="filter-group"><legend class="sr-only">Prêt</legend><div class="chips"><label class="chip"><input type="checkbox" name="lend" id="fLend"><span>Disponible au prêt</span></label></div></fieldset></div></details>
+        <details class="fsec" open data-fsec="lend" data-soon-hide="pret"><summary>Prêt<span class="fsec-v" id="fsvLend"></span></summary><div class="fsec-body"><fieldset class="filter-group"><legend class="sr-only">Prêt</legend><div class="chips"><label class="chip"><input type="checkbox" name="lend" id="fLend"><span>Disponible au prêt</span></label></div></fieldset></div></details>
         <details class="fsec" data-fsec="more"><summary>Marque et style<span class="fsec-v" id="fsvMore"></span></summary><div class="fsec-body">
           <div class="filter-group"><label class="filter-label" for="fBrand">Marque ou auteur</label><select class="input" id="fBrand"></select></div>
           <div class="filter-group"><label class="filter-label" for="fStyle">Style</label><select class="input" id="fStyle"></select></div></div></details>
@@ -4739,8 +4797,13 @@ async function syncFavorites(){
   state.favorites=[...new Set([...state.favorites,...remoteIds])];save("favorites");
 }
 document.body.classList.add("guest");
-/* Prêt entre membres : bientôt disponible */
-document.addEventListener("click",e=>{const t=e.target.closest("[data-soon]");if(!t)return;e.preventDefault();e.stopPropagation();toast("Bientôt disponible : le prêt entre membres arrive très vite sur Orleoo.")},true);
+/* Services pas encore ouverts : passer à false le jour de l'ouverture */
+const SOON={echange:true,pret:true};
+document.querySelectorAll("[data-soon-hide]").forEach(el=>{if(SOON[el.dataset.soonHide])el.hidden=true});
+// Petite mention « Bientôt » sur les liens des services pas encore ouverts (barre du haut sur ordi)
+[["#/echanger","echange"],["#/pret","pret"]].forEach(([h,k])=>{if(!SOON[k])return;document.querySelectorAll(`.nav-atouts [data-go="${h}"]`).forEach(b=>{if(b.querySelector(".nav-soon"))return;b.insertAdjacentHTML("beforeend",'<span class="nav-soon">Bientôt</span>');b.title+=" (bientôt disponible)"})});
+const SOON_TXT={echange:"Bientôt disponible : l’échange entre membres arrive très vite sur Orleoo.",pret:"Bientôt disponible : le prêt entre membres arrive très vite sur Orleoo."};
+document.addEventListener("click",e=>{const t=e.target.closest("[data-soon]");if(!t)return;e.preventDefault();e.stopPropagation();toast(SOON_TXT[t.dataset.soon]||SOON_TXT.pret)},true);
 async function onSession(session,event){
   // Re-vérification du mot de passe (ex. suppression du compte) : même personne, rien à recharger
   if(event==="SIGNED_IN"&&session&&state.user&&session.user.id===state.user.id&&state.reauth)return;
@@ -5854,7 +5917,7 @@ async function loadLoans(){
 }
 const loanTodo=()=>state.user?loans.list.filter(o=>o.lender_id===state.user.id&&o.status==="demandee").length:0;
 function loanBlock(p){
-  if(!p.lendOn||p.demo||state.isAdmin)return "";
+  if(SOON.pret||!p.lendOn||p.demo||state.isAdmin)return "";
   const mine=state.user&&loans.list.find(o=>o.listing_id===p.id&&o.borrower_id===state.user.id&&["demandee","acceptee","en_cours"].includes(o.status));
   const info=`<div class="loan-box"><div class="loan-head"><span class="loan-ic">${xSvg("loop")}</span><div><b>Disponible au prêt</b><span class="muted small">${p.lendDays.map(d=>d+" j").join(" · ")}</span></div></div>
     <div class="loan-nums"><div><span>Prêt</span><b>${eur(p.lendPrice)}</b></div><div><span>Caution</span><b>${eur(p.lendDeposit)}</b><small>rendue au retour</small></div></div>`;
@@ -6304,7 +6367,7 @@ async function loadTrades(){
 }
 const purchasesDone=()=>state.user?orders.mine.filter(o=>o.buyer_id===state.user.id&&o.status==="received").length:0;
 function tradeBlock(p){
-  if(!payOn()||p.demo||p.mine||state.isAdmin)return"";
+  if(SOON.echange||!payOn()||p.demo||p.mine||state.isAdmin)return"";
   if(!state.user)return `<p class="trade-lock small"><span aria-hidden="true">⇄</span> <a href="#/compte">Connecte-toi</a> pour proposer un échange.</p>`;
   const n=purchasesDone();
   if(n<TRADE_UNLOCK)return `<div class="trade-lock"><span class="lock-ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div><b>Échange</b><br><span class="small">Débloqué après ${TRADE_UNLOCK} achats confirmés : tu en es à <b>${n}/${TRADE_UNLOCK}</b>.</span><span class="trade-progress" aria-hidden="true"><i style="width:${Math.min(100,n/TRADE_UNLOCK*100)}%"></i></span></div></div>`;
@@ -7261,7 +7324,7 @@ function renderAccount(tab){
   if(payOn()){const mo=orders.mine;tabs.splice(2,tabs.length,["achats",`Mes achats (${mo.filter(o=>o.buyer_id===state.user.id).length})`],["ventes",`Mes ventes (${mo.filter(o=>o.seller_id===state.user.id&&o.status==="paid").length} à envoyer)`],["echanges",`Échanges (${trades.list.filter(t=>["proposed","accepted","problem"].includes(t.status)).length})`],["portemonnaie","Porte-monnaie"]);if(offersOpen()){const n=offerTodo();tabs.splice(4,0,["offres",`Offres${n?` (${n} à traiter)`:""}`])}}
   {const nw=(growth.hits||[]).filter(h=>!h.seen_at).length+latestDrops().filter(d=>!d.seen_at).length+(growth.fhits||[]).filter(h=>!h.seen_at).length;tabs.push(["alertes",`Mes alertes${nw?` (${nw} nouvelle${nw>1?"s":""})`:""}`])}
   if(!loans.loaded&&!state._loansAsk){state._loansAsk=true;loadLoans().then(()=>{if(location.hash.startsWith("#/compte/prets"))renderView()})}
-  tabs.push(["prets",`Mes prêts${loanTodo()?` (${loanTodo()} à traiter)`:""}`]);
+  if(!SOON.pret)tabs.push(["prets",`Mes prêts${loanTodo()?` (${loanTodo()} à traiter)`:""}`]);
   if(state.isAdmin)tabs.push(["moderation",`Modération (${mod.reports.filter(r=>r.status==="nouveau").length})`]);
   let body="";
   if(accountTab==="alertes"){body=alertsHtml()}
@@ -7440,7 +7503,7 @@ function renderSell(editId){
       <div class="field"><label for="tCond">État</label><select class="input" id="tCond">${opt(CONDITIONS,l?.condition,"Choisir…")}</select><span class="error" id="tCondErr"></span></div>
       <div class="field"><label for="tStyle">Style <span class="hint">(facultatif)</span></label><select class="input" id="tStyle">${opt(STYLES,l?.style,"Aucun")}</select></div>
       <div class="field"><label for="tPrice">Prix (€)</label><input class="input" id="tPrice" type="number" inputmode="decimal" min="1" max="10000" step="0.5" value="${l?l.price:""}"><span class="hint" id="priceHint"></span><span class="price-sug" id="priceSug" aria-live="polite"></span><span class="error" id="tPriceErr"></span></div>
-      <fieldset class="lend-set field"><legend class="label">Prêt entre membres <span class="hint">(facultatif)</span></legend>
+      <fieldset class="lend-set field" ${SOON.pret?"hidden":""}><legend class="label">Prêt entre membres <span class="hint">(facultatif)</span></legend>
         <label class="consent lend-on"><input type="checkbox" id="tLendOn" ${l&&l.lendOn?"checked":""}><span class="consent-box" aria-hidden="true"></span><span><b>Proposer aussi cet article au prêt</b><em class="consent-req">Un membre peut te l’emprunter quelques jours contre un petit prix, avec une caution rendue au retour.</em></span></label>
         <div class="lend-fields" id="lendFields" ${l&&l.lendOn?"":"hidden"}>
           <div class="grid-2"><div class="field"><label for="tLendPrice">Prix du prêt (€)</label><input class="input" id="tLendPrice" type="number" inputmode="decimal" min="1" step="0.5" value="${l&&l.lendPrice!=null?l.lendPrice:""}" placeholder="Ex. : 5"><span class="hint">Au moins 1 €, au plus le prix de l’article.</span><span class="error" id="tLendPriceErr"></span></div>
@@ -8291,9 +8354,9 @@ function xPage(o){
   <nav class="x-more" aria-label="Les autres façons d’utiliser Orleoo">${[["#/echanger","swap","Échanger"],["#/main-propre","shield","Main propre"],["#/pret","loop","Prêt"],["#/aide","chat","Centre d’aide"]].filter(x=>x[0]!==o.self).map(([h,ic,l])=>`<a href="${h}">${xSvg(ic)}<span>${l}</span></a>`).join("")}</nav></div>`;
 }
 function pageEchanger(){
-  return xPage({self:"#/echanger",crumb:"Échanger",ic:"swap",facts:[["check","Ouvert à tous les membres"],["euro","Complément jusqu’à 500 €"],["box","Colis avec suivi obligatoire"],["clock","48 h pour vérifier"]],kicker:"Exclusif Orleoo",title:"Échange tes articles avec d’autres membres",
+  return xPage({soon:SOON.echange,self:"#/echanger",crumb:"Échanger",ic:"swap",facts:[["check","Ouvert à tous les membres"],["euro","Complément jusqu’à 500 €"],["box","Colis avec suivi obligatoire"],["clock","48 h pour vérifier"]],kicker:"Exclusif Orleoo",title:"Échange tes articles avec d’autres membres",
     lead:"Ton pull contre sa veste, ton roman contre sa BD. Sur Orleoo, tu peux proposer un de tes articles contre celui d’un autre membre, avec un peu d’argent en plus si les deux n’ont pas la même valeur.",
-    note:CONFIG.vitrine?"Les échanges démarrent avec l’ouverture des achats. Tu peux déjà mettre en ligne les articles que tu voudrais échanger.":"",
+    note:SOON.echange?"<b>Bientôt disponible.</b> L’échange entre membres arrive très vite. En attendant, tu peux déjà mettre en ligne les articles que tu voudrais échanger.":CONFIG.vitrine?"Les échanges démarrent avec l’ouverture des achats. Tu peux déjà mettre en ligne les articles que tu voudrais échanger.":"",
     steps:[["heart","Choisis un article","Ouvre l’annonce qui te plaît et clique sur « ⇄ Proposer un échange »."],
       ["swap","Propose le tien","Choisis un de tes articles en ligne et, si besoin, un complément d’argent : tu l’ajoutes ou tu le demandes (500 € maximum)."],
       ["chat","Négociez","L’autre membre accepte, refuse ou propose un autre montant. Vous pouvez faire des allers-retours jusqu’à être d’accord."],
@@ -8304,7 +8367,7 @@ function pageEchanger(){
       ["pin","Adresse protégée","Ton adresse d’envoi n’est visible par l’autre membre que s’il accepte l’échange."],
       ["euro","Des frais simples","Chacun des deux membres paie les frais du paiement protégé ("+FEE_TXT()+", calculés sur le prix de l’article demandé)."]],
     faq:[["Qui peut échanger ?","Tous les membres, dès l’inscription."],["Je peux échanger un livre contre un vêtement ?","Oui : tous les articles en ligne peuvent être échangés, vêtements comme livres."],["Où suivre mes échanges ?","Dans Mon compte › Échanges : propositions reçues, envoyées, colis et validation."]],
-    ctaTitle:"Prêt(e) à échanger ?",ctaText:"Trouve l’article qui te plaît, ou mets d’abord en ligne celui que tu veux échanger.",cta:[["Trouver un article","#/catalogue"],["Mettre un article en ligne","#/vendre"]]});
+    ctaTitle:SOON.echange?"En attendant l’échange":"Prêt(e) à échanger ?",ctaText:SOON.echange?"Découvre les articles en ligne, ou mets en ligne ceux que tu aimerais échanger plus tard.":"Trouve l’article qui te plaît, ou mets d’abord en ligne celui que tu veux échanger.",cta:[["Trouver un article","#/catalogue"],["Mettre un article en ligne","#/vendre"]]});
 }
 function pageMainPropre(){
   return xPage({self:"#/main-propre",crumb:"Main propre",ic:"shield",facts:[["lock","Argent bloqué jusqu’au code"],["shield","Code visible par toi seul"],["clock","Rendez-vous sous "+FREE_PERKS.handoff+" jours"],["euro","Aucun paiement en espèces"]],kicker:"Exclusif Orleoo",title:"La remise en main propre, sans espèces ni risque",
@@ -8324,9 +8387,9 @@ function pageMainPropre(){
 }
 function pagePret(){
   const pay=payOn()&&!CONFIG.vitrine;
-  return xPage({self:"#/pret",crumb:"Prêt",ic:"loop",facts:[["clock","3, 7, 14 ou 30 jours"],["euro","Un petit prix fixé par le prêteur"],["lock","Caution rendue au retour"],["box","Main propre ou colis"]],kicker:"Exclusif Orleoo",title:"Le prêt entre membres",
+  return xPage({soon:SOON.pret,self:"#/pret",crumb:"Prêt",ic:"loop",facts:[["clock","3, 7, 14 ou 30 jours"],["euro","Un petit prix fixé par le prêteur"],["lock","Caution rendue au retour"],["box","Main propre ou colis"]],kicker:"Exclusif Orleoo",title:"Le prêt entre membres",
     lead:"Une tenue pour un mariage, un livre qu’on lit une fois, un sac pour une soirée : beaucoup de choses servent peu. Prête les tiennes à d’autres membres contre un petit prix, et emprunte les leurs au lieu d’acheter.",
-    note:pay?"":"Tu peux déjà proposer tes articles au prêt et envoyer ou accepter des demandes. Le paiement du prêt et de la caution se fera sur Orleoo dès l’ouverture des paiements.",
+    note:SOON.pret?"<b>Bientôt disponible.</b> Le prêt entre membres arrive très vite. Voici déjà comment il fonctionnera.":pay?"":"Tu peux déjà proposer tes articles au prêt et envoyer ou accepter des demandes. Le paiement du prêt et de la caution se fera sur Orleoo dès l’ouverture des paiements.",
     steps:[["shirt","Le prêteur propose","Sur son annonce, il coche « Proposer aussi au prêt », fixe le prix du prêt, la caution et les durées possibles."],
       ["heart","Tu fais une demande","Sur l’article, clique sur « Demander à l’emprunter » : choisis la durée et la remise (main propre ou colis)."],
       ["check","Il accepte","Tu paies le prix du prêt et la caution sur Orleoo. La caution reste bloquée pendant tout le prêt."],
@@ -8339,7 +8402,7 @@ function pagePret(){
       ["Comment trouver des articles à emprunter ?","Dans le catalogue, ouvre les filtres et coche « Disponible au prêt ». Sur un article empruntable, un encadré « Disponible au prêt » indique le prix, la caution et les durées."],
       ["Où suivre mes prêts ?","Dans Mon compte › Mes prêts : les demandes reçues (à accepter ou refuser) et celles que tu as envoyées."],
       ["Un article prêté peut-il être vendu ?","Oui, l’annonce reste en vente. Si l’article est vendu ou retiré, les demandes de prêt pas encore commencées sont annulées."]],
-    ctaTitle:"Prêt(e) à prêter ?",ctaText:"Mets un article en ligne en cochant « Proposer aussi au prêt », ou trouve ce que tu veux emprunter.",cta:[["Voir les articles à emprunter","#/catalogue?pret"],["Mettre un article en ligne","#/vendre"]]});
+    ctaTitle:SOON.pret?"En attendant le prêt":"Prêt(e) à prêter ?",ctaText:SOON.pret?"Découvre les articles en ligne, ou mets en ligne ceux que tu aimerais prêter plus tard.":"Mets un article en ligne en cochant « Proposer aussi au prêt », ou trouve ce que tu veux emprunter.",cta:SOON.pret?[["Voir les articles","#/catalogue"],["Mettre un article en ligne","#/vendre"]]:[["Voir les articles à emprunter","#/catalogue?pret"],["Mettre un article en ligne","#/vendre"]]});
 }
 const PAGES={
   "echanger":()=>pageEchanger(),
@@ -8859,25 +8922,39 @@ function menuHtml(){
   const nMsg=typeof chat!=="undefined"?chat.unread||0:0,nFav=u?state.favorites.length:0,nCart=state.cart.length;
   const nAl=u?((growth.hits||[]).filter(h=>!h.seen_at).length+(growth.drops||[]).filter(d=>!d.seen_at).length+(growth.fhits||[]).filter(h=>!h.seen_at).length):0;
   let nLoan=0,nOff=0;try{nLoan=loanTodo()}catch(_){}try{nOff=offerTodo()}catch(_){}
+  const nAds=u?state.remote.filter(p=>p.mine&&p.status!=="sold").length:0;
   const on=h=>cur===h||(h!=="#/"&&cur.startsWith(h+"/"));
-  const row=(href,ic,label,badge,attrs="")=>`<a class="m3-row${on(href)?" on":""}" href="${href}" ${attrs}${on(href)?' aria-current="page"':""}>${mIc(ic)}<span class="m3-l">${label}</span>${badge?`<span class="m3-badge">${badge}</span>`:""}</a>`;
-  const btnRow=(attr,ic,label)=>`<button type="button" class="m3-row" ${attr}>${ic}<span class="m3-l">${label}</span></button>`;
-  const group=(t,rows)=>`<section class="m3-group"><h3>${t}</h3><div class="m3-card">${rows}</div></section>`;
-  const looIc=`<span class="m3-loo">${document.querySelector(".reboot-bubble")?.innerHTML||""}</span>`;
-  const theme=`<div class="m3-theme" role="radiogroup" aria-label="Apparence">${[["auto","Auto"],["light","Clair"],["dark","Sombre"]].map(([v,l])=>`<label><input type="radio" name="themeMode" value="${v}" ${themeMode()===v?"checked":""}><span>${l}</span></label>`).join("")}</div>`;
-  const head=u?`<a class="m3-me" href="${mod?"#/compte/moderation":"#/vendeur/"+u.id}"><span class="avatar m3-av" aria-hidden="true">${avatarInner(u.name,u.avatar)}</span><span class="m3-meid"><b>@${esc(u.name)}</b><small>${mod?"Compte de l’équipe Orleoo":"Voir mon profil public"}</small></span></a>`
+  const cur_=h=>on(h)?' aria-current="page"':"";
+  const badge=n=>n?`<span class="m3-badge">${n>99?"99+":n}</span>`:"";
+  // ligne de liste : icône, libellé, petit texte, badge ou « Bientôt »
+  const row=(href,ic,label,sub="",extra="",attrs="")=>`<a class="m3-row${on(href)?" on":""}" href="${href}" ${attrs}${cur_(href)}><span class="m3-ic">${mIc(ic)}</span><span class="m3-l">${label}${sub?`<small>${sub}</small>`:""}</span>${extra}</a>`;
+  const soonRow=(href,ic,label,sub)=>row(href,ic,label,sub,`<span class="m3-soon">Bientôt</span>`);
+  // tuile d'activité
+  const tile=(href,ic,label,info,n)=>`<a class="m3-tile${on(href)?" on":""}" href="${href}"${cur_(href)}><span class="m3-tic">${mIc(ic)}${n?`<span class="m3-tbadge" aria-hidden="true">${n>99?"99+":n}</span>`:""}</span><b>${label}</b><small>${n?`${n} ${info[1]}`:info[0]}</small>${n?`<span class="sr-only">, ${n} ${info[1]}</span>`:""}</a>`;
+  const group=(t,inner,cls="m3-card")=>`<section class="m3-group"><h3>${t}</h3><div class="${cls}">${inner}</div></section>`;
+  const looIc=`<span class="m3-ic m3-loo">${document.querySelector("#rebootBtn .reboot-bubble")?.innerHTML||""}</span>`;
+  const head=u?`<div class="m3-me"><a class="m3-me-link" href="${mod?"#/compte/moderation":"#/vendeur/"+u.id}"><span class="avatar m3-av" aria-hidden="true">${avatarInner(u.name,u.avatar)}</span><span class="m3-meid"><b>@${esc(u.name)}</b><small>${mod?"Compte de l’équipe Orleoo":"Voir mon profil public"}</small></span></a>${mod?"":`<a class="m3-gear" href="#/compte/profil" aria-label="Profil et paramètres" title="Profil et paramètres">${mIc("gear")}</a>`}</div>`
     :`<div class="m3-login"><b>Connecte-toi à Orleoo</b><small>Pour vendre, écrire aux membres, garder tes favoris et suivre tes commandes.</small><a class="btn btn-primary" href="#/compte/login">Se connecter</a><a class="btn btn-outline" href="#/compte">Créer un compte gratuit</a></div>`;
+  const activity=u&&!mod?group("Mon activité",
+      tile("#/messages","msg","Messages",["Tes discussions","non lu"+(nMsg>1?"s":"")],nMsg)
+     +tile("#/favoris","heart","Favoris",["Articles gardés","article"+(nFav>1?"s":"")],nFav)
+     +tile("#/compte/annonces","list","Mes annonces",["Gérer mes ventes","en ligne"],nAds)
+     +tile("#/compte/alertes","bell","Alertes",["Recherches et suivis","nouveauté"+(nAl>1?"s":"")],nAl)
+     +(offersOpen()?tile("#/compte/offres","tag","Offres",["Prix proposés","à traiter"],nOff):"")
+     +(payOn()?tile("#/panier","bag","Panier",["Prêt à payer","article"+(nCart>1?"s":"")],nCart):"")
+     +(!SOON.pret?tile("#/compte/prets","loop","Prêts",["Prêter, emprunter","à traiter"],nLoan):""),"m3-tiles"):"";
   return `<div class="m3-top"><span class="m3-title">${u?"Mon compte":"Menu"}</span><button type="button" class="m2-close" data-mm-close aria-label="Fermer le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   ${head}
   ${mod?"":`<a class="btn btn-primary m3-sell" href="#/vendre">${mIc("plus")} Vendre un article</a>`}
-  ${u&&!mod?group("Mon activité",row("#/messages","msg","Messages",nMsg)+row("#/favoris","heart","Favoris",nFav)+row("#/compte/annonces","list","Mes annonces")+(payOn()?row("#/panier","bag","Panier",nCart):"")+(offersOpen()?row("#/compte/offres","tag","Offres",nOff):"")+row("#/compte/prets","loop","Prêts",nLoan)+row("#/compte/alertes","bell","Alertes et vendeurs suivis",nAl)):""}
-  ${mod?group("Modération",row("#/compte/moderation","mod","Console de modération")):""}
-  ${mod?"":group("Explorer",row("#/","home","Accueil")+row("#/catalogue","search","Tous les articles","",'data-new="1"')+row("#/univers/mode","shirt","Mode")+row("#/univers/livres","book","Livres"))}
-  ${group("Services Orleoo",row("#/echanger","swap","Échanger")+row("#/main-propre","shield","Main propre")+row("#/pret","loop","Prêt entre membres")+(mod?"":row("#/abonnements","crown","Abonnements")))}
-  ${group("Aide et réglages",btnRow("data-mm-loo",looIc,"Poser une question à Loo")+row("#/aide","help","Centre d’aide")+(u&&!mod?row("#/compte/profil","gear","Profil et paramètres"):"")+`<div class="m3-row m3-themerow"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg><span class="m3-l">Apparence</span>${theme}</div>`)}
-  ${u?`<button type="button" class="m3-out" data-mm-out id="mmLogout">Se déconnecter</button>`:""}
+  ${activity}
+  ${mod?group("Modération",row("#/compte/moderation","mod","Console de modération","Signalements, membres, annonces")):""}
+  ${mod?"":group("Découvrir",row("#/catalogue","search","Tous les articles","Vêtements et livres","",'data-new="1"')+row("#/univers/mode","shirt","Mode","Femme, homme, enfant")+row("#/univers/livres","book","Livres","Romans, BD, jeunesse…"))}
+  ${group("Services Orleoo",row("#/main-propre","shield","Main propre","Voir l’article avant de payer")+(SOON.echange?soonRow("#/echanger","swap","Échanger","Ton article contre le sien"):row("#/echanger","swap","Échanger","Ton article contre le sien"))+(SOON.pret?soonRow("#/pret","loop","Prêt entre membres","Prêter et emprunter"):row("#/pret","loop","Prêt entre membres","Prêter et emprunter")))}
+  ${group("Aide et compte",(u&&!mod?row("#/compte/profil","gear","Paramètres","Profil, apparence, abonnement, notifications"):"")+`<button type="button" class="m3-row" data-mm-loo>${looIc}<span class="m3-l">Poser une question à Loo<small>Réponse immédiate</small></span></button>`+row("#/aide","help","Centre d’aide","Questions fréquentes"))}
+  ${u?`<button type="button" class="m3-out" data-mm-out id="mmLogout">${mIc("out")} Se déconnecter</button>`:""}
   <p class="m2-foot"><a href="#/a-propos">À propos</a><a href="#/conditions">Conditions</a><a href="#/confidentialite">Confidentialité</a><a href="#/mentions-legales">Mentions légales</a></p>`;
 }
+
 /* Bouton du menu : photo de profil quand on est connecté, « Se connecter » sinon */
 function paintMenuBtn(){
   const b=$("menuBtn");if(!b)return;const u=hdrUser();const key=u?"u:"+u.id+":"+(u.avatar||"")+":"+u.name:"g";if(b.dataset.k===key)return;b.dataset.k=key;
