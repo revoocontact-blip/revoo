@@ -8422,6 +8422,8 @@ function updateCounts(){
     $("acctBtn").setAttribute("aria-label",`Mon compte (@${n})`);
     {const h=document.querySelector(".acct-menu-head");if(h)h.onclick=()=>{location.hash="#/vendeur/"+hu.id;setAcctMenu(false)}}}
 }
+// Pages d'information qu'un compte modération peut consulter (règles, aide, mentions)
+const MOD_INFO_PAGES=["aide","charte","securite","fonctionnement","echanger","main-propre","pret","a-propos","conditions","confidentialite","mentions-legales"];
 function renderView(){
   const [name="",arg]=location.hash.replace(/^#\/?/,"").split("/").map(decodeURIComponent);
   if(name!=="compte"&&name!=="desinscription")state.returnTo=location.hash||"#/";   // page où revenir après connexion
@@ -8434,7 +8436,7 @@ function renderView(){
   const isMod=!!(state.user&&state.isAdmin);
   document.body.classList.toggle("mod-mode",isMod);
   const mp=$("modPill");if(mp)mp.textContent=state.role==="fondateur"?"Espace fondateur":"Console de modération";
-  if(isMod&&!["compte","article","vendeur"].includes(name)){if(["vendre","panier","paiement","favoris","messages"].includes(name))toast("Ce compte est réservé à la modération.");location.replace("#/compte/moderation");return}
+  if(isMod&&!["compte","article","vendeur",...MOD_INFO_PAGES].includes(name)){if(["vendre","panier","paiement","favoris","messages"].includes(name))toast("Ce compte est réservé à la modération.");location.replace("#/compte/moderation");return}
   if(isMod&&name==="compte"&&arg!=="moderation"&&!(arg||"").startsWith("mod-")){location.replace("#/compte/moderation");return}
   if(!state.user&&GATED_ROUTES[name]){view="page";$("pageContent").innerHTML=gatePage(GATED_ROUTES[name])}
   else if(name==="catalogue"){view="catalogue";renderCatalogue()}
@@ -8870,7 +8872,7 @@ function menuHtml(){
   ${mod?"":`<a class="btn btn-primary m3-sell" href="#/vendre">${mIc("plus")} Vendre un article</a>`}
   ${u&&!mod?group("Mon activité",row("#/messages","msg","Messages",nMsg)+row("#/favoris","heart","Favoris",nFav)+row("#/compte/annonces","list","Mes annonces")+(payOn()?row("#/panier","bag","Panier",nCart):"")+(offersOpen()?row("#/compte/offres","tag","Offres",nOff):"")+row("#/compte/prets","loop","Prêts",nLoan)+row("#/compte/alertes","bell","Alertes et vendeurs suivis",nAl)):""}
   ${mod?group("Modération",row("#/compte/moderation","mod","Console de modération")):""}
-  ${group("Explorer",row("#/","home","Accueil")+row("#/catalogue","search","Tous les articles","",'data-new="1"')+row("#/univers/mode","shirt","Mode")+row("#/univers/livres","book","Livres"))}
+  ${mod?"":group("Explorer",row("#/","home","Accueil")+row("#/catalogue","search","Tous les articles","",'data-new="1"')+row("#/univers/mode","shirt","Mode")+row("#/univers/livres","book","Livres"))}
   ${group("Services Orleoo",row("#/echanger","swap","Échanger")+row("#/main-propre","shield","Main propre")+row("#/pret","loop","Prêt entre membres")+(mod?"":row("#/abonnements","crown","Abonnements")))}
   ${group("Aide et réglages",btnRow("data-mm-loo",looIc,"Poser une question à Loo")+row("#/aide","help","Centre d’aide")+(u&&!mod?row("#/compte/profil","gear","Profil et paramètres"):"")+`<div class="m3-row m3-themerow"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg><span class="m3-l">Apparence</span>${theme}</div>`)}
   ${u?`<button type="button" class="m3-out" data-mm-out id="mmLogout">Se déconnecter</button>`:""}
