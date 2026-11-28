@@ -4013,6 +4013,74 @@ html[data-design="2"][data-theme="dark"] #activeFilters button{background:#3B302
 
 /* ordinateur : la ligne Femme · Homme · Enfant… fait doublon avec la barre de filtres → retirée */
 @media (min-width:681px){html[data-design="2"] .top .subnav .nav-cats{display:none!important}}
+
+/* ===== LOO V3 : logo robot + discussion pro ===== */
+.loo-logo .ll-head{fill:#B04E2E}
+.loo-logo .ll-ear{fill:#8E3D22}
+.loo-logo .ll-ant{stroke:#8E3D22;stroke-width:2.6;stroke-linecap:round;fill:none}
+.loo-logo .ll-spark{fill:#EBA488}
+.loo-logo .ll-face{fill:#FBF5EC}
+.loo-logo .ll-eye{fill:#2E3238}
+.loo-logo .ll-eyes{transform-origin:24px 25.5px;animation:llBlink 5s infinite}
+@keyframes llBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
+@media (prefers-reduced-motion:reduce){.loo-logo .ll-eyes{animation:none}}
+html[data-design="2"][data-theme="dark"] .loo-logo .ll-head{fill:#E07A55}
+html[data-design="2"][data-theme="dark"] .loo-logo .ll-ear,html[data-design="2"][data-theme="dark"] .loo-logo .ll-ant{fill:#B85C3A;stroke:#B85C3A}
+html[data-design="2"][data-theme="dark"] .loo-logo .ll-ant{fill:none}
+html[data-design="2"][data-theme="dark"] .loo-logo .ll-face{fill:#23272B}
+html[data-design="2"][data-theme="dark"] .loo-logo .ll-eye{fill:#F2C4AE}
+@media (prefers-color-scheme:dark){
+ html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-head{fill:#E07A55}
+ html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-ear,html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-ant{fill:#B85C3A;stroke:#B85C3A}
+ html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-ant{fill:none}
+ html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-face{fill:#23272B}
+ html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-eye{fill:#F2C4AE}
+}
+#chat{--lc-bg:#FFFFFF;--lc-log:#FAF6F1;--lc-ink:#2E3238;--lc-mute:#6B6560;--lc-line:#ECE3D8;--lc-bot:#FFFFFF;--lc-user:#B04E2E;--lc-on-user:#FFFFFF;--lc-acc:#B04E2E;--lc-acc-soft:#F8E9DF;--lc-ok:#2E8B5E}
+html[data-design="2"][data-theme="dark"] #chat{--lc-bg:#2A2E33;--lc-log:#23272B;--lc-ink:#ECEFF1;--lc-mute:#B4BAC0;--lc-line:#3B4148;--lc-bot:#31363C;--lc-user:#E07A55;--lc-on-user:#1E2124;--lc-acc:#EBA488;--lc-acc-soft:#3B3430;--lc-ok:#5CC28E}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) #chat{--lc-bg:#2A2E33;--lc-log:#23272B;--lc-ink:#ECEFF1;--lc-mute:#B4BAC0;--lc-line:#3B4148;--lc-bot:#31363C;--lc-user:#E07A55;--lc-on-user:#1E2124;--lc-acc:#EBA488;--lc-acc-soft:#3B3430;--lc-ok:#5CC28E}}
+html[data-design] body #chat{background:var(--lc-bg)!important;border-color:var(--lc-line)!important;color:var(--lc-ink)}
+@media (min-width:681px){html[data-design] body #chat{width:400px!important;height:min(620px,calc(100vh - 120px))!important;border-radius:22px!important;box-shadow:0 28px 70px rgba(40,25,15,.24),0 2px 8px rgba(40,25,15,.08)!important}}
+html[data-design] body #chat .chat-head{background:var(--lc-bg)!important;color:var(--lc-ink)!important;border-bottom:1px solid var(--lc-line)!important;padding:14px 12px 14px 16px!important;gap:12px}
+html[data-design] body #chat .chat-head .reboot-bubble{width:42px!important;height:42px!important;background:none!important;position:relative;flex:none}
+html[data-design] body #chat .lc-id{flex:1;min-width:0;line-height:1.25}
+html[data-design] body #chat .lc-id b{font-size:16px;font-weight:800;letter-spacing:-.01em}
+html[data-design] body #chat .lc-id small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--lc-mute)!important;opacity:1!important;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#chat .lc-dot{width:8px;height:8px;border-radius:50%;background:var(--lc-ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--lc-ok) 22%,transparent);flex:none}
+html[data-design] body #chat .chat-head .lc-ic{width:38px!important;height:38px!important;border-radius:12px!important;display:grid;place-items:center;color:var(--lc-mute)!important;background:transparent!important;border:0;font-size:0;flex:none;transition:background .15s,color .15s}
+html[data-design] body #chat .chat-head .lc-ic:hover{background:var(--lc-acc-soft)!important;color:var(--lc-ink)!important}
+#chat .lc-ic svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+html[data-design] body #chat .chat-log{background:var(--lc-log)!important;padding:18px 14px 10px!important;gap:6px!important;scroll-behavior:smooth}
+#chat .lc-row{display:flex;align-items:flex-end;gap:8px;animation:lcIn .22s ease-out both}
+#chat .lc-row.user{justify-content:flex-end;margin-top:8px}
+#chat .lc-row.bot{margin-top:8px}#chat .lc-row.bot.cont{margin-top:2px}
+#chat .lc-row:first-child{margin-top:0}
+#chat .lc-mav{width:28px;height:28px;flex:none;display:block}
+#chat .lc-mav .loo-logo .ll-eyes{animation:none}
+#chat .lc-row.cont .lc-mav{visibility:hidden}
+@keyframes lcIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#chat .lc-row{animation:none}}
+html[data-design] body #chat .msg{max-width:84%;font-size:14.5px;line-height:1.5;padding:11px 14px;border-radius:18px!important}
+html[data-design] body #chat .msg.bot{background:var(--lc-bot)!important;border:1px solid var(--lc-line)!important;color:var(--lc-ink);border-bottom-left-radius:6px!important;box-shadow:0 1px 2px rgba(40,25,15,.04)}
+html[data-design] body #chat .msg.user{background:var(--lc-user)!important;color:var(--lc-on-user)!important;border-bottom-right-radius:6px!important;max-width:78%}
+html[data-design] body #chat .msg .pill,html[data-design] body #chat .chat-quick .pill{background:var(--lc-bg)!important;color:var(--lc-ink)!important;border:1px solid var(--lc-line)!important;border-radius:999px!important;font-weight:600;font-size:13px;min-height:34px;padding:6px 13px;transition:border-color .15s,background .15s,color .15s}
+html[data-design] body #chat .msg .pill:hover,html[data-design] body #chat .chat-quick .pill:hover{border-color:var(--lc-acc)!important;background:var(--lc-acc-soft)!important}
+html[data-design] body #chat .msg .reboot-next{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+html[data-design] body #chat .msg .reboot-next .pill{margin:0}
+html[data-design] body #chat .chat-quick{background:var(--lc-log)!important;border-top:0!important;padding:6px 14px 10px!important;gap:6px!important}
+html[data-design] body #chat .chat-input{background:var(--lc-bg)!important;border-top:1px solid var(--lc-line)!important;padding:12px 14px 4px!important;display:block}
+#chat .lc-field{display:flex;align-items:center;gap:6px;background:var(--lc-log);border:1.5px solid var(--lc-line);border-radius:999px;padding:4px 4px 4px 16px;transition:border-color .15s,box-shadow .15s}
+#chat .lc-field:focus-within{border-color:var(--lc-acc);box-shadow:0 0 0 4px var(--lc-acc-soft)}
+html[data-design] body #chat .lc-field input{flex:1;min-width:0;border:0!important;background:transparent!important;color:var(--lc-ink)!important;min-height:40px;padding:0!important;font-size:15px;outline:0;box-shadow:none!important;border-radius:0!important}
+html[data-design] body #chat .lc-field input::placeholder{color:var(--lc-mute);opacity:1}
+#chat .lc-send{width:40px;height:40px;border-radius:50%;border:0;background:var(--lc-user);color:var(--lc-on-user);display:grid;place-items:center;flex:none;cursor:pointer;transition:transform .15s,filter .15s}
+#chat .lc-send:hover{filter:brightness(1.08)}#chat .lc-send:active{transform:scale(.94)}
+#chat .lc-send svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+#chat .lc-note{margin:0;padding:6px 16px 12px;font-size:11.5px;color:var(--lc-mute);text-align:center;background:var(--lc-bg)}
+#chat .lc-note a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+@media (max-width:680px){#chat .lc-note{padding-bottom:calc(12px + env(safe-area-inset-bottom))}html[data-design] body #chat .chat-input{padding-bottom:4px!important}}
+/* bouton d'ouverture */
+html[data-design] body .reboot .reboot-bubble{width:40px!important;height:40px!important}
 </style>
 </head>
 <body>
@@ -4333,9 +4401,10 @@ html[data-design="2"][data-theme="dark"] #activeFilters button{background:#3B302
 <!-- ================= LOO ================= -->
 <section class="chat" id="chat" role="dialog" aria-modal="false" aria-labelledby="chatTitle">
   <div class="chat-head">
-    <span class="reboot-bubble"><svg class="loo-logo" viewBox="0 0 48 48" aria-hidden="true"><path class="ll-bubble" d="M24 4c11 0 20 7.6 20 17.5S35 39 24 39c-1.9 0-3.7-.2-5.4-.7L10 43.5c-.9.5-1.9-.3-1.6-1.3l2-6.6C6.7 32.4 4 27.2 4 21.5 4 11.6 13 4 24 4Z"/><circle class="ll-ring" cx="19.5" cy="21" r="6.2"/><circle class="ll-ring" cx="28.5" cy="21" r="6.2"/><path class="ll-spark" d="M37.5 8.5l1 2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1z"/></svg></span>
-    <div><b id="chatTitle">Loo</b><small>Assistant Orleoo · réponses automatiques</small></div>
-    <button type="button" id="closeChat" aria-label="Fermer Loo">×</button>
+    <span class="reboot-bubble lc-av"><svg class="loo-logo" viewBox="0 0 48 48" aria-hidden="true"><path class="ll-ant" d="M24 10.5V6"/><circle class="ll-spark" cx="24" cy="4.6" r="2.9"/><rect class="ll-ear" x="2.2" y="21" width="5" height="11" rx="2.5"/><rect class="ll-ear" x="40.8" y="21" width="5" height="11" rx="2.5"/><rect class="ll-head" x="5.5" y="10" width="37" height="33" rx="13"/><rect class="ll-face" x="10.5" y="16" width="27" height="19" rx="9.5"/><g class="ll-eyes"><rect class="ll-eye" x="16" y="20.5" width="5" height="10" rx="2.5"/><rect class="ll-eye" x="27" y="20.5" width="5" height="10" rx="2.5"/></g></svg></span>
+    <div class="lc-id"><b id="chatTitle">Loo</b><small><span class="lc-dot" aria-hidden="true"></span>Assistant Orleoo · en ligne</small></div>
+    <button type="button" id="chatReset" class="lc-ic" aria-label="Nouvelle conversation" title="Nouvelle conversation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+    <button type="button" id="closeChat" class="lc-ic" aria-label="Fermer Loo" title="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   </div>
   <div class="chat-log" id="chatLog" aria-live="polite"></div>
   <div class="chat-quick" aria-label="Suggestions">
@@ -4349,12 +4418,13 @@ html[data-design="2"][data-theme="dark"] #activeFilters button{background:#3B302
   </div>
   <form class="chat-input" id="chatForm">
     <label for="chatMessage" class="sr-only">Message à Loo</label>
-    <input id="chatMessage" placeholder="Écris ta question…" autocomplete="off">
-    <button class="btn btn-primary" type="submit">Envoyer</button>
+    <div class="lc-field"><input id="chatMessage" placeholder="Pose ta question à Loo…" autocomplete="off" maxlength="300">
+    <button class="lc-send" type="submit" aria-label="Envoyer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span class="sr-only">Envoyer</span></button></div>
   </form>
+  <p class="lc-note">Réponses automatiques tirées du <a href="#/aide">centre d’aide</a>.</p>
 </section>
 <button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat" aria-label="Loo, l’assistant Orleoo">
-  <span class="reboot-bubble"><svg class="loo-logo" viewBox="0 0 48 48" aria-hidden="true"><path class="ll-bubble" d="M24 4c11 0 20 7.6 20 17.5S35 39 24 39c-1.9 0-3.7-.2-5.4-.7L10 43.5c-.9.5-1.9-.3-1.6-1.3l2-6.6C6.7 32.4 4 27.2 4 21.5 4 11.6 13 4 24 4Z"/><circle class="ll-ring" cx="19.5" cy="21" r="6.2"/><circle class="ll-ring" cx="28.5" cy="21" r="6.2"/><path class="ll-spark" d="M37.5 8.5l1 2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1z"/></svg></span><span class="reboot-label">Loo</span>
+  <span class="reboot-bubble"><svg class="loo-logo" viewBox="0 0 48 48" aria-hidden="true"><path class="ll-ant" d="M24 10.5V6"/><circle class="ll-spark" cx="24" cy="4.6" r="2.9"/><rect class="ll-ear" x="2.2" y="21" width="5" height="11" rx="2.5"/><rect class="ll-ear" x="40.8" y="21" width="5" height="11" rx="2.5"/><rect class="ll-head" x="5.5" y="10" width="37" height="33" rx="13"/><rect class="ll-face" x="10.5" y="16" width="27" height="19" rx="9.5"/><g class="ll-eyes"><rect class="ll-eye" x="16" y="20.5" width="5" height="10" rx="2.5"/><rect class="ll-eye" x="27" y="20.5" width="5" height="10" rx="2.5"/></g></svg></span><span class="reboot-label">Loo</span>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -8622,8 +8692,10 @@ $("seasonBtn")?.addEventListener("click",seasonGo);$("discoverSeason").addEventL
    LOO — assistant à réponses préparées (pas d'IA connectée)
    ========================================================= */
 const chatLog=$("chatLog");
-function botSay(html){const d=document.createElement("div");d.className="msg bot";d.innerHTML=html;chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight}
-function userSay(text){const d=document.createElement("div");d.className="msg user";d.textContent=text;chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight}
+const LOO_AV=`<span class="lc-mav" aria-hidden="true">${document.querySelector("#rebootBtn .loo-logo")?.outerHTML||""}</span>`;
+function botSay(html){const prev=chatLog.lastElementChild;const r=document.createElement("div");r.className="lc-row bot"+(prev&&prev.classList.contains("bot")?" cont":"");
+  r.innerHTML=LOO_AV;const d=document.createElement("div");d.className="msg bot";d.innerHTML=html;r.appendChild(d);chatLog.appendChild(r);chatLog.scrollTop=chatLog.scrollHeight}
+function userSay(text){const r=document.createElement("div");r.className="lc-row user";const d=document.createElement("div");d.className="msg user";d.textContent=text;r.appendChild(d);chatLog.appendChild(r);chatLog.scrollTop=chatLog.scrollHeight}
 
 /* =========================================================
    LOO ANTICIPE : accueil personnalisé, petites bulles au bon moment, questions suivantes
@@ -8824,6 +8896,7 @@ function openChat(open){
 }
 $("rebootBtn").addEventListener("click",()=>openChat(!$("chat").classList.contains("open")));
 $("closeChat").addEventListener("click",()=>openChat(false));
+$("chatReset").addEventListener("click",()=>{chatLog.innerHTML="";botSay(looGreeting());$("chatMessage").focus()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("chat").classList.contains("open"))openChat(false)});
 /* ---------- Base de connaissances de Loo (réponses préparées, aucune IA) ---------- */
 const STOP=new Set("je tu il elle on nous vous un une des de du la le les et ou a au aux en pour avec sur dans mon ma mes ton ta tes cherche chercher recherche trouve trouver veux voudrais voir besoin quoi est ce que qui il y as avez taille prix moins euros euro eur max maximum sous pas cher chere bon bonne plus".split(" "));
