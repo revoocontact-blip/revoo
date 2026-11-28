@@ -3974,6 +3974,42 @@ html[data-design="2"] .top .acct-btn .acct-av{border:0!important;box-shadow:none
 html[data-design="2"] .top .acct-btn .acct-chev,html[data-design="2"] .top .acct-btn .acct-name{display:none!important}
 @media (max-width:680px){html[data-design="2"] .menu-btn.is-user{border:0!important;box-shadow:none!important;background:transparent!important}html[data-design="2"] .menu-btn.is-user .mb-av{width:40px;height:40px}}
 @media (max-width:680px){html[data-design="2"] .menu-btn.is-user .mb-av{border:0!important;box-shadow:none!important;outline:0!important}}
+
+/* ===== FILTRES ORDINATEUR : barre horizontale ===== */
+@media (min-width:921px){
+  html[data-design="2"] .catalogue{grid-template-columns:minmax(0,1fr)!important;gap:0!important}
+  html[data-design="2"] #filters{position:relative!important;top:auto!important;max-height:none!important;overflow:visible!important;display:flex!important;flex-wrap:wrap;align-items:center;gap:8px;padding:0!important;margin:0 0 16px!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;z-index:20}
+  html[data-design="2"] #filters #filterForm{display:contents!important}
+  html[data-design="2"] #filters .filters-head{order:99;position:static;padding:0;border:0;background:none;margin-left:4px}
+  html[data-design="2"] #filters .filters-head h2,html[data-design="2"] #filters .filters-close{display:none!important}
+  html[data-design="2"] #filters .f-search{margin:0;width:260px;order:-1}
+  html[data-design="2"] #filters .f-search .input{min-height:42px;border-radius:99px!important}
+  html[data-design="2"] #filters details.fsec{position:relative;border:0!important}
+  html[data-design="2"] #filters details.fsec>summary{display:flex;align-items:center;gap:8px;min-height:42px;padding:0 14px!important;border:1px solid var(--line,#E6DCCF)!important;border-radius:99px!important;background:var(--surface,#fff)!important;font-weight:700;font-size:.92rem;white-space:nowrap;transition:border-color .15s,background .15s}
+  html[data-design="2"] #filters details.fsec>summary:hover{border-color:#B04E2E!important}
+  html[data-design="2"] #filters details.fsec[open]>summary{border-color:#B04E2E!important;box-shadow:0 0 0 3px rgba(235,164,136,.35)}
+  html[data-design="2"] #filters details.fsec:has(.fsec-v:not(:empty))>summary{background:#FDF3EE!important;border-color:#B04E2E!important}
+  html[data-design="2"] #filters .fsec-v{margin-left:0;max-width:150px;font-size:.85rem}
+  html[data-design="2"] #filters .fsec-v:empty{display:none}
+  html[data-design="2"] #filters .fsec-body{position:absolute;top:calc(100% + 8px);left:0;z-index:40;min-width:320px;max-width:400px;max-height:min(62vh,460px);overflow:auto;padding:16px;border-radius:16px;background:var(--surface,#fff);border:1px solid var(--line,#E6DCCF);box-shadow:0 18px 44px rgba(46,50,56,.18)}
+  html[data-design="2"] #filters .fsec-body .filter-group{margin:0}
+  html[data-design="2"] #filters .fsec-body .filter-group+.filter-group{margin-top:12px}
+  html[data-design="2"] #filters .f-clear{font-size:.9rem}
+  html[data-design="2"] .results-bar #filtersToggle{display:none!important}
+}
+@media (min-width:921px){
+  html[data-design="2"][data-theme="dark"] #filters details.fsec>summary,html[data-design="2"][data-theme="dark"] #filters .fsec-body{background:#2F3439!important;border-color:#49515A!important}
+  html[data-design="2"][data-theme="dark"] #filters details.fsec:has(.fsec-v:not(:empty))>summary{background:#3B302B!important;border-color:#E07A55!important}
+  html[data-design="2"][data-theme="dark"] #filters details.fsec[open]>summary{border-color:#E07A55!important}
+}
+@media (min-width:921px) and (prefers-color-scheme:dark){
+  html[data-design="2"]:not([data-theme="light"]) #filters details.fsec>summary,html[data-design="2"]:not([data-theme="light"]) #filters .fsec-body{background:#2F3439!important;border-color:#49515A!important}
+  html[data-design="2"]:not([data-theme="light"]) #filters details.fsec:has(.fsec-v:not(:empty))>summary{background:#3B302B!important;border-color:#E07A55!important}
+  html[data-design="2"]:not([data-theme="light"]) #filters details.fsec[open]>summary{border-color:#E07A55!important}
+}
+
+html[data-design="2"][data-theme="dark"] #activeFilters button{background:#3B302B!important;color:#F6D3C4!important;border-color:#7A4A3A!important}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) #activeFilters button{background:#3B302B!important;color:#F6D3C4!important;border-color:#7A4A3A!important}}
 </style>
 </head>
 <body>
@@ -4183,9 +4219,9 @@ html[data-design="2"] .top .acct-btn .acct-chev,html[data-design="2"] .top .acct
       <div class="filters-head"><h2>Filtres <span class="f-nb" id="fHeadNb"></span></h2><button type="button" class="f-clear" id="resetFilters">Tout effacer</button><button type="button" class="filters-close" id="filtersClose" aria-label="Fermer les filtres">×</button></div>
       <form id="filterForm">
         <div class="f-search"><label class="sr-only" for="fQuery">Rechercher</label><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" id="fQuery" type="search" placeholder="Nom, marque, auteur…"></div>
-        <details class="fsec" open data-fsec="cat"><summary>Catégorie<span class="fsec-v" id="fsvCat"></span></summary><fieldset class="filter-group"><legend class="sr-only">Catégorie</legend><div class="chips" id="fCategory"></div></fieldset></details>
-        <details class="fsec" open data-fsec="size"><summary><span id="fSizeLabel">Taille</span><span class="fsec-v" id="fsvSize"></span></summary><fieldset class="filter-group"><legend class="sr-only">Taille ou format</legend><div id="fSize"></div></fieldset></details>
-        <details class="fsec" open data-fsec="price"><summary>Prix<span class="fsec-v" id="fsvPrice"></span></summary><fieldset class="filter-group"><legend class="sr-only">Prix en euros</legend>
+        <details class="fsec" open data-fsec="cat"><summary>Catégorie<span class="fsec-v" id="fsvCat"></span></summary><div class="fsec-body"><fieldset class="filter-group"><legend class="sr-only">Catégorie</legend><div class="chips" id="fCategory"></div></fieldset></div></details>
+        <details class="fsec" open data-fsec="size"><summary><span id="fSizeLabel">Taille</span><span class="fsec-v" id="fsvSize"></span></summary><div class="fsec-body"><fieldset class="filter-group"><legend class="sr-only">Taille ou format</legend><div id="fSize"></div></fieldset></div></details>
+        <details class="fsec" open data-fsec="price"><summary>Prix<span class="fsec-v" id="fsvPrice"></span></summary><div class="fsec-body"><fieldset class="filter-group"><legend class="sr-only">Prix en euros</legend>
           <div class="f-presets" id="fPresets"></div>
           <div class="price-row">
             <label class="f-money"><span class="sr-only">Prix minimum</span><input class="input" id="fMin" type="number" min="0" step="1" inputmode="numeric" placeholder="Min"><i aria-hidden="true">€</i></label>
@@ -4193,12 +4229,12 @@ html[data-design="2"] .top .acct-btn .acct-chev,html[data-design="2"] .top .acct
             <label class="f-money"><span class="sr-only">Prix maximum</span><input class="input" id="fMax" type="number" min="0" step="1" inputmode="numeric" placeholder="Max"><i aria-hidden="true">€</i></label>
           </div>
           <p class="error" id="priceError" role="alert"></p>
-        </fieldset></details>
-        <details class="fsec" open data-fsec="lend"><summary>Prêt<span class="fsec-v" id="fsvLend"></span></summary><fieldset class="filter-group"><legend class="sr-only">Prêt</legend><div class="chips"><label class="chip"><input type="checkbox" name="lend" id="fLend"><span>Disponible au prêt</span></label></div></fieldset></details>
-        <details class="fsec" open data-fsec="cond"><summary>État<span class="fsec-v" id="fsvCond"></span></summary><fieldset class="filter-group"><legend class="sr-only">État</legend><div class="chips" id="fCondition"></div></fieldset></details>
-        <details class="fsec" data-fsec="more"><summary>Marque et style<span class="fsec-v" id="fsvMore"></span></summary>
+        </fieldset></div></details>
+        <details class="fsec" open data-fsec="cond"><summary>État<span class="fsec-v" id="fsvCond"></span></summary><div class="fsec-body"><fieldset class="filter-group"><legend class="sr-only">État</legend><div class="chips" id="fCondition"></div></fieldset></div></details>
+        <details class="fsec" open data-fsec="lend"><summary>Prêt<span class="fsec-v" id="fsvLend"></span></summary><div class="fsec-body"><fieldset class="filter-group"><legend class="sr-only">Prêt</legend><div class="chips"><label class="chip"><input type="checkbox" name="lend" id="fLend"><span>Disponible au prêt</span></label></div></fieldset></div></details>
+        <details class="fsec" data-fsec="more"><summary>Marque et style<span class="fsec-v" id="fsvMore"></span></summary><div class="fsec-body">
           <div class="filter-group"><label class="filter-label" for="fBrand">Marque ou auteur</label><select class="input" id="fBrand"></select></div>
-          <div class="filter-group"><label class="filter-label" for="fStyle">Style</label><select class="input" id="fStyle"></select></div></details>
+          <div class="filter-group"><label class="filter-label" for="fStyle">Style</label><select class="input" id="fStyle"></select></div></div></details>
         <div class="filters-foot"><button type="button" class="btn btn-outline" id="resetFilters2">Tout effacer</button><button type="button" class="btn btn-primary" id="filtersApply">Voir les résultats</button></div>
       </form>
     </aside>
@@ -6875,7 +6911,7 @@ function renderNav(view){
 document.addEventListener("click",e=>{
   const u=e.target.closest("[data-univers]");if(u){navUniv=u.dataset.univers;renderNav("univers");location.hash="#/univers/"+navUniv;return}
   if(e.target.closest("[data-navfiltres]")){
-    const open=()=>{if(innerWidth<=920)setFiltersOpen(true);else{$("filters").scrollIntoView({behavior:"smooth",block:"start"});$("fQuery")?.focus({preventScroll:true})}};
+    const open=()=>{if(innerWidth<=920)setFiltersOpen(true);else{scrollTo({top:0,behavior:"smooth"});setTimeout(()=>{const d=document.querySelector('#filters .fsec[data-fsec="cat"]');if(d){d.open=true;d.querySelector("summary").focus({preventScroll:true})}},250)}};
     if(location.hash==="#/catalogue")open();else{openCatalogue(navUniv==="livres"?{univers:"livres",category:"Livres"}:{univers:"mode"});setTimeout(open,80)}
     return}
   const c=e.target.closest("[data-navcat]");if(c){$("searchInput").value="";openCatalogue({univers:"mode",category:c.dataset.navcat});return}
@@ -8756,6 +8792,17 @@ document.addEventListener("pointerdown",e=>{
   },{passive:true});
   addEventListener("resize",()=>{if(!B.contains("hdr-compact"))measure();else fix()});
   addEventListener("hashchange",()=>{B.remove("hdr-compact","hdr-peek");const m=main();if(m)m.style.marginTop="";y=0});
+})();
+
+/* Ordinateur : barre de filtres horizontale, chaque filtre s'ouvre en petite fenêtre (une seule à la fois) */
+(function(){
+  const mq=matchMedia("(min-width:921px)"),secs=()=>[...document.querySelectorAll("#filters .fsec")];
+  const DEF=["cat","size","price","cond","lend"];
+  const apply=()=>secs().forEach(d=>{d.open=mq.matches?false:DEF.includes(d.dataset.fsec)});
+  apply();(mq.addEventListener?mq.addEventListener("change",apply):mq.addListener(apply));
+  document.addEventListener("toggle",e=>{const d=e.target;if(!mq.matches||!d.classList||!d.classList.contains("fsec")||!d.open)return;secs().forEach(x=>{if(x!==d)x.open=false})},true);
+  document.addEventListener("pointerdown",e=>{if(!mq.matches||e.target.closest("#filters .fsec"))return;secs().forEach(x=>x.open=false)});
+  document.addEventListener("keydown",e=>{if(!mq.matches||e.key!=="Escape")return;const o=secs().find(x=>x.open);if(o){o.open=false;o.querySelector("summary").focus()}});
 })();
 let chatStarted=false;
 function openChat(open){
