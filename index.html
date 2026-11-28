@@ -4210,7 +4210,18 @@ footer svg.wm,html footer svg.wm{--wm-ink:#F3EEE8;--wm-oo:#EBA488}
 
 /* ===== PAGES D'ACTIVITÉ V1 ===== */
 .ap-mode>.page-head{display:none!important}
-#view-compte.ap-mode>.narrow,#view-messages.ap-mode>.narrow{max-width:860px}
+#view-compte.ap-mode>.narrow,#view-messages.ap-mode>.narrow{max-width:none}
+@media (min-width:1000px){
+ .ap-body .ap-list,.ap-offers,#view-messages.ap-mode .ap-list,#cartContent .ap-list{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+ .ap-empty{padding:56px 24px}
+}
+@media (min-width:1500px){.ap-body .ap-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:901px){
+ html[data-design] #view-vendre>.narrow,html[data-design] #view-vendre>.page-head{max-width:1040px;margin-inline:auto}
+ html[data-design="2"] #pageContent:not(:has(.ch-sws)):not(:has(.xpage)):not(:has(.gate-page)){max-width:1040px;margin-inline:auto}
+ html[data-design] #view-compte:not(.ap-mode)>.narrow,html[data-design] #view-compte:not(.ap-mode)>.page-head{margin-inline:auto}
+ html[data-design] #view-messages:not(.ap-mode)>.narrow,html[data-design] #view-messages:not(.ap-mode)>.page-head{max-width:980px;margin-inline:auto}
+}
 .ap-head{margin:6px 0 18px}
 .ap-head .crumbs{margin:0 0 14px}
 .ap-row{display:flex;align-items:center;gap:16px}
@@ -4327,6 +4338,35 @@ html[data-design="2"][data-theme="dark"] .ap-soon p{color:#E6D7AE}
  html[data-design="2"]:not([data-theme="light"]) .ap-soon{background:#3A3322;border-color:#5C4E2A}
  html[data-design="2"]:not([data-theme="light"]) .ap-soon-ic{background:#4A3E22;color:#FFD98A}
  html[data-design="2"]:not([data-theme="light"]) .ap-soon p{color:#E6D7AE}
+}
+
+/* ===== SUPPRESSION DES MESSAGES ===== */
+.conv-wrap{position:relative}
+.conv-wrap .ap-conv{padding-right:52px!important}
+.conv-del{position:absolute;right:10px;bottom:10px;width:36px;height:36px;border-radius:10px;border:0;background:transparent;color:var(--muted,#6B6560);display:grid;place-items:center;cursor:pointer;opacity:.75}
+.conv-del .icon,.msg-del .icon{width:18px;height:18px;margin:0}
+.conv-del:hover,.conv-del:focus-visible{opacity:1;background:#FBE4E1;color:#A3341C}
+.conv-wrap .ap-conv .badge{align-self:start}
+.bubble{position:relative}
+.msg-del{position:absolute;left:-40px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:0;background:var(--surface,#fff);color:var(--muted,#6B6560);display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity .15s;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.bubble:hover .msg-del,.msg-del:focus-visible{opacity:1}
+.msg-del:hover{color:#A3341C;background:#FBE4E1}
+@media (hover:none){.msg-del{opacity:.7}}
+.bubble.deleted{opacity:.75}
+.bubble.deleted p{font-style:italic}
+html[data-design] body .bubble.me.deleted{background:transparent!important;border:1px dashed var(--line,#D9CBBB)!important;color:var(--muted,#6B6560)!important}
+html[data-design] body .bubble.them.deleted{background:transparent!important;border:1px dashed var(--line,#D9CBBB)!important}
+.thread-tools{margin:10px 0 0}
+.thread-tools .link{color:#A3341C}
+html[data-design="2"][data-theme="dark"] :is(.conv-del,.msg-del){color:#B4BAC0}
+html[data-design="2"][data-theme="dark"] .msg-del{background:#31363C}
+html[data-design="2"][data-theme="dark"] :is(.conv-del,.msg-del):hover{background:#4A2723;color:#F2A399}
+html[data-design="2"][data-theme="dark"] .thread-tools .link{color:#F2867D}
+@media (prefers-color-scheme:dark){
+ html[data-design="2"]:not([data-theme="light"]) :is(.conv-del,.msg-del){color:#B4BAC0}
+ html[data-design="2"]:not([data-theme="light"]) .msg-del{background:#31363C}
+ html[data-design="2"]:not([data-theme="light"]) :is(.conv-del,.msg-del):hover{background:#4A2723;color:#F2A399}
+ html[data-design="2"]:not([data-theme="light"]) .thread-tools .link{color:#F2867D}
 }
 </style>
 </head>
@@ -4975,10 +5015,12 @@ async function loadConversations(){
   if(error){console.warn(error);return}
   const convs=(data||[]).map(convView);
   if(convs.length){
-    const {data:msgs}=await sb.from("messages").select("conversation_id,body,sender_id,created_at,read_at").in("conversation_id",convs.map(c=>c.id)).order("created_at",{ascending:false}).limit(500);
+    const {data:msgs}=await sb.from("messages").select("conversation_id,body,sender_id,created_at,read_at,deleted_at").in("conversation_id",convs.map(c=>c.id)).order("created_at",{ascending:false}).limit(500);
     (msgs||[]).forEach(m=>{const c=convs.find(x=>x.id===m.conversation_id);if(!c)return;if(!c.last)c.last=m;if(!m.read_at&&m.sender_id!==state.user.id)c.unread=(c.unread||0)+1});
   }
-  chat.convs=convs.filter(c=>c.last||c.buyer_id===state.user.id);  // le vendeur ne voit une conversation qu'après le premier message
+  let hidden={};try{const h=await sb.from("conversation_hidden").select("conversation_id,hidden_at");(h.data||[]).forEach(x=>hidden[x.conversation_id]=x.hidden_at)}catch(_){}
+  chat.convs=convs.filter(c=>(c.last||c.buyer_id===state.user.id)  // le vendeur ne voit une conversation qu'après le premier message
+    &&!(hidden[c.id]&&(!c.last||Date.parse(c.last.created_at)<=Date.parse(hidden[c.id]))));   // masquée par moi, sauf nouveau message depuis
   chat.unread=chat.convs.reduce((t,c)=>t+(c.unread||0),0);
   updateCounts();
 }
@@ -5040,17 +5082,31 @@ function renderMessages(id){
   const f=apF.msg,list=chat.convs.filter(c=>f==="unread"?c.unread:f==="buy"?c.buyer_id===state.user.id:f==="sell"?c.seller_id===state.user.id:true);
   el.innerHTML=apHead("messages",chat.unread)
     +(chat.convs.length?apChips("msg",[["all","Toutes",chat.convs.length],["unread","Non lues",unread],buy?["buy","J’achète",buy]:null,sell?["sell","Je vends",sell]:null]):"")
-    +(list.length?`<div class="conv-list ap-list">${list.map(c=>`<a class="conv ap-conv${c.unread?" unread":""}" href="#/messages/${c.id}">
+    +(list.length?`<div class="conv-list ap-list">${list.map(c=>`<div class="conv-wrap"><a class="conv ap-conv${c.unread?" unread":""}" href="#/messages/${c.id}">
       <span class="image-frame conv-img">${c.img?`<img data-safe-image src="${esc(c.img)}" alt="">`:""}</span>
       <span class="conv-main"><span class="conv-top"><b>${c.gone?esc(c.other):"@"+esc(c.other)}</b><small>${c.last?msgTime(c.last.created_at):""}</small></span>
       <span class="conv-sub"><span class="ap-role ${c.buyer_id===state.user.id?"buy":"sell"}">${esc(c.role)}</span> ${esc(c.title)}</span>
-      <span class="conv-last">${c.last?(c.last.sender_id===state.user.id?"Toi : ":"")+esc(c.last.body):"Aucun message pour l’instant"}</span></span>
+      <span class="conv-last">${c.last?(c.last.sender_id===state.user.id?"Toi : ":"")+(c.last.deleted_at?"<em>Message supprimé</em>":esc(c.last.body)):"Aucun message pour l’instant"}</span></span>
       ${c.unread?`<span class="badge has" aria-label="${c.unread} non lu${c.unread>1?"s":""}">${c.unread}</span>`:""}
-    </a>`).join("")}</div>`
+    </a><button type="button" class="conv-del" data-convhide="${c.id}" data-name="${esc(c.other)}" aria-label="Supprimer la conversation avec ${esc(c.other)}" title="Supprimer la conversation"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button></div>`).join("")}</div>`
     :chat.convs.length?apEmpty("msg","Rien à afficher ici",f==="unread"?"Tu as lu tous tes messages.":"Aucune conversation dans cette catégorie.")
     :apEmpty("msg","Aucune conversation pour l’instant","Pour écrire à un vendeur, ouvre une annonce et clique sur « Je suis intéressé(e) ». Tes discussions apparaîtront ici.",[["Voir les articles","#/catalogue"]]));
   watchImages(el);
 }
+/* Supprimer un message (le mien) ou masquer une conversation */
+document.addEventListener("click",async e=>{
+  const d=e.target.closest("[data-msgdel]");
+  if(d){e.preventDefault();if(!confirm("Supprimer ce message ? Il disparaîtra aussi pour l’autre membre."))return;
+    const {error}=await sb.rpc("delete_message",{p_msg:d.dataset.msgdel});if(error){toast(frenchError(error));return}
+    const m=chat.messages.find(x=>x.id===d.dataset.msgdel);if(m){m.deleted_at=new Date().toISOString();m.body="Message supprimé"}
+    const c=chat.current&&chat.convs.find(x=>x.id===chat.current.id);if(c&&c.last&&c.last.created_at===m?.created_at)c.last.deleted_at=m.deleted_at;
+    renderThreadLog();toast("Message supprimé.");return}
+  const h=e.target.closest("[data-convhide]");
+  if(h){e.preventDefault();e.stopPropagation();if(!confirm(`Supprimer la conversation avec ${h.dataset.name||"ce membre"} de ta liste ? Elle réapparaîtra si vous vous écrivez de nouveau.`))return;
+    const {error}=await sb.rpc("hide_conversation",{p_conv:h.dataset.convhide});if(error){toast(frenchError(error));return}
+    chat.convs=chat.convs.filter(x=>x.id!==h.dataset.convhide);chat.unread=chat.convs.reduce((t,c)=>t+(c.unread||0),0);updateCounts();
+    toast("Conversation supprimée de ta liste.");if(h.dataset.back)location.hash="#/messages";else renderView();return}
+});
 /* Bloquer un membre */
 const blocks={list:[],names:{}};
 async function loadBlocks(){blocks.list=[];if(!sb||!state.user)return;try{const r=await sb.from("blocks").select("blocked_id,created_at").order("created_at",{ascending:false});if(r.error)return;blocks.list=r.data||[];
@@ -5099,11 +5155,12 @@ async function openThread(id){
       <button class="btn btn-primary" type="submit">Envoyer</button>
     </form>`}
     <p class="error" id="threadErr" role="alert"></p>
+    <p class="small thread-tools"><button type="button" class="link" data-convhide="${c.id}" data-name="${esc(c.other)}" data-back="1">Supprimer cette conversation</button></p>
     <p class="muted small">Pour ta sécurité, tout se paie sur Orleoo. Les messages qui contiennent un numéro, un e-mail, un IBAN ou un autre moyen de paiement sont bloqués. <a class="link" href="#/securite">En savoir plus</a></p>
     ${c.gone||!c.otherId?"":`<div id="mrBox"></div>`}${c.gone||!c.otherId||iBlocked(c.otherId)?"":`<p class="small"><button type="button" class="link block-link" data-mreport="${c.otherId}" data-name="${esc(c.other)}" data-conv="${c.id}" style="margin-right:16px">Signaler @${esc(c.other)}</button><button type="button" class="link block-link" data-block="${c.otherId}" data-name="${esc(c.other)}" data-on="1">Bloquer @${esc(c.other)}</button></p>`}`;
   if(!c.gone&&c.otherId&&!iBlocked(c.otherId))sb.rpc("blocked_me",{p_other:c.otherId}).then(r=>{if(r.data===true&&chat.current===c){const f=$("threadForm"),n=$("blockedMe");if(f)f.hidden=true;if(n)n.hidden=false}}).catch(()=>{});
   watchImages(el);
-  const {data,error}=await sb.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at").eq("conversation_id",id).order("created_at",{ascending:true}).limit(500);
+  const {data,error}=await sb.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at,deleted_at").eq("conversation_id",id).order("created_at",{ascending:true}).limit(500);
   if(chat.current?.id!==id)return;
   if(error){$("threadLog").innerHTML=`<p class="error">${frenchError(error)}</p>`;return}
   chat.messages=data||[];renderThreadLog();
@@ -5114,7 +5171,7 @@ async function openThread(id){
     e.preventDefault();const body=input.value.trim();if(!body||chat.sending)return;
     {const why=offPlatform(body);if(why){$("threadErr").textContent=offPlatformMsg(why);return}}
     chat.sending=true;$("threadErr").textContent="";
-    const {data:m,error}=await sb.from("messages").insert({conversation_id:id,body,sender_id:state.user.id}).select("id,conversation_id,sender_id,body,created_at,read_at").single();
+    const {data:m,error}=await sb.from("messages").insert({conversation_id:id,body,sender_id:state.user.id}).select("id,conversation_id,sender_id,body,created_at,read_at,deleted_at").single();
     chat.sending=false;
     if(error){$("threadErr").textContent=frenchError(error);return}
     input.value="";
@@ -5126,7 +5183,8 @@ async function openThread(id){
 function renderThreadLog(){
   const log=$("threadLog");if(!log)return;
   const me=state.user.id;
-  log.innerHTML=chat.messages.length?chat.messages.map(m=>`<div class="bubble ${m.sender_id===me?"me":"them"}"><p>${esc(m.body)}</p><small>${msgTime(m.created_at)}${m.sender_id===me&&m.read_at?" · Lu":""}</small></div>`).join("")
+  log.innerHTML=chat.messages.length?chat.messages.map(m=>m.deleted_at?`<div class="bubble ${m.sender_id===me?"me":"them"} deleted"><p><em>${m.sender_id===me?"Tu as supprimé ce message":"Message supprimé"}</em></p><small>${msgTime(m.created_at)}</small></div>`
+    :`<div class="bubble ${m.sender_id===me?"me":"them"}"><p>${esc(m.body)}</p><small>${msgTime(m.created_at)}${m.sender_id===me&&m.read_at?" · Lu":""}</small>${m.sender_id===me&&m.id?`<button type="button" class="msg-del" data-msgdel="${m.id}" aria-label="Supprimer ce message" title="Supprimer ce message"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>`:""}</div>`).join("")
     :`<p class="muted small" style="text-align:center">Écris ton premier message à ${esc(chat.current.other)} : pose une question sur l’article, sa taille, son état…</p>`;
   log.scrollTop=log.scrollHeight;
 }

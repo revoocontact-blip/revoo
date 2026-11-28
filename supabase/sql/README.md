@@ -54,6 +54,7 @@ Chaque script peut être relancé sans risque.
 | 42 | `supabase-suivis-tableau.sql` | Suivre un vendeur (nouveautés sur le site, e-mail si accepté) + tableau « Santé du site » pour l’équipe |
 | 43 | `supabase-moderation-plus.sql` | Modération : signaler un membre, file « Membres signalés », statistiques de modération, motif « Ni un vêtement ni un livre » |
 | 44 | `supabase-securite-2.sql` | Sécurité : les tâches de fond ne sont lancées que par le planificateur, suivi réservé aux membres connectés |
+| 45 | `supabase-messages-suppression.sql` | Messagerie : supprimer un de ses messages (copie gardée pour la modération), masquer une conversation |
 
 Le script `supabase-contact.sql` suppose que l'adresse d'expédition est validée chez Brevo.
 
