@@ -3967,6 +3967,13 @@ body{overflow-anchor:none}
 
 /* connecté : seulement la photo de profil en haut à droite (tout le reste est dans son menu) */
 body:not(.guest) .top .actions>:is(.action,.head-sell,#cartBtn){display:none!important}
+
+/* photo de profil sans contour (en-tête) */
+html[data-design="2"] .top .acct-btn,html[data-design="2"] .top .acct-btn:hover,html[data-design="2"] .top .acct-btn[aria-expanded="true"]{border:0!important;box-shadow:none!important;outline-offset:3px;background:transparent!important;padding:0!important}
+html[data-design="2"] .top .acct-btn .acct-av{border:0!important;box-shadow:none!important;width:42px;height:42px}
+html[data-design="2"] .top .acct-btn .acct-chev,html[data-design="2"] .top .acct-btn .acct-name{display:none!important}
+@media (max-width:680px){html[data-design="2"] .menu-btn.is-user{border:0!important;box-shadow:none!important;background:transparent!important}html[data-design="2"] .menu-btn.is-user .mb-av{width:40px;height:40px}}
+@media (max-width:680px){html[data-design="2"] .menu-btn.is-user .mb-av{border:0!important;box-shadow:none!important;outline:0!important}}
 </style>
 </head>
 <body>
