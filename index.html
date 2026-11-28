@@ -35,9 +35,9 @@
 <link rel="preload" href="fonts/dm-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://htisbuqxnqdahtedgiiz.supabase.co" crossorigin>
 <link rel="preload" href="fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32.png?v=19">
-<link rel="icon" type="image/png" sizes="64x64" href="logos/favicon-64.png?v=19">
-<link rel="apple-touch-icon" href="logos/apple-touch-icon.png?v=19">
+<link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32.png?v=20">
+<link rel="icon" type="image/png" sizes="64x64" href="logos/favicon-64.png?v=20">
+<link rel="apple-touch-icon" href="logos/apple-touch-icon.png?v=20">
 <style>
 /* =========================================================
    ORLEOO — identité bleue
@@ -4021,7 +4021,7 @@ html[data-design="2"][data-theme="dark"] #activeFilters button{background:#3B302
 .loo-logo .ll-spark{fill:#EBA488}
 .loo-logo .ll-face{fill:#FBF5EC}
 .loo-logo .ll-eye{fill:#2E3238}
-.loo-logo .ll-eyes{transform-origin:24px 25.5px;animation:llBlink 5s infinite}
+.loo-logo .ll-eyes{transform-origin:24px 23.2px;animation:llBlink 5s infinite}
 @keyframes llBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
 @media (prefers-reduced-motion:reduce){.loo-logo .ll-eyes{animation:none}}
 html[data-design="2"][data-theme="dark"] .loo-logo .ll-head{fill:#E07A55}
@@ -4081,6 +4081,18 @@ html[data-design] body #chat .lc-field input::placeholder{color:var(--lc-mute);o
 @media (max-width:680px){#chat .lc-note{padding-bottom:calc(12px + env(safe-area-inset-bottom))}html[data-design] body #chat .chat-input{padding-bottom:4px!important}}
 /* bouton d'ouverture */
 html[data-design] body .reboot .reboot-bubble{width:40px!important;height:40px!important}
+
+/* ===== LOO V3.1 : robot affiné + bouton rond centré ===== */
+.loo-logo .ll-shine{fill:none;stroke:#FFFFFF;stroke-opacity:.45;stroke-width:2.2;stroke-linecap:round}
+.loo-logo .ll-smile{fill:none;stroke:#2E3238;stroke-width:1.9;stroke-linecap:round}
+html[data-design="2"][data-theme="dark"] .loo-logo .ll-smile{stroke:#F2C4AE}
+@media (prefers-color-scheme:dark){html[data-design="2"]:not([data-theme="light"]) .loo-logo .ll-smile{stroke:#F2C4AE}}
+html[data-design] body .reboot{width:60px!important;height:60px!important;min-height:0!important;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center!important;gap:0!important}
+html[data-design] body .reboot .reboot-bubble{width:40px!important;height:40px!important;margin:0!important;display:block!important}
+html[data-design] body .reboot .reboot-label{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
+html[data-design] body .reboot:hover .loo-logo{transform:translateY(-1px) rotate(-4deg);transition:transform .2s}
+@media (prefers-reduced-motion:reduce){html[data-design] body .reboot:hover .loo-logo{transform:none}}
+html[data-design] body .loo-logo .ll-head,html[data-design] body .loo-logo .ll-ear,html[data-design] body .loo-logo .ll-face,html[data-design] body .loo-logo .ll-eye,html[data-design] body .loo-logo .ll-spark{stroke:none!important}
 </style>
 </head>
 <body>
@@ -4401,7 +4413,7 @@ html[data-design] body .reboot .reboot-bubble{width:40px!important;height:40px!i
 <!-- ================= LOO ================= -->
 <section class="chat" id="chat" role="dialog" aria-modal="false" aria-labelledby="chatTitle">
   <div class="chat-head">
-    <span class="reboot-bubble lc-av"><svg class="loo-logo" viewBox="0 0 48 48" aria-hidden="true"><path class="ll-ant" d="M24 10.5V6"/><circle class="ll-spark" cx="24" cy="4.6" r="2.9"/><rect class="ll-ear" x="2.2" y="21" width="5" height="11" rx="2.5"/><rect class="ll-ear" x="40.8" y="21" width="5" height="11" rx="2.5"/><rect class="ll-head" x="5.5" y="10" width="37" height="33" rx="13"/><rect class="ll-face" x="10.5" y="16" width="27" height="19" rx="9.5"/><g class="ll-eyes"><rect class="ll-eye" x="16" y="20.5" width="5" height="10" rx="2.5"/><rect class="ll-eye" x="27" y="20.5" width="5" height="10" rx="2.5"/></g></svg></span>
+    <span class="reboot-bubble lc-av"><svg class="loo-logo" viewBox="0 -2.6 48 48" aria-hidden="true"><path class="ll-ant" d="M24 10.5V6.2"/><circle class="ll-spark" cx="24" cy="4.4" r="2.9"/><rect class="ll-ear" x="2.6" y="20" width="5" height="11" rx="2.5"/><rect class="ll-ear" x="40.4" y="20" width="5" height="11" rx="2.5"/><rect class="ll-head" x="6" y="10" width="36" height="31" rx="12"/><path class="ll-shine" d="M11.5 16.5c.8-2.4 2.8-3.9 5.3-4.2"/><rect class="ll-face" x="10.5" y="15.5" width="27" height="19.5" rx="9.75"/><g class="ll-eyes"><rect class="ll-eye" x="16.3" y="19.3" width="4.8" height="7.8" rx="2.4"/><rect class="ll-eye" x="26.9" y="19.3" width="4.8" height="7.8" rx="2.4"/></g><path class="ll-smile" d="M21.2 29.9q2.8 1.9 5.6 0"/></svg></span>
     <div class="lc-id"><b id="chatTitle">Loo</b><small><span class="lc-dot" aria-hidden="true"></span>Assistant Orleoo · en ligne</small></div>
     <button type="button" id="chatReset" class="lc-ic" aria-label="Nouvelle conversation" title="Nouvelle conversation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
     <button type="button" id="closeChat" class="lc-ic" aria-label="Fermer Loo" title="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
@@ -4424,7 +4436,7 @@ html[data-design] body .reboot .reboot-bubble{width:40px!important;height:40px!i
   <p class="lc-note">Réponses automatiques tirées du <a href="#/aide">centre d’aide</a>.</p>
 </section>
 <button type="button" class="reboot" id="rebootBtn" aria-expanded="false" aria-controls="chat" aria-label="Loo, l’assistant Orleoo">
-  <span class="reboot-bubble"><svg class="loo-logo" viewBox="0 0 48 48" aria-hidden="true"><path class="ll-ant" d="M24 10.5V6"/><circle class="ll-spark" cx="24" cy="4.6" r="2.9"/><rect class="ll-ear" x="2.2" y="21" width="5" height="11" rx="2.5"/><rect class="ll-ear" x="40.8" y="21" width="5" height="11" rx="2.5"/><rect class="ll-head" x="5.5" y="10" width="37" height="33" rx="13"/><rect class="ll-face" x="10.5" y="16" width="27" height="19" rx="9.5"/><g class="ll-eyes"><rect class="ll-eye" x="16" y="20.5" width="5" height="10" rx="2.5"/><rect class="ll-eye" x="27" y="20.5" width="5" height="10" rx="2.5"/></g></svg></span><span class="reboot-label">Loo</span>
+  <span class="reboot-bubble"><svg class="loo-logo" viewBox="0 -2.6 48 48" aria-hidden="true"><path class="ll-ant" d="M24 10.5V6.2"/><circle class="ll-spark" cx="24" cy="4.4" r="2.9"/><rect class="ll-ear" x="2.6" y="20" width="5" height="11" rx="2.5"/><rect class="ll-ear" x="40.4" y="20" width="5" height="11" rx="2.5"/><rect class="ll-head" x="6" y="10" width="36" height="31" rx="12"/><path class="ll-shine" d="M11.5 16.5c.8-2.4 2.8-3.9 5.3-4.2"/><rect class="ll-face" x="10.5" y="15.5" width="27" height="19.5" rx="9.75"/><g class="ll-eyes"><rect class="ll-eye" x="16.3" y="19.3" width="4.8" height="7.8" rx="2.4"/><rect class="ll-eye" x="26.9" y="19.3" width="4.8" height="7.8" rx="2.4"/></g><path class="ll-smile" d="M21.2 29.9q2.8 1.9 5.6 0"/></svg></span><span class="reboot-label">Loo</span>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
